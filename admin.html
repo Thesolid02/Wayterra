@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wayterra · Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --w:#fff;--g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g300:#d1d5db;
+  --g400:#9ca3af;--g500:#6b7280;--g700:#374151;--g900:#111827;
+  --blue:#2563eb;--blue-d:#1d4ed8;--blue-l:#eff6ff;
+  --red:#dc2626;--red-bg:#fef2f2;--green:#16a34a;--green-bg:#f0fdf4;
+  --sh:0 1px 3px rgba(0,0,0,.07);--sh-md:0 4px 16px rgba(0,0,0,.08);
+  --r:8px;--rl:12px;--rxl:16px;--f:'Geist',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--f);background:var(--g50);color:var(--g900);min-height:100vh;font-size:14px;-webkit-font-smoothing:antialiased;}
+.topbar{height:54px;background:var(--g900);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:200;}
+.tb-left{display:flex;align-items:center;gap:10px;}
+.tb-name{font-size:1rem;font-weight:700;color:#fff;letter-spacing:-.02em;}
+.tb-badge{font-size:.62rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.55);}
+.tb-sync{font-size:.7rem;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;}
+.tabs{background:var(--w);border-bottom:1px solid var(--g200);display:flex;padding:0 24px;}
+.tab{padding:13px 18px;border:none;background:none;font-family:var(--f);font-size:.83rem;font-weight:600;color:var(--g400);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+.tab:hover{color:var(--g700);}.tab.on{color:var(--g900);border-color:var(--blue);}
+.pane{display:none;padding:24px;}.pane.on{display:block;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rl);border:1px solid transparent;font-family:var(--f);font-size:.81rem;font-weight:600;cursor:pointer;transition:all .14s;white-space:nowrap;}
+.bp{background:var(--blue);color:#fff;}.bp:hover{background:var(--blue-d);}
+.bs{background:var(--w);color:var(--g700);border-color:var(--g200);}.bs:hover{background:var(--g50);}
+.bd{background:var(--red-bg);color:var(--red);border-color:rgba(220,38,38,.15);}
+.bok{background:var(--green-bg);color:var(--green);border-color:rgba(22,163,74,.15);}
+.sm{padding:5px 11px;font-size:.75rem;border-radius:var(--r);}
+.ico{width:32px;height:32px;padding:0;border-radius:var(--r);justify-content:center;font-size:.85rem;border-color:var(--g200);}
+.page{max-width:1080px;margin:0 auto;}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.stat{background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);padding:14px 18px;flex:1;min-width:110px;}
+.stat-n{font-size:1.7rem;font-weight:700;line-height:1;margin-bottom:2px;}
+.stat-l{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);}
+.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.sw{position:relative;flex:1;min-width:180px;}
+.sw input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--g200);border-radius:var(--rl);font-family:var(--f);font-size:.83rem;background:var(--w);color:var(--g900);outline:none;}
+.sw input:focus{border-color:var(--blue);}
+.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--g400);font-size:.85rem;pointer-events:none;}
+select.fs2{padding:8px 12px;border:1px solid var(--g200);border-radius:var(--rl);font-family:var(--f);font-size:.81rem;background:var(--w);color:var(--g700);outline:none;cursor:pointer;}
+.tw{background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:10px 14px;text-align:left;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--g400);background:var(--g50);border-bottom:1px solid var(--g200);}
+tbody tr{border-bottom:1px solid var(--g100);transition:background .1s;}
+tbody tr:last-child{border:none;}
+tbody tr:hover{background:var(--g50);}
+td{padding:10px 14px;font-size:.82rem;vertical-align:middle;}
+.tb{font-weight:600;color:var(--g900);}
+.tm{color:var(--g400);font-size:.78rem;}
+.tt{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--g500);}
+.tac{display:flex;gap:6px;}
+.thimg{width:40px;height:40px;border-radius:var(--r);object-fit:cover;border:1px solid var(--g200);}
+.the{width:40px;height:40px;border-radius:var(--r);background:var(--g100);border:1px dashed var(--g200);display:flex;align-items:center;justify-content:center;font-size:.88rem;color:var(--g400);}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:100px;}
+.abadge{font-size:.72rem;font-weight:500;padding:3px 9px;border-radius:100px;background:var(--g100);color:var(--g500);border:1px solid var(--g200);}
+.empty{text-align:center;padding:52px;color:var(--g400);}
+.exp-row{background:var(--g50);}
+.exp-inner{padding:0 14px 14px 54px;}
+.atbl{background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);overflow:hidden;margin-top:10px;}
+.atbl-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--g200);}
+.atbl-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);}
+.alist{display:flex;flex-direction:column;}
+.aitem{display:flex;align-items:flex-start;gap:10px;padding:9px 14px;border-bottom:1px solid var(--g100);font-size:.81rem;}
+.aitem:last-child{border:none;}
+.ath{width:32px;height:32px;border-radius:var(--r);object-fit:cover;border:1px solid var(--g200);flex-shrink:0;}
+.athe{width:32px;height:32px;border-radius:var(--r);background:var(--g100);border:1px dashed var(--g200);display:flex;align-items:center;justify-content:center;font-size:.78rem;color:var(--g400);flex-shrink:0;}
+.aicho{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.an{font-weight:600;color:var(--g900);}
+.at-type{font-size:.72rem;color:var(--g400);}
+.spec-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;}
+.spec-tag{font-size:.65rem;padding:1px 6px;border-radius:100px;background:var(--g100);color:var(--g500);}
+.ov{display:none;position:fixed;inset:0;z-index:400;background:rgba(17,24,39,.4);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
+.ov.on{display:flex;}
+.modal{background:var(--w);border-radius:var(--rxl);width:100%;max-width:700px;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:mi .2s ease;margin:auto;}
+@keyframes mi{from{opacity:0;transform:translateY(8px) scale(.98);}to{opacity:1;transform:none;}}
+.mh{padding:18px 22px;border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;z-index:2;}
+.mh-t{font-size:1rem;font-weight:700;letter-spacing:-.01em;}
+.mx{width:28px;height:28px;border:none;background:var(--g100);border-radius:var(--r);cursor:pointer;font-size:.82rem;display:flex;align-items:center;justify-content:center;color:var(--g500);}
+.mc{padding:20px 22px;}
+.mf{padding:14px 22px;border-top:1px solid var(--g200);display:flex;justify-content:flex-end;gap:8px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.full{grid-column:1/-1;}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.fg:last-child{margin-bottom:0;}
+.fg label{font-size:.7rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--g400);}
+input[type=text],input[type=number],input[type=url],select.fs,textarea.ft{padding:9px 11px;border:1px solid var(--g200);border-radius:var(--rl);font-family:var(--f);font-size:.83rem;color:var(--g900);background:var(--w);outline:none;width:100%;transition:border .14s;}
+input:focus,select.fs:focus,textarea.ft:focus{border-color:var(--blue);}
+textarea.ft{resize:vertical;line-height:1.65;}
+.fh{font-size:.7rem;color:var(--g400);margin-top:2px;}
+.sdiv{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);padding:16px 0 10px;border-bottom:1px solid var(--g200);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.pa{border:1.5px dashed var(--g300);border-radius:var(--rl);padding:16px;text-align:center;cursor:pointer;background:var(--g50);transition:all .15s;position:relative;overflow:hidden;}
+.pa:hover{border-color:var(--blue);background:var(--blue-l);}
+.pa input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:10px;}
+.pi{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--g200);}
+.pi img{width:100%;height:68px;object-fit:cover;display:block;}
+.pirm{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(220,38,38,.88);color:#fff;border:none;cursor:pointer;font-size:.55rem;display:flex;align-items:center;justify-content:center;}
+.cv-prev{margin-top:8px;max-width:160px;}
+.cv-prev img{width:100%;height:80px;object-fit:cover;border-radius:var(--r);border:1px solid var(--g200);}
+.gp{width:100%;height:40px;border-radius:var(--r);border:1px solid var(--g200);margin-top:5px;transition:background .3s;}
+.arow-wrap{background:var(--g50);border:1px solid var(--g200);border-radius:var(--rxl);padding:14px;margin-bottom:10px;}
+/* SPECS */
+.specs-box{background:var(--w);border:1px solid var(--g200);border-radius:var(--rl);overflow:hidden;margin-top:6px;}
+.specs-hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--g100);background:var(--g50);}
+.specs-hd-lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g500);}
+.spec-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--g100);}
+.spec-row:last-child{border:none;}
+.spec-rm{width:24px;height:24px;border:none;background:var(--red-bg);color:var(--red);border-radius:6px;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.presets-row{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--g100);}
+.preset-btn{font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:100px;border:1px solid var(--g200);background:var(--w);color:var(--g700);cursor:pointer;transition:all .12s;}
+.preset-btn:hover{background:var(--blue-l);border-color:var(--blue);color:var(--blue);}
+.clist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.ci{display:flex;align-items:center;gap:12px;background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);padding:12px 14px;}
+.cdot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.cico{font-size:1.15rem;min-width:26px;text-align:center;}
+.cinfo{flex:1;}
+.cname{font-weight:700;font-size:.88rem;}
+.cmeta{font-size:.72rem;color:var(--g400);display:flex;gap:10px;margin-top:2px;}
+.atgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;}
+.atcard{background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);padding:14px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
+.expbox{background:var(--g900);color:#e5e7eb;border-radius:var(--rl);padding:14px 16px;font-family:monospace;font-size:.72rem;line-height:1.65;max-height:260px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;margin-bottom:12px;}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--g900);color:#fff;font-size:.79rem;padding:9px 20px;border-radius:100px;box-shadow:var(--sh-md);opacity:0;transition:all .22s;pointer-events:none;z-index:600;white-space:nowrap;}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.ok{background:var(--green);}
+#toast.err{background:var(--red);}
+@media(max-width:680px){.g2,.g3{grid-template-columns:1fr;}.full{grid-column:1;}table{display:block;overflow-x:auto;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-left">
+    <svg width="26" height="26" viewBox="0 0 200 200" fill="none">
+      <circle cx="100" cy="100" r="88" stroke="#e8e0b8" stroke-width="10" fill="none"/>
+      <polygon points="100,8 107,32 100,26 93,32" fill="#e8721a"/>
+      <polygon points="100,192 107,168 100,174 93,168" fill="#e8e0b8"/>
+      <polygon points="192,100 168,107 174,100 168,93" fill="#e8e0b8"/>
+      <polygon points="8,100 32,107 26,100 32,93" fill="#e8e0b8"/>
+      <path d="M58 75 L100 68 L142 75 L142 138 L100 145 L58 138 Z" fill="rgba(232,224,184,.18)" stroke="#e8e0b8" stroke-width="4" stroke-linejoin="round"/>
+      <line x1="100" y1="68" x2="100" y2="145" stroke="#e8e0b8" stroke-width="2.5" stroke-dasharray="4 3"/>
+      <circle cx="72" cy="128" r="3.5" fill="#e8721a"/>
+      <circle cx="115" cy="98" r="3" fill="#e8721a" opacity=".8"/>
+      <polygon points="128,90 120,96 124,104 136,94" fill="#e8721a"/>
+    </svg>
+    <span class="tb-name">Wayterra</span>
+    <span class="tb-badge">Admin</span>
+    <span class="tb-sync"><span class="sync-dot"></span> Sync attivo</span>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <a href="app.html" target="_blank" class="btn bs sm">🗺 Apri app</a>
+    <button class="btn bok sm" onclick="openExport()">⬇ Esporta</button>
+    <button class="btn bs sm" onclick="resetUnlock()" id="unlock-btn" style="display:none;">🔓 Reset unlock</button>
+    <button class="btn bp" onclick="openAddPlace()">+ Nuovo luogo</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="switchTab('places',this)">Luoghi</button>
+  <button class="tab" onclick="switchTab('cats',this)">Categorie</button>
+  <button class="tab" onclick="switchTab('actypes',this)">Tipi attività</button>
+</div>
+
+<div class="pane on" id="pane-places">
+<div class="page">
+  <div class="stats" id="stats"></div>
+  <div class="toolbar">
+    <div class="sw"><span class="si">⌕</span><input type="text" id="srch" placeholder="Cerca per nome o regione…" oninput="renderPlaces()"></div>
+    <select class="fs2" id="cflt" onchange="renderPlaces()"><option value="all">Tutte le categorie</option></select>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th></th><th>Foto</th><th>Cat.</th><th>Nome</th><th>Regione</th><th>Tagline</th><th>Att.</th><th style="width:90px;">Score</th><th style="width:90px;">Accesso</th><th style="width:70px;">Dettaglio</th><th></th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none"><div style="font-size:2.2rem;margin-bottom:8px;">🗺</div><p>Nessun luogo trovato</p></div>
+  </div>
+</div>
+</div>
+
+<div class="pane" id="pane-cats">
+<div class="page">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+    <div><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Categorie luoghi</div><div style="font-size:.82rem;color:var(--g400);">Livello 1 — appaiono nel menu "Dove vorresti andare?"</div></div>
+    <button class="btn bp" onclick="openAddCat()">+ Nuova categoria</button>
+  </div>
+  <div class="clist" id="clist"></div>
+</div>
+</div>
+
+<div class="pane" id="pane-actypes">
+<div class="page">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+    <div><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Tipi di attività</div><div style="font-size:.82rem;color:var(--g400);">Livello 2 — pin che compaiono dentro ogni luogo.</div></div>
+    <button class="btn bp" onclick="openAddAtype()">+ Nuovo tipo</button>
+  </div>
+  <div class="atgrid" id="atgrid"></div>
+</div>
+</div>
+
+<!-- MODAL LUOGO -->
+<div class="ov" id="m-place">
+<div class="modal">
+  <div class="mh"><div class="mh-t" id="mp-title">Nuovo luogo</div><button class="mx" onclick="closePlace()">✕</button></div>
+  <div class="mc">
+    <div class="sdiv">Info base · Livello 1</div>
+    <div class="g2">
+      <div class="fg full"><label>Nome *</label><input type="text" id="p-name" placeholder="Es. Civita di Bagnoregio"></div>
+      <div class="fg"><label>Regione</label><input type="text" id="p-region" placeholder="Es. Viterbo · Alto Lazio"></div>
+      <div class="fg"><label>Categoria *</label><select class="fs" id="p-cat"></select></div>
+      <div class="fg"><label>Latitudine *</label><input type="number" id="p-lat" step="0.0001" placeholder="42.6274"></div>
+      <div class="fg"><label>Longitudine *</label><input type="number" id="p-lng" step="0.0001" placeholder="12.1134"></div>
+    </div>
+    <div class="sdiv">Contenuto</div>
+    <div class="fg"><label>Tagline *</label><input type="text" id="p-tagline" placeholder="Frase breve che cattura l'essenza del luogo"></div>
+    <div class="fg"><label>Descrizione *</label><textarea class="ft" id="p-desc" rows="4" placeholder="Descrizione completa…"></textarea></div>
+    <div class="fg"><label>🤫 Segreto locale *</label><textarea class="ft" id="p-secret" rows="3" placeholder="La cosa che non trovi su Google…"></textarea></div>
+    <div class="sdiv">🔭 Hiddenness Score</div>
+    <div style="background:var(--g50);border-radius:var(--rl);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:14px;" id="score-preview-wrap">
+      <div><div style="font-size:2rem;font-weight:800;line-height:1;" id="p-score-num">50</div><div style="font-size:.75rem;font-weight:600;margin-top:2px;" id="p-score-lbl">—</div></div>
+      <div style="font-size:.7rem;color:var(--g500);line-height:1.55;" id="p-score-desc">Muovi lo slider per impostare quanto è segreto il luogo.</div>
+    </div>
+    <input type="range" min="0" max="100" step="1" id="p-score" value="50" oninput="updScore()" style="width:100%;margin-bottom:4px;">
+    <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--g400);margin-bottom:12px;"><span>0 · Noto a tutti</span><span>100 · Totalmente segreto</span></div>
+    <div class="sdiv">🔒 Accesso</div>
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:6px;">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;font-weight:500;"><input type="radio" name="p-premium" id="p-free" value="false" checked> <span style="background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:5px;font-size:.75rem;font-weight:600;">🟢 Free</span></label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;font-weight:500;"><input type="radio" name="p-premium" id="p-prem" value="true"> <span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:5px;font-size:.75rem;font-weight:600;">🔒 Premium</span></label>
+    </div>
+    <div style="font-size:.7rem;color:var(--g400);margin-bottom:12px;line-height:1.5;">Free: visibile a tutti. Premium: pin con lucchetto, card oscurata, paywall.</div>
+    <div class="sdiv">Foto <span style="font-weight:400;font-size:.68rem;color:var(--g400);">(compresse automaticamente)</span></div>
+    <div class="fg">
+      <label>Foto copertina</label>
+      <div class="pa" onclick="document.getElementById('cinp').click()">
+        <input type="file" id="cinp" accept="image/*" onchange="handleCover(this)">
+        <div style="font-size:1.3rem;margin-bottom:4px;">📸</div>
+        <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Carica copertina</div>
+        <div style="font-size:.7rem;color:var(--g400);margin-top:2px;">Compressa automaticamente per risparmiare spazio</div>
+      </div>
+      <div id="cprev" class="cv-prev" style="display:none">
+        <img id="cimg" src="" alt="">
+        <button class="btn bd sm" style="margin-top:5px;width:100%;" onclick="removeCover()">Rimuovi</button>
+      </div>
+    </div>
+    <div class="fg">
+      <label>Galleria (max 6 foto)</label>
+      <div class="pa" onclick="document.getElementById('ginp').click()">
+        <input type="file" id="ginp" accept="image/*" multiple onchange="handleGallery(this)">
+        <div style="font-size:1.3rem;margin-bottom:4px;">🖼</div>
+        <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Aggiungi foto alla galleria</div>
+      </div>
+      <div class="pg" id="ggrid"></div>
+    </div>
+    <div class="sdiv">Info pratiche (pillole)</div>
+    <div class="g2">
+      <div class="fg"><label>Pill 1</label><input type="text" id="p-p1" placeholder="~ 1h da Roma"></div>
+      <div class="fg"><label>Pill 2</label><input type="text" id="p-p2" placeholder="€ 5 ingresso"></div>
+      <div class="fg"><label>Pill 3</label><input type="text" id="p-p3" placeholder="Ottobre ideale"></div>
+      <div class="fg"><label>Pill 4</label><input type="text" id="p-p4" placeholder="Solo a piedi"></div>
+    </div>
+    <div class="sdiv">Colore sfondo (senza foto)</div>
+    <div class="g3">
+      <div class="fg"><label>Colore 1</label><input type="text" id="p-c1" placeholder="#8c6250" oninput="updGrad()"></div>
+      <div class="fg"><label>Colore 2</label><input type="text" id="p-c2" placeholder="#c4913a" oninput="updGrad()"></div>
+      <div class="fg"><label>Colore 3</label><input type="text" id="p-c3" placeholder="#6a4e39" oninput="updGrad()"></div>
+    </div>
+    <div class="gp" id="gprev"></div>
+    <div class="sdiv" style="margin-top:14px;">Google Maps URL</div>
+    <div class="fg"><input type="url" id="p-maps" placeholder="https://maps.google.com/?q=…"><span class="fh">Vuoto = generato automaticamente dal nome</span></div>
+    <div class="sdiv" style="margin-top:6px;">
+      Attività · Livello 2
+      <button class="btn bs sm" onclick="addActRow(null)">+ Aggiungi attività</button>
+    </div>
+    <div style="font-size:.78rem;color:var(--g400);margin-bottom:12px;line-height:1.6;">Ogni attività è un pin fisico geo-referenziato con caratteristiche specifiche (lunghezza, difficoltà, ecc.).</div>
+    <div id="arows"></div>
+  </div>
+  <div class="mf">
+    <button class="btn bs" onclick="closePlace()">Annulla</button>
+    <button class="btn bp" onclick="savePlace()">Salva luogo</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL CATEGORIA -->
+<div class="ov" id="m-cat">
+<div class="modal" style="max-width:440px;">
+  <div class="mh"><div class="mh-t" id="mct">Nuova categoria</div><button class="mx" onclick="closeCat()">✕</button></div>
+  <div class="mc">
+    <div class="fg"><label>Icona (emoji) *</label><input type="text" id="ci" placeholder="🏘" maxlength="4"></div>
+    <div class="fg"><label>Nome *</label><input type="text" id="cn" placeholder="Es. Borghi"></div>
+    <div class="fg"><label>Colore hex *</label><input type="text" id="cc" placeholder="#dc6b2f" oninput="updCP()"></div>
+    <div style="height:32px;border-radius:var(--r);border:1px solid var(--g200);margin-top:4px;transition:background .2s;" id="cpv"></div>
+  </div>
+  <div class="mf"><button class="btn bs" onclick="closeCat()">Annulla</button><button class="btn bp" onclick="saveCat()">Salva</button></div>
+</div>
+</div>
+
+<!-- MODAL TIPO ATTIVITA -->
+<div class="ov" id="m-at">
+<div class="modal" style="max-width:500px;">
+  <div class="mh"><div class="mh-t" id="matt">Nuovo tipo attività</div><button class="mx" onclick="closeAt()">✕</button></div>
+  <div class="mc">
+    <div class="fg"><label>Icona (emoji) *</label><input type="text" id="ati" placeholder="🥾" maxlength="4"></div>
+    <div class="fg"><label>Nome *</label><input type="text" id="atn" placeholder="Es. Trekking"></div>
+    <div class="fg"><label>Colore hex</label><input type="text" id="atc" placeholder="#16a34a" oninput="updATP()"></div>
+    <div style="height:30px;border-radius:var(--r);border:1px solid var(--g200);margin-top:4px;transition:background .2s;" id="atpv"></div>
+    <div class="sdiv" style="margin-top:14px;">Campi predefiniti <span style="font-weight:400;font-size:.68rem;color:var(--g400);">— suggeriti quando si aggiunge questo tipo di attività</span></div>
+    <div id="at-presets-list"></div>
+    <button class="btn bs sm" style="margin-top:8px;" onclick="addAtPresetRow('')">+ Aggiungi campo</button>
+  </div>
+  <div class="mf"><button class="btn bs" onclick="closeAt()">Annulla</button><button class="btn bp" onclick="saveAt()">Salva</button></div>
+</div>
+</div>
+
+<!-- MODAL DELETE -->
+<div class="ov" id="m-del">
+<div class="modal" style="max-width:400px;">
+  <div class="mh"><div class="mh-t">Elimina</div><button class="mx" onclick="closeDel()">✕</button></div>
+  <div class="mc" style="text-align:center;padding:20px 22px;">
+    <div style="font-size:2.2rem;margin-bottom:8px;">🗑</div>
+    <div style="font-size:1rem;font-weight:700;margin:8px 0 6px;" id="dname"></div>
+    <div style="font-size:.83rem;color:var(--g500);">Operazione irreversibile.</div>
+  </div>
+  <div class="mf"><button class="btn bs" onclick="closeDel()">Annulla</button><button class="btn bd" onclick="confirmDel()">Elimina definitivamente</button></div>
+</div>
+</div>
+
+<!-- MODAL EXPORT -->
+<div class="ov" id="m-exp">
+<div class="modal" style="max-width:740px;">
+  <div class="mh"><div class="mh-t">Esporta dati</div><button class="mx" onclick="closeExp()">✕</button></div>
+  <div class="mc">
+    <div style="background:#ecfdf5;border:1px solid #bbf7d0;border-radius:var(--rl);padding:12px 14px;margin-bottom:14px;font-size:.82rem;color:#166534;line-height:1.6;">
+      📋 <strong>Flusso pubblicazione:</strong><br>
+      1. Clicca <strong>⬇ Scarica data.json</strong><br>
+      2. Carica <code>data.json</code> su Netlify insieme ad <code>app.html</code>, <code>admin.html</code>, <code>landing.html</code><br>
+      3. L'app leggerà i dati aggiornati su tutti i dispositivi
+    </div>
+    <div class="expbox" id="expbox"></div>
+  </div>
+  <div class="mf">
+    <button class="btn bs" onclick="closeExp()">Chiudi</button>
+    <button class="btn bok" onclick="migrateToSupabase()">☁️ Migra su Supabase</button>
+    <button class="btn bok" onclick="copyExp()">📋 Copia</button>
+    <button class="btn bp" onclick="dlExp()">⬇ Scarica</button>
+  </div>
+</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════
+// STORAGE KEYS — identici a app.html
+// ═══════════════════════════════════
+var K = { P:'WT_PLACES_v2', C:'WT_CATS_v2', A:'WT_ATYPES_v2' };
+
+var DEF_CATS = [
+  {id:'borgo',  icon:'🏘', name:'Borghi',           color:'#dc6b2f'},
+  {id:'nature', icon:'🌿', name:'Parchi e natura',  color:'#16a34a'},
+  {id:'food',   icon:'🍽', name:'Dove mangiare',    color:'#ca8a04'},
+  {id:'photo',  icon:'📸', name:'Spot fotografici', color:'#7c3aed'}
+];
+
+var DEF_ATYPES = [
+  {id:'trekking', icon:'🥾', name:'Trekking',            color:'#16a34a', presets:['Lunghezza','Difficoltà','Dislivello','Durata','Quota max']},
+  {id:'food',     icon:'🍽', name:'Dove mangiare',       color:'#ca8a04', presets:['Tipo','Prezzo medio','Specialità','Orari','Prenotazione']},
+  {id:'photo',    icon:'📸', name:'Foto spot',           color:'#7c3aed', presets:['Momento ideale','Obiettivo','Periodo','Accesso']},
+  {id:'bike',     icon:'🚴', name:'Bike',                color:'#16a34a', presets:['Lunghezza','Difficoltà','Dislivello','Fondo','Durata']},
+  {id:'sci',      icon:'⛷️',  name:'Sci',                color:'#2563eb', presets:['Piste km','Quota base','Quota max','Impianti','Periodo']},
+  {id:'poi',      icon:'🏛',  name:'Punto d\'interesse', color:'#6b7280', presets:['Anno','Accesso','Orari','Ingresso']},
+  {id:'mare',     icon:'🏊', name:'Mare',               color:'#0284c7', presets:['Tipo fondale','Accesso','Servizi','Periodo']},
+  {id:'relax',    icon:'🧘', name:'Relax',              color:'#ca8a04', presets:['Tipo','Prezzo','Prenotazione']}
+];
+
+var DEF_PLACES = [
+  {id:1,cat:'borgo',name:'Civita di Bagnoregio',region:'Viterbo · Alto Lazio',lat:42.627,lng:12.113,
+   tagline:'La città che muore, sospesa su un pinnacolo di tufo.',
+   desc:'Solo 12 residenti permanenti. Raggiungibile a piedi su un ponte di tufo.',
+   secret:'Arriva prima delle 9: la luce tinge il tufo di arancio.',
+   pills:['~1h30 da Roma','€5 ingresso','Ottobre ideale','Solo a piedi'],
+   gradient:'linear-gradient(145deg,#8c6250,#c4913a,#6a4e39)',
+   maps:'https://maps.google.com/?q=Civita+di+Bagnoregio',coverPhoto:'',gallery:[],
+   activities:[
+     {id:101,type:'trekking',name:'Sentiero del tufo',lat:42.629,lng:12.111,
+      desc:'Anello panoramico intorno alla rupe.',secret:'Mattina presto: solo tu e le capre.',
+      specs:[{k:'Lunghezza',v:'3.2 km'},{k:'Difficoltà',v:'Facile'},{k:'Dislivello',v:'80 m'},{k:'Durata',v:'~1h'}],
+      coverPhoto:'',maps:'https://maps.google.com/?q=Civita+sentiero'},
+     {id:102,type:'food',name:'Osteria Al Forno',lat:42.626,lng:12.115,
+      desc:'Vino locale, bruschette e cinghiale.',secret:'Il cinghiale del giovedì non è sul menu.',
+      specs:[{k:'Tipo',v:'Osteria'},{k:'Prezzo medio',v:'€18-25'}],
+      coverPhoto:'',maps:'https://maps.google.com/?q=Osteria+Bagnoregio'}
+   ]},
+  {id:2,cat:'nature',name:'Lago di Pilato',region:'Rieti · Monti Sibillini',lat:42.835,lng:13.245,
+   tagline:"L'unico lago glaciale appenninico. Rosso sangue d'estate.",
+   desc:"A 1940m sui Sibillini. In luglio-agosto le acque diventano scarlatte.",
+   secret:'Settembre: acqua rossa, zero turisti.',
+   pills:['4h A/R','Luglio-settembre','2.270m','Unico al mondo'],
+   gradient:'linear-gradient(145deg,#5e1a2e,#a03050,#3a0e1c)',
+   maps:'https://maps.google.com/?q=Lago+Pilato',coverPhoto:'',gallery:[],
+   activities:[
+     {id:201,type:'trekking',name:'Da Forca di Presta',lat:42.830,lng:13.238,
+      desc:'8km A/R con 400m di dislivello.',secret:'Partenza alle 7: soli al lago.',
+      specs:[{k:'Lunghezza',v:'8 km A/R'},{k:'Difficoltà',v:'Media'},{k:'Dislivello',v:'400 m'},{k:'Durata',v:'4h A/R'}],
+      coverPhoto:'',maps:'https://maps.google.com/?q=Forca+di+Presta'}
+   ]}
+];
+
+// ═══ STATE ═══
+var places=[], cats=[], atypes=[];
+var editPId=null, editCId=null, editAId=null;
+var delId=null, delType=null, delParent=null;
+var expId=null;
+var coverData='', galleryData=[];
+
+// ═══ SUPABASE CONFIG ═══
+var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
+
+function sbFetch(path,opts){
+  return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
+    headers:{
+      'apikey':SB_KEY,
+      'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json',
+      'Prefer':'return=representation'
+    }
+  },opts||{}));
+}
+
+// converte riga DB → oggetto place usato dall'app
+function rowToPlace(row, acts){
+  return {
+    id: row.id,
+    cat: row.cat,
+    name: row.name,
+    region: row.region||'',
+    lat: row.lat,
+    lng: row.lng,
+    tagline: row.tagline||'',
+    desc: row.description||'',
+    secret: row.secret||'',
+    pills: row.pills||[],
+    gradient: row.gradient||'linear-gradient(135deg,#888,#555)',
+    maps: row.maps_url||'',
+    coverPhoto: row.cover_photo||'',
+    gallery: row.gallery||[],
+    hiddenScore: row.hidden_score||0,
+    premium: row.premium||false,
+    activities: (acts||[]).filter(function(a){return a.place_id===row.id;}).map(actRowToAct)
+  };
+}
+
+// converte riga DB → oggetto activity
+function actRowToAct(a){
+  return {
+    id: a.id,
+    type: a.type,
+    name: a.name,
+    lat: a.lat||null,
+    lng: a.lng||null,
+    desc: a.description||'',
+    secret: a.secret||'',
+    specs: a.specs||[],
+    coverPhoto: a.cover_photo||'',
+    maps: a.maps_url||''
+  };
+}
+
+// converte oggetto place → riga DB places
+function placeToRow(p){
+  return {
+    id: p.id,
+    cat: p.cat,
+    name: p.name,
+    region: p.region||'',
+    lat: p.lat,
+    lng: p.lng,
+    tagline: p.tagline||'',
+    description: p.desc||'',
+    secret: p.secret||'',
+    pills: p.pills||[],
+    gradient: p.gradient||'',
+    maps_url: p.maps||'',
+    cover_photo: p.coverPhoto||'',
+    gallery: p.gallery||[],
+    hidden_score: p.hiddenScore||0,
+    premium: p.premium||false
+  };
+}
+
+// converte oggetto activity → riga DB activities
+function actToRow(a, placeId){
+  return {
+    id: a.id,
+    place_id: placeId,
+    type: a.type,
+    name: a.name,
+    lat: a.lat||null,
+    lng: a.lng||null,
+    description: a.desc||'',
+    secret: a.secret||'',
+    specs: a.specs||[],
+    cover_photo: a.coverPhoto||'',
+    maps_url: a.maps||''
+  };
+}
+
+// converte riga DB categories → formato interno
+function rowToCat(row){
+  return {id:row.id, icon:row.icon, name:row.name, nameEn:row.name_en||row.name, color:row.color};
+}
+
+// converte riga DB activity_types → formato interno
+function rowToAtype(row){
+  return {id:row.id, icon:row.icon, name:row.name, nameEn:row.name_en||row.name, color:row.color, presets:row.presets||[]};
+}
+
+// ═══ LOAD ═══
+function load(){
+  document.body.insertAdjacentHTML('beforeend',
+    '<div id="sb-loading" style="position:fixed;inset:0;z-index:9999;background:rgba(255,255,255,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-family:var(--f);">'
+    +'<div style="font-size:1.8rem;">⏳</div><div style="font-size:.9rem;color:var(--g500);">Caricamento dati...</div></div>');
+
+  // carica categorie, tipi attività, luoghi e attività in parallelo
+  Promise.all([
+    sbFetch('categories?select=*&order=sort_order').then(function(r){return r.json();}),
+    sbFetch('activity_types?select=*&order=id').then(function(r){return r.json();}),
+    sbFetch('places?select=*&order=id').then(function(r){return r.json();}),
+    sbFetch('activities?select=*&order=place_id,sort_order').then(function(r){return r.json();})
+  ])
+  .then(function(results){
+    var catRows=results[0], atypeRows=results[1], placeRows=results[2], actRows=results[3];
+    cats   = catRows.map(rowToCat);
+    atypes = atypeRows.map(rowToAtype);
+    places = placeRows.map(function(row){return rowToPlace(row, actRows);});
+    if(!cats.length)   cats   = JSON.parse(JSON.stringify(DEF_CATS));
+    if(!atypes.length) atypes = JSON.parse(JSON.stringify(DEF_ATYPES));
+    var el=document.getElementById('sb-loading');if(el)el.remove();
+    renderStats();populateCatFilter();renderPlaces();checkUnlockStatus();
+    // banner migrazione se Supabase è vuoto ma localStorage ha dati
+    if(!places.length){
+      var rp=localStorage.getItem('WT_PLACES_v2');
+      var localPlaces=rp?JSON.parse(rp):[];
+      if(localPlaces.length){
+        document.body.insertAdjacentHTML('beforeend',
+          '<div id="migrate-banner" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;background:#1d4ed8;color:#fff;padding:14px 20px;border-radius:12px;font-family:var(--f);font-size:.85rem;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);">'
+          +'<span>📦 Trovati <b>'+localPlaces.length+' luoghi</b> in locale — caricali su Supabase</span>'
+          +'<button onclick="migrateToSupabase()" style="background:#fff;color:#1d4ed8;border:none;border-radius:7px;padding:7px 14px;font-family:var(--f);font-size:.82rem;font-weight:700;cursor:pointer;">☁️ Migra ora</button>'
+          +'<button onclick="document.getElementById(\'migrate-banner\').remove()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:1.2rem;cursor:pointer;padding:0 4px;">✕</button>'
+          +'</div>');
+      } else {
+        toast('Nessun luogo — aggiungine uno!','ok');
+      }
+    }
+  })
+  .catch(function(err){
+    var el=document.getElementById('sb-loading');if(el)el.remove();
+    toast('⚠️ Errore Supabase: '+err.message,'err');
+    // fallback localStorage
+    var rp=localStorage.getItem('WT_PLACES_v2');
+    places=rp?JSON.parse(rp):JSON.parse(JSON.stringify(DEF_PLACES));
+    cats=JSON.parse(JSON.stringify(DEF_CATS));
+    atypes=JSON.parse(JSON.stringify(DEF_ATYPES));
+    renderStats();populateCatFilter();renderPlaces();
+  });
+}
+
+// ═══ SAVE LUOGO (upsert place + activities) ═══
+function upsert(p){
+  var row=placeToRow(p);
+  // upsert place
+  return sbFetch('places',{
+    method:'POST',
+    headers:{
+      'apikey':SB_KEY,
+      'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json',
+      'Prefer':'resolution=merge-duplicates,return=representation'
+    },
+    body:JSON.stringify(row)
+  })
+  .then(function(r){if(!r.ok)throw new Error('place upsert HTTP '+r.status);return r.json();})
+  .then(function(){
+    // cancella attività vecchie e reinserisce
+    return sbFetch('activities?place_id=eq.'+p.id,{method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}});
+  })
+  .then(function(){
+    var acts=p.activities||[];
+    if(!acts.length)return;
+    return sbFetch('activities',{
+      method:'POST',
+      headers:{
+        'apikey':SB_KEY,
+        'Authorization':'Bearer '+SB_KEY,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates,return=representation'
+      },
+      body:JSON.stringify(acts.map(function(a,i){
+        var r=actToRow(a,p.id);r.sort_order=i;return r;
+      }))
+    });
+  });
+}
+
+// ═══ DELETE LUOGO ═══
+function deletePlace_sb(id){
+  // le activities si cancellano in cascade
+  return sbFetch('places?id=eq.'+id,{
+    method:'DELETE',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+  });
+}
+
+// ═══ UPSERT CATEGORIA ═══
+function upsertCat(c){
+  return sbFetch('categories',{
+    method:'POST',
+    headers:{
+      'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json',
+      'Prefer':'resolution=merge-duplicates,return=representation'
+    },
+    body:JSON.stringify({id:c.id,icon:c.icon,name:c.name,name_en:c.nameEn||c.name,color:c.color,sort_order:c.sort_order||0})
+  });
+}
+
+// ═══ DELETE CATEGORIA ═══
+function deleteCat_sb(id){
+  return sbFetch('categories?id=eq.'+id,{
+    method:'DELETE',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+  });
+}
+
+// ═══ UPSERT TIPO ATTIVITÀ ═══
+function upsertAtype(a){
+  return sbFetch('activity_types',{
+    method:'POST',
+    headers:{
+      'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json',
+      'Prefer':'resolution=merge-duplicates,return=representation'
+    },
+    body:JSON.stringify({id:a.id,icon:a.icon,name:a.name,name_en:a.nameEn||a.name,color:a.color,presets:a.presets||[]})
+  });
+}
+
+// ═══ MIGRAZIONE DA LOCALSTORAGE ═══
+function migrateToSupabase(){
+  var rp=localStorage.getItem('WT_PLACES_v2');
+  if(!rp){toast('Nessun dato locale da migrare','err');return;}
+  var ps=JSON.parse(rp);
+  if(!ps.length){toast('Nessun luogo trovato','err');return;}
+  toast('Migrazione '+ps.length+' luoghi...','ok');
+  Promise.all(ps.map(function(p){return upsert(p);}))
+    .then(function(){
+      toast('✅ '+ps.length+' luoghi migrati su Supabase!','ok');
+      var b=document.getElementById('migrate-banner');if(b)b.remove();
+      load();
+    })
+    .catch(function(e){toast('⚠️ Errore migrazione: '+e.message,'err');});
+}
+
+// ═══ save() globale — usato dopo import JSON ═══
+function save(){
+  return Promise.all(places.map(function(p){return upsert(p);}));
+}
+
+// ═══ IMAGE COMPRESSION ═══
+function compressImage(file, callback){
+  var maxW=1200, quality=0.72;
+  var r=new FileReader();
+  r.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var w=img.width, h=img.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      var canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      callback(canvas.toDataURL('image/jpeg',quality));
+    };
+    img.src=e.target.result;
+  };
+  r.readAsDataURL(file);
+}
+
+// ═══ TABS ═══
+function switchTab(t,btn){
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  document.getElementById('pane-'+t).classList.add('on');
+  if(t==='cats') renderCats();
+  if(t==='actypes') renderAtypes();
+}
+
+// ═══ HELPERS ═══
+function catOf(id){ return cats.find(function(c){return c.id===id;})||{icon:'?',name:id,color:'#888'}; }
+function atypeOf(id){ return atypes.find(function(a){return a.id===id;})||{icon:'?',name:id,color:'#888'}; }
+
+function populateCatFilter(){
+  var sel=document.getElementById('cflt'), cur=sel.value;
+  sel.innerHTML='<option value="all">Tutte le categorie</option>';
+  cats.forEach(function(c){
+    var o=document.createElement('option');o.value=c.id;o.textContent=c.icon+' '+c.name;sel.appendChild(o);
+  });
+  if(cur) sel.value=cur;
+}
+function populateCatSelect(){
+  var sel=document.getElementById('p-cat');
+  sel.innerHTML='';
+  cats.forEach(function(c){
+    var o=document.createElement('option');o.value=c.id;o.textContent=c.icon+' '+c.name;sel.appendChild(o);
+  });
+}
+
+// ═══ STATS ═══
+function renderStats(){
+  var h='<div class="stat"><div class="stat-n">'+places.length+'</div><div class="stat-l">Luoghi totali</div></div>';
+  cats.forEach(function(c){
+    var n=places.filter(function(p){return p.cat===c.id;}).length;
+    h+='<div class="stat"><div class="stat-n" style="color:'+c.color+'">'+n+'</div><div class="stat-l">'+c.name+'</div></div>';
+  });
+  var ta=places.reduce(function(s,p){return s+(p.activities||[]).length;},0);
+  h+='<div class="stat"><div class="stat-n" style="color:var(--blue)">'+ta+'</div><div class="stat-l">Attività L2</div></div>';
+  document.getElementById('stats').innerHTML=h;
+}
+
+// ═══ PLACES TABLE ═══
+function renderPlaces(){
+  var q=document.getElementById('srch').value.toLowerCase();
+  var cf=document.getElementById('cflt').value;
+  var filtered=places.filter(function(p){
+    return (cf==='all'||p.cat===cf)&&(!q||(p.name||'').toLowerCase().indexOf(q)>=0||(p.region||'').toLowerCase().indexOf(q)>=0);
+  });
+  var tb=document.getElementById('tbody');
+  document.getElementById('empty').style.display=filtered.length?'none':'block';
+  if(!filtered.length){tb.innerHTML='';return;}
+  var rows='';
+  filtered.forEach(function(p){
+    var c=catOf(p.cat), n=(p.activities||[]).length, ex=expId===p.id;
+    var thHtml=p.coverPhoto?'<img class="thimg" src="'+p.coverPhoto+'" alt="">':'<div class="the">📷</div>';
+    var expContent='';
+    if(ex){
+      if(n===0){
+        expContent='<div style="padding:16px;text-align:center;color:var(--g400);font-size:.82rem;">Nessuna attività. Clicca &ldquo;+ Aggiungi&rdquo;.</div>';
+      } else {
+        expContent='<div class="alist">';
+        (p.activities||[]).forEach(function(a){
+          var at=atypeOf(a.type);
+          var ath=a.coverPhoto?'<img class="ath" src="'+a.coverPhoto+'" alt="">':'<div class="athe">📷</div>';
+          var sps=(a.specs||[]).slice(0,3).map(function(s){return '<span class="spec-tag">'+s.k+': '+s.v+'</span>';}).join('');
+          expContent+='<div class="aitem">'+ath+'<div class="aicho" style="background:'+at.color+'15;">'+at.icon+'</div>'
+            +'<div style="flex:1;min-width:0;"><div class="an">'+a.name+'</div><div class="at-type">'+at.name+'</div>'
+            +(sps?'<div class="spec-tags">'+sps+'</div>':'')+'</div>'
+            +'<div style="font-size:.7rem;color:var(--g400);font-family:monospace;">'+(a.lat!=null?(a.lat.toFixed(4)+', '+a.lng.toFixed(4)):'○ solo card')+'</div>'
+            +'<div class="tac">'
+            +'<button class="btn bs sm ico" onclick="openEditPlace('+p.id+')">✏️</button>'
+            +'<button class="btn bd sm ico" onclick="openDel('+a.id+',\'act\','+p.id+')">🗑</button>'
+            +'</div></div>';
+        });
+        expContent+='</div>';
+      }
+    }
+    rows+='<tr style="'+(ex?'background:var(--g50);':'')+'">'
+      +'<td><button class="btn bs sm ico" onclick="toggleExp('+p.id+')">'+(ex?'▲':'▼')+'</button></td>'
+      +'<td>'+thHtml+'</td>'
+      +'<td><span class="chip" style="background:'+c.color+'15;color:'+c.color+'">'+c.icon+' '+c.name+'</span></td>'
+      +'<td><div class="tb">'+p.name+'</div></td>'
+      +'<td><div class="tm tt" style="max-width:120px">'+(p.region||'—')+'</div></td>'
+      +'<td><div class="tt">'+(p.tagline||'—')+'</div></td>'
+      +'<td><span class="abadge">'+n+'</span></td>'
+      +'<td>'+scoreCell(p)+'</td>'
+      +'<td>'+toggleCell(p)+'</td>'
+      +'<td>'+detailCell(p)+'</td>'
+      +'<td><div class="tac">'
+      +'<button class="btn bs sm ico" onclick="openEditPlace('+p.id+')">✏️</button>'
+      +'<button class="btn bd sm ico" onclick="openDel('+p.id+',\'place\')">🗑</button>'
+      +'</div></td></tr>';
+    if(ex){
+      rows+='<tr class="exp-row"><td colspan="11"><div class="exp-inner">'
+        +'<div class="atbl"><div class="atbl-head"><div class="atbl-title">Attività L2 — '+p.name+'</div>'
+        +'<button class="btn bp sm" onclick="openAddAct('+p.id+')">+ Aggiungi attività</button></div>'
+        +expContent+'</div></div></td></tr>';
+    }
+  });
+  tb.innerHTML=rows;
+}
+
+function toggleExp(id){ expId=expId===id?null:id; renderPlaces(); }
+
+// ═══ PLACE MODAL ═══
+function openAddPlace(){
+  editPId=null; coverData=''; galleryData=[];
+  document.getElementById('mp-title').textContent='Nuovo luogo';
+  clearPForm();
+  document.getElementById('m-place').classList.add('on');
+}
+function openEditPlace(pid){
+  var p=places.find(function(x){return x.id===pid;});
+  if(!p) return;
+  editPId=pid; coverData=p.coverPhoto||''; galleryData=(p.gallery||[]).slice();
+  document.getElementById('mp-title').textContent='Modifica — '+p.name;
+  fillPForm(p);
+  document.getElementById('m-place').classList.add('on');
+}
+function closePlace(){ document.getElementById('m-place').classList.remove('on'); editPId=null; }
+
+function clearPForm(){
+  populateCatSelect();
+  ['p-name','p-region','p-tagline','p-desc','p-secret','p-p1','p-p2','p-p3','p-p4','p-c1','p-c2','p-c3','p-maps'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('p-lat').value=''; document.getElementById('p-lng').value='';
+  document.getElementById('cprev').style.display='none';
+  document.getElementById('p-score').value=50; updScore();
+  document.getElementById('p-free').checked=true;
+  document.getElementById('ggrid').innerHTML='';
+  document.getElementById('arows').innerHTML='';
+  updGrad();
+}
+function fillPForm(p){
+  populateCatSelect();
+  document.getElementById('p-name').value=p.name||'';
+  document.getElementById('p-region').value=p.region||'';
+  document.getElementById('p-cat').value=p.cat||cats[0]&&cats[0].id||'';
+  document.getElementById('p-lat').value=p.lat||'';
+  document.getElementById('p-lng').value=p.lng||'';
+  document.getElementById('p-tagline').value=p.tagline||'';
+  document.getElementById('p-desc').value=p.desc||'';
+  document.getElementById('p-secret').value=p.secret||'';
+  var pl=p.pills||[];
+  ['p-p1','p-p2','p-p3','p-p4'].forEach(function(id,i){document.getElementById(id).value=pl[i]||'';});
+  document.getElementById('p-maps').value=p.maps||'';
+  // score e premium
+  var score=p.hiddenScore||0;
+  document.getElementById('p-score').value=score;
+  updScore();
+  if(p.premium){document.getElementById('p-prem').checked=true;}
+  else{document.getElementById('p-free').checked=true;}
+  var hx=(p.gradient||'').match(/#[0-9a-fA-F]{3,6}/g)||[];
+  document.getElementById('p-c1').value=hx[0]||'';
+  document.getElementById('p-c2').value=hx[1]||'';
+  document.getElementById('p-c3').value=hx[2]||'';
+  updGrad();
+  if(p.coverPhoto){document.getElementById('cimg').src=p.coverPhoto;document.getElementById('cprev').style.display='block';}
+  else document.getElementById('cprev').style.display='none';
+  renderGGrid();
+  document.getElementById('arows').innerHTML='';
+  (p.activities||[]).forEach(function(a){addActRow(a);});
+}
+
+// Photos
+function handleCover(inp){
+  var f=inp.files[0]; if(!f)return;
+  toast('Compressione foto…');
+  compressImage(f,function(data){
+    coverData=data;
+    document.getElementById('cimg').src=data;
+    document.getElementById('cprev').style.display='block';
+    toast('Copertina caricata ✓','ok');
+  });
+  inp.value='';
+}
+function removeCover(){ coverData=''; document.getElementById('cprev').style.display='none'; }
+
+function handleGallery(inp){
+  var files=Array.from(inp.files), rem=6-galleryData.length, toLoad=files.slice(0,rem);
+  if(!toLoad.length){toast('Massimo 6 foto','err');return;}
+  toast('Caricamento foto…');
+  var done=0;
+  toLoad.forEach(function(f){
+    compressImage(f,function(data){
+      galleryData.push(data); renderGGrid();
+      done++; if(done===toLoad.length) toast('Galleria aggiornata ✓','ok');
+    });
+  });
+  inp.value='';
+}
+function removeGPhoto(i){ galleryData.splice(i,1); renderGGrid(); }
+function renderGGrid(){
+  document.getElementById('ggrid').innerHTML=galleryData.map(function(src,i){
+    return '<div class="pi">'+(i===0?'<div style="position:absolute;bottom:3px;left:3px;font-size:.5rem;font-weight:700;padding:2px 5px;border-radius:3px;background:rgba(37,99,235,.85);color:#fff;">COVER</div>':'')
+      +'<img src="'+src+'"><button class="pirm" onclick="removeGPhoto('+i+')">✕</button></div>';
+  }).join('');
+}
+function updGrad(){
+  var c1=document.getElementById('p-c1').value.trim()||'#8c6250';
+  var c2=document.getElementById('p-c2').value.trim()||'#c4913a';
+  var c3=document.getElementById('p-c3').value.trim()||'#6a4e39';
+  document.getElementById('gprev').style.background='linear-gradient(145deg,'+c1+','+c2+','+c3+')';
+}
+
+// ═══ ACTIVITY ROW with SPECS ═══
+function addActRow(a){
+  var rid=a?a.id:(Date.now()+Math.random());
+  var opts='';
+  atypes.forEach(function(at){
+    opts+='<option value="'+at.id+'"'+(a&&a.type===at.id?' selected':'')+'>'+at.icon+' '+at.name+'</option>';
+  });
+  var div=document.createElement('div');
+  div.id='ar-'+rid;
+  div.className='arow-wrap';
+
+  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    +'<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);">Attività</div>'
+    +'<button class="btn bd sm ico" onclick="this.closest(\'.arow-wrap\').remove()">✕</button></div>'
+    +'<div class="g2">'
+    +'<div class="fg"><label>Nome *</label><input type="text" class="ar-name" placeholder="Es. Sentiero del tufo"></div>'
+    +'<div class="fg"><label>Tipo *</label><select class="fs ar-type" onchange="onTypeChange(this,\''+rid+'\')">'+opts+'</select></div>'
+    +'<div class="fg"><label>Latitudine <span style="font-weight:400;color:var(--g400);">opzionale</span></label><input type="text" class="ar-lat" placeholder="lascia vuoto = solo card"></div>'
+    +'<div class="fg"><label>Longitudine <span style="font-weight:400;color:var(--g400);">opzionale</span></label><input type="text" class="ar-lng" placeholder="lascia vuoto = solo card"></div>'
+    +'</div>'
+    +'<div style="background:#eff6ff;border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:.67rem;color:#2563eb;line-height:1.55;">ℹ️ Con coordinate → pin L2 sulla mappa con tooltip. Senza coordinate → icona nella card fumetto, non sulla mappa.</div>'
+    +'<div class="fg"><label>Descrizione</label><textarea class="ft ar-desc" rows="2"></textarea></div>'
+    +'<div class="fg"><label>🤫 Segreto locale</label><input type="text" class="ar-secret" placeholder="Il dettaglio che fa la differenza…"></div>'
+    +'<div class="fg"><label>Caratteristiche specifiche</label>'
+    +'<div class="specs-box">'
+    +'<div class="specs-hd"><div class="specs-hd-lbl">Specifiche</div><button class="btn bs sm" onclick="addSpecRow(\''+rid+'\',\'\',\'\')">+ Aggiungi</button></div>'
+    +'<div class="spec-rows" id="spec-rows-'+rid+'"></div>'
+    +'<div class="presets-row" id="presets-'+rid+'"></div>'
+    +'</div></div>'
+    +'<div class="fg"><label>Foto attività (opzionale)</label>'
+    +'<div class="pa" style="padding:10px;" onclick="document.getElementById(\'ai-'+rid+'\').click()">'
+    +'<input type="file" id="ai-'+rid+'" accept="image/*" onchange="handleActPhoto(this,\''+rid+'\')">'
+    +'<div style="font-size:.78rem;font-weight:600;color:var(--g700);">📸 Carica foto (compressa automaticamente)</div>'
+    +'</div>'
+    +'<div id="ap-'+rid+'" style="display:none;margin-top:7px;">'
+    +'<img id="aimg-'+rid+'" src="" style="width:100%;max-width:150px;height:72px;object-fit:cover;border-radius:var(--r);border:1px solid var(--g200);">'
+    +'<button class="btn bd sm" style="margin-top:4px;" onclick="removeActPhoto(\''+rid+'\')">Rimuovi</button>'
+    +'</div></div>'
+    +'<div class="fg"><label>Google Maps URL</label><input type="url" class="ar-maps" placeholder="https://maps.google.com/?q=…"></div>'
+    +'<input type="hidden" class="ar-id" value="'+rid+'">'
+    +'<input type="hidden" class="ar-cover" value="">';
+
+  div.innerHTML=html;
+  document.getElementById('arows').appendChild(div);
+
+  // Fill values if editing
+  if(a){
+    div.querySelector('.ar-name').value=a.name||'';
+    div.querySelector('.ar-lat').value=a.lat!=null?a.lat:'';
+    div.querySelector('.ar-lng').value=a.lng!=null?a.lng:'';
+    div.querySelector('.ar-desc').value=a.desc||'';
+    div.querySelector('.ar-secret').value=a.secret||'';
+    div.querySelector('.ar-maps').value=a.maps||'';
+    div.querySelector('.ar-cover').value=a.coverPhoto||'';
+    if(a.coverPhoto){
+      document.getElementById('aimg-'+rid).src=a.coverPhoto;
+      document.getElementById('ap-'+rid).style.display='block';
+    }
+    (a.specs||[]).forEach(function(s){ addSpecRow(rid, s.k, s.v); });
+  }
+
+  // Load presets for current type
+  var typeId=a?a.type:(atypes[0]&&atypes[0].id||'');
+  loadPresets(rid, typeId);
+}
+
+function onTypeChange(sel, rid){ loadPresets(rid, sel.value); }
+
+function loadPresets(rid, typeId){
+  var at=atypeOf(typeId);
+  var presets=at.presets||[];
+  var el=document.getElementById('presets-'+rid);
+  if(!el) return;
+  el.innerHTML=presets.map(function(p){
+    return '<button class="preset-btn" onclick="addSpecRow(\''+rid+'\',\''+p+'\',\'\')">'+p+'</button>';
+  }).join('');
+}
+
+function addSpecRow(rid, k, v){
+  var rowId='sr-'+(Date.now()+Math.random()).toString().replace('.','');
+  var rows=document.getElementById('spec-rows-'+rid);
+  if(!rows) return;
+  var div=document.createElement('div');
+  div.id=rowId; div.className='spec-row';
+  div.innerHTML='<input type="text" class="spec-k" placeholder="Es. Lunghezza" value="" style="flex:0 0 38%;border:1px solid var(--g200);border-radius:var(--r);padding:6px 9px;font-family:var(--f);font-size:.82rem;outline:none;">'
+    +'<input type="text" class="spec-v" placeholder="Es. 8 km A/R" value="" style="flex:1;border:1px solid var(--g200);border-radius:var(--r);padding:6px 9px;font-family:var(--f);font-size:.82rem;outline:none;">'
+    +'<button class="spec-rm" onclick="document.getElementById(\''+rowId+'\').remove()">✕</button>';
+  rows.appendChild(div);
+  div.querySelector('.spec-k').value=k||'';
+  div.querySelector('.spec-v').value=v||'';
+}
+
+function handleActPhoto(inp, rid){
+  var f=inp.files[0]; if(!f) return;
+  compressImage(f, function(data){
+    var row=document.getElementById('ar-'+rid);
+    if(!row) return;
+    row.querySelector('.ar-cover').value=data;
+    document.getElementById('aimg-'+rid).src=data;
+    document.getElementById('ap-'+rid).style.display='block';
+  });
+  inp.value='';
+}
+function removeActPhoto(rid){
+  var row=document.getElementById('ar-'+rid);
+  if(row) row.querySelector('.ar-cover').value='';
+  document.getElementById('ap-'+rid).style.display='none';
+}
+
+function savePlace(){
+  var name=document.getElementById('p-name').value.trim();
+  var lat=parseFloat(document.getElementById('p-lat').value);
+  var lng=parseFloat(document.getElementById('p-lng').value);
+  var tagline=document.getElementById('p-tagline').value.trim();
+  var desc=document.getElementById('p-desc').value.trim();
+  if(!name){toast('Nome obbligatorio','err');return;}
+  if(isNaN(lat)||isNaN(lng)){toast('Coordinate obbligatorie','err');return;}
+  if(!tagline||!desc){toast('Tagline e descrizione obbligatorie','err');return;}
+
+  var pills=['p-p1','p-p2','p-p3','p-p4'].map(function(id){return document.getElementById(id).value.trim();}).filter(Boolean);
+  var c1=document.getElementById('p-c1').value.trim()||'#8c6250';
+  var c2=document.getElementById('p-c2').value.trim()||'#c4913a';
+  var c3=document.getElementById('p-c3').value.trim()||'#6a4e39';
+
+  var activities=[];
+  document.querySelectorAll('.arow-wrap').forEach(function(row){
+    var n=(row.querySelector('.ar-name')&&row.querySelector('.ar-name').value||'').trim();
+    var alat=parseFloat(row.querySelector('.ar-lat')&&row.querySelector('.ar-lat').value||'');
+    var alng=parseFloat(row.querySelector('.ar-lng')&&row.querySelector('.ar-lng').value||'');
+    if(!n) return;
+    // coordinate opzionali
+    var hasCoords=!isNaN(alat)&&!isNaN(alng)&&row.querySelector('.ar-lat').value.trim()!==''&&row.querySelector('.ar-lng').value.trim()!=='';
+    var specs=[];
+    row.querySelectorAll('.spec-row').forEach(function(sr){
+      var k=(sr.querySelector('.spec-k')&&sr.querySelector('.spec-k').value||'').trim();
+      var v=(sr.querySelector('.spec-v')&&sr.querySelector('.spec-v').value||'').trim();
+      if(k) specs.push({k:k,v:v});
+    });
+    activities.push({
+      id:parseInt(row.querySelector('.ar-id')&&row.querySelector('.ar-id').value)||Date.now(),
+      type:row.querySelector('.ar-type')&&row.querySelector('.ar-type').value||'poi',
+      name:n, lat:hasCoords?alat:null, lng:hasCoords?alng:null,
+      desc:(row.querySelector('.ar-desc')&&row.querySelector('.ar-desc').value||'').trim(),
+      secret:(row.querySelector('.ar-secret')&&row.querySelector('.ar-secret').value||'').trim(),
+      specs:specs,
+      maps:(row.querySelector('.ar-maps')&&row.querySelector('.ar-maps').value||'').trim()||'https://maps.google.com/?q='+encodeURIComponent(n),
+      coverPhoto:(row.querySelector('.ar-cover')&&row.querySelector('.ar-cover').value||'')
+    });
+  });
+
+  var obj={
+    id:editPId||Date.now(),
+    cat:document.getElementById('p-cat').value,
+    name:name, region:document.getElementById('p-region').value.trim(),
+    lat:lat, lng:lng, tagline:tagline, desc:desc,
+    hiddenScore:parseInt(document.getElementById('p-score').value)||0,
+    premium:document.querySelector('input[name="p-premium"]:checked')&&document.querySelector('input[name="p-premium"]:checked').value==='true',
+    secret:document.getElementById('p-secret').value.trim(),
+    pills:pills, activities:activities,
+    gradient:'linear-gradient(145deg,'+c1+','+c2+','+c3+')',
+    maps:document.getElementById('p-maps').value.trim()||'https://maps.google.com/?q='+encodeURIComponent(name),
+    coverPhoto:coverData, gallery:galleryData.slice()
+  };
+
+  if(editPId){
+    var i=places.findIndex(function(p){return p.id===editPId;});
+    if(i>=0) places[i]=obj;
+  } else {
+    places.push(obj);
+  }
+  // salva su Supabase
+  upsert(obj).then(function(){
+    toast(editPId?'Aggiornato ✓ — visibile subito sull\'app':'Aggiunto ✓ — visibile subito sull\'app','ok');
+  }).catch(function(e){
+    toast('⚠️ Errore salvataggio: '+e.message,'err');
+  });
+  closePlace(); renderStats(); renderPlaces();
+}
+
+function openAddAct(pid){
+  openEditPlace(pid);
+  setTimeout(function(){
+    addActRow(null);
+    document.getElementById('arows').scrollIntoView({behavior:'smooth'});
+  },350);
+}
+
+// ═══ CATEGORIES ═══
+function renderCats(){
+  var cm={};
+  places.forEach(function(p){cm[p.cat]=(cm[p.cat]||0)+1;});
+  document.getElementById('clist').innerHTML=cats.map(function(c){
+    return '<div class="ci"><div class="cdot" style="background:'+c.color+';"></div>'
+      +'<div class="cico">'+c.icon+'</div>'
+      +'<div class="cinfo"><div class="cname">'+c.name+'</div>'
+      +'<div class="cmeta"><span>id: '+c.id+'</span><span>'+(cm[c.id]||0)+' luoghi</span></div></div>'
+      +'<div class="tac">'
+      +'<button class="btn bs sm ico" onclick="openEditCat(\''+c.id+'\')">✏️</button>'
+      +'<button class="btn bd sm ico" onclick="openDel(\''+c.id+'\',\'cat\')">🗑</button>'
+      +'</div></div>';
+  }).join('');
+}
+function openAddCat(){editCId=null;document.getElementById('mct').textContent='Nuova categoria';['ci','cn','cc'].forEach(function(id){document.getElementById(id).value='';});updCP();document.getElementById('m-cat').classList.add('on');}
+function openEditCat(id){var c=cats.find(function(x){return x.id===id;});if(!c)return;editCId=id;document.getElementById('mct').textContent='Modifica categoria';document.getElementById('ci').value=c.icon;document.getElementById('cn').value=c.name;document.getElementById('cc').value=c.color;updCP();document.getElementById('m-cat').classList.add('on');}
+function closeCat(){document.getElementById('m-cat').classList.remove('on');editCId=null;}
+function updCP(){document.getElementById('cpv').style.background=document.getElementById('cc').value.trim()||'#ccc';}
+function saveCat(){
+  var icon=document.getElementById('ci').value.trim();
+  var name=document.getElementById('cn').value.trim();
+  var color=document.getElementById('cc').value.trim();
+  if(!name){toast('Nome obbligatorio','err');return;}
+  if(!color.match(/^#/)){toast('Colore hex richiesto (es. #dc6b2f)','err');return;}
+  var obj;
+  if(editCId){
+    var i=cats.findIndex(function(c){return c.id===editCId;});
+    if(i>=0){cats[i]=Object.assign({},cats[i],{icon:icon,name:name,color:color});obj=cats[i];}
+  } else {
+    var newId=name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+    if(cats.find(function(c){return c.id===newId;})){toast('ID già esistente','err');return;}
+    obj={id:newId,icon:icon,name:name,nameEn:name,color:color,sort_order:cats.length};
+    cats.push(obj);
+  }
+  upsertCat(obj)
+    .then(function(){toast('Categoria salvata ✓','ok');})
+    .catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
+  closeCat();renderStats();renderCats();populateCatFilter();populateCatSelect();
+}
+
+// ═══ ACTIVITY TYPES ═══
+function renderAtypes(){
+  document.getElementById('atgrid').innerHTML=atypes.map(function(a){
+    var presStr=(a.presets||[]).slice(0,3).join(', ')+(((a.presets||[]).length>3)?'…':'');
+    return '<div class="atcard">'
+      +'<div style="background:'+a.color+'12;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;">'+a.icon+'</div>'
+      +'<div style="font-size:.75rem;font-weight:600;color:var(--g700);">'+a.name+'</div>'
+      +(presStr?'<div style="font-size:.65rem;color:var(--g400);text-align:center;">'+presStr+'</div>':'')
+      +'<div style="display:flex;gap:4px;">'
+      +'<button class="btn bs sm ico" onclick="openEditAt(\''+a.id+'\')">✏️</button>'
+      +'<button class="btn bd sm ico" onclick="openDel(\''+a.id+'\',\'atype\')">🗑</button>'
+      +'</div></div>';
+  }).join('');
+}
+function openAddAtype(){editAId=null;document.getElementById('matt').textContent='Nuovo tipo';['ati','atn','atc'].forEach(function(id){document.getElementById(id).value='';});updATP();document.getElementById('at-presets-list').innerHTML='';document.getElementById('m-at').classList.add('on');}
+function openEditAt(id){var a=atypes.find(function(x){return x.id===id;});if(!a)return;editAId=id;document.getElementById('matt').textContent='Modifica tipo';document.getElementById('ati').value=a.icon;document.getElementById('atn').value=a.name;document.getElementById('atc').value=a.color||'';updATP();document.getElementById('at-presets-list').innerHTML='';(a.presets||[]).forEach(function(p){addAtPresetRow(p);});document.getElementById('m-at').classList.add('on');}
+function closeAt(){document.getElementById('m-at').classList.remove('on');editAId=null;}
+function updATP(){document.getElementById('atpv').style.background=document.getElementById('atc').value.trim()||'#ccc';}
+function addAtPresetRow(val){
+  var rid='apr-'+(Date.now()+Math.random()).toString().replace('.','');
+  var div=document.createElement('div');
+  div.id=rid;
+  div.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:6px;';
+  div.innerHTML='<input type="text" class="at-preset-val" placeholder="Es. Lunghezza" style="flex:1;border:1px solid var(--g200);border-radius:var(--r);padding:7px 10px;font-family:var(--f);font-size:.83rem;outline:none;">'
+    +'<button class="btn bd sm ico" onclick="document.getElementById(\''+rid+'\').remove()">✕</button>';
+  document.getElementById('at-presets-list').appendChild(div);
+  div.querySelector('.at-preset-val').value=val||'';
+}
+function saveAt(){
+  var icon=document.getElementById('ati').value.trim();
+  var name=document.getElementById('atn').value.trim();
+  var color=document.getElementById('atc').value.trim()||'#6b7280';
+  if(!name){toast('Nome obbligatorio','err');return;}
+  var presets=Array.from(document.querySelectorAll('.at-preset-val')).map(function(i){return i.value.trim();}).filter(Boolean);
+  var obj;
+  if(editAId){
+    var i=atypes.findIndex(function(a){return a.id===editAId;});
+    if(i>=0){atypes[i]=Object.assign({},atypes[i],{icon:icon,name:name,color:color,presets:presets});obj=atypes[i];}
+  } else {
+    var newId=name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+    if(atypes.find(function(a){return a.id===newId;})){toast('ID già esistente','err');return;}
+    obj={id:newId,icon:icon,name:name,nameEn:name,color:color,presets:presets};
+    atypes.push(obj);
+  }
+  upsertAtype(obj)
+    .then(function(){toast('Tipo attività salvato ✓','ok');})
+    .catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
+  closeAt();renderAtypes();
+}
+
+// ═══ DELETE ═══
+function openDel(id,type,parent){
+  delId=id;delType=type;delParent=parent||null;
+  var name='?';
+  if(type==='place'){var p=places.find(function(x){return x.id===id;});name=p?p.name:'?';}
+  else if(type==='cat'){var c=cats.find(function(x){return x.id===id;});name=c?(c.icon+' '+c.name):'?';}
+  else if(type==='atype'){var a=atypes.find(function(x){return x.id===id;});name=a?(a.icon+' '+a.name):'?';}
+  else if(type==='act'){var pp=places.find(function(x){return x.id===parent;});var aa=pp&&(pp.activities||[]).find(function(x){return x.id===id;});name=aa?aa.name:'?';}
+  document.getElementById('dname').textContent=name;
+  document.getElementById('m-del').classList.add('on');
+}
+function closeDel(){document.getElementById('m-del').classList.remove('on');}
+function confirmDel(){
+  if(delType==='place'){
+    deletePlace_sb(delId).catch(function(e){toast('⚠️ '+e.message,'err');});
+    places=places.filter(function(p){return p.id!==delId;});
+  } else if(delType==='cat'){
+    sbFetch('categories?id=eq.'+delId,{method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+    }).catch(function(e){toast('⚠️ '+e.message,'err');});
+    cats=cats.filter(function(c){return c.id!==delId;});
+    places=places.filter(function(p){return p.cat!==delId;});
+  } else if(delType==='atype'){
+    sbFetch('activity_types?id=eq.'+delId,{method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+    }).catch(function(e){toast('⚠️ '+e.message,'err');});
+    atypes=atypes.filter(function(a){return a.id!==delId;});
+  } else if(delType==='act'){
+    var pi=places.findIndex(function(p){return p.id===delParent;});
+    if(pi>=0){
+      places[pi].activities=(places[pi].activities||[]).filter(function(a){return a.id!==delId;});
+      upsert(places[pi]).catch(function(e){toast('⚠️ '+e.message,'err');});
+    }
+  }
+  closeDel();renderStats();renderPlaces();renderCats();renderAtypes();populateCatFilter();
+  toast('Eliminato ✓','ok');
+}
+
+// ═══ EXPORT / IMPORT ═══
+function openExport(){document.getElementById('expbox').textContent=JSON.stringify({places:places,cats:cats,atypes:atypes},null,2);document.getElementById('m-exp').classList.add('on');}
+function closeExp(){document.getElementById('m-exp').classList.remove('on');}
+function copyExp(){navigator.clipboard.writeText(document.getElementById('expbox').textContent).then(function(){toast('Copiato ✓','ok');});}
+function dlExp(){var b=new Blob([document.getElementById('expbox').textContent],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='data.json';a.click();toast('data.json scaricato ✓','ok');}
+function migrateToSupabase(){
+  // legge dal localStorage e carica tutto su Supabase
+  var rp=localStorage.getItem('WT_PLACES_v2');
+  if(!rp){toast('Nessun dato locale da migrare','err');return;}
+  var ps=JSON.parse(rp);
+  if(!ps.length){toast('Nessun luogo trovato nel localStorage','err');return;}
+  toast('Migrazione in corso ('+ps.length+' luoghi)...','ok');
+  Promise.all(ps.map(function(p){return upsert(p);}))
+    .then(function(){
+      toast('✅ '+ps.length+' luoghi caricati su Supabase!','ok');
+      load(); // ricarica da Supabase
+    })
+    .catch(function(e){toast('⚠️ Errore migrazione: '+e.message,'err');});
+}
+
+// ═══ TOAST ═══
+var _tt;
+function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className=type?('on '+type):'on';clearTimeout(_tt);_tt=setTimeout(function(){t.className='';},3000);}
+
+// Close overlays on backdrop click
+document.querySelectorAll('.ov').forEach(function(o){
+  o.addEventListener('click',function(e){if(e.target===o){o.classList.remove('on');editPId=null;}});
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') document.querySelectorAll('.ov.on').forEach(function(o){o.classList.remove('on');});
+});
+
+// ═══ SCORE / PREMIUM HELPERS ═══
+function scoreInfo(s){
+  if(!s&&s!==0)return{color:'var(--g400)',bg:'var(--g100)',border:'var(--g200)',label:'—'};
+  if(s>=80)return{color:'#166534',bg:'#f0fdf4',border:'#bbf7d0',label:'Molto nascosto'};
+  if(s>=60)return{color:'#854d0e',bg:'#fefce8',border:'#fde68a',label:'Abbastanza nascosto'};
+  return{color:'#991b1b',bg:'#fef2f2',border:'#fecaca',label:'Sempre più noto'};
+}
+function scoreCell(p){
+  if(!p.hiddenScore&&p.hiddenScore!==0) return '<span style="color:var(--g400);font-size:.78rem;">—</span>';
+  var si=scoreInfo(p.hiddenScore);
+  return '<span style="font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:4px;background:'+si.bg+';color:'+si.color+';border:0.5px solid '+si.border+';">'+p.hiddenScore+' hidden</span>';
+}
+function toggleCell(p){
+  return '<div style="display:inline-flex;align-items:center;background:var(--g100);border:0.5px solid var(--g200);border-radius:7px;overflow:hidden;" id="tog-'+p.id+'">'
+    +'<button style="padding:3px 8px;font-size:.7rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);'+(p.premium?'color:var(--g400);background:none;':'background:#16a34a;color:#fff;border-radius:5px 0 0 5px;margin:2px 0 2px 2px;')+'" onclick="setPremium('+p.id+',false)">Free</button>'
+    +'<button style="padding:3px 8px;font-size:.7rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);'+(p.premium?'background:#2563eb;color:#fff;border-radius:0 5px 5px 0;margin:2px 2px 2px 0;':'color:var(--g400);background:none;')+'" onclick="setPremium('+p.id+',true)">Prem</button>'
+    +'</div>';
+}
+function detailCell(p){
+  var ok=!!(p.desc&&p.desc.trim()&&p.secret&&p.secret.trim());
+  return ok?'<span style="font-size:.72rem;color:#16a34a;display:flex;align-items:center;gap:3px;">✓ Completo</span>'
+           :'<span style="font-size:.72rem;color:var(--g400);">In corso</span>';
+}
+function setPremium(id,val){
+  var p=places.find(function(x){return x.id===id;});if(!p)return;
+  p.premium=val;
+  upsert(p).catch(function(e){toast('⚠️ '+e.message,'err');});
+  // aggiorna cella inline senza re-render completo
+  var td=document.getElementById('tog-'+id);
+  if(td){
+    var btns=td.querySelectorAll('button');
+    btns[0].style.cssText='padding:3px 8px;font-size:.7rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);'+(val?'color:var(--g400);background:none;':'background:#16a34a;color:#fff;border-radius:5px 0 0 5px;margin:2px 0 2px 2px;');
+    btns[1].style.cssText='padding:3px 8px;font-size:.7rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);'+(val?'background:#2563eb;color:#fff;border-radius:0 5px 5px 0;margin:2px 2px 2px 0;':'color:var(--g400);background:none;');
+  }
+  renderStats();
+  toast((val?'🔒 Premium':'🟢 Free')+': '+p.name,'ok');
+}
+function updScore(){
+  var v=parseInt(document.getElementById('p-score').value)||0;
+  var si=scoreInfo(v);
+  var num=document.getElementById('p-score-num');
+  var lbl=document.getElementById('p-score-lbl');
+  var desc=document.getElementById('p-score-desc');
+  var wrap=document.getElementById('score-preview-wrap');
+  if(num){num.textContent=v;num.style.color=si.color;}
+  if(lbl){lbl.textContent=si.label;lbl.style.color=si.color;}
+  if(wrap){wrap.style.background=si.bg;wrap.style.borderLeft='3px solid '+si.color;}
+  if(desc)desc.textContent=v>=80?'Il luogo è ancora un segreto. Solo chi sa, sa.':v>=60?'Abbastanza nascosto: noto ai locali ma poco sui circuiti turistici.':'Comincia a essere conosciuto.';
+}
+
+// ═══ BOOT ═══
+function resetUnlock(){
+  localStorage.removeItem('WT_UNLOCKED_v2');
+  toast('🔒 Accesso premium ripristinato — il paywall è attivo nell\'app','ok');
+  checkUnlockStatus();
+}
+function checkUnlockStatus(){
+  var isUnlocked=localStorage.getItem('WT_UNLOCKED_v2')==='1';
+  var btn=document.getElementById('unlock-btn');
+  if(btn)btn.style.display=isUnlocked?'inline-flex':'none';
+}
+
+// boot asincrono — load gestisce render internamente
+load();
+checkUnlockStatus();
+</script>
+</body>
+</html>
