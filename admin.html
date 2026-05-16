@@ -238,12 +238,12 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <div class="sdiv">Foto <span style="font-weight:400;font-size:.68rem;color:var(--g400);">(compresse automaticamente)</span></div>
     <div class="fg">
       <label>Foto copertina</label>
-      <div class="pa" onclick="document.getElementById('cinp').click()">
-        <input type="file" id="cinp" accept="image/*" onchange="handleCover(this)">
+      <label class="pa" style="display:block;">
+        <input type="file" id="cinp" accept="image/*" onchange="handleCover(this)" style="display:none;">
         <div style="font-size:1.3rem;margin-bottom:4px;">📸</div>
         <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Carica copertina</div>
         <div style="font-size:.7rem;color:var(--g400);margin-top:2px;">Compressa automaticamente per risparmiare spazio</div>
-      </div>
+      </label>
       <div id="cprev" class="cv-prev" style="display:none">
         <img id="cimg" src="" alt="">
         <button class="btn bd sm" style="margin-top:5px;width:100%;" onclick="removeCover()">Rimuovi</button>
@@ -251,11 +251,12 @@ textarea.ft{resize:vertical;line-height:1.65;}
     </div>
     <div class="fg">
       <label>Galleria (max 6 foto)</label>
-      <div class="pa" onclick="document.getElementById('ginp').click()">
-        <input type="file" id="ginp" accept="image/*" multiple onchange="handleGallery(this)">
+      <label class="pa" style="display:block;">
+        <input type="file" id="ginp" accept="image/*" multiple onchange="handleGallery(this)" style="display:none;">
         <div style="font-size:1.3rem;margin-bottom:4px;">🖼</div>
         <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Aggiungi foto alla galleria</div>
-      </div>
+        <div style="font-size:.72rem;color:var(--g400);margin-top:3px;">Clicca per selezionare (max 6)</div>
+      </label>
       <div class="pg" id="ggrid"></div>
     </div>
     <div class="sdiv">Info pratiche (pillole)</div>
