@@ -55,7 +55,7 @@ td{padding:10px 14px;font-size:.82rem;vertical-align:middle;}
 .tb{font-weight:600;color:var(--g900);}
 .tm{color:var(--g400);font-size:.78rem;}
 .tt{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--g500);}
-.tac{display:flex;gap:6px;}
+.tac{display:flex;gap:6px;white-space:nowrap;}
 .thimg{width:40px;height:40px;border-radius:var(--r);object-fit:cover;border:1px solid var(--g200);}
 .the{width:40px;height:40px;border-radius:var(--r);background:var(--g100);border:1px dashed var(--g200);display:flex;align-items:center;justify-content:center;font-size:.88rem;color:var(--g400);}
 .chip{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:100px;}
@@ -177,7 +177,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
   </div>
   <div class="tw">
     <table>
-      <thead><tr><th></th><th>Foto</th><th>Cat.</th><th>Nome</th><th>Regione</th><th>Tagline</th><th>Att.</th><th style="width:90px;">Score</th><th style="width:90px;">Accesso</th><th style="width:70px;">Dettaglio</th><th></th></tr></thead>
+      <thead><tr><th style="width:32px;"></th><th style="width:44px;">Foto</th><th>Nome</th><th>Tagline</th><th style="width:40px;">Att.</th><th style="width:90px;">Score</th><th style="width:90px;">Accesso</th><th style="width:80px;">Dettaglio</th><th style="width:72px;"></th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
     <div class="empty" id="empty" style="display:none"><div style="font-size:2.2rem;margin-bottom:8px;">🗺</div><p>Nessun luogo trovato</p></div>
@@ -785,20 +785,18 @@ function renderPlaces(){
     rows+='<tr style="'+(ex?'background:var(--g50);':'')+'">'
       +'<td><button class="btn bs sm ico" onclick="toggleExp('+p.id+')">'+(ex?'▲':'▼')+'</button></td>'
       +'<td>'+thHtml+'</td>'
-      +'<td><span class="chip" style="background:'+c.color+'15;color:'+c.color+'">'+c.icon+' '+c.name+'</span></td>'
-      +'<td><div class="tb">'+p.name+'</div></td>'
-      +'<td><div class="tm tt" style="max-width:120px">'+(p.region||'—')+'</div></td>'
+      +'<td><div class="tb">'+c.icon+' '+p.name+'</div><div class="tm" style="font-size:.72rem;color:var(--g400);">'+(p.region||'')+'</div></td>'
       +'<td><div class="tt">'+(p.tagline||'—')+'</div></td>'
       +'<td><span class="abadge">'+n+'</span></td>'
       +'<td>'+scoreCell(p)+'</td>'
       +'<td>'+toggleCell(p)+'</td>'
       +'<td>'+detailCell(p)+'</td>'
-      +'<td><div class="tac">'
+      +'<td style="white-space:nowrap;"><div class="tac">'
       +'<button class="btn bs sm ico" onclick="openEditPlace('+p.id+')">✏️</button>'
       +'<button class="btn bd sm ico" onclick="openDel('+p.id+',\'place\')">🗑</button>'
       +'</div></td></tr>';
     if(ex){
-      rows+='<tr class="exp-row"><td colspan="11"><div class="exp-inner">'
+      rows+='<tr class="exp-row"><td colspan="9"><div class="exp-inner">'
         +'<div class="atbl"><div class="atbl-head"><div class="atbl-title">Attività L2 — '+p.name+'</div>'
         +'<button class="btn bp sm" onclick="openAddAct('+p.id+')">+ Aggiungi attività</button></div>'
         +expContent+'</div></div></td></tr>';
