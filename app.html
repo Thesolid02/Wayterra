@@ -24,7 +24,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background:#fff;}
 
-#map{position:fixed;inset:0;z-index:0;height:100vh;height:100dvh;}
+#map{position:fixed;inset:0;z-index:0;height:100vh;height:100dvh;transition:right .3s ease;}
 .leaflet-control-zoom{display:none;}
 .leaflet-control-attribution{font-size:9px;opacity:.28;}
 
@@ -171,6 +171,15 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 /* ── DETAIL PAGE ── */
 #detail-page{position:fixed;inset:0;z-index:500;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #detail-page.show{display:flex;}
+/* su desktop il pulsante back diventa X */
+@media(min-width:768px){
+  #detail-page.show{left:auto;right:0;top:0;bottom:0;width:400px;border-left:1px solid var(--g200);box-shadow:-8px 0 32px rgba(0,0,0,.08);}
+  #map.panel-open{right:400px;}
+  .dp-hero{height:160px;}
+  .dp-hero img{height:160px;}
+  .dp-back::before{content:'✕';font-size:.82rem;}
+  .dp-back{font-size:0;}
+}
 .dp-header{display:flex;align-items:center;gap:10px;padding:12px 16px;
   padding-top:calc(env(safe-area-inset-top,0px) + 12px);border-bottom:1px solid var(--g100);flex-shrink:0;background:var(--w);}
 .dp-back{width:34px;height:34px;border-radius:50%;background:var(--g50);border:0.5px solid var(--g200);
@@ -197,24 +206,11 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-gallery img{width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;border:0.5px solid var(--g200);}
 .dp-gallery-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:8px;}
 .dp-acts-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:10px;}
-/* activity detail popup — bottom sheet mobile, tooltip desktop */
-#act-popup{display:none;position:fixed;inset:0;z-index:600;}
-#act-popup.show{display:block;}
-/* mobile bottom sheet */
-.act-popup-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;max-height:80vh;overflow-y:auto;padding:20px 18px calc(env(safe-area-inset-bottom,0px)+20px);animation:slideup .22s ease;box-shadow:0 -8px 40px rgba(0,0,0,.18);}
+/* activity detail popup */
+#act-popup{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center;}
+#act-popup.show{display:flex;}
+.act-popup-sheet{background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;padding:20px 18px calc(env(safe-area-inset-bottom,0px)+20px);animation:slideup .22s ease;box-shadow:0 -8px 40px rgba(0,0,0,.18);}
 @keyframes slideup{from{transform:translateY(100%);}to{transform:translateY(0);}}
-/* desktop tooltip */
-.act-popup-tooltip{position:absolute;background:var(--w);border:0.5px solid var(--g200);border-radius:var(--rxl);width:300px;box-shadow:0 12px 40px rgba(0,0,0,.16);padding:16px;}
-.act-popup-tooltip::before{content:'';position:absolute;width:10px;height:10px;background:var(--w);border-left:0.5px solid var(--g200);border-top:0.5px solid var(--g200);transform:rotate(45deg);top:-6px;left:24px;}
-/* overlay solo su mobile */
-.act-popup-overlay{display:none;}
-@media(max-width:640px){
-  .act-popup-overlay{display:block;position:absolute;inset:0;background:rgba(0,0,0,.4);}
-  .act-popup-tooltip{display:none;}
-}
-@media(min-width:641px){
-  .act-popup-sheet{display:none;}
-}
 .act-popup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .act-popup-title{font-size:.95rem;font-weight:700;color:var(--g900);}
 .act-popup-close{width:26px;height:26px;border-radius:50%;background:var(--g100);border:none;cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -232,8 +228,30 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #dp-lightbox.show{display:flex;}
 #dp-lightbox img{max-width:94vw;max-height:88vh;object-fit:contain;border-radius:10px;}
 #dp-lightbox-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.dp-acts-grid{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
-.dp-acts-grid::-webkit-scrollbar{display:none;}
+/* desktop activity inline bubble */
+@media(min-width:768px){
+  #act-popup{display:none !important;} /* nasconde il bottom sheet su desktop */
+  .dp-acts-grid{flex-wrap:wrap;}
+  .dp-act-card.act-selected{border:1.5px solid var(--blue);background:var(--blue-l);}
+}
+.act-inline-bubble{display:none;background:var(--w);border:0.5px solid var(--g200);border-radius:var(--rl);padding:14px;margin-top:6px;margin-bottom:8px;box-shadow:0 4px 20px rgba(0,0,0,.1);position:relative;width:100%;flex-basis:100%;}
+.act-inline-bubble.show{display:block;}
+.act-bubble-arrow{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid var(--g200);position:absolute;top:-9px;left:24px;}
+.act-bubble-arrow::after{content:'';width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:8px solid var(--w);position:absolute;top:2px;left:-7px;}
+.act-bub-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.act-bub-title{font-size:.88rem;font-weight:700;color:var(--g900);}
+.act-bub-close{width:22px;height:22px;border-radius:50%;background:var(--g100);border:none;cursor:pointer;font-size:.72rem;display:flex;align-items:center;justify-content:center;color:var(--g500);}
+.act-bub-type{font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:8px;}
+.act-bub-img{width:100%;height:110px;object-fit:cover;border-radius:var(--r);margin-bottom:8px;display:block;}
+.act-bub-desc{font-size:.8rem;color:var(--g500);line-height:1.65;margin-bottom:8px;}
+.act-bub-secret{background:#fffbeb;border-left:3px solid #f59e0b;padding:7px 10px;margin-bottom:8px;border-radius:0;}
+.act-bub-secret-lbl{font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b45309;margin-bottom:2px;}
+.act-bub-secret p{font-size:.76rem;color:var(--g700);line-height:1.6;font-style:italic;}
+.act-bub-specs{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
+.act-bub-spec{display:flex;justify-content:space-between;font-size:.76rem;padding:4px 0;border-bottom:0.5px solid var(--g100);}
+.act-bub-spec-k{color:var(--g500);}.act-bub-spec-v{color:var(--g900);font-weight:500;}
+.act-bub-maps{width:100%;padding:8px;background:var(--g900);color:#fff;border:none;border-radius:var(--r);font-family:var(--f);font-size:.8rem;font-weight:600;cursor:pointer;}
+.dp-acts-grid{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:4px;}
 .dp-act-card{flex-shrink:0;background:var(--g50);border:1px solid var(--g200);border-radius:var(--rl);padding:10px 12px;min-width:110px;}
 .dp-act-icon{font-size:1.1rem;margin-bottom:4px;}
 .dp-act-name{font-size:.78rem;font-weight:600;color:var(--g900);line-height:1.2;margin-bottom:2px;}
@@ -414,22 +432,12 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 <div id="cpill" style="display:none"></div>
 
 <div id="act-popup">
-  <div class="act-popup-overlay" onclick="closeActPopup()"></div>
-  <!-- mobile: bottom sheet -->
   <div class="act-popup-sheet" id="act-popup-sheet">
     <div class="act-popup-header">
       <div class="act-popup-title" id="act-popup-title"></div>
       <button class="act-popup-close" onclick="closeActPopup()">✕</button>
     </div>
     <div id="act-popup-body-mobile"></div>
-  </div>
-  <!-- desktop: tooltip -->
-  <div class="act-popup-tooltip" id="act-popup-tooltip">
-    <div class="act-popup-header">
-      <div class="act-popup-title" id="act-popup-title-d"></div>
-      <button class="act-popup-close" onclick="closeActPopup()">✕</button>
-    </div>
-    <div id="act-popup-body-desktop"></div>
   </div>
 </div>
 
@@ -751,43 +759,71 @@ function openActPopup(actId, placeId, triggerEl){
   var a=(p.activities||[]).find(function(x){return x.id===actId;});
   if(!a)return;
   var at=atypeOf(a.type);
-  var title=a.name;
-  var html='<div class="act-popup-type">'+at.icon+' '+atName(at)+'</div>';
-  if(a.coverPhoto) html+='<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">';
-  if(a.desc) html+='<div class="act-popup-desc">'+a.desc+'</div>';
-  if(a.secret) html+='<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+a.secret+'</p></div>';
+
+  // contenuto comune
+  var html='<div class="act-bub-type">'+at.icon+' '+atName(at)+'</div>';
+  if(a.coverPhoto) html+='<img class="act-bub-img" src="'+a.coverPhoto+'" alt="">';
+  if(a.desc) html+='<div class="act-bub-desc">'+a.desc+'</div>';
+  if(a.secret) html+='<div class="act-bub-secret"><div class="act-bub-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+a.secret+'</p></div>';
   if(a.specs&&a.specs.length){
-    html+='<div class="act-popup-specs">'
-      +a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+s.k+'</span><span class="act-popup-spec-v">'+s.v+'</span></div>';}).join('')
+    html+='<div class="act-bub-specs">'
+      +a.specs.map(function(s){return'<div class="act-bub-spec"><span class="act-bub-spec-k">'+s.k+'</span><span class="act-bub-spec-v">'+s.v+'</span></div>';}).join('')
       +'</div>';
   }
-  if(a.maps) html+='<button class="act-popup-maps-btn" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>';
+  if(a.maps) html+='<button class="act-bub-maps" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>';
 
-  var isDesktop=window.innerWidth>640;
-  if(isDesktop&&triggerEl){
-    // tooltip posizionato sopra/sotto la card attività
-    var tt=document.getElementById('act-popup-tooltip');
-    document.getElementById('act-popup-title-d').textContent=title;
-    document.getElementById('act-popup-body-desktop').innerHTML=html;
-    var rect=triggerEl.getBoundingClientRect();
-    var ttW=300;
-    var left=rect.left;
-    if(left+ttW>window.innerWidth-16)left=window.innerWidth-ttW-16;
-    if(left<16)left=16;
-    var top=rect.bottom+8;
-    // se va fuori schermo in basso, metti sopra
-    if(top+360>window.innerHeight)top=rect.top-8-360;
-    if(top<16)top=16;
-    tt.style.left=left+'px';
-    tt.style.top=top+'px';
-    // aggiusta freccia
-    tt.style.setProperty('--arrow-left',(rect.left+rect.width/2-left-5)+'px');
+  if(window.innerWidth>=768){
+    // rimuovi selezione e fumetto precedente
+    document.querySelectorAll('.dp-act-card.act-selected').forEach(function(el){el.classList.remove('act-selected');});
+    var existing=document.getElementById('act-inline-bubble');
+    if(existing)existing.remove();
+
+    if(triggerEl)triggerEl.classList.add('act-selected');
+
+    // costruisci fumetto con freccia posizionata dinamicamente
+    var arrowLeft=24; // default
+    if(triggerEl){
+      var grid=document.getElementById('dp-acts-grid');
+      var gridRect=grid.getBoundingClientRect();
+      var cardRect=triggerEl.getBoundingClientRect();
+      arrowLeft=Math.round((cardRect.left-gridRect.left)+(cardRect.width/2)-8);
+      if(arrowLeft<8)arrowLeft=8;
+    }
+    var bubbleHTML='<div class="act-inline-bubble show" id="act-inline-bubble">'
+      +'<div class="act-bubble-arrow" style="left:'+arrowLeft+'px;"></div>'
+      +'<div class="act-bub-header">'
+      +'<div class="act-bub-title">'+a.name+'</div>'
+      +'<button class="act-bub-close" onclick="closeInlineBubble()">✕</button>'
+      +'</div>'
+      +'<div class="act-bub-body">'+html+'</div>'
+      +'</div>';
+
+    // inserisci subito dopo la card cliccata
+    if(triggerEl){
+      triggerEl.insertAdjacentHTML('afterend', bubbleHTML);
+    } else {
+      document.getElementById('dp-acts-grid').insertAdjacentHTML('afterend', bubbleHTML);
+    }
   } else {
-    // bottom sheet mobile
-    document.getElementById('act-popup-title').textContent=title;
-    document.getElementById('act-popup-body-mobile').innerHTML=html;
+    // mobile: bottom sheet
+    var mobileHtml=html
+      .replace(/act-bub-/g,'act-popup-')
+      .replace(/act-bub-maps/g,'act-popup-maps-btn');
+    document.getElementById('act-popup-title').textContent=a.name;
+    document.getElementById('act-popup-body-mobile').innerHTML=
+      '<div class="act-popup-type">'+at.icon+' '+atName(at)+'</div>'
+      +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
+      +(a.desc?'<div class="act-popup-desc">'+a.desc+'</div>':'')
+      +(a.secret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+a.secret+'</p></div>':'')
+      +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+s.k+'</span><span class="act-popup-spec-v">'+s.v+'</span></div>';}).join('')+'</div>':'')
+      +(a.maps?'<button class="act-popup-maps-btn" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'');
+    document.getElementById('act-popup').classList.add('show');
   }
-  document.getElementById('act-popup').classList.add('show');
+}
+function closeInlineBubble(){
+  var b=document.getElementById('act-inline-bubble');
+  if(b)b.remove();
+  document.querySelectorAll('.dp-act-card.act-selected').forEach(function(el){el.classList.remove('act-selected');});
 }
 function closeActPopup(){
   document.getElementById('act-popup').classList.remove('show');
@@ -842,8 +878,6 @@ function l1Html(p,dim){
     +'<div style="width:40px;height:40px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 1px 4px rgba(0,0,0,.15),0 0 0 2.5px rgba(255,255,255,.9);'+(dim?'opacity:.25;transform:scale(.8);':'')+'">'
     +c.icon+'</div>'
     +'<div style="width:2px;height:6px;background:'+c.color+';border-radius:1px;margin-top:-1px;"></div>'
-    +'<div style="background:rgba(255,255,255,.96);border-radius:100px;padding:2px 8px;margin-top:2px;font-size:.62rem;font-weight:700;color:#111;white-space:nowrap;max-width:100px;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,.18);border:0.5px solid rgba(0,0,0,.06);">'
-    +p.name+'</div>'
     +'</div>';
 }
 function addL1(p){
@@ -1181,9 +1215,21 @@ function openDetail(){
   document.getElementById('dp-maps-btn').textContent=t('maps');
   document.getElementById('dp-maps-btn').onclick=function(){window.open(p.maps,'_blank');};
   setupDpSave(p.id);
+  // desktop: restringi mappa
+  if(window.innerWidth>=768){
+    document.getElementById('map').classList.add('panel-open');
+    setTimeout(function(){map_o.invalidateSize();},320);
+  }
   document.getElementById('detail-page').classList.add('show');
 }
-function closeDetail(){document.getElementById('detail-page').classList.remove('show');}
+function closeDetail(){
+  document.getElementById('detail-page').classList.remove('show');
+  closeInlineBubble();
+  if(window.innerWidth>=768){
+    document.getElementById('map').classList.remove('panel-open');
+    setTimeout(function(){map_o.invalidateSize();},320);
+  }
+}
 function setupDpSave(id){
   var sv=document.getElementById('dp-save');
   sv.className='dp-save'+(favs.has(id)?' saved':'');
