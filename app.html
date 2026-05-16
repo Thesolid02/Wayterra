@@ -1319,10 +1319,11 @@ window.addEventListener('DOMContentLoaded',function(){
 
   Promise.all([
     fetch(SB_URL+'/rest/v1/places?select=id,cat,name,region,lat,lng,tagline,description,secret,pills,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
-    fetch(SB_URL+'/rest/v1/categories?select=*&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];})
+    fetch(SB_URL+'/rest/v1/categories?select=*&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
+    fetch(SB_URL+'/rest/v1/activity_types?select=*&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];})
   ])
   .then(function(results){
-    var placeRows=results[0], catRows=results[1];
+    var placeRows=results[0], catRows=results[1], atypeRows=results[2];
       clearTimeout(timeout);
       if(!placeRows||!placeRows.length){
         initDefaults();
@@ -1330,6 +1331,7 @@ window.addEventListener('DOMContentLoaded',function(){
         return;
       }
       var cats_=catRows&&catRows.length?catRows.map(function(r){return{id:r.id,icon:r.icon,name:r.name,nameEn:r.name_en||r.name,color:r.color};}):null;
+    var atypes_=atypeRows&&atypeRows.length?atypeRows.map(function(r){return{id:r.id,icon:r.icon,name:r.name,nameEn:r.name_en||r.name,color:r.color};}):null;
       var places_=placeRows.map(function(row){
         return{
           id:row.id,cat:row.cat,name:row.name,region:row.region||'',
@@ -1343,7 +1345,8 @@ window.addEventListener('DOMContentLoaded',function(){
       });
       localStorage.setItem(K.P,JSON.stringify(places_));
       if(cats_)localStorage.setItem(K.C,JSON.stringify(cats_));
-      doBoot(places_,cats_,null);
+      if(atypes_)localStorage.setItem(K.A,JSON.stringify(atypes_));
+      doBoot(places_,cats_,atypes_);
       // carica attività in background (non bloccante)
       fetch(SB_URL+'/rest/v1/activities?select=*&order=place_id,sort_order',{headers:h})
         .then(function(r){return r.ok?r.json():[];})
