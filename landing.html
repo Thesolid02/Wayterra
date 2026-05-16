@@ -27,15 +27,21 @@ a{color:inherit;text-decoration:none;}
 img{display:block;max-width:100%;}
 
 /* ── NAV ── */
-nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.06);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.06);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;}
 .nav-brand{display:flex;align-items:center;gap:9px;}
 .nav-name{font-size:.95rem;font-weight:800;color:var(--g900);letter-spacing:-.03em;}
-.nav-links{display:flex;align-items:center;gap:8px;}
-.nav-btn{display:inline-flex;align-items:center;padding:9px 20px;border-radius:100px;font-weight:600;font-size:.84rem;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.nav-links{display:flex;align-items:center;gap:6px;}
+.nav-btn{display:inline-flex;align-items:center;padding:8px 16px;border-radius:100px;font-weight:600;font-size:.82rem;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .nav-btn-ghost{border:1.5px solid var(--g200);color:var(--g700);}
 .nav-btn-ghost:hover{background:var(--g50);}
 .nav-btn-blue{background:var(--blue);color:#fff;border:1.5px solid transparent;}
 .nav-btn-blue:hover{background:var(--blue-d);}
+@media(max-width:480px){
+  nav{padding:0 14px;}
+  .nav-btn-ghost{display:none;}
+  .lang-sw-nav{display:none;}
+  .nav-btn-blue{padding:8px 14px;font-size:.8rem;}
+}
 
 /* ── HERO ── */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;overflow:hidden;}
@@ -230,7 +236,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <span class="nav-name">Wayterra</span>
   </div>
   <div class="nav-links">
-    <div style="display:flex;background:var(--g100);border-radius:100px;padding:3px;gap:2px;">
+    <div class="lang-sw-nav" style="display:flex;background:var(--g100);border-radius:100px;padding:3px;gap:2px;">
       <button id="lang-en" onclick="setLandingLang('en')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:var(--g900);color:#fff;transition:all .15s;">EN</button>
       <button id="lang-it" onclick="setLandingLang('it')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:none;color:var(--g500);transition:all .15s;">IT</button>
     </div>
@@ -700,6 +706,7 @@ var currentLang='en';
 
 function setLandingLang(l){
   currentLang=l;
+  localStorage.setItem('WT_LANG_v1',l); // sincronizza con app.html
   var t=T[l];
 
   // toggle buttons

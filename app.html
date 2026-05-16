@@ -197,7 +197,24 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-gallery img{width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;border:0.5px solid var(--g200);}
 .dp-gallery-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:8px;}
 .dp-acts-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:10px;}
-/* lightbox */
+/* activity detail popup */
+#act-popup{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center;}
+#act-popup.show{display:flex;}
+.act-popup-card{background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;padding:20px 18px calc(env(safe-area-inset-bottom,0px)+20px);animation:slideup .22s ease;}
+@keyframes slideup{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.act-popup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.act-popup-title{font-size:1rem;font-weight:700;color:var(--g900);}
+.act-popup-close{width:28px;height:28px;border-radius:50%;background:var(--g100);border:none;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;}
+.act-popup-type{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:10px;}
+.act-popup-img{width:100%;height:140px;object-fit:cover;border-radius:var(--rl);margin-bottom:12px;display:block;}
+.act-popup-desc{font-size:.84rem;color:var(--g500);line-height:1.72;margin-bottom:12px;}
+.act-popup-secret{background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 var(--r) var(--r) 0;padding:10px 12px;margin-bottom:12px;}
+.act-popup-secret-lbl{font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b45309;margin-bottom:3px;}
+.act-popup-secret p{font-size:.8rem;color:var(--g700);line-height:1.65;font-style:italic;}
+.act-popup-specs{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.act-popup-spec{display:flex;justify-content:space-between;font-size:.8rem;padding:6px 0;border-bottom:0.5px solid var(--g100);}
+.act-popup-spec-k{color:var(--g500);}.act-popup-spec-v{color:var(--g900);font-weight:500;}
+.act-popup-maps{width:100%;padding:11px;background:var(--g900);color:#fff;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.84rem;font-weight:600;cursor:pointer;}
 #dp-lightbox{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.92);align-items:center;justify-content:center;}
 #dp-lightbox.show{display:flex;}
 #dp-lightbox img{max-width:94vw;max-height:88vh;object-fit:contain;border-radius:10px;}
@@ -382,6 +399,16 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 
 <button id="fab" style="display:none" onclick="locateMe()">📍</button>
 <div id="cpill" style="display:none"></div>
+
+<div id="act-popup" onclick="closeActPopup(event)">
+  <div class="act-popup-card" id="act-popup-card">
+    <div class="act-popup-header">
+      <div class="act-popup-title" id="act-popup-title"></div>
+      <button class="act-popup-close" onclick="closeActPopup()">✕</button>
+    </div>
+    <div id="act-popup-body"></div>
+  </div>
+</div>
 
 <div id="dp-lightbox" onclick="closeLightbox()">
   <img id="dp-lightbox-img" src="" alt="">
@@ -693,6 +720,31 @@ function applyTranslations(){
 }
 
 /* ═══ MAP ═══ */
+function openActPopup(actId, placeId){
+  var p=DATA.places.find(function(x){return x.id===placeId;});
+  if(!p)return;
+  var a=(p.activities||[]).find(function(x){return x.id===actId;});
+  if(!a)return;
+  var at=atypeOf(a.type);
+  document.getElementById('act-popup-title').textContent=a.name;
+  var html='<div class="act-popup-type">'+at.icon+' '+atName(at)+'</div>';
+  if(a.coverPhoto) html+='<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">';
+  if(a.desc) html+='<div class="act-popup-desc">'+a.desc+'</div>';
+  if(a.secret) html+='<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+a.secret+'</p></div>';
+  if(a.specs&&a.specs.length){
+    html+='<div class="act-popup-specs">'
+      +a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+s.k+'</span><span class="act-popup-spec-v">'+s.v+'</span></div>';}).join('')
+      +'</div>';
+  }
+  if(a.maps) html+='<button class="act-popup-maps" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>';
+  document.getElementById('act-popup-body').innerHTML=html;
+  document.getElementById('act-popup').classList.add('show');
+}
+function closeActPopup(e){
+  if(e&&e.target!==document.getElementById('act-popup'))return;
+  document.getElementById('act-popup').classList.remove('show');
+}
+
 function openLightbox(idx,p){
   var gallery=(p.gallery||[]).filter(function(s){return s&&s.length>10;});
   if(!gallery[idx])return;
@@ -1068,9 +1120,11 @@ function openDetail(){
     actsGrid.innerHTML=acts.map(function(a){
       var at=atypeOf(a.type);
       var specs=(a.specs||[]).slice(0,3).map(function(s){return'<div class="dp-act-spec">'+s.k+': '+s.v+'</div>';}).join('');
-      return '<div class="dp-act-card"><div class="dp-act-icon">'+at.icon+'</div>'
+      var hasDetail=!!(a.desc||a.secret||(a.specs&&a.specs.length));
+      return '<div class="dp-act-card" '+(hasDetail?'onclick="openActPopup('+a.id+','+p.id+')" style="cursor:pointer;"':'')+' >'
+        +'<div class="dp-act-icon">'+at.icon+'</div>'
         +'<div class="dp-act-name">'+a.name+'</div>'
-        +'<div class="dp-act-type">'+atName(at)+'</div>'
+        +'<div class="dp-act-type">'+atName(at)+(hasDetail?' →':'')+'</div>'
         +(specs?'<div class="dp-act-specs">'+specs+'</div>':'')
         +'</div>';
     }).join('');
@@ -1142,7 +1196,12 @@ function removeFav(id){
 function goToFav(id){
   closeFavPage();
   var p=DATA.places.find(function(x){return x.id===id;});
-  if(p)handleL1Click(p);
+  if(!p)return;
+  if(p.premium&&!unlocked){showPW();return;}
+  // centra mappa e apri direttamente il dettaglio
+  currentPlace=p;
+  map_o.setView([p.lat,p.lng],13,{animate:true});
+  setTimeout(function(){openDetail();},400);
 }
 
 /* ═══ PAYWALL ═══ */
