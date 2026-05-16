@@ -1460,13 +1460,14 @@ function bootApp(d){
 
 window.addEventListener('DOMContentLoaded',function(){
   var h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+  var APP_VERSION='2026-05-16-v1'; // aggiorna questo per forzare reload su tutti i dispositivi
 
-  // timeout di sicurezza: se Supabase non risponde in 6s, usa localStorage
+  // timeout di sicurezza: se Supabase non risponde in 8s, usa localStorage
   var timeout=setTimeout(function(){
     console.warn('[Wayterra] timeout — uso cache locale');
     initDefaults();
     bootApp(loadData());
-  },6000);
+  },8000);
 
   Promise.all([
     fetch(SB_URL+'/rest/v1/places?select=id,cat,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
@@ -1477,6 +1478,8 @@ window.addEventListener('DOMContentLoaded',function(){
   .then(function(results){
     clearTimeout(timeout);
     var placeRows=results[0], catRows=results[1], atypeRows=results[2], actRows=results[3];
+    // debug temporaneo visibile
+    toast('DB: '+placeRows.length+' luoghi, '+actRows.length+' attività');
 
     if(!placeRows||!placeRows.length){
       initDefaults();
@@ -1516,6 +1519,7 @@ window.addEventListener('DOMContentLoaded',function(){
   .catch(function(err){
     clearTimeout(timeout);
     console.warn('[Wayterra] Supabase error:',err.message);
+    toast('⚠️ Errore DB: '+err.message.slice(0,40));
     initDefaults();
     bootApp(loadData());
   });
