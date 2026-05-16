@@ -158,6 +158,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <a href="app.html" target="_blank" class="btn bs sm">🗺 Apri app</a>
     <button class="btn bok sm" onclick="openExport()">⬇ Esporta</button>
     <button class="btn bs sm" onclick="resetUnlock()" id="unlock-btn" style="display:none;">🔓 Reset unlock</button>
+    <button class="btn bok sm" onclick="migrateImagesToStorage()" id="migrate-img-btn" title="Sposta le immagini base64 su Supabase Storage">☁️ Migra immagini</button>
     <button class="btn bp" onclick="openAddPlace()">+ Nuovo luogo</button>
   </div>
 </div>
@@ -686,7 +687,11 @@ function save(){
 }
 
 // ═══ IMAGE COMPRESSION ═══
-function compressImage(file, callback){
+var SB_STORAGE_URL=SB_URL+'/storage/v1/object/wayterra-images/';
+var SB_PUBLIC_URL=SB_URL+'/storage/v1/object/public/wayterra-images/';
+
+function uploadToStorage(file, callback){
+  // comprimi prima
   var maxW=1200, quality=0.72;
   var r=new FileReader();
   r.onload=function(e){
@@ -697,12 +702,40 @@ function compressImage(file, callback){
       var canvas=document.createElement('canvas');
       canvas.width=w; canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
-      callback(canvas.toDataURL('image/jpeg',quality));
+      canvas.toBlob(function(blob){
+        // nome file univoco
+        var filename=Date.now()+'-'+Math.random().toString(36).slice(2)+'.jpg';
+        fetch(SB_STORAGE_URL+filename,{
+          method:'POST',
+          headers:{
+            'apikey':SB_KEY,
+            'Authorization':'Bearer '+SB_KEY,
+            'Content-Type':'image/jpeg',
+            'x-upsert':'true'
+          },
+          body:blob
+        })
+        .then(function(res){
+          if(!res.ok)throw new Error('Upload failed: '+res.status);
+          return res.json();
+        })
+        .then(function(){
+          callback(SB_PUBLIC_URL+filename);
+        })
+        .catch(function(err){
+          toast('⚠️ Errore upload foto: '+err.message,'err');
+          // fallback: usa base64
+          callback(canvas.toDataURL('image/jpeg',quality));
+        });
+      },'image/jpeg',quality);
     };
     img.src=e.target.result;
   };
   r.readAsDataURL(file);
 }
+
+// mantieni compatibilità con vecchio nome
+function compressImage(file, callback){ uploadToStorage(file, callback); }
 
 // ═══ TABS ═══
 function switchTab(t,btn){
@@ -940,10 +973,10 @@ function addActRow(a){
     +'<div class="presets-row" id="presets-'+rid+'"></div>'
     +'</div></div>'
     +'<div class="fg"><label>Foto attività (opzionale)</label>'
-    +'<div class="pa" style="padding:10px;" onclick="document.getElementById(\'ai-'+rid+'\').click()">'
-    +'<input type="file" id="ai-'+rid+'" accept="image/*" onchange="handleActPhoto(this,\''+rid+'\')">'
+    +'<label class="pa" style="padding:10px;display:block;cursor:pointer;">'
+    +'<input type="file" id="ai-'+rid+'" accept="image/*" onchange="handleActPhoto(this,\''+rid+'\')" style="display:none;">'
     +'<div style="font-size:.78rem;font-weight:600;color:var(--g700);">📸 Carica foto (compressa automaticamente)</div>'
-    +'</div>'
+    +'</label>'
     +'<div id="ap-'+rid+'" style="display:none;margin-top:7px;">'
     +'<img id="aimg-'+rid+'" src="" style="width:100%;max-width:150px;height:72px;object-fit:cover;border-radius:var(--r);border:1px solid var(--g200);">'
     +'<button class="btn bd sm" style="margin-top:4px;" onclick="removeActPhoto(\''+rid+'\')">Rimuovi</button>'
@@ -1314,7 +1347,71 @@ function updScore(){
 }
 
 // ═══ BOOT ═══
-function resetUnlock(){
+function migrateImagesToStorage(){
+  if(!confirm('Migra tutte le immagini base64 su Supabase Storage? Potrebbe richiedere qualche minuto.'))return;
+  var total=0, done=0, errors=0;
+  var toMigrate=[];
+
+  // raccoglie tutte le immagini base64
+  places.forEach(function(p){
+    if(p.coverPhoto&&p.coverPhoto.startsWith('data:')) toMigrate.push({type:'place-cover',p:p});
+    (p.gallery||[]).forEach(function(g,i){
+      if(g&&g.startsWith('data:')) toMigrate.push({type:'place-gallery',p:p,i:i});
+    });
+    (p.activities||[]).forEach(function(a){
+      if(a.coverPhoto&&a.coverPhoto.startsWith('data:')) toMigrate.push({type:'act-cover',p:p,a:a});
+    });
+  });
+
+  total=toMigrate.length;
+  if(!total){toast('Nessuna immagine base64 da migrare ✓','ok');return;}
+  toast('Migrazione '+total+' immagini in corso...','ok');
+
+  function migrateOne(idx){
+    if(idx>=toMigrate.length){
+      toast('✅ Migrazione completata: '+done+' ok, '+errors+' errori','ok');
+      // salva su Supabase
+      Promise.all(places.map(function(p){return upsert(p);}))
+        .then(function(){toast('✅ Database aggiornato','ok');renderPlaces();})
+        .catch(function(e){toast('⚠️ Errore salvataggio: '+e.message,'err');});
+      return;
+    }
+    var item=toMigrate[idx];
+    var dataUrl=item.type==='place-cover'?item.p.coverPhoto:item.type==='place-gallery'?item.p.gallery[item.i]:item.a.coverPhoto;
+
+    // converti base64 in blob
+    var arr=dataUrl.split(',');
+    var mime=arr[0].match(/:(.*?);/)[1];
+    var bstr=atob(arr[1]);
+    var n=bstr.length;
+    var u8arr=new Uint8Array(n);
+    for(var i=0;i<n;i++) u8arr[i]=bstr.charCodeAt(i);
+    var blob=new Blob([u8arr],{type:mime});
+
+    var filename=Date.now()+'-'+Math.random().toString(36).slice(2)+'.jpg';
+    fetch(SB_STORAGE_URL+filename,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'image/jpeg','x-upsert':'true'},
+      body:blob
+    })
+    .then(function(res){
+      if(!res.ok)throw new Error(res.status);
+      var url=SB_PUBLIC_URL+filename;
+      if(item.type==='place-cover') item.p.coverPhoto=url;
+      else if(item.type==='place-gallery') item.p.gallery[item.i]=url;
+      else item.a.coverPhoto=url;
+      done++;
+      toast('Migrazione: '+done+'/'+total,'ok');
+      setTimeout(function(){migrateOne(idx+1);},200);
+    })
+    .catch(function(e){
+      errors++;
+      console.warn('Errore migrazione immagine:',e);
+      setTimeout(function(){migrateOne(idx+1);},200);
+    });
+  }
+  migrateOne(0);
+}
   localStorage.removeItem('WT_UNLOCKED_v2');
   toast('🔒 Accesso premium ripristinato — il paywall è attivo nell\'app','ok');
   checkUnlockStatus();
