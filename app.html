@@ -1204,7 +1204,7 @@ function openDetail(){
     actsGrid.innerHTML=acts.map(function(a){
       var at=atypeOf(a.type);
       var specs=(a.specs||[]).slice(0,3).map(function(s){return'<div class="dp-act-spec">'+s.k+': '+s.v+'</div>';}).join('');
-      var hasDetail=!!(a.desc||a.secret||(a.specs&&a.specs.length));
+      var hasDetail=!!(a.desc||a.secret||(a.specs&&a.specs.length)||a.coverPhoto);
       return '<div class="dp-act-card" '+(hasDetail?'onclick="openActPopup('+a.id+','+p.id+',this)" style="cursor:pointer;"':'')+' >'
         +'<div class="dp-act-icon">'+at.icon+'</div>'
         +'<div class="dp-act-name">'+a.name+'</div>'
