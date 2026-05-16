@@ -1478,8 +1478,6 @@ window.addEventListener('DOMContentLoaded',function(){
   .then(function(results){
     clearTimeout(timeout);
     var placeRows=results[0], catRows=results[1], atypeRows=results[2], actRows=results[3];
-    // debug temporaneo visibile
-    toast('DB: '+placeRows.length+' luoghi, '+actRows.length+' attività');
 
     if(!placeRows||!placeRows.length){
       initDefaults();
