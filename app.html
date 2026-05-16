@@ -722,9 +722,9 @@ function checkUnlock(){
 function hasDetail(p){return !!(p.desc&&p.desc.trim()&&p.secret&&p.secret.trim());}
 function scoreColor(s){
   if(!s||s===0)return null;
-  if(s>=70)return{bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',label:'Gemma nascosta',gems:'💎💎💎'};
-  if(s>=40)return{bg:'#fefce8',color:'#854d0e',border:'#fde68a',label:'Lo sanno in pochi',gems:'💎💎'};
-  return{bg:'#fef2f2',color:'#991b1b',border:'#fecaca',label:'Inizia a circolare',gems:'💎'};
+  if(s>=70)return{bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',label:lang==='en'?'Hidden gem':'Gemma nascosta',gems:'💎💎💎'};
+  if(s>=40)return{bg:'#fefce8',color:'#854d0e',border:'#fde68a',label:lang==='en'?'Known to few':'Lo sanno in pochi',gems:'💎💎'};
+  return{bg:'#fef2f2',color:'#991b1b',border:'#fecaca',label:lang==='en'?'Starting to spread':'Inizia a circolare',gems:'💎'};
 }
 function catName(c){return lang==='en'&&c.nameEn?c.nameEn:c.name;}
 function atName(a){return lang==='en'&&a.nameEn?a.nameEn:a.name;}
@@ -1174,9 +1174,11 @@ function openDetail(){
   cb.innerHTML='<span style="font-size:.72rem;font-weight:600;color:#fff;">'+c.icon+' '+catName(c)+'</span>';
   hero.appendChild(cb);
 
-  var tEl=document.getElementById('dp-tagline');tEl.textContent=p.tagline||'';tEl.style.borderColor=c.color;
-  document.getElementById('dp-desc').textContent=p.desc||'';
-  document.getElementById('dp-secret').textContent=p.secret||'';
+  var tEl=document.getElementById('dp-tagline');
+  tEl.textContent=(lang==='en'&&p.taglineEn?p.taglineEn:p.tagline)||'';
+  tEl.style.borderColor=c.color;
+  document.getElementById('dp-desc').textContent=(lang==='en'&&p.descEn?p.descEn:p.desc)||'';
+  document.getElementById('dp-secret').textContent=(lang==='en'&&p.secretEn?p.secretEn:p.secret)||'';
   document.getElementById('dp-pills').innerHTML=(p.pills||[]).map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('');
 
   // gallery
@@ -1346,7 +1348,11 @@ function locateMe(){
 }
 
 function gemTooltipHtml(currentSc){
-  var levels=[
+  var levels=lang==='en'?[
+    {gems:'💎💎💎',label:'Hidden gem',sub:'Only locals know it',bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',min:70},
+    {gems:'💎💎',label:'Known to few',sub:'Not yet on the tourist radar',bg:'#fefce8',color:'#854d0e',border:'#fde68a',min:40},
+    {gems:'💎',label:'Starting to spread',sub:'Visit it soon',bg:'#f9fafb',color:'#6b7280',border:'#e5e7eb',min:1}
+  ]:[
     {gems:'💎💎💎',label:'Gemma nascosta',sub:'Solo i locals lo sanno',bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',min:70},
     {gems:'💎💎',label:'Lo sanno in pochi',sub:'Non ancora sui radar',bg:'#fefce8',color:'#854d0e',border:'#fde68a',min:40},
     {gems:'💎',label:'Inizia a circolare',sub:'Visitalo presto',bg:'#f9fafb',color:'#6b7280',border:'#e5e7eb',min:1}
@@ -1361,7 +1367,7 @@ function gemTooltipHtml(currentSc){
   }).join('');
   return '<div style="font-size:.76rem;font-weight:600;color:var(--g700);margin-bottom:8px;">Hiddenness Score</div>'
     +rows
-    +'<div class="gem-tooltip-note">Aggiornato manualmente — nessun algoritmo.</div>';
+    +'<div class="gem-tooltip-note">'+(lang==='en'?'Updated manually — no algorithm.':'Aggiornato manualmente — nessun algoritmo.')+'</div>';
 }
 function openGemTooltip(btn,sc){
   if(!sc){
@@ -1475,7 +1481,7 @@ window.addEventListener('DOMContentLoaded',function(){
   },5000);
 
   Promise.all([
-    fetch(SB_URL+'/rest/v1/places?select=id,cat,name,region,lat,lng,tagline,description,secret,pills,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
+    fetch(SB_URL+'/rest/v1/places?select=id,cat,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
     fetch(SB_URL+'/rest/v1/categories?select=*&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activity_types?select=*&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];})
   ])
@@ -1492,8 +1498,10 @@ window.addEventListener('DOMContentLoaded',function(){
       var places_=placeRows.map(function(row){
         return{
           id:row.id,cat:row.cat,name:row.name,region:row.region||'',
-          lat:row.lat,lng:row.lng,tagline:row.tagline||'',
-          desc:row.description||'',secret:row.secret||'',
+          lat:row.lat,lng:row.lng,
+          tagline:row.tagline||'',taglineEn:row.tagline_en||'',
+          desc:row.description||'',descEn:row.description_en||'',
+          secret:row.secret||'',secretEn:row.secret_en||'',
           pills:row.pills||[],gradient:row.gradient||'linear-gradient(135deg,#888,#555)',
           maps:row.maps_url||'',coverPhoto:row.cover_photo||'',gallery:row.gallery||[],
           hiddenScore:row.hidden_score||0,premium:row.premium||false,

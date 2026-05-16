@@ -220,8 +220,11 @@ textarea.ft{resize:vertical;line-height:1.65;}
     </div>
     <div class="sdiv">Contenuto</div>
     <div class="fg"><label>Tagline *</label><input type="text" id="p-tagline" placeholder="Frase breve che cattura l'essenza del luogo"></div>
+    <div class="fg"><label>Tagline EN <span style="font-size:.68rem;font-weight:400;color:var(--g400);">opzionale — se vuoto usa l'italiano</span></label><input type="text" id="p-tagline-en" placeholder="Short phrase capturing the essence of the place"></div>
     <div class="fg"><label>Descrizione *</label><textarea class="ft" id="p-desc" rows="4" placeholder="Descrizione completa…"></textarea></div>
+    <div class="fg"><label>Description EN <span style="font-size:.68rem;font-weight:400;color:var(--g400);">opzionale</span></label><textarea class="ft" id="p-desc-en" rows="4" placeholder="Full description in English…"></textarea></div>
     <div class="fg"><label>🤫 Segreto locale *</label><textarea class="ft" id="p-secret" rows="3" placeholder="La cosa che non trovi su Google…"></textarea></div>
+    <div class="fg"><label>🤫 Local secret EN <span style="font-size:.68rem;font-weight:400;color:var(--g400);">opzionale</span></label><textarea class="ft" id="p-secret-en" rows="3" placeholder="The thing you won't find on Google…"></textarea></div>
     <div class="sdiv">🔭 Hiddenness Score</div>
     <div style="background:var(--g50);border-radius:var(--rl);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:14px;" id="score-preview-wrap">
       <div><div style="font-size:2rem;font-weight:800;line-height:1;" id="p-score-num">50</div><div style="font-size:.75rem;font-weight:600;margin-top:2px;" id="p-score-lbl">—</div></div>
@@ -446,8 +449,11 @@ function rowToPlace(row, acts){
     lat: row.lat,
     lng: row.lng,
     tagline: row.tagline||'',
+    taglineEn: row.tagline_en||'',
     desc: row.description||'',
+    descEn: row.description_en||'',
     secret: row.secret||'',
+    secretEn: row.secret_en||'',
     pills: row.pills||[],
     gradient: row.gradient||'linear-gradient(135deg,#888,#555)',
     maps: row.maps_url||'',
@@ -485,8 +491,11 @@ function placeToRow(p){
     lat: p.lat,
     lng: p.lng,
     tagline: p.tagline||'',
+    tagline_en: p.taglineEn||'',
     description: p.desc||'',
+    description_en: p.descEn||'',
     secret: p.secret||'',
+    secret_en: p.secretEn||'',
     pills: p.pills||[],
     gradient: p.gradient||'',
     maps_url: p.maps||'',
@@ -819,7 +828,7 @@ function closePlace(){ document.getElementById('m-place').classList.remove('on')
 
 function clearPForm(){
   populateCatSelect();
-  ['p-name','p-region','p-tagline','p-desc','p-secret','p-p1','p-p2','p-p3','p-p4','p-c1','p-c2','p-c3','p-maps'].forEach(function(id){document.getElementById(id).value='';});
+  ['p-name','p-region','p-tagline','p-tagline-en','p-desc','p-desc-en','p-secret','p-secret-en','p-p1','p-p2','p-p3','p-p4','p-c1','p-c2','p-c3','p-maps'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('p-lat').value=''; document.getElementById('p-lng').value='';
   document.getElementById('cprev').style.display='none';
   document.getElementById('p-score').value=50; updScore();
@@ -836,8 +845,11 @@ function fillPForm(p){
   document.getElementById('p-lat').value=p.lat||'';
   document.getElementById('p-lng').value=p.lng||'';
   document.getElementById('p-tagline').value=p.tagline||'';
+  document.getElementById('p-tagline-en').value=p.taglineEn||'';
   document.getElementById('p-desc').value=p.desc||'';
+  document.getElementById('p-desc-en').value=p.descEn||'';
   document.getElementById('p-secret').value=p.secret||'';
+  document.getElementById('p-secret-en').value=p.secretEn||'';
   var pl=p.pills||[];
   ['p-p1','p-p2','p-p3','p-p4'].forEach(function(id,i){document.getElementById(id).value=pl[i]||'';});
   document.getElementById('p-maps').value=p.maps||'';
@@ -1014,7 +1026,9 @@ function savePlace(){
   var lat=parseFloat(document.getElementById('p-lat').value);
   var lng=parseFloat(document.getElementById('p-lng').value);
   var tagline=document.getElementById('p-tagline').value.trim();
+  var taglineEn=document.getElementById('p-tagline-en').value.trim();
   var desc=document.getElementById('p-desc').value.trim();
+  var descEn=document.getElementById('p-desc-en').value.trim();
   if(!name){toast('Nome obbligatorio','err');return;}
   if(isNaN(lat)||isNaN(lng)){toast('Coordinate obbligatorie','err');return;}
   if(!tagline||!desc){toast('Tagline e descrizione obbligatorie','err');return;}
@@ -1058,6 +1072,9 @@ function savePlace(){
     hiddenScore:parseInt(document.getElementById('p-score').value)||0,
     premium:document.querySelector('input[name="p-premium"]:checked')&&document.querySelector('input[name="p-premium"]:checked').value==='true',
     secret:document.getElementById('p-secret').value.trim(),
+    secretEn:document.getElementById('p-secret-en').value.trim(),
+    taglineEn:taglineEn,
+    descEn:descEn,
     pills:pills, activities:activities,
     gradient:'linear-gradient(145deg,'+c1+','+c2+','+c3+')',
     maps:document.getElementById('p-maps').value.trim()||'https://maps.google.com/?q='+encodeURIComponent(name),
