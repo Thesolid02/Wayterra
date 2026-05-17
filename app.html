@@ -988,23 +988,25 @@ function showActBubble(a, latlng){
   mapsBtn.textContent=t('maps');
   mapsBtn.onclick=function(){window.open(a.maps||('https://maps.google.com/?q='+encodeURIComponent(a.name)),'_blank');};
 
-  // posizionamento semplice
+  // posizionamento
   var bub=document.getElementById('act-bubble');
-  var pt=map_o.latLngToContainerPoint(latlng);
-  var cardW=260;
-  var panelW=(window.innerWidth>=768&&document.getElementById('detail-page').classList.contains('show'))?400:0;
-  var vw=window.innerWidth-panelW;
-  var x=pt.x-(cardW/2);
-  var y=pt.y-120-14;
-  if(x<8)x=8;
-  if(x+cardW>vw-8)x=vw-cardW-8;
-  var tailLeft=pt.x-x-8;
-  if(tailLeft<16)tailLeft=16;
-  if(tailLeft>cardW-32)tailLeft=cardW-32;
-  document.getElementById('act-bubble-tail').style.marginLeft=tailLeft+'px';
-  bub.style.left=x+'px';
-  bub.style.top=y+'px';
+  bub.style.visibility='hidden';
   bub.classList.add('show');
+  requestAnimationFrame(function(){
+    var pt=map_o.latLngToContainerPoint(latlng);
+    var cardW=bub.offsetWidth;
+    var panelW=(window.innerWidth>=768&&document.getElementById('detail-page').classList.contains('show'))?400:0;
+    var vw=window.innerWidth-panelW;
+    var x=pt.x-(cardW/2);
+    if(x<8)x=8;
+    if(x+cardW>vw-8)x=vw-cardW-8;
+    var y=pt.y-bub.offsetHeight-14;
+    var tailLeft=pt.x-x-8;
+    document.getElementById('act-bubble-tail').style.marginLeft=tailLeft+'px';
+    bub.style.left=x+'px';
+    bub.style.top=y+'px';
+    bub.style.visibility='';
+  });
 
   // evidenzia attività nel panel desktop
   if(window.innerWidth>=768){
