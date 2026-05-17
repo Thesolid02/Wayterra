@@ -120,19 +120,23 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .gem-tooltip-note{font-size:.62rem;color:var(--g400);border-top:0.5px solid var(--g100);padding-top:7px;margin-top:7px;line-height:1.5;}
 .gem-tooltip-close{position:absolute;top:6px;right:8px;background:none;border:none;font-size:.75rem;color:var(--g400);cursor:pointer;}
 
-/* ── ACTIVITY BUBBLE (L2 pin click) ── */
-#act-bubble{position:fixed;z-index:350;display:none;pointer-events:all;}
-#act-bubble.show{display:block;}
-.act-bubble-card{background:var(--w);border-radius:var(--rxl);border:0.5px solid var(--g200);box-shadow:var(--sh-lg);overflow:hidden;width:260px;position:relative;}
-.act-bubble-img{width:70px;min-width:70px;height:70px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
-.act-bubble-body{padding:8px 10px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between;}
-.act-bubble-type{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
-.act-bubble-name{font-size:.82rem;font-weight:700;color:var(--g900);line-height:1.2;margin-bottom:3px;}
-.act-bubble-desc{font-size:.72rem;color:var(--g500);line-height:1.5;margin-bottom:4px;}
-.act-bubble-specs{font-size:.68rem;color:var(--g400);margin-bottom:5px;}
-.act-bubble-btn{width:100%;padding:5px;background:var(--g900);border:none;border-radius:7px;font-family:var(--f);font-size:.72rem;font-weight:600;color:#fff;cursor:pointer;}
-.act-bubble-close{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.08);border:none;cursor:pointer;font-size:.65rem;color:var(--g500);}
-.act-bubble-tail{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid var(--w);filter:drop-shadow(0 1px 0 rgba(0,0,0,.1));}
+/* ── ACTIVITY MAP POPUP (L2 pin click) ── */
+#act-map-popup{display:none;position:fixed;inset:0;z-index:400;}
+#act-map-popup.show{display:block;}
+.amp-overlay{position:absolute;inset:0;background:rgba(0,0,0,.3);}
+.amp-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;border-top:0.5px solid var(--g200);}
+.amp-handle{width:32px;height:3px;border-radius:2px;background:var(--g300);margin:8px auto 4px;}
+.amp-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--w);border-radius:var(--rxl);border:0.5px solid var(--g200);box-shadow:0 8px 40px rgba(0,0,0,.18);width:300px;max-height:80vh;overflow-y:auto;}
+.amp-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;}
+.amp-title{font-size:.92rem;font-weight:700;color:var(--g900);}
+.amp-close{width:26px;height:26px;border-radius:50%;background:var(--g100);border:none;cursor:pointer;font-size:.75rem;color:var(--g500);display:flex;align-items:center;justify-content:center;}
+.amp-type{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);padding:4px 16px 8px;}
+.amp-img{width:100%;height:120px;object-fit:cover;display:block;}
+.amp-body{padding:10px 16px 16px;}
+.amp-desc{font-size:.82rem;color:var(--g500);line-height:1.7;margin-bottom:8px;}
+.amp-specs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.amp-spec{font-size:.72rem;color:var(--g500);background:var(--g50);padding:3px 8px;border-radius:5px;border:0.5px solid var(--g200);}
+.amp-maps{width:100%;padding:10px;background:var(--g900);border:none;border-radius:var(--r);font-family:var(--f);font-size:.82rem;font-weight:600;color:#fff;cursor:pointer;}
 .mk2{display:flex;flex-direction:column;align-items:center;cursor:pointer;
   animation:pop .22s cubic-bezier(.34,1.56,.64,1) both;position:relative;}
 @keyframes pop{from{opacity:0;transform:scale(.5) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
@@ -419,25 +423,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 <!-- BUBBLE CARD -->
 <div id="gem-tooltip-global"></div>
 
-<!-- ACTIVITY BUBBLE (L2 pin) -->
-<div id="act-bubble">
-  <div class="act-bubble-card" id="act-bubble-card">
-    <div style="display:flex;">
-      <div class="act-bubble-img" id="act-bub-img"></div>
-      <div class="act-bubble-body">
-        <div>
-          <div class="act-bubble-type" id="act-bub-type"></div>
-          <div class="act-bubble-name" id="act-bub-name"></div>
-          <div class="act-bubble-desc" id="act-bub-desc"></div>
-          <div class="act-bubble-specs" id="act-bub-specs"></div>
-        </div>
-        <button class="act-bubble-btn" id="act-bub-maps"></button>
-      </div>
-    </div>
-    <button class="act-bubble-close" onclick="closeActBubble()">✕</button>
-  </div>
-  <div class="act-bubble-tail" id="act-bubble-tail"></div>
-</div>
+<!-- ACTIVITY MAP POPUP (L2 pin) -->
 
 <div id="bubble">
   <div class="bubble-card" id="bubble-card">
@@ -514,6 +500,23 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
     <div class="fav-count" id="fav-count"></div>
   </div>
   <div class="fav-scroll" id="fav-scroll"></div>
+</div>
+
+<div id="act-map-popup">
+  <div class="amp-overlay" onclick="closeActMapPopup()"></div>
+  <div class="amp-sheet" id="amp-sheet" style="display:none;">
+    <div class="amp-handle"></div>
+    <div class="amp-header"><div class="amp-title" id="amp-title"></div><button class="amp-close" onclick="closeActMapPopup()">✕</button></div>
+    <div class="amp-type" id="amp-type"></div>
+    <img class="amp-img" id="amp-img" src="" alt="" style="display:none;">
+    <div class="amp-body"><div class="amp-desc" id="amp-desc"></div><div class="amp-specs" id="amp-specs"></div><button class="amp-maps" id="amp-maps"></button></div>
+  </div>
+  <div class="amp-center" id="amp-center" style="display:none;">
+    <div class="amp-header"><div class="amp-title" id="amp-title-d"></div><button class="amp-close" onclick="closeActMapPopup()">✕</button></div>
+    <div class="amp-type" id="amp-type-d"></div>
+    <img class="amp-img" id="amp-img-d" src="" alt="" style="display:none;">
+    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-specs" id="amp-specs-d"></div><button class="amp-maps" id="amp-maps-d"></button></div>
+  </div>
 </div>
 
 <!-- PAYWALL -->
@@ -884,7 +887,7 @@ function initMap(){
   L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21vajFqcXdqMDhyMTJyczFvNXlsejlheSJ9.yFaqeUd9Jvd62adyNUrkAg',
     {attribution:'© Mapbox © OpenStreetMap',maxZoom:20,tileSize:256}).addTo(map_o);
   DATA.places.forEach(function(p){addL1(p);});
-  map_o.on('click',function(){closeBubble();closeActBubble();if(ddOpen)closeDD();});
+  map_o.on('click',function(){closeBubble();closeActMapPopup();if(ddOpen)closeDD();});
   updCount();
   setTimeout(function(){
     if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(pos){
@@ -955,70 +958,34 @@ function showL2(place){
     l2Mk.push(m);
   });
 }
-function clearL2(){l2Mk.forEach(function(m){m.remove();});l2Mk.length=0;closeActBubble();}
+function clearL2(){l2Mk.forEach(function(m){m.remove();});l2Mk.length=0;closeActMapPopup();}
 
 function showActBubble(a, latlng){
   var at=atypeOf(a.type);
-  // immagine
-  var imgEl=document.getElementById('act-bub-img');
-  if(a.coverPhoto){
-    imgEl.innerHTML='<img src="'+a.coverPhoto+'" alt="" style="width:70px;height:70px;object-fit:cover;">';
-    imgEl.style.background='none';
-  } else {
-    imgEl.innerHTML='<span style="font-size:1.4rem;">'+at.icon+'</span>';
-    imgEl.style.background='var(--g50)';
-  }
-  // tipo
-  var typeEl=document.getElementById('act-bub-type');
-  typeEl.textContent=at.icon+' '+atName(at);
-  typeEl.style.color=at.color||'var(--g500)';
-  // nome
-  document.getElementById('act-bub-name').textContent=a.name;
-  // desc
-  var descEl=document.getElementById('act-bub-desc');
-  descEl.textContent=a.desc||'';
-  descEl.style.display=a.desc?'':'none';
-  // specs (max 2)
-  var specsEl=document.getElementById('act-bub-specs');
-  var specs=(a.specs||[]).slice(0,2).map(function(s){return s.k+': '+s.v;}).join(' · ');
-  specsEl.textContent=specs;
-  specsEl.style.display=specs?'':'none';
-  // maps button
-  var mapsBtn=document.getElementById('act-bub-maps');
+  var isMobile=window.innerWidth<768;
+  var titleId=isMobile?'amp-title':'amp-title-d';
+  var typeId=isMobile?'amp-type':'amp-type-d';
+  var imgId=isMobile?'amp-img':'amp-img-d';
+  var descId=isMobile?'amp-desc':'amp-desc-d';
+  var specsId=isMobile?'amp-specs':'amp-specs-d';
+  var mapsId=isMobile?'amp-maps':'amp-maps-d';
+  document.getElementById('amp-sheet').style.display=isMobile?'':'none';
+  document.getElementById('amp-center').style.display=isMobile?'none':'';
+  document.getElementById(titleId).textContent=a.name;
+  document.getElementById(typeId).textContent=at.icon+' '+atName(at);
+  var imgEl=document.getElementById(imgId);
+  if(a.coverPhoto){imgEl.src=a.coverPhoto;imgEl.style.display='block';}
+  else imgEl.style.display='none';
+  document.getElementById(descId).textContent=a.desc||'';
+  var specs=(a.specs||[]).map(function(s){return '<span class="amp-spec">'+s.k+': '+s.v+'</span>';}).join('');
+  document.getElementById(specsId).innerHTML=specs;
+  var mapsBtn=document.getElementById(mapsId);
   mapsBtn.textContent=t('maps');
   mapsBtn.onclick=function(){window.open(a.maps||('https://maps.google.com/?q='+encodeURIComponent(a.name)),'_blank');};
-
-  // posizionamento
-  var bub=document.getElementById('act-bubble');
-  bub.style.visibility='hidden';
-  bub.classList.add('show');
-  requestAnimationFrame(function(){
-    var pt=map_o.latLngToContainerPoint(latlng);
-    var cardW=bub.offsetWidth;
-    var panelW=(window.innerWidth>=768&&document.getElementById('detail-page').classList.contains('show'))?400:0;
-    var vw=window.innerWidth-panelW;
-    var x=pt.x-(cardW/2);
-    if(x<8)x=8;
-    if(x+cardW>vw-8)x=vw-cardW-8;
-    var y=pt.y-bub.offsetHeight-14;
-    var tailLeft=pt.x-x-8;
-    document.getElementById('act-bubble-tail').style.marginLeft=tailLeft+'px';
-    bub.style.left=x+'px';
-    bub.style.top=y+'px';
-    bub.style.visibility='';
-  });
-
-  // evidenzia attività nel panel desktop
-  if(window.innerWidth>=768){
-    document.querySelectorAll('.dp-act-card').forEach(function(el){el.classList.remove('act-selected');});
-    document.querySelectorAll('.dp-act-card').forEach(function(el){
-      if(el.textContent.indexOf(a.name)>=0)el.classList.add('act-selected');
-    });
-  }
+  document.getElementById('act-map-popup').classList.add('show');
 }
-function closeActBubble(){
-  document.getElementById('act-bubble').classList.remove('show');
-  document.querySelectorAll('.dp-act-card.act-selected').forEach(function(el){el.classList.remove('act-selected');});
+function closeActMapPopup(){
+  document.getElementById('act-map-popup').classList.remove('show');
 }
 
 function updCount(){
