@@ -120,11 +120,23 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .gem-tooltip-note{font-size:.62rem;color:var(--g400);border-top:0.5px solid var(--g100);padding-top:7px;margin-top:7px;line-height:1.5;}
 .gem-tooltip-close{position:absolute;top:6px;right:8px;background:none;border:none;font-size:.75rem;color:var(--g400);cursor:pointer;}
 
-/* ── L2 MARKERS ── */
+/* ── ACTIVITY BUBBLE (L2 pin click) ── */
+#act-bubble{position:fixed;z-index:350;display:none;pointer-events:all;}
+#act-bubble.show{display:block;}
+.act-bubble-card{background:var(--w);border-radius:var(--rxl);border:0.5px solid var(--g200);box-shadow:var(--sh-lg);overflow:hidden;width:260px;position:relative;}
+.act-bubble-img{width:70px;min-width:70px;height:70px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.act-bubble-body{padding:8px 10px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between;}
+.act-bubble-type{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+.act-bubble-name{font-size:.82rem;font-weight:700;color:var(--g900);line-height:1.2;margin-bottom:3px;}
+.act-bubble-desc{font-size:.72rem;color:var(--g500);line-height:1.5;margin-bottom:4px;}
+.act-bubble-specs{font-size:.68rem;color:var(--g400);margin-bottom:5px;}
+.act-bubble-btn{width:100%;padding:5px;background:var(--g900);border:none;border-radius:7px;font-family:var(--f);font-size:.72rem;font-weight:600;color:#fff;cursor:pointer;}
+.act-bubble-close{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.08);border:none;cursor:pointer;font-size:.65rem;color:var(--g500);}
+.act-bubble-tail{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid var(--w);filter:drop-shadow(0 1px 0 rgba(0,0,0,.1));}
 .mk2{display:flex;flex-direction:column;align-items:center;cursor:pointer;
   animation:pop .22s cubic-bezier(.34,1.56,.64,1) both;position:relative;}
 @keyframes pop{from{opacity:0;transform:scale(.5) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.mk2-pin{width:32px;height:32px;border-radius:50%;background:var(--w);display:flex;align-items:center;
+.mk2-pin{width:26px;height:26px;border-radius:50%;background:var(--w);display:flex;align-items:center;
   justify-content:center;font-size:.88rem;box-shadow:var(--sh-md),0 0 0 1.5px rgba(0,0,0,.06);transition:transform .15s;}
 .mk2-pin:hover{transform:scale(1.18);}
 .mk2-stem{width:1.5px;height:4px;border-radius:1px;background:rgba(0,0,0,.18);margin-top:-1px;}
@@ -406,6 +418,26 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 
 <!-- BUBBLE CARD -->
 <div id="gem-tooltip-global"></div>
+
+<!-- ACTIVITY BUBBLE (L2 pin) -->
+<div id="act-bubble">
+  <div class="act-bubble-card" id="act-bubble-card">
+    <div style="display:flex;">
+      <div class="act-bubble-img" id="act-bub-img"></div>
+      <div class="act-bubble-body">
+        <div>
+          <div class="act-bubble-type" id="act-bub-type"></div>
+          <div class="act-bubble-name" id="act-bub-name"></div>
+          <div class="act-bubble-desc" id="act-bub-desc"></div>
+          <div class="act-bubble-specs" id="act-bub-specs"></div>
+        </div>
+        <button class="act-bubble-btn" id="act-bub-maps"></button>
+      </div>
+    </div>
+    <button class="act-bubble-close" onclick="closeActBubble()">✕</button>
+  </div>
+  <div class="act-bubble-tail" id="act-bubble-tail"></div>
+</div>
 
 <div id="bubble">
   <div class="bubble-card" id="bubble-card">
@@ -852,7 +884,7 @@ function initMap(){
   L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21vajFqcXdqMDhyMTJyczFvNXlsejlheSJ9.yFaqeUd9Jvd62adyNUrkAg',
     {attribution:'© Mapbox © OpenStreetMap',maxZoom:20,tileSize:256}).addTo(map_o);
   DATA.places.forEach(function(p){addL1(p);});
-  map_o.on('click',function(){closeBubble();if(ddOpen)closeDD();});
+  map_o.on('click',function(){closeBubble();closeActBubble();if(ddOpen)closeDD();});
   updCount();
   setTimeout(function(){
     if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(pos){
@@ -869,19 +901,17 @@ function l1Html(p,dim){
   var isPremium=p.premium&&!unlocked;
   if(isPremium){
     return '<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
-      +'<div style="width:40px;height:40px;border-radius:50%;background:#4b5563;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 1px 4px rgba(0,0,0,.15),0 0 0 2.5px rgba(255,255,255,.9);'+(dim?'opacity:.25;transform:scale(.8);':'')+'">'
+      +'<div style="width:26px;height:26px;border-radius:50%;background:#4b5563;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;box-shadow:0 1px 3px rgba(0,0,0,.2),0 0 0 1.5px rgba(255,255,255,.9);'+(dim?'opacity:.25;transform:scale(.75);':'')+'">'
       +'🔒</div>'
-      +'<div style="width:2px;height:6px;background:#4b5563;border-radius:1px;margin-top:-1px;"></div>'
       +'</div>';
   }
   return '<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
-    +'<div style="width:40px;height:40px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 1px 4px rgba(0,0,0,.15),0 0 0 2.5px rgba(255,255,255,.9);'+(dim?'opacity:.25;transform:scale(.8);':'')+'">'
+    +'<div style="width:26px;height:26px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-size:.72rem;box-shadow:0 1px 3px rgba(0,0,0,.2),0 0 0 1.5px rgba(255,255,255,.9);'+(dim?'opacity:.25;transform:scale(.75);':'')+'">'
     +c.icon+'</div>'
-    +'<div style="width:2px;height:6px;background:'+c.color+';border-radius:1px;margin-top:-1px;"></div>'
     +'</div>';
 }
 function addL1(p){
-  var m=L.marker([p.lat,p.lng],{icon:L.divIcon({html:l1Html(p,false),className:'',iconSize:[104,58],iconAnchor:[52,54]})}).addTo(map_o);
+  var m=L.marker([p.lat,p.lng],{icon:L.divIcon({html:l1Html(p,false),className:'',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(map_o);
   m.on('click',function(e){L.DomEvent.stopPropagation(e);
     if(p.premium&&!unlocked){showPW();return;}
     handleL1Click(p);
@@ -891,14 +921,14 @@ function addL1(p){
 function dimL1(exceptId){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    if(p.id===exceptId){m.setIcon(L.divIcon({html:l1Html(p,true),className:'',iconSize:[104,58],iconAnchor:[52,54]}));m.addTo(map_o);}
+    if(p.id===exceptId){m.setIcon(L.divIcon({html:l1Html(p,true),className:'',iconSize:[26,26],iconAnchor:[13,13]}));m.addTo(map_o);}
     else m.remove();
   });
 }
 function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[104,58],iconAnchor:[52,54]}));
+    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[26,26],iconAnchor:[13,13]}));
     var show=activeFilter==='all'||p.cat===activeFilter;
     if(show)m.addTo(map_o);else m.remove();
   });
@@ -906,11 +936,11 @@ function restoreL1(){
 function refreshL1markers(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[104,58],iconAnchor:[52,54]}));
+    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[26,26],iconAnchor:[13,13]}));
   });
 }
 
-/* L2 markers — solo se coordinate presenti, tooltip = nome specifico */
+/* L2 markers — solo se coordinate presenti */
 function l2Html(a){
   var at=atypeOf(a.type);
   return '<div class="mk2"><div class="mk2-tooltip">'+a.name+'</div><div class="mk2-pin">'+at.icon+'</div><div class="mk2-stem"></div></div>';
@@ -921,10 +951,73 @@ function showL2(place){
   (place.activities||[]).forEach(function(a,i){
     if(!a.lat||!a.lng)return;
     var m=L.marker([a.lat,a.lng],{icon:L.divIcon({html:l2Html(a),className:'',iconSize:[90,52],iconAnchor:[45,48],zIndexOffset:100+i})}).addTo(map_o);
+    m.on('click',function(e){L.DomEvent.stopPropagation(e);showActBubble(a,[a.lat,a.lng]);});
     l2Mk.push(m);
   });
 }
-function clearL2(){l2Mk.forEach(function(m){m.remove();});l2Mk.length=0;}
+function clearL2(){l2Mk.forEach(function(m){m.remove();});l2Mk.length=0;closeActBubble();}
+
+function showActBubble(a, latlng){
+  var at=atypeOf(a.type);
+  // immagine
+  var imgEl=document.getElementById('act-bub-img');
+  if(a.coverPhoto){
+    imgEl.innerHTML='<img src="'+a.coverPhoto+'" alt="" style="width:70px;height:70px;object-fit:cover;">';
+    imgEl.style.background='none';
+  } else {
+    imgEl.innerHTML='<span style="font-size:1.4rem;">'+at.icon+'</span>';
+    imgEl.style.background='var(--g50)';
+  }
+  // tipo
+  var typeEl=document.getElementById('act-bub-type');
+  typeEl.textContent=at.icon+' '+atName(at);
+  typeEl.style.color=at.color||'var(--g500)';
+  // nome
+  document.getElementById('act-bub-name').textContent=a.name;
+  // desc
+  var descEl=document.getElementById('act-bub-desc');
+  descEl.textContent=a.desc||'';
+  descEl.style.display=a.desc?'':'none';
+  // specs (max 2)
+  var specsEl=document.getElementById('act-bub-specs');
+  var specs=(a.specs||[]).slice(0,2).map(function(s){return s.k+': '+s.v;}).join(' · ');
+  specsEl.textContent=specs;
+  specsEl.style.display=specs?'':'none';
+  // maps button
+  var mapsBtn=document.getElementById('act-bub-maps');
+  mapsBtn.textContent=t('maps');
+  mapsBtn.onclick=function(){window.open(a.maps||('https://maps.google.com/?q='+encodeURIComponent(a.name)),'_blank');};
+
+  // posizionamento semplice
+  var bub=document.getElementById('act-bubble');
+  var pt=map_o.latLngToContainerPoint(latlng);
+  var cardW=260;
+  var panelW=(window.innerWidth>=768&&document.getElementById('detail-page').classList.contains('show'))?400:0;
+  var vw=window.innerWidth-panelW;
+  var x=pt.x-(cardW/2);
+  var y=pt.y-120-14;
+  if(x<8)x=8;
+  if(x+cardW>vw-8)x=vw-cardW-8;
+  var tailLeft=pt.x-x-8;
+  if(tailLeft<16)tailLeft=16;
+  if(tailLeft>cardW-32)tailLeft=cardW-32;
+  document.getElementById('act-bubble-tail').style.marginLeft=tailLeft+'px';
+  bub.style.left=x+'px';
+  bub.style.top=y+'px';
+  bub.classList.add('show');
+
+  // evidenzia attività nel panel desktop
+  if(window.innerWidth>=768){
+    document.querySelectorAll('.dp-act-card').forEach(function(el){el.classList.remove('act-selected');});
+    document.querySelectorAll('.dp-act-card').forEach(function(el){
+      if(el.textContent.indexOf(a.name)>=0)el.classList.add('act-selected');
+    });
+  }
+}
+function closeActBubble(){
+  document.getElementById('act-bubble').classList.remove('show');
+  document.querySelectorAll('.dp-act-card.act-selected').forEach(function(el){el.classList.remove('act-selected');});
+}
 
 function updCount(){
   var visible=DATA.places.filter(function(p){return activeFilter==='all'||p.cat===activeFilter;});
@@ -1217,8 +1310,9 @@ function openDetail(){
   document.getElementById('dp-maps-btn').textContent=t('maps');
   document.getElementById('dp-maps-btn').onclick=function(){window.open(p.maps,'_blank');};
   setupDpSave(p.id);
-  // desktop: restringi mappa
+  // desktop: restringi mappa e chiudi bubble
   if(window.innerWidth>=768){
+    closeBubble();
     document.getElementById('map').classList.add('panel-open');
     setTimeout(function(){map_o.invalidateSize();},320);
   }
