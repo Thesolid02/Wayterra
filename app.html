@@ -801,8 +801,10 @@ function openActPopup(actId, placeId, triggerEl){
   // contenuto comune
   var html='<div class="act-bub-type">'+at.icon+' '+atName(at)+'</div>';
   if(a.coverPhoto) html+='<img class="act-bub-img" src="'+a.coverPhoto+'" alt="">';
-  if(a.desc) html+='<div class="act-bub-desc">'+a.desc+'</div>';
-  if(a.secret) html+='<div class="act-bub-secret"><div class="act-bub-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+a.secret+'</p></div>';
+  var actDesc=lang==='en'&&a.descEn?a.descEn:a.desc;
+  var actSecret=lang==='en'&&a.secretEn?a.secretEn:a.secret;
+  if(actDesc) html+='<div class="act-bub-desc">'+actDesc+'</div>';
+  if(actSecret) html+='<div class="act-bub-secret"><div class="act-bub-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+actSecret+'</p></div>';
   if(a.specs&&a.specs.length){
     html+='<div class="act-bub-specs">'
       +a.specs.map(function(s){return'<div class="act-bub-spec"><span class="act-bub-spec-k">'+s.k+'</span><span class="act-bub-spec-v">'+s.v+'</span></div>';}).join('')
@@ -851,8 +853,8 @@ function openActPopup(actId, placeId, triggerEl){
     document.getElementById('act-popup-body-mobile').innerHTML=
       '<div class="act-popup-type">'+at.icon+' '+atName(at)+'</div>'
       +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
-      +(a.desc?'<div class="act-popup-desc">'+a.desc+'</div>':'')
-      +(a.secret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+a.secret+'</p></div>':'')
+      +(actDesc?'<div class="act-popup-desc">'+actDesc+'</div>':'')
+      +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+actSecret+'</p></div>':'')
       +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+s.k+'</span><span class="act-popup-spec-v">'+s.v+'</span></div>';}).join('')+'</div>':'')
       +(a.maps?'<button class="act-popup-maps-btn" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'');
     document.getElementById('act-popup').classList.add('show');
@@ -1564,7 +1566,8 @@ window.addEventListener('DOMContentLoaded',function(){
     var places_=placeRows.map(function(row){
       var acts=(actRows||[]).filter(function(a){return a.place_id===row.id;}).map(function(a){
         return{id:a.id,type:a.type,name:a.name,lat:a.lat||null,lng:a.lng||null,
-               desc:a.description||'',secret:a.secret||'',specs:a.specs||[],
+               desc:a.description||'',descEn:a.description_en||'',
+               secret:a.secret||'',secretEn:a.secret_en||'',specs:a.specs||[],
                coverPhoto:a.cover_photo||'',maps:a.maps_url||''};
       });
       return{

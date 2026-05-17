@@ -475,7 +475,9 @@ function actRowToAct(a){
     lat: a.lat||null,
     lng: a.lng||null,
     desc: a.description||'',
+    descEn: a.description_en||'',
     secret: a.secret||'',
+    secretEn: a.secret_en||'',
     specs: a.specs||[],
     coverPhoto: a.cover_photo||'',
     maps: a.maps_url||''
@@ -517,7 +519,9 @@ function actToRow(a, placeId){
     lat: a.lat||null,
     lng: a.lng||null,
     description: a.desc||'',
+    description_en: a.descEn||'',
     secret: a.secret||'',
+    secret_en: a.secretEn||'',
     specs: a.specs||[],
     cover_photo: a.coverPhoto||'',
     maps_url: a.maps||''
@@ -965,7 +969,9 @@ function addActRow(a){
     +'</div>'
     +'<div style="background:#eff6ff;border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:.67rem;color:#2563eb;line-height:1.55;">ℹ️ Con coordinate → pin L2 sulla mappa con tooltip. Senza coordinate → icona nella card fumetto, non sulla mappa.</div>'
     +'<div class="fg"><label>Descrizione</label><textarea class="ft ar-desc" rows="2"></textarea></div>'
+    +'<div class="fg"><label>Description EN</label><textarea class="ft ar-desc-en" rows="2"></textarea></div>'
     +'<div class="fg"><label>🤫 Segreto locale</label><input type="text" class="ar-secret" placeholder="Il dettaglio che fa la differenza…"></div>'
+    +'<div class="fg"><label>🤫 Secret EN</label><input type="text" class="ar-secret-en" placeholder="The local detail that makes the difference…"></div>'
     +'<div class="fg"><label>Caratteristiche specifiche</label>'
     +'<div class="specs-box">'
     +'<div class="specs-hd"><div class="specs-hd-lbl">Specifiche</div><button class="btn bs sm" onclick="addSpecRow(\''+rid+'\',\'\',\'\')">+ Aggiungi</button></div>'
@@ -994,7 +1000,9 @@ function addActRow(a){
     div.querySelector('.ar-lat').value=a.lat!=null?a.lat:'';
     div.querySelector('.ar-lng').value=a.lng!=null?a.lng:'';
     div.querySelector('.ar-desc').value=a.desc||'';
+    div.querySelector('.ar-desc-en').value=a.descEn||'';
     div.querySelector('.ar-secret').value=a.secret||'';
+    div.querySelector('.ar-secret-en').value=a.secretEn||'';
     div.querySelector('.ar-maps').value=a.maps||'';
     div.querySelector('.ar-cover').value=a.coverPhoto||'';
     if(a.coverPhoto){
@@ -1088,7 +1096,9 @@ function savePlace(){
       type:row.querySelector('.ar-type')&&row.querySelector('.ar-type').value||'poi',
       name:n, lat:hasCoords?alat:null, lng:hasCoords?alng:null,
       desc:(row.querySelector('.ar-desc')&&row.querySelector('.ar-desc').value||'').trim(),
+      descEn:(row.querySelector('.ar-desc-en')&&row.querySelector('.ar-desc-en').value||'').trim(),
       secret:(row.querySelector('.ar-secret')&&row.querySelector('.ar-secret').value||'').trim(),
+      secretEn:(row.querySelector('.ar-secret-en')&&row.querySelector('.ar-secret-en').value||'').trim(),
       specs:specs,
       maps:(row.querySelector('.ar-maps')&&row.querySelector('.ar-maps').value||'').trim()||'https://maps.google.com/?q='+encodeURIComponent(n),
       coverPhoto:(row.querySelector('.ar-cover')&&row.querySelector('.ar-cover').value||'')
