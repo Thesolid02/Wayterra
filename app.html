@@ -892,8 +892,8 @@ function initMap(){
   // fix mobile: ricalcola dimensioni dopo rendering completo
   setTimeout(function(){map_o.invalidateSize();},300);
   window.addEventListener('resize',function(){map_o.invalidateSize();});
-  L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21vajFqcXdqMDhyMTJyczFvNXlsejlheSJ9.yFaqeUd9Jvd62adyNUrkAg',
-    {attribution:'© Mapbox © OpenStreetMap',maxZoom:20,tileSize:512,zoomOffset:-1}).addTo(map_o);
+  L.tileLayer('https://api.mapbox.com/styles/v1/thesolid/cmpbb0j7b001001s603b86vso/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA',
+    {attribution:'© Mapbox © OpenStreetMap',maxZoom:20,tileSize:256}).addTo(map_o);
   DATA.places.forEach(function(p){addL1(p);});
   map_o.on('click',function(){closeBubble();closeActMapPopup();if(ddOpen)closeDD();});
   updCount();
