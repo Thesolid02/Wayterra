@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 :root{
   --w:#fff;--g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;
@@ -907,19 +908,23 @@ function initMap(){
 function l1Html(p,dim){
   var c=catOf(p.cat);
   var isPremium=p.premium&&!unlocked;
+  var dimStyle=dim?'opacity:.25;transform:scale(.75);':'';
   if(isPremium){
     return '<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
-      +'<div style="width:26px;height:26px;border-radius:50%;background:#4b5563;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;box-shadow:0 1px 3px rgba(0,0,0,.2),0 0 0 1.5px rgba(255,255,255,.9);'+(dim?'opacity:.25;transform:scale(.75);':'')+'">'
-      +'🔒</div>'
+      +'<div style="width:34px;height:34px;border-radius:50%;background:#374151;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px dashed rgba(255,255,255,.7);'+dimStyle+'">'
+      +'<i class="ti ti-lock" style="color:white;font-size:12px;"></i></div>'
       +'</div>';
   }
+  var iconHtml=c.icon&&c.icon.startsWith('ti-')
+    ?'<i class="ti '+c.icon+'" style="color:white;font-size:13px;"></i>'
+    :(c.icon||'');
   return '<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
-    +'<div style="width:26px;height:26px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;font-size:.72rem;box-shadow:0 1px 3px rgba(0,0,0,.2),0 0 0 1.5px rgba(255,255,255,.9);'+(dim?'opacity:.25;transform:scale(.75);':'')+'">'
-    +c.icon+'</div>'
+    +'<div style="width:34px;height:34px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px solid white;'+dimStyle+'">'
+    +iconHtml+'</div>'
     +'</div>';
 }
 function addL1(p){
-  var m=L.marker([p.lat,p.lng],{icon:L.divIcon({html:l1Html(p,false),className:'',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(map_o);
+  var m=L.marker([p.lat,p.lng],{icon:L.divIcon({html:l1Html(p,false),className:'',iconSize:[34,34],iconAnchor:[17,17]})}).addTo(map_o);
   m.on('click',function(e){L.DomEvent.stopPropagation(e);
     if(p.premium&&!unlocked){showPW();return;}
     handleL1Click(p);
@@ -929,14 +934,14 @@ function addL1(p){
 function dimL1(exceptId){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    if(p.id===exceptId){m.setIcon(L.divIcon({html:l1Html(p,true),className:'',iconSize:[26,26],iconAnchor:[13,13]}));m.addTo(map_o);}
+    if(p.id===exceptId){m.setIcon(L.divIcon({html:l1Html(p,true),className:'',iconSize:[34,34],iconAnchor:[17,17]}));m.addTo(map_o);}
     else m.remove();
   });
 }
 function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[26,26],iconAnchor:[13,13]}));
+    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[34,34],iconAnchor:[17,17]}));
     var show=activeFilter==='all'||p.cat===activeFilter;
     if(show)m.addTo(map_o);else m.remove();
   });
@@ -944,14 +949,17 @@ function restoreL1(){
 function refreshL1markers(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[26,26],iconAnchor:[13,13]}));
+    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[34,34],iconAnchor:[17,17]}));
   });
 }
 
 /* L2 markers — solo se coordinate presenti */
 function l2Html(a){
   var at=atypeOf(a.type);
-  return '<div class="mk2"><div class="mk2-tooltip">'+a.name+'</div><div class="mk2-pin">'+at.icon+'</div><div class="mk2-stem"></div></div>';
+  var iconHtml=at.icon&&at.icon.startsWith('ti-')
+    ?'<i class="ti '+at.icon+'" style="color:white;font-size:13px;"></i>'
+    :(at.icon||'');
+  return '<div class="mk2"><div class="mk2-tooltip">'+a.name+'</div><div class="mk2-pin" style="background:'+at.color+';">'+iconHtml+'</div><div class="mk2-stem"></div></div>';
 }
 function showL2(place){
   clearL2();

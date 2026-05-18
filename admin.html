@@ -6,6 +6,7 @@
 <title>Wayterra · Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 :root{
   --w:#fff;--g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g300:#d1d5db;
@@ -132,6 +133,11 @@ textarea.ft{resize:vertical;line-height:1.65;}
 #toast.ok{background:var(--green);}
 #toast.err{background:var(--red);}
 @media(max-width:680px){.g2,.g3{grid-template-columns:1fr;}.full{grid-column:1;}table{display:block;overflow-x:auto;}}
+.icon-btn{width:36px;height:36px;border:1.5px solid var(--g200);border-radius:8px;background:var(--w);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:border-color .15s,background .15s;}
+.icon-btn:hover{border-color:var(--blue);background:var(--blue-l);}
+.icon-btn-sel{border-color:var(--blue)!important;background:var(--blue-l)!important;}
+.icon-pick-btn{width:100%;text-align:left;display:flex;align-items:center;gap:8px;font-size:.83rem;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);background:var(--w);cursor:pointer;font-family:var(--f);color:var(--g700);}
+.icon-pick-btn:hover{border-color:var(--blue);}
 </style>
 </head>
 <body>
@@ -298,7 +304,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
 <div class="modal" style="max-width:440px;">
   <div class="mh"><div class="mh-t" id="mct">Nuova categoria</div><button class="mx" onclick="closeCat()">✕</button></div>
   <div class="mc">
-    <div class="fg"><label>Icona (emoji) *</label><input type="text" id="ci" placeholder="🏘" maxlength="4"></div>
+    <div class="fg"><label>Icona *</label><input type="hidden" id="ci"><button type="button" class="icon-pick-btn" id="ci-btn" onclick="openIconPicker(function(ic){document.getElementById('ci').value=ic;updateCatIconBtn();},document.getElementById('ci').value,document.getElementById('cc').value)"><span id="ci-display">Seleziona icona →</span></button></div>
     <div class="fg"><label>Nome *</label><input type="text" id="cn" placeholder="Es. Borghi"></div>
     <div class="fg"><label>Colore hex *</label><input type="text" id="cc" placeholder="#dc6b2f" oninput="updCP()"></div>
     <div style="height:32px;border-radius:var(--r);border:1px solid var(--g200);margin-top:4px;transition:background .2s;" id="cpv"></div>
@@ -312,7 +318,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
 <div class="modal" style="max-width:500px;">
   <div class="mh"><div class="mh-t" id="matt">Nuovo tipo attività</div><button class="mx" onclick="closeAt()">✕</button></div>
   <div class="mc">
-    <div class="fg"><label>Icona (emoji) *</label><input type="text" id="ati" placeholder="🥾" maxlength="4"></div>
+    <div class="fg"><label>Icona *</label><input type="hidden" id="ati"><button type="button" class="icon-pick-btn" id="ati-btn" onclick="openIconPicker(function(ic){document.getElementById('ati').value=ic;updateAtIconBtn();},document.getElementById('ati').value,document.getElementById('atc').value)"><span id="ati-display">Seleziona icona →</span></button></div>
     <div class="fg"><label>Nome *</label><input type="text" id="atn" placeholder="Es. Trekking"></div>
     <div class="fg"><label>Colore hex</label><input type="text" id="atc" placeholder="#16a34a" oninput="updATP()"></div>
     <div style="height:30px;border-radius:var(--r);border:1px solid var(--g200);margin-top:4px;transition:background .2s;" id="atpv"></div>
@@ -334,6 +340,27 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <div style="font-size:.83rem;color:var(--g500);">Operazione irreversibile.</div>
   </div>
   <div class="mf"><button class="btn bs" onclick="closeDel()">Annulla</button><button class="btn bd" onclick="confirmDel()">Elimina definitivamente</button></div>
+</div>
+</div>
+
+<!-- MODAL ICON PICKER -->
+<div class="ov" id="m-icon-picker" style="z-index:500;">
+<div class="modal" style="max-width:480px;">
+  <div class="mh"><div class="mh-t">Seleziona icona</div><button class="mx" onclick="closeIconPicker()">✕</button></div>
+  <div class="mc" style="max-height:60vh;overflow-y:auto;">
+    <div style="margin-bottom:12px;">
+      <input type="text" id="icon-search" placeholder="Cerca icona..." oninput="filterIcons()" style="width:100%;border:1px solid var(--g200);border-radius:var(--r);padding:8px 10px;font-family:var(--f);font-size:.83rem;outline:none;">
+    </div>
+    <div id="icon-grid"></div>
+    <div style="margin-top:14px;padding:12px;background:var(--g50);border-radius:var(--r);display:flex;align-items:center;gap:12px;">
+      <div style="font-size:.75rem;color:var(--g500);">Anteprima:</div>
+      <div id="icon-preview-pin" style="width:34px;height:34px;border-radius:50%;background:#374151;display:flex;align-items:center;justify-content:center;border:2.5px solid white;box-shadow:0 1px 3px rgba(0,0,0,.2);flex-shrink:0;">
+        <i id="icon-preview-i" class="ti ti-star" style="color:white;font-size:13px;"></i>
+      </div>
+      <div id="icon-preview-name" style="font-size:.75rem;color:var(--g700);">—</div>
+    </div>
+  </div>
+  <div class="mf"><button class="btn bs" onclick="closeIconPicker()">Annulla</button><button class="btn bp" onclick="confirmIcon()">Conferma</button></div>
 </div>
 </div>
 
@@ -759,7 +786,7 @@ function populateCatFilter(){
   var sel=document.getElementById('cflt'), cur=sel.value;
   sel.innerHTML='<option value="all">Tutte le categorie</option>';
   cats.forEach(function(c){
-    var o=document.createElement('option');o.value=c.id;o.textContent=c.icon+' '+c.name;sel.appendChild(o);
+    var o=document.createElement('option');o.value=c.id;o.textContent=(c.icon&&!c.icon.startsWith('ti-')?c.icon+' ':'')+c.name;sel.appendChild(o);
   });
   if(cur) sel.value=cur;
 }
@@ -767,7 +794,7 @@ function populateCatSelect(){
   var sel=document.getElementById('p-cat');
   sel.innerHTML='';
   cats.forEach(function(c){
-    var o=document.createElement('option');o.value=c.id;o.textContent=c.icon+' '+c.name;sel.appendChild(o);
+    var o=document.createElement('option');o.value=c.id;o.textContent=(c.icon&&!c.icon.startsWith('ti-')?c.icon+' ':'')+c.name;sel.appendChild(o);
   });
 }
 
@@ -807,7 +834,7 @@ function renderPlaces(){
           var at=atypeOf(a.type);
           var ath=a.coverPhoto?'<img class="ath" src="'+a.coverPhoto+'" alt="">':'<div class="athe">📷</div>';
           var sps=(a.specs||[]).slice(0,3).map(function(s){return '<span class="spec-tag">'+s.k+': '+s.v+'</span>';}).join('');
-          expContent+='<div class="aitem">'+ath+'<div class="aicho" style="background:'+at.color+'15;">'+at.icon+'</div>'
+          expContent+='<div class="aitem">'+ath+'<div class="aicho" style="background:'+at.color+'15;">'+iconHtml(at.icon)+'</div>'
             +'<div style="flex:1;min-width:0;"><div class="an">'+a.name+'</div><div class="at-type">'+at.name+'</div>'
             +(sps?'<div class="spec-tags">'+sps+'</div>':'')+'</div>'
             +'<div style="font-size:.7rem;color:var(--g400);font-family:monospace;">'+(a.lat!=null?(a.lat.toFixed(4)+', '+a.lng.toFixed(4)):'○ solo card')+'</div>'
@@ -822,7 +849,7 @@ function renderPlaces(){
     rows+='<tr style="'+(ex?'background:var(--g50);':'')+'">'
       +'<td><button class="btn bs sm ico" onclick="toggleExp('+p.id+')">'+(ex?'▲':'▼')+'</button></td>'
       +'<td>'+thHtml+'</td>'
-      +'<td><div class="tb">'+c.icon+' '+p.name+'</div><div class="tm" style="font-size:.72rem;color:var(--g400);">'+(p.region||'')+'</div></td>'
+      +'<td><div class="tb">'+iconHtml(c.icon)+' '+p.name+'</div><div class="tm" style="font-size:.72rem;color:var(--g400);">'+(p.region||'')+'</div></td>'
       +'<td><div class="tt">'+(p.tagline||'—')+'</div></td>'
       +'<td><span class="abadge">'+n+'</span></td>'
       +'<td>'+scoreCell(p)+'</td>'
@@ -1145,13 +1172,78 @@ function openAddAct(pid){
   },350);
 }
 
+// ═══ ICON PICKER ═══
+var _ipCb=null,_ipSel=null,_ipColor=null;
+var ICON_CATS=[
+  {label:'Luoghi',icons:['ti-building-castle','ti-home','ti-building','ti-tower','ti-arch','ti-church','ti-windmill']},
+  {label:'Natura',icons:['ti-tree','ti-mountain','ti-leaf','ti-waves','ti-droplet','ti-sun','ti-snowflake']},
+  {label:'Attività',icons:['ti-shoe','ti-bike','ti-swimming','ti-camera','ti-tools-kitchen-2','ti-bottle','ti-ski','ti-yoga','ti-kayak','ti-horse','ti-tent','ti-telescope','ti-music','ti-palette','ti-run','ti-map-pin','ti-compass','ti-flame','ti-star','ti-heart']}
+];
+function iconHtml(icon){
+  return icon&&icon.startsWith('ti-')
+    ?'<i class="ti '+icon+'"></i>'
+    :(icon||'');
+}
+function openIconPicker(cb,currentIcon,color){
+  _ipCb=cb;_ipSel=currentIcon&&currentIcon.startsWith('ti-')?currentIcon:null;_ipColor=color||'#374151';
+  document.getElementById('icon-search').value='';
+  renderIconGrid('');
+  if(_ipSel){_setIpSel(_ipSel);}
+  else{document.getElementById('icon-preview-name').textContent='—';}
+  document.getElementById('m-icon-picker').classList.add('on');
+}
+function closeIconPicker(){document.getElementById('m-icon-picker').classList.remove('on');}
+function filterIcons(){renderIconGrid(document.getElementById('icon-search').value.trim().toLowerCase());}
+function renderIconGrid(q){
+  var html='';
+  ICON_CATS.forEach(function(cat){
+    var list=q?cat.icons.filter(function(ic){return ic.indexOf(q)>=0;}):cat.icons;
+    if(!list.length)return;
+    html+='<div style="margin-bottom:12px;">'
+      +'<div style="font-size:.68rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">'+cat.label+'</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:6px;">'
+      +list.map(function(ic){
+        var sel=_ipSel===ic;
+        return '<button type="button" class="icon-btn'+(sel?' icon-btn-sel':'')+'" data-ic="'+ic+'" onclick="_setIpSel(\''+ic+'\')" title="'+ic+'">'
+          +'<i class="ti '+ic+'"></i>'
+          +'</button>';
+      }).join('')
+      +'</div></div>';
+  });
+  document.getElementById('icon-grid').innerHTML=html||'<div style="font-size:.8rem;color:var(--g400);padding:8px 0;">Nessuna icona trovata</div>';
+}
+function _setIpSel(ic){
+  _ipSel=ic;
+  document.querySelectorAll('#icon-grid .icon-btn').forEach(function(btn){btn.classList.toggle('icon-btn-sel',btn.dataset.ic===ic);});
+  document.getElementById('icon-preview-pin').style.background=_ipColor||'#374151';
+  document.getElementById('icon-preview-i').className='ti '+ic;
+  document.getElementById('icon-preview-name').textContent=ic;
+}
+function confirmIcon(){
+  if(!_ipSel){toast('Seleziona un\'icona','err');return;}
+  if(_ipCb)_ipCb(_ipSel);
+  closeIconPicker();
+}
+function updateCatIconBtn(){
+  var ic=document.getElementById('ci').value;
+  var el=document.getElementById('ci-display');
+  if(ic&&ic.startsWith('ti-')){el.innerHTML='<i class="ti '+ic+'" style="font-size:1rem;"></i> '+ic;}
+  else{el.textContent=ic||'Seleziona icona →';}
+}
+function updateAtIconBtn(){
+  var ic=document.getElementById('ati').value;
+  var el=document.getElementById('ati-display');
+  if(ic&&ic.startsWith('ti-')){el.innerHTML='<i class="ti '+ic+'" style="font-size:1rem;"></i> '+ic;}
+  else{el.textContent=ic||'Seleziona icona →';}
+}
+
 // ═══ CATEGORIES ═══
 function renderCats(){
   var cm={};
   places.forEach(function(p){cm[p.cat]=(cm[p.cat]||0)+1;});
   document.getElementById('clist').innerHTML=cats.map(function(c){
     return '<div class="ci"><div class="cdot" style="background:'+c.color+';"></div>'
-      +'<div class="cico">'+c.icon+'</div>'
+      +'<div class="cico">'+iconHtml(c.icon)+'</div>'
       +'<div class="cinfo"><div class="cname">'+c.name+'</div>'
       +'<div class="cmeta"><span>id: '+c.id+'</span><span>'+(cm[c.id]||0)+' luoghi</span></div></div>'
       +'<div class="tac">'
@@ -1160,8 +1252,8 @@ function renderCats(){
       +'</div></div>';
   }).join('');
 }
-function openAddCat(){editCId=null;document.getElementById('mct').textContent='Nuova categoria';['ci','cn','cc'].forEach(function(id){document.getElementById(id).value='';});updCP();document.getElementById('m-cat').classList.add('on');}
-function openEditCat(id){var c=cats.find(function(x){return x.id===id;});if(!c)return;editCId=id;document.getElementById('mct').textContent='Modifica categoria';document.getElementById('ci').value=c.icon;document.getElementById('cn').value=c.name;document.getElementById('cc').value=c.color;updCP();document.getElementById('m-cat').classList.add('on');}
+function openAddCat(){editCId=null;document.getElementById('mct').textContent='Nuova categoria';document.getElementById('ci').value='';document.getElementById('cn').value='';document.getElementById('cc').value='';updateCatIconBtn();updCP();document.getElementById('m-cat').classList.add('on');}
+function openEditCat(id){var c=cats.find(function(x){return x.id===id;});if(!c)return;editCId=id;document.getElementById('mct').textContent='Modifica categoria';document.getElementById('ci').value=c.icon;document.getElementById('cn').value=c.name;document.getElementById('cc').value=c.color;updateCatIconBtn();updCP();document.getElementById('m-cat').classList.add('on');}
 function closeCat(){document.getElementById('m-cat').classList.remove('on');editCId=null;}
 function updCP(){document.getElementById('cpv').style.background=document.getElementById('cc').value.trim()||'#ccc';}
 function saveCat(){
@@ -1191,7 +1283,7 @@ function renderAtypes(){
   document.getElementById('atgrid').innerHTML=atypes.map(function(a){
     var presStr=(a.presets||[]).slice(0,3).join(', ')+(((a.presets||[]).length>3)?'…':'');
     return '<div class="atcard">'
-      +'<div style="background:'+a.color+'12;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;">'+a.icon+'</div>'
+      +'<div style="background:'+a.color+'12;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;">'+iconHtml(a.icon)+'</div>'
       +'<div style="font-size:.75rem;font-weight:600;color:var(--g700);">'+a.name+'</div>'
       +(presStr?'<div style="font-size:.65rem;color:var(--g400);text-align:center;">'+presStr+'</div>':'')
       +'<div style="display:flex;gap:4px;">'
@@ -1200,8 +1292,8 @@ function renderAtypes(){
       +'</div></div>';
   }).join('');
 }
-function openAddAtype(){editAId=null;document.getElementById('matt').textContent='Nuovo tipo';['ati','atn','atc'].forEach(function(id){document.getElementById(id).value='';});updATP();document.getElementById('at-presets-list').innerHTML='';document.getElementById('m-at').classList.add('on');}
-function openEditAt(id){var a=atypes.find(function(x){return x.id===id;});if(!a)return;editAId=id;document.getElementById('matt').textContent='Modifica tipo';document.getElementById('ati').value=a.icon;document.getElementById('atn').value=a.name;document.getElementById('atc').value=a.color||'';updATP();document.getElementById('at-presets-list').innerHTML='';(a.presets||[]).forEach(function(p){addAtPresetRow(p);});document.getElementById('m-at').classList.add('on');}
+function openAddAtype(){editAId=null;document.getElementById('matt').textContent='Nuovo tipo';document.getElementById('ati').value='';document.getElementById('atn').value='';document.getElementById('atc').value='';updateAtIconBtn();updATP();document.getElementById('at-presets-list').innerHTML='';document.getElementById('m-at').classList.add('on');}
+function openEditAt(id){var a=atypes.find(function(x){return x.id===id;});if(!a)return;editAId=id;document.getElementById('matt').textContent='Modifica tipo';document.getElementById('ati').value=a.icon;document.getElementById('atn').value=a.name;document.getElementById('atc').value=a.color||'';updateAtIconBtn();updATP();document.getElementById('at-presets-list').innerHTML='';(a.presets||[]).forEach(function(p){addAtPresetRow(p);});document.getElementById('m-at').classList.add('on');}
 function closeAt(){document.getElementById('m-at').classList.remove('on');editAId=null;}
 function updATP(){document.getElementById('atpv').style.background=document.getElementById('atc').value.trim()||'#ccc';}
 function addAtPresetRow(val){
@@ -1241,8 +1333,8 @@ function openDel(id,type,parent){
   delId=id;delType=type;delParent=parent||null;
   var name='?';
   if(type==='place'){var p=places.find(function(x){return x.id===id;});name=p?p.name:'?';}
-  else if(type==='cat'){var c=cats.find(function(x){return x.id===id;});name=c?(c.icon+' '+c.name):'?';}
-  else if(type==='atype'){var a=atypes.find(function(x){return x.id===id;});name=a?(a.icon+' '+a.name):'?';}
+  else if(type==='cat'){var c=cats.find(function(x){return x.id===id;});name=c?((c.icon&&!c.icon.startsWith('ti-')?c.icon+' ':'')+c.name):'?';}
+  else if(type==='atype'){var a=atypes.find(function(x){return x.id===id;});name=a?((a.icon&&!a.icon.startsWith('ti-')?a.icon+' ':'')+a.name):'?';}
   else if(type==='act'){var pp=places.find(function(x){return x.id===parent;});var aa=pp&&(pp.activities||[]).find(function(x){return x.id===id;});name=aa?aa.name:'?';}
   document.getElementById('dname').textContent=name;
   document.getElementById('m-del').classList.add('on');
