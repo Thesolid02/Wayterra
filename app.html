@@ -1353,7 +1353,7 @@ function openDetail(){
       var at=atypeOf(typeId);
       var groupActs=groups[typeId];
       var rows=groupActs.map(function(a){
-        var hasDetail=!!(a.desc||a.secret||(a.specs&&a.specs.length)||a.coverPhoto);
+        var hasDetail=!!(a.desc||a.secret||(a.specs&&a.specs.length)||a.coverPhoto||a.maps);
         return '<div class="dp-act-row"'+(hasDetail?' onclick="openActPopup('+a.id+','+p.id+',this)"':'')+' >'
           +'<div class="dp-act-row-ico" style="background:'+at.color+'22;">'+renderIcon(at.icon,at.color||'#374151')+'</div>'
           +'<div class="dp-act-row-name">'+a.name+'</div>'
