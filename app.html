@@ -251,8 +251,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 /* desktop activity inline bubble */
 @media(min-width:768px){
   #act-popup{display:none !important;} /* nasconde il bottom sheet su desktop */
-  .dp-acts-grid{flex-wrap:wrap;}
-  .dp-act-card.act-selected{border:1.5px solid var(--blue);background:var(--blue-l);}
+  .dp-act-row.act-selected{background:var(--blue-l);}
 }
 .act-inline-bubble{display:none;background:var(--w);border:0.5px solid var(--g200);border-radius:var(--rl);padding:14px;margin-top:6px;margin-bottom:8px;box-shadow:0 4px 20px rgba(0,0,0,.1);position:relative;width:100%;flex-basis:100%;}
 .act-inline-bubble.show{display:block;}
@@ -271,13 +270,27 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .act-bub-spec{display:flex;justify-content:space-between;font-size:.76rem;padding:4px 0;border-bottom:0.5px solid var(--g100);}
 .act-bub-spec-k{color:var(--g500);}.act-bub-spec-v{color:var(--g900);font-weight:500;}
 .act-bub-maps{width:100%;padding:8px;background:var(--g900);color:#fff;border:none;border-radius:var(--r);font-family:var(--f);font-size:.8rem;font-weight:600;cursor:pointer;}
-.dp-acts-grid{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:4px;}
+.dp-acts-grid{display:block;padding-bottom:4px;}
 .dp-act-card{flex-shrink:0;background:var(--g50);border:1px solid var(--g200);border-radius:var(--rl);padding:10px 12px;min-width:110px;}
 .dp-act-icon{font-size:1.1rem;margin-bottom:4px;}
 .dp-act-name{font-size:.78rem;font-weight:600;color:var(--g900);line-height:1.2;margin-bottom:2px;}
 .dp-act-type{font-size:.67rem;color:var(--g400);}
 .dp-act-specs{margin-top:6px;}
 .dp-act-spec{font-size:.67rem;color:var(--g500);}
+.dp-act-group{border:1px solid var(--g200);border-radius:var(--rl);overflow:hidden;margin-bottom:8px;}
+.dp-act-group-header{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:var(--g50);transition:background .12s;user-select:none;}
+.dp-act-group-header:hover{background:var(--g100);}
+.dp-act-group-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;}
+.dp-act-group-name{font-size:.84rem;font-weight:600;color:var(--g900);flex:1;}
+.dp-act-group-count{font-size:.74rem;color:var(--g400);font-weight:500;}
+.dp-act-group-chevron{font-size:.8rem;color:var(--g400);transition:transform .18s;flex-shrink:0;}
+.dp-act-group-body{border-top:1px solid var(--g200);}
+.dp-act-row{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .12s;border-bottom:0.5px solid var(--g100);}
+.dp-act-row:last-child{border-bottom:none;}
+.dp-act-row:hover{background:var(--g50);}
+.dp-act-row-ico{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;}
+.dp-act-row-name{font-size:.84rem;font-weight:500;color:var(--g900);flex:1;}
+.dp-act-row-arrow{font-size:.78rem;color:var(--g400);flex-shrink:0;}
 .dp-cta{display:flex;gap:8px;padding:12px 16px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
   border-top:1px solid var(--g100);flex-shrink:0;background:var(--w);}
 .dp-maps-btn{flex:1;padding:13px;background:var(--g900);color:#fff;border:none;border-radius:var(--rl);
@@ -816,7 +829,7 @@ function openActPopup(actId, placeId, triggerEl){
 
   if(window.innerWidth>=768){
     // rimuovi selezione e fumetto precedente
-    document.querySelectorAll('.dp-act-card.act-selected').forEach(function(el){el.classList.remove('act-selected');});
+    document.querySelectorAll('.dp-act-card.act-selected,.dp-act-row.act-selected').forEach(function(el){el.classList.remove('act-selected');});
     var existing=document.getElementById('act-inline-bubble');
     if(existing)existing.remove();
 
@@ -865,7 +878,23 @@ function openActPopup(actId, placeId, triggerEl){
 function closeInlineBubble(){
   var b=document.getElementById('act-inline-bubble');
   if(b)b.remove();
-  document.querySelectorAll('.dp-act-card.act-selected').forEach(function(el){el.classList.remove('act-selected');});
+  document.querySelectorAll('.dp-act-card.act-selected,.dp-act-row.act-selected').forEach(function(el){el.classList.remove('act-selected');});
+}
+function toggleActGroup(typeId){
+  closeInlineBubble();
+  document.querySelectorAll('#dp-acts-grid .dp-act-group').forEach(function(g){
+    var body=g.querySelector('.dp-act-group-body');
+    var chevron=g.querySelector('.dp-act-group-chevron');
+    var isThis=g.dataset.type===typeId;
+    var isOpen=body.style.display==='block';
+    if(isThis){
+      body.style.display=isOpen?'none':'block';
+      if(chevron)chevron.style.transform=isOpen?'':'rotate(90deg)';
+    } else {
+      body.style.display='none';
+      if(chevron)chevron.style.transform='';
+    }
+  });
 }
 function closeActPopup(){
   document.getElementById('act-popup').classList.remove('show');
@@ -956,6 +985,23 @@ function l2Html(a){
   var at=atypeOf(a.type);
   return '<div class="mk2"><div class="mk2-tooltip">'+a.name+'</div><div class="mk2-pin" style="background:'+at.color+';">'+renderIcon(at.icon,'white')+'</div><div class="mk2-stem"></div></div>';
 }
+function haversine(lat1,lng1,lat2,lng2){
+  var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function l1NearbyHtml(p){
+  var c=catOf(p.cat);
+  var isPremium=p.premium&&!unlocked;
+  if(isPremium){
+    return '<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
+      +'<div style="width:34px;height:34px;border-radius:50%;background:#374151;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px dashed rgba(255,255,255,.5);">'
+      +'<i class="ti ti-lock" style="color:white;font-size:12px;"></i></div></div>';
+  }
+  return '<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
+    +'<div style="width:34px;height:34px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px dashed white;">'
+    +renderIcon(c.icon,'white')+'</div></div>';
+}
 function showL2(place){
   clearL2();
   if(place.premium&&!unlocked)return;
@@ -964,6 +1010,17 @@ function showL2(place){
     var m=L.marker([a.lat,a.lng],{icon:L.divIcon({html:l2Html(a),className:'',iconSize:[90,52],iconAnchor:[45,48],zIndexOffset:100+i})}).addTo(map_o);
     m.on('click',function(e){L.DomEvent.stopPropagation(e);showActBubble(a,[a.lat,a.lng]);});
     l2Mk.push(m);
+  });
+  // pin luoghi vicini entro 20km
+  DATA.places.forEach(function(nearby){
+    if(nearby.id===place.id)return;
+    if(haversine(place.lat,place.lng,nearby.lat,nearby.lng)>20)return;
+    var nm=L.marker([nearby.lat,nearby.lng],{icon:L.divIcon({html:l1NearbyHtml(nearby),className:'',iconSize:[34,34],iconAnchor:[17,17]})}).addTo(map_o);
+    nm.on('click',function(e){L.DomEvent.stopPropagation(e);
+      if(nearby.premium&&!unlocked){showPW();return;}
+      handleL1Click(nearby);
+    });
+    l2Mk.push(nm);
   });
 }
 function clearL2(){l2Mk.forEach(function(m){m.remove();});l2Mk.length=0;closeActMapPopup();}
@@ -1162,11 +1219,16 @@ function showBubble(p){
     nameEl.textContent=p.name;
   }
 
-  // activity icons
+  // activity icons — one icon per unique type
   var actsEl=document.getElementById('bub-acts');
   var acts=p.activities||[];
   if(acts.length&&!isPremium){
-    actsEl.innerHTML=acts.map(function(a){
+    var seenTypes=[];
+    var uniqueActs=acts.filter(function(a){
+      if(seenTypes.indexOf(a.type)===-1){seenTypes.push(a.type);return true;}
+      return false;
+    });
+    actsEl.innerHTML=uniqueActs.map(function(a){
       var at=atypeOf(a.type);
       return '<div class="bubble-act-ico">'+renderIcon(at.icon)+'<div class="btt">'+atName(at)+'</div></div>';
     }).join('');
@@ -1282,15 +1344,30 @@ function openDetail(){
   if(acts.length){
     actsLbl.style.display='block';
     actsLbl.textContent=t('activities');
-    actsGrid.innerHTML=acts.map(function(a){
-      var at=atypeOf(a.type);
-      var specs=(a.specs||[]).slice(0,3).map(function(s){return'<div class="dp-act-spec">'+s.k+': '+s.v+'</div>';}).join('');
-      var hasDetail=!!(a.desc||a.secret||(a.specs&&a.specs.length)||a.coverPhoto);
-      return '<div class="dp-act-card" '+(hasDetail?'onclick="openActPopup('+a.id+','+p.id+',this)" style="cursor:pointer;"':'')+' >'
-        +'<div class="dp-act-icon">'+renderIcon(at.icon,at.color||'#374151')+'</div>'
-        +'<div class="dp-act-name">'+a.name+'</div>'
-        +'<div class="dp-act-type">'+atName(at)+(hasDetail?' →':'')+'</div>'
-        +(specs?'<div class="dp-act-specs">'+specs+'</div>':'')
+    var groups={};var groupOrder=[];
+    acts.forEach(function(a){
+      if(!groups[a.type]){groups[a.type]=[];groupOrder.push(a.type);}
+      groups[a.type].push(a);
+    });
+    actsGrid.innerHTML=groupOrder.map(function(typeId){
+      var at=atypeOf(typeId);
+      var groupActs=groups[typeId];
+      var rows=groupActs.map(function(a){
+        var hasDetail=!!(a.desc||a.secret||(a.specs&&a.specs.length)||a.coverPhoto);
+        return '<div class="dp-act-row"'+(hasDetail?' onclick="openActPopup('+a.id+','+p.id+',this)"':'')+' >'
+          +'<div class="dp-act-row-ico" style="background:'+at.color+'22;">'+renderIcon(at.icon,at.color||'#374151')+'</div>'
+          +'<div class="dp-act-row-name">'+a.name+'</div>'
+          +(hasDetail?'<span class="dp-act-row-arrow">→</span>':'')
+          +'</div>';
+      }).join('');
+      return '<div class="dp-act-group" data-type="'+typeId+'">'
+        +'<div class="dp-act-group-header" onclick="toggleActGroup(\''+typeId+'\')">'
+        +'<div class="dp-act-group-circle" style="background:'+at.color+';">'+renderIcon(at.icon,'white')+'</div>'
+        +'<div class="dp-act-group-name">'+atName(at)+'</div>'
+        +'<div class="dp-act-group-count">'+groupActs.length+'</div>'
+        +'<i class="ti ti-chevron-right dp-act-group-chevron"></i>'
+        +'</div>'
+        +'<div class="dp-act-group-body" style="display:none;">'+rows+'</div>'
         +'</div>';
     }).join('');
   } else {actsLbl.style.display='none';actsGrid.innerHTML='';}
