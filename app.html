@@ -1035,6 +1035,7 @@ function showActBubble(a, latlng){
   var specsId=isMobile?'amp-specs':'amp-specs-d';
   var mapsId=isMobile?'amp-maps':'amp-maps-d';
   document.getElementById('amp-sheet').style.display=isMobile?'':'none';
+  document.getElementById('amp-sheet').style.padding = '0 16px calc(env(safe-area-inset-bottom, 0px) + 20px)';
   document.getElementById('amp-center').style.display=isMobile?'none':'';
   document.getElementById(titleId).textContent=a.name;
   document.getElementById(typeId).innerHTML=renderIcon(at.icon,'white')+' '+atName(at);
