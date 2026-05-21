@@ -365,6 +365,9 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   box-shadow:var(--sh-sm);white-space:nowrap;opacity:0;transition:all .22s;pointer-events:none;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .udot{width:14px;height:14px;border-radius:50%;background:var(--blue);border:2.5px solid #fff;box-shadow:0 0 0 4px rgba(37,99,235,.2);}
+.pin-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,24,39,.85);color:#fff;font-size:.7rem;font-weight:600;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:10;}
+@media(hover:hover){.pin-hover-wrap:hover .pin-tooltip{display:block;}}
+.pin-name{font-size:.62rem;font-weight:700;color:#111827;margin-top:3px;white-space:nowrap;max-width:72px;overflow:hidden;text-overflow:ellipsis;text-align:center;text-shadow:0 0 4px #fff,0 0 4px #fff,0 0 4px #fff;line-height:1.1;}
 </style>
 </head>
 <body>
@@ -924,6 +927,14 @@ function initMap(){
     {attribution:'© Mapbox © OpenStreetMap',maxZoom:20,tileSize:512,zoomOffset:-1}).addTo(map_o);
   DATA.places.forEach(function(p){addL1(p);});
   map_o.on('click',function(){closeBubble();closeActMapPopup();if(ddOpen)closeDD();});
+  map_o.on('zoomend',function(){
+    if(window.innerWidth>=768)return;
+    var z=map_o.getZoom();
+    DATA.places.forEach(function(p){
+      var m=l1Mk[p.id];if(!m)return;
+      m.setIcon(L.divIcon({html:l1Html(p,false,z>=11),className:'',iconSize:[34,34],iconAnchor:[17,17]}));
+    });
+  });
   updCount();
   setTimeout(function(){
     if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(pos){
@@ -935,7 +946,7 @@ function initMap(){
 }
 
 /* L1 html — FREE vs PREMIUM */
-function l1Html(p,dim){
+function l1Html(p,dim,showName){
   var c=catOf(p.cat);
   var isPremium=p.premium&&!unlocked;
   var dimStyle=dim?'opacity:.25;transform:scale(.75);':'';
@@ -945,9 +956,12 @@ function l1Html(p,dim){
       +'<i class="ti ti-lock" style="color:white;font-size:12px;"></i></div>'
       +'</div>';
   }
-  return '<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
+  var nameHtml=showName?'<div class="pin-name">'+p.name+'</div>':'';
+  return '<div class="pin-hover-wrap" style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
+    +'<div class="pin-tooltip">'+p.name+'</div>'
     +'<div style="width:34px;height:34px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px solid white;'+dimStyle+'">'
     +renderIcon(c.icon,'white')+'</div>'
+    +nameHtml
     +'</div>';
 }
 function addL1(p){
