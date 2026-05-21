@@ -366,9 +366,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .udot{width:14px;height:14px;border-radius:50%;background:var(--blue);border:2.5px solid #fff;box-shadow:0 0 0 4px rgba(37,99,235,.2);}
 .pin-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,24,39,.85);color:#fff;font-size:.7rem;font-weight:600;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:10;}
-@media(hover:hover){.pin-hover-wrap:hover .pin-tooltip{display:block;}}
-.pin-name{font-size:.62rem;font-weight:700;color:#111827;margin-top:3px;white-space:nowrap;max-width:72px;overflow:hidden;text-overflow:ellipsis;text-align:center;text-shadow:0 0 4px #fff,0 0 4px #fff,0 0 4px #fff;line-height:1.1;}
-</style>
+@media(hover:hover){.pin-hover-wrap:hover .pin-tooltip{display:block;}}</style>
 </head>
 <body>
 
@@ -956,7 +954,7 @@ function l1Html(p,dim,showName){
       +'<i class="ti ti-lock" style="color:white;font-size:12px;"></i></div>'
       +'</div>';
   }
-  var nameHtml=showName?'<div class="pin-name">'+p.name+'</div>':'';
+  var nameHtml=showName?'<div style="margin-top:4px;background:rgba(17,24,39,.85);color:#fff;font-size:.7rem;font-weight:600;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;">'+p.name+'</div>':'';
   return '<div class="pin-hover-wrap" style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
     +'<div class="pin-tooltip">'+p.name+'</div>'
     +'<div style="width:34px;height:34px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px solid white;'+dimStyle+'">'
