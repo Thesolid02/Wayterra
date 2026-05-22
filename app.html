@@ -937,6 +937,20 @@ function initMap(){
       layersToHide.forEach(function(layer){
         if(map_o.getLayer(layer)){map_o.setLayoutProperty(layer,'visibility','none');}
       });
+      var extraLayers=[
+        'settlement-minor-label',
+        'settlement-subdivision-label',
+        'place-neighborhood-suburb-label',
+        'place-town-label',
+        'place-village-label',
+        'place-hamlet-label',
+        'place-suburb-label',
+        'place-quarter-label',
+        'place-city-label'
+      ];
+      extraLayers.forEach(function(layer){
+        if(map_o.getLayer(layer)){map_o.setLayoutProperty(layer,'visibility','none');}
+      });
       console.log('Layer nascosti applicati');
       DATA.places.forEach(function(p){addL1(p);});
       updCount();
