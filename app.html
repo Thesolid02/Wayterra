@@ -1427,7 +1427,7 @@ function openDetail(){
   if(window.innerWidth>=768){
     closeBubble();
     document.getElementById('map').classList.add('panel-open');
-    setTimeout(function(){map_o.invalidateSize();},320);
+    setTimeout(function(){map_o.resize();},320);
   }
   document.getElementById('detail-page').classList.add('show');
 }
@@ -1436,7 +1436,7 @@ function closeDetail(){
   closeInlineBubble();
   if(window.innerWidth>=768){
     document.getElementById('map').classList.remove('panel-open');
-    setTimeout(function(){map_o.invalidateSize();},320);
+    setTimeout(function(){map_o.resize();},320);
   }
 }
 function setupDpSave(id){
