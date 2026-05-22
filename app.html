@@ -917,28 +917,35 @@ function atypeOf(id){return DATA.atypes.find(function(a){return a.id===id;})||{i
 
 function initMap(){
   var isMobile=window.innerWidth<600;
-  map_o=L.map('map',{center:[41.9,12.5],zoom:isMobile?8:9,zoomControl:false});
-  // fix mobile: ricalcola dimensioni dopo rendering completo
-  setTimeout(function(){map_o.invalidateSize();},300);
-  window.addEventListener('resize',function(){map_o.invalidateSize();});
-  L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21vajFqcXdqMDhyMTJyczFvNXlsejlheSJ9.yFaqeUd9Jvd62adyNUrkAg',
-    {attribution:'© Mapbox © OpenStreetMap',maxZoom:20,tileSize:512,zoomOffset:-1}).addTo(map_o);
-  DATA.places.forEach(function(p){addL1(p);});
+  mapboxgl.accessToken='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21vajFqcXdqMDhyMTJyczFvNXlsejlheSJ9.yFaqeUd9Jvd62adyNUrkAg';
+  map_o=new mapboxgl.Map({
+    container:'map',
+    style:'mapbox://styles/mapbox/streets-v12',
+    center:[12.5,41.9],
+    zoom:isMobile?8:9,
+    attributionControl:false
+  });
+  map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
+  map_o.on('load',function(){
+    DATA.places.forEach(function(p){addL1(p);});
+    updCount();
+  });
+  setTimeout(function(){map_o.resize();},300);
+  window.addEventListener('resize',function(){map_o.resize();});
   map_o.on('click',function(){closeBubble();closeActMapPopup();if(ddOpen)closeDD();});
   map_o.on('zoomend',function(){
     if(window.innerWidth>=768)return;
     var z=map_o.getZoom();
     DATA.places.forEach(function(p){
       var m=l1Mk[p.id];if(!m)return;
-      m.setIcon(L.divIcon({html:l1Html(p,false,z>=11),className:'',iconSize:[34,34],iconAnchor:[17,17]}));
+      var el=createPinEl(p,false,z>=11);
+      m.getElement().innerHTML=el.innerHTML;
     });
   });
-  updCount();
   setTimeout(function(){
     if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(pos){
       var el=document.createElement('div');el.className='udot';
-      userMk=L.marker([pos.coords.latitude,pos.coords.longitude],
-        {icon:L.divIcon({html:el,className:'',iconSize:[14,14],iconAnchor:[7,7]})}).addTo(map_o);
+      userMk=new mapboxgl.Marker({element:el}).setLngLat([pos.coords.longitude,pos.coords.latitude]).addTo(map_o);
     },function(){});
   },900);
 }
