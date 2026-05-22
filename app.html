@@ -1188,6 +1188,7 @@ function refreshL1(){
       var lats=vis.map(function(p){return p.lat;});
       map_o.fitBounds([[Math.min.apply(null,lngs),Math.min.apply(null,lats)],[Math.max.apply(null,lngs),Math.max.apply(null,lats)]],{padding:60,maxZoom:13,duration:700});
     } else map_o.flyTo({center:[12.5,41.9],zoom:9,duration:600});
+  }
 }
 
 /* ═══ LEVEL TRANSITIONS ═══ */
