@@ -1299,7 +1299,7 @@ function showBubble(p){
 }
 
 function positionBubble(p){
-  var pt=map_o.latLngToContainerPoint([p.lat,p.lng]);
+  var pt=map_o.project([p.lng,p.lat]);
   var bub=document.getElementById('bubble');
   var cardW=280;
   var x=pt.x-(cardW/2);
