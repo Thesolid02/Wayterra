@@ -26,8 +26,6 @@
 html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background:#fff;}
 
 #map{position:fixed;inset:0;z-index:0;height:100vh;height:100dvh;transition:right .3s ease;}
-.leaflet-control-zoom{display:none;}
-.leaflet-control-attribution{font-size:9px;opacity:.28;}
 
 /* ── TOP BAR ── */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:300;
@@ -1010,7 +1008,7 @@ function restoreL1(){
 function refreshL1markers(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[34,34],iconAnchor:[17,17]}));
+    m.getElement().innerHTML=createPinEl(p,false,false).innerHTML;
   });
 }
 
@@ -1185,9 +1183,11 @@ function refreshL1(){
   updCount();
   if(activeFilter!=='all'){
     var vis=DATA.places.filter(function(p){return p.cat===activeFilter;});
-    if(vis.length){var b=L.latLngBounds(vis.map(function(p){return[p.lat,p.lng];}));
-      map_o.flyToBounds(b,{padding:[60,60],duration:.7,maxZoom:13});}
-  } else map_o.flyTo([41.9,12.5],9,{duration:.6});
+    if(vis.length){
+      var lngs=vis.map(function(p){return p.lng;});
+      var lats=vis.map(function(p){return p.lat;});
+      map_o.fitBounds([[Math.min.apply(null,lngs),Math.min.apply(null,lats)],[Math.max.apply(null,lngs),Math.max.apply(null,lats)]],{padding:60,maxZoom:13,duration:700});
+    } else map_o.flyTo({center:[12.5,41.9],zoom:9,duration:600});
 }
 
 /* ═══ LEVEL TRANSITIONS ═══ */
@@ -1196,7 +1196,7 @@ function handleL1Click(place){
   closeDD();closeBubble();
   dimL1(place.id);
   showL2(place);
-  map_o.flyTo([place.lat,place.lng],13,{duration:.6});
+  map_o.flyTo({center:[place.lng,place.lat],zoom:13,duration:600});
   document.getElementById('search-bar').style.display='none';
   document.getElementById('lv2-bar').style.display='flex';
   document.getElementById('lv2-label').textContent=place.premium&&!unlocked?t('premium_name'):place.name;
@@ -1207,7 +1207,7 @@ function exitL2(){
   closeBubble();clearL2();restoreL1();
   document.getElementById('lv2-bar').style.display='none';
   document.getElementById('search-bar').style.display='block';
-  map_o.flyTo([41.9,12.5],9,{duration:.7});
+  map_o.flyTo({center:[12.5,41.9],zoom:9,duration:700});
 }
 
 /* ═══ BUBBLE CARD ═══ */
@@ -1548,8 +1548,8 @@ function devUnlock(){
 function locateMe(){
   if(!navigator.geolocation){toast(lang==='en'?'GPS not available':'GPS non disponibile');return;}
   navigator.geolocation.getCurrentPosition(function(pos){
-    map_o.setView([pos.coords.latitude,pos.coords.longitude],13);
-    if(userMk)userMk.setLatLng([pos.coords.latitude,pos.coords.longitude]);
+    map_o.jumpTo({center:[pos.coords.longitude,pos.coords.latitude],zoom:13});
+    if(userMk)userMk.setLngLat([pos.coords.longitude,pos.coords.latitude]);
     toast('📍 '+(lang==='en'?'Location updated':'Posizione aggiornata'));
   },function(){toast(lang==='en'?'Could not get location':'Impossibile ottenere la posizione');});
 }
