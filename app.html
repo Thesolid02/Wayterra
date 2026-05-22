@@ -926,7 +926,10 @@ function hideMinorLabels(){
     'settlement-subdivision-label','settlement-minor-label'
   ];
   layersToHide.forEach(function(layer){
-    if(map_o.getLayer(layer))map_o.setLayoutProperty(layer,'visibility','none');
+    if(map_o.getLayer(layer)){
+      map_o.setLayoutProperty(layer,'visibility','none');
+      map_o.setFilter(layer,['==','name','___HIDE_ALL___']);
+    }
   });
 }
 
