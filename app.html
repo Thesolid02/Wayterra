@@ -924,22 +924,13 @@ function initMap(){
     attributionControl:false
   });
   map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
-  map_o.on('load',function(){
-    var layersToHide=[
-      'road-label','road-number-shield','road-exit-shield',
-      'waterway-label','natural-point-label','natural-line-label',
-      'water-line-label','water-point-label',
-      'poi-label','airport-label',
-      'settlement-subdivision-label',
-      'settlement-minor-label'
-    ];
-    layersToHide.forEach(function(layer){
-      if(map_o.getLayer(layer)){map_o.setLayoutProperty(layer,'visibility','none');}
-    });
-    var allLayers=map_o.getStyle().layers;
-    console.log('Tutti i layer:',allLayers.map(function(l){return l.id;}).join(', '));
-    DATA.places.forEach(function(p){addL1(p);});
-    updCount();
+  map_o.on('style.load',function(){
+    setTimeout(function(){
+      var allLayers=map_o.getStyle().layers;
+      console.log('Tutti i layer:',allLayers.map(function(l){return l.id;}).join(', '));
+      DATA.places.forEach(function(p){addL1(p);});
+      updCount();
+    },1000);
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
