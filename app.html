@@ -969,9 +969,19 @@ function l1Html(p,dim,showName){
     +nameHtml
     +'</div>';
 }
+function createPinEl(p, dim, showName){
+  var el=document.createElement('div');
+  el.innerHTML=l1Html(p,dim,showName);
+  return el;
+}
+
 function addL1(p){
-  var m=L.marker([p.lat,p.lng],{icon:L.divIcon({html:l1Html(p,false),className:'',iconSize:[34,34],iconAnchor:[17,17]})}).addTo(map_o);
-  m.on('click',function(e){L.DomEvent.stopPropagation(e);
+  var el=createPinEl(p,false,false);
+  var m=new mapboxgl.Marker({element:el,anchor:'center'})
+    .setLngLat([p.lng,p.lat])
+    .addTo(map_o);
+  el.addEventListener('click',function(e){
+    e.stopPropagation();
     if(p.premium&&!unlocked){showPW();return;}
     handleL1Click(p);
   });
