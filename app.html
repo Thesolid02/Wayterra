@@ -925,6 +925,17 @@ function initMap(){
   });
   map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
   map_o.on('load',function(){
+    var layersToHide=[
+      'road-label','road-number-shield','road-exit-shield',
+      'waterway-label','natural-point-label','natural-line-label',
+      'water-line-label','water-point-label',
+      'poi-label','airport-label',
+      'settlement-subdivision-label',
+      'settlement-minor-label'
+    ];
+    layersToHide.forEach(function(layer){
+      if(map_o.getLayer(layer)){map_o.setLayoutProperty(layer,'visibility','none');}
+    });
     DATA.places.forEach(function(p){addL1(p);});
     updCount();
   });
