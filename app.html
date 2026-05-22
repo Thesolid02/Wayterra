@@ -913,6 +913,23 @@ function closeLightbox(){
 function catOf(id){return DATA.cats.find(function(c){return c.id===id;})||{icon:'📍',name:id,nameEn:id,color:'#888'};}
 function atypeOf(id){return DATA.atypes.find(function(a){return a.id===id;})||{icon:'📍',name:id,nameEn:id,color:'#888'};}
 
+function hideMinorLabels(){
+  var layersToHide=[
+    'tunnel-oneway-arrow-blue','tunnel-oneway-arrow-white','level-crossing',
+    'road-oneway-arrow-blue','road-oneway-arrow-white','crosswalks',
+    'bridge-oneway-arrow-blue','bridge-oneway-arrow-white','building-entrance',
+    'building-number-label','block-number-label','road-label','road-intersection',
+    'road-number-shield','road-exit-shield','path-pedestrian-label',
+    'golf-hole-label','ferry-aerialway-label','waterway-label',
+    'natural-line-label','natural-point-label','water-line-label',
+    'water-point-label','poi-label','transit-label','airport-label',
+    'settlement-subdivision-label','settlement-minor-label'
+  ];
+  layersToHide.forEach(function(layer){
+    if(map_o.getLayer(layer))map_o.setLayoutProperty(layer,'visibility','none');
+  });
+}
+
 function initMap(){
   var isMobile=window.innerWidth<600;
   mapboxgl.accessToken='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
@@ -926,20 +943,7 @@ function initMap(){
   map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
   map_o.on('style.load',function(){
     setTimeout(function(){
-      var layersToHide=[
-        'tunnel-oneway-arrow-blue','tunnel-oneway-arrow-white','level-crossing',
-        'road-oneway-arrow-blue','road-oneway-arrow-white','crosswalks',
-        'bridge-oneway-arrow-blue','bridge-oneway-arrow-white','building-entrance',
-        'building-number-label','block-number-label','road-label','road-intersection',
-        'road-number-shield','road-exit-shield','path-pedestrian-label',
-        'golf-hole-label','ferry-aerialway-label','waterway-label',
-        'natural-line-label','natural-point-label','water-line-label',
-        'water-point-label','poi-label','transit-label','airport-label',
-        'settlement-subdivision-label','settlement-minor-label'
-      ];
-      layersToHide.forEach(function(layer){
-        if(map_o.getLayer(layer))map_o.setLayoutProperty(layer,'visibility','none');
-      });
+      hideMinorLabels();
       DATA.places.forEach(function(p){addL1(p);});
       updCount();
     },500);
@@ -948,6 +952,7 @@ function initMap(){
   window.addEventListener('resize',function(){map_o.resize();});
   map_o.on('click',function(){closeBubble();closeActMapPopup();if(ddOpen)closeDD();});
   map_o.on('zoomend',function(){
+    hideMinorLabels();
     if(window.innerWidth>=768)return;
     var z=map_o.getZoom();
     DATA.places.forEach(function(p){
