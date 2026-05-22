@@ -990,14 +990,19 @@ function addL1(p){
 function dimL1(exceptId){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    if(p.id===exceptId){m.setIcon(L.divIcon({html:l1Html(p,true),className:'',iconSize:[34,34],iconAnchor:[17,17]}));m.addTo(map_o);}
-    else m.remove();
+    if(p.id===exceptId){
+      m.getElement().innerHTML=createPinEl(p,true,false).innerHTML;
+      m.addTo(map_o);
+    } else {
+      m.remove();
+    }
   });
 }
+
 function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    m.setIcon(L.divIcon({html:l1Html(p,false),className:'',iconSize:[34,34],iconAnchor:[17,17]}));
+    m.getElement().innerHTML=createPinEl(p,false,false).innerHTML;
     var show=activeFilter==='all'||p.cat===activeFilter;
     if(show)m.addTo(map_o);else m.remove();
   });
