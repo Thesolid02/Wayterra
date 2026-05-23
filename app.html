@@ -784,9 +784,11 @@ function checkUnlock(){
 function hasDetail(p){return !!(p.desc&&p.desc.trim()&&p.secret&&p.secret.trim());}
 function scoreColor(s){
   if(!s||s===0)return null;
-  if(s>=70)return{bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',label:lang==='en'?'Hidden gem':'Gemma nascosta',gems:'💎💎💎'};
-  if(s>=40)return{bg:'#fefce8',color:'#854d0e',border:'#fde68a',label:lang==='en'?'Known to few':'Lo sanno in pochi',gems:'💎💎'};
-  return{bg:'#fef2f2',color:'#991b1b',border:'#fecaca',label:lang==='en'?'Starting to spread':'Inizia a circolare',gems:'💎'};
+  var active='<span style="font-size:1rem;">💎</span>';
+  var inactive='<span style="font-size:1rem;filter:grayscale(1) opacity(.25);">💎</span>';
+  if(s>=70)return{bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',label:lang==='en'?'Hidden gem':'Gemma nascosta',gems:active+active+active,level:3};
+  if(s>=40)return{bg:'#fefce8',color:'#854d0e',border:'#fde68a',label:lang==='en'?'Known to few':'Lo sanno in pochi',gems:active+active+inactive,level:2};
+  return{bg:'#fef2f2',color:'#991b1b',border:'#fecaca',label:lang==='en'?'Starting to spread':'Inizia a circolare',gems:active+inactive+inactive,level:1};
 }
 function catName(c){return lang==='en'&&c.nameEn?c.nameEn:c.name;}
 function atName(a){return lang==='en'&&a.nameEn?a.nameEn:a.name;}
@@ -1278,7 +1280,7 @@ function showBubble(p){
     scoreEl.innerHTML='<div class="gem-tooltip-wrap">'
       +'<span style="display:inline-flex;align-items:center;gap:4px;background:'+sc.bg+';color:'+sc.color+';border:0.5px solid '+sc.border+';border-radius:6px;padding:2px 7px;font-size:.78rem;cursor:default;">'
       +sc.gems
-      +'<button class="gem-info-btn" data-gems="'+sc.gems+'" data-label="'+sc.label+'" data-bg="'+sc.bg+'" data-color="'+sc.color+'" data-border="'+sc.border+'">ⓘ</button>'
+      +'<button class="gem-info-btn" data-score="'+p.hiddenScore+'" data-label="'+sc.label+'" data-bg="'+sc.bg+'" data-color="'+sc.color+'" data-border="'+sc.border+'">ⓘ</button>'
       +'</span>'
       +'</div>';
     // attach click handler
@@ -1370,8 +1372,7 @@ function showBottomCard(p){
       +renderIcon(at.icon,'white')+'</div>';
   }).join('');
   document.getElementById('bc-acts').innerHTML=actsHtml;
-  var gemsHtml=sc?'<span class="bc-gems-ico" onclick="openGemTooltip(this,scoreColor('+p.hiddenScore+'))" style="cursor:pointer;">'+sc.gems+'</span>':'';
-  document.getElementById('bc-gems').innerHTML=gemsHtml;
+  document.getElementById('bc-gems').innerHTML=sc?'<div style="display:flex;align-items:center;gap:4px;">'+sc.gems+'<span style="font-size:.72rem;color:'+sc.color+';">'+sc.label+'</span></div>':'';
   var card=document.getElementById('bottom-card');
   card.onclick=function(e){
     if(e.target.closest('.bc-act-ico')||e.target.closest('.bc-gems-ico'))return;
@@ -1661,17 +1662,19 @@ function locateMe(){
 }
 
 function gemTooltipHtml(currentSc){
+  var active='<span style="font-size:1rem;">💎</span>';
+  var inactive='<span style="font-size:1rem;filter:grayscale(1) opacity(.25);">💎</span>';
   var levels=lang==='en'?[
-    {gems:'💎💎💎',label:'Hidden gem',sub:'Only locals know it',bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',min:70},
-    {gems:'💎💎',label:'Known to few',sub:'Not yet on the tourist radar',bg:'#fefce8',color:'#854d0e',border:'#fde68a',min:40},
-    {gems:'💎',label:'Starting to spread',sub:'Visit it soon',bg:'#f9fafb',color:'#6b7280',border:'#e5e7eb',min:1}
+    {gems:active+active+active,level:3,label:'Hidden gem',sub:'Only locals know it',bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',min:70},
+    {gems:active+active+inactive,level:2,label:'Known to few',sub:'Not yet on the tourist radar',bg:'#fefce8',color:'#854d0e',border:'#fde68a',min:40},
+    {gems:active+inactive+inactive,level:1,label:'Starting to spread',sub:'Visit it soon',bg:'#f9fafb',color:'#6b7280',border:'#e5e7eb',min:1}
   ]:[
-    {gems:'💎💎💎',label:'Gemma nascosta',sub:'Solo i locals lo sanno',bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',min:70},
-    {gems:'💎💎',label:'Lo sanno in pochi',sub:'Non ancora sui radar',bg:'#fefce8',color:'#854d0e',border:'#fde68a',min:40},
-    {gems:'💎',label:'Inizia a circolare',sub:'Visitalo presto',bg:'#f9fafb',color:'#6b7280',border:'#e5e7eb',min:1}
+    {gems:active+active+active,level:3,label:'Gemma nascosta',sub:'Solo i locals lo sanno',bg:'#f0fdf4',color:'#166534',border:'#bbf7d0',min:70},
+    {gems:active+active+inactive,level:2,label:'Lo sanno in pochi',sub:'Non ancora sui radar',bg:'#fefce8',color:'#854d0e',border:'#fde68a',min:40},
+    {gems:active+inactive+inactive,level:1,label:'Inizia a circolare',sub:'Visitalo presto',bg:'#f9fafb',color:'#6b7280',border:'#e5e7eb',min:1}
   ];
   var rows=levels.map(function(l){
-    var isActive=currentSc&&currentSc.gems===l.gems;
+    var isActive=currentSc&&currentSc.level===l.level;
     return '<div class="gem-tooltip-row'+(isActive?' active':'')+'" style="background:'+l.bg+';'+(isActive?'border-color:'+l.border+';':'border:0.5px solid transparent;')+'">'
       +'<div class="gem-tooltip-gems">'+l.gems+'</div>'
       +'<div><div class="gem-tooltip-lbl" style="color:'+l.color+';">'+l.label+'</div>'
@@ -1684,8 +1687,7 @@ function gemTooltipHtml(currentSc){
 }
 function openGemTooltip(btn,sc){
   if(!sc){
-    sc={
-      gems:btn.dataset.gems,
+    sc=scoreColor(parseInt(btn.dataset.score)||0)||{
       label:btn.dataset.label,
       bg:btn.dataset.bg,
       color:btn.dataset.color,
