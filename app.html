@@ -361,7 +361,22 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .udot{width:14px;height:14px;border-radius:50%;background:var(--blue);border:2.5px solid #fff;box-shadow:0 0 0 4px rgba(37,99,235,.2);}
 .pin-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,24,39,.85);color:#fff;font-size:.7rem;font-weight:600;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:10;}
-@media(hover:hover){.pin-hover-wrap:hover .pin-tooltip{display:block;}}</style>
+@media(hover:hover){.pin-hover-wrap:hover .pin-tooltip{display:block;}}
+#bottom-card{position:fixed;bottom:0;left:0;right:0;background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;border-top:0.5px solid var(--g200);padding:10px 14px 20px;z-index:300;display:none;box-shadow:0 -4px 20px rgba(0,0,0,.1);}
+#bottom-card.show{display:block;}
+.bc-handle{width:28px;height:3px;border-radius:2px;background:var(--g300);margin:0 auto 10px;}
+.bc-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;}
+.bc-img{width:60px;height:60px;border-radius:var(--r);flex-shrink:0;object-fit:cover;display:block;}
+.bc-img-placeholder{width:60px;height:60px;border-radius:var(--r);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.bc-body{flex:1;min-width:0;}
+.bc-cat{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+.bc-name{font-size:.88rem;font-weight:700;color:var(--g900);line-height:1.2;margin-bottom:2px;}
+.bc-region{font-size:.72rem;color:var(--g400);margin-bottom:5px;}
+.bc-acts{display:flex;gap:4px;margin-bottom:5px;}
+.bc-act-ico{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.bc-act-ico i{font-size:10px;color:white;}
+.bc-gems{font-size:.75rem;color:var(--g500);}
+.bc-btn{width:100%;padding:9px;background:var(--g900);border:none;border-radius:var(--r);font-family:var(--f);font-size:.82rem;font-weight:600;color:#fff;cursor:pointer;}</style>
 </head>
 <body>
 
@@ -926,7 +941,7 @@ function initMap(){
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
-  map_o.on('click',function(){closeBubble();closeActMapPopup();if(ddOpen)closeDD();});
+  map_o.on('click',function(){closeBubble();closeBottomCard();closeActMapPopup();if(ddOpen)closeDD();});
   map_o.on('zoomend',function(){
     if(window.innerWidth>=768)return;
     var z=map_o.getZoom();
@@ -1218,7 +1233,9 @@ function handleL1Click(place){
   document.getElementById('search-bar').style.display='none';
   document.getElementById('lv2-bar').style.display='flex';
   document.getElementById('lv2-label').textContent=place.premium&&!unlocked?t('premium_name'):place.name;
-  setTimeout(function(){showBubble(place);},500);
+  setTimeout(function(){
+    if(window.innerWidth<768){showBottomCard(place);}else{showBubble(place);}
+  },500);
 }
 function exitL2(){
   level=1;activePId=null;currentPlace=null;
@@ -1331,7 +1348,38 @@ function positionBubble(p){
   bub.style.left=x+'px';
   bub.style.top=y+'px';
 }
-function closeBubble(){document.getElementById('bubble').classList.remove('show');}
+function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
+function showBottomCard(p){
+  var c=catOf(p.cat);
+  var sc=scoreColor(p.hiddenScore);
+  var imgWrap=document.getElementById('bc-img-wrap');
+  if(p.coverPhoto){
+    imgWrap.innerHTML='<img class="bc-img" src="'+p.coverPhoto+'" alt="">';
+  } else {
+    imgWrap.innerHTML='<div class="bc-img-placeholder" style="background:'+c.color+';">'+renderIcon(c.icon,'white')+'</div>';
+  }
+  document.getElementById('bc-cat').textContent=catName(c);
+  document.getElementById('bc-cat').style.color=c.color;
+  document.getElementById('bc-name').textContent=p.name;
+  document.getElementById('bc-region').textContent=p.region||'';
+  var types={};
+  (p.activities||[]).forEach(function(a){types[a.type]=atypeOf(a.type);});
+  document.getElementById('bc-acts').innerHTML=Object.values(types).map(function(at){
+    return '<div class="bc-act-ico" style="background:'+(at.color||'#374151')+';">'+renderIcon(at.icon,'white')+'</div>';
+  }).join('');
+  document.getElementById('bc-gems').textContent=sc?sc.gems+' '+sc.label:'';
+  var btn=document.getElementById('bc-btn');
+  btn.textContent=t('discover');
+  btn.onclick=function(){
+    closeBottomCard();
+    currentPlace=p;
+    openDetail();
+  };
+  document.getElementById('bottom-card').classList.add('show');
+}
+function closeBottomCard(){
+  document.getElementById('bottom-card').classList.remove('show');
+}
 
 /* ═══ DETAIL PAGE ═══ */
 function openDetail(){
@@ -1748,5 +1796,19 @@ window.addEventListener('DOMContentLoaded',function(){
   });
 });
 </script>
+<div id="bottom-card">
+  <div class="bc-handle"></div>
+  <div class="bc-row">
+    <div id="bc-img-wrap"></div>
+    <div class="bc-body">
+      <div class="bc-cat" id="bc-cat"></div>
+      <div class="bc-name" id="bc-name"></div>
+      <div class="bc-region" id="bc-region"></div>
+      <div class="bc-acts" id="bc-acts"></div>
+      <div class="bc-gems" id="bc-gems"></div>
+    </div>
+  </div>
+  <button class="bc-btn" id="bc-btn"></button>
+</div>
 </body>
 </html>
