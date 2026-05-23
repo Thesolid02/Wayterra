@@ -366,8 +366,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #bottom-card.show{display:block;}
 .bc-handle{width:28px;height:3px;border-radius:2px;background:var(--g300);margin:0 auto 10px;}
 .bc-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;}
-.bc-img{width:60px;height:60px;border-radius:var(--r);flex-shrink:0;object-fit:cover;display:block;}
-.bc-img-placeholder{width:60px;height:60px;border-radius:var(--r);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.bc-img{width:80px;height:80px;border-radius:var(--rl);flex-shrink:0;object-fit:cover;display:block;}
+.bc-img-placeholder{width:80px;height:80px;border-radius:var(--rl);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
 .bc-body{flex:1;min-width:0;}
 .bc-cat{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
 .bc-name{font-size:.88rem;font-weight:700;color:var(--g900);line-height:1.2;margin-bottom:2px;}
@@ -1364,9 +1364,9 @@ function showBottomCard(p){
   var types={};
   (p.activities||[]).forEach(function(a){types[a.type]=atypeOf(a.type);});
   var actsHtml=Object.entries(types).map(function(entry){
-    var typeId=entry[0]; var at=entry[1];
-    var actNames=(p.activities||[]).filter(function(a){return a.type===typeId;}).map(function(a){return a.name;}).join(', ');
-    return '<div class="bc-act-ico" style="background:'+(at.color||'#374151')+';position:relative;" title="'+actNames+'" onclick="showActIconTooltip(this,\''+actNames.replace(/'/g,"\\'")+'\')">'
+    var at=entry[1];
+    var typeName=atName(at);
+    return '<div class="bc-act-ico" style="background:'+(at.color||'#374151')+';position:relative;" title="'+typeName+'" onclick="showActIconTooltip(this,\''+typeName.replace(/'/g,"\\'")+'\')">'
       +renderIcon(at.icon,'white')+'</div>';
   }).join('');
   document.getElementById('bc-acts').innerHTML=actsHtml;
@@ -1848,7 +1848,6 @@ window.addEventListener('DOMContentLoaded',function(){
       <div class="bc-gems" id="bc-gems"></div>
     </div>
   </div>
-  <div style="text-align:center;margin-top:6px;font-size:.7rem;color:var(--g400);">Tocca per il dettaglio →</div>
 </div>
 </body>
 </html>
