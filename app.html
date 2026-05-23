@@ -964,7 +964,7 @@ function addCityLabels(){
     var el=document.createElement('div');
     el.className='city-label-mk';
     el.textContent=c.name;
-    el.style.cssText='font-size:'+(c.big?'13px':'10px')+';font-weight:500;color:'+(c.big?'#4b4b48':'#888780')+';letter-spacing:.02em;pointer-events:none;text-shadow:0 0 4px rgba(242,238,234,.9),0 0 8px rgba(242,238,234,.7);white-space:nowrap;';
+    el.style.cssText='font-size:'+(c.big?'15px':'12px')+';font-weight:500;color:'+(c.big?'#3a3a38':'#888780')+';letter-spacing:.02em;pointer-events:none;text-shadow:0 0 4px rgba(242,238,234,.9),0 0 8px rgba(242,238,234,.7);white-space:nowrap;';
     new mapboxgl.Marker({element:el,anchor:'center'})
       .setLngLat([c.lng,c.lat])
       .addTo(map_o);
