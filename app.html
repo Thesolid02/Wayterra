@@ -922,6 +922,7 @@ function initMap(){
   map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
   map_o.on('style.load',function(){
     DATA.places.forEach(function(p){addL1(p);});
+    addCityLabels();
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
@@ -941,6 +942,33 @@ function initMap(){
       userMk=new mapboxgl.Marker({element:el}).setLngLat([pos.coords.longitude,pos.coords.latitude]).addTo(map_o);
     },function(){});
   },900);
+}
+
+function addCityLabels(){
+  var cities=[
+    {name:'Roma',lng:12.4964,lat:41.9028,big:true},
+    {name:'Viterbo',lng:12.1047,lat:42.4168,big:false},
+    {name:'Rieti',lng:12.8564,lat:42.4045,big:false},
+    {name:'Latina',lng:12.9034,lat:41.4677,big:false},
+    {name:'Frosinone',lng:13.3407,lat:41.6400,big:false},
+    {name:'Tivoli',lng:12.7983,lat:41.9632,big:false},
+    {name:'Civitavecchia',lng:11.7942,lat:42.0933,big:false},
+    {name:'Velletri',lng:12.7786,lat:41.6862,big:false},
+    {name:'Anzio',lng:12.6274,lat:41.4476,big:false},
+    {name:'L\'Aquila',lng:13.3995,lat:42.3498,big:false},
+    {name:'Terni',lng:12.6462,lat:42.5639,big:false},
+    {name:'Perugia',lng:12.3908,lat:43.1107,big:false},
+    {name:'Napoli',lng:14.2681,lat:40.8518,big:false}
+  ];
+  cities.forEach(function(c){
+    var el=document.createElement('div');
+    el.className='city-label-mk';
+    el.textContent=c.name;
+    el.style.cssText='font-size:'+(c.big?'13px':'10px')+';font-weight:500;color:'+(c.big?'#4b4b48':'#888780')+';letter-spacing:.02em;pointer-events:none;text-shadow:0 0 4px rgba(242,238,234,.9),0 0 8px rgba(242,238,234,.7);white-space:nowrap;';
+    new mapboxgl.Marker({element:el,anchor:'center'})
+      .setLngLat([c.lng,c.lat])
+      .addTo(map_o);
+  });
 }
 
 /* L1 html — FREE vs PREMIUM */
