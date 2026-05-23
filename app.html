@@ -67,7 +67,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .ddcat:hover{background:var(--g50);}
 .dcdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 .dcname{font-size:.88rem;font-weight:600;color:var(--g900);}
-.dccount{font-size:.75rem;color:var(--g400);margin-left:auto;}
+
 .dddiv{border:none;border-top:1px solid var(--g100);margin:0;}
 .ddvibe-item{display:flex;align-items:center;gap:12px;padding:9px 16px;opacity:.38;}
 .ddvibe-name{font-size:.88rem;color:var(--g500);}
@@ -88,10 +88,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   width:46px;height:46px;border-radius:50%;border:0.5px solid var(--g200);background:var(--w);
   box-shadow:var(--sh-md);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;}
 #fab:active{transform:scale(.9);}
-#cpill{position:fixed;z-index:300;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);
-  left:50%;transform:translateX(-50%);background:rgba(17,24,39,.82);color:#fff;
-  font-size:.7rem;font-weight:600;padding:6px 16px;border-radius:100px;
-  box-shadow:var(--sh-sm);pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px);}
+
 
 /* ── L1 MARKERS ── */
 .mk1{display:flex;flex-direction:column;align-items:center;cursor:pointer;}
@@ -463,7 +460,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 </div>
 
 <button id="fab" style="display:none" onclick="locateMe()">📍</button>
-<div id="cpill" style="display:none"></div>
+
 
 <div id="act-popup">
   <div class="act-popup-sheet" id="act-popup-sheet">
@@ -789,7 +786,6 @@ function setLang(l){
   document.getElementById('btn-en').className='lang-btn '+(l==='en'?'on':'off');
   applyTranslations();
   buildDD();
-  updCount();
 }
 function applyTranslations(){
   document.getElementById('sinp').placeholder=t('search_placeholder');
@@ -926,7 +922,6 @@ function initMap(){
   map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
   map_o.on('style.load',function(){
     DATA.places.forEach(function(p){addL1(p);});
-    updCount();
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
@@ -1106,10 +1101,6 @@ function closeActMapPopup(){
   document.getElementById('act-map-popup').classList.remove('show');
 }
 
-function updCount(){
-  var visible=DATA.places.filter(function(p){return activeFilter==='all'||p.cat===activeFilter;});
-  document.getElementById('cpill').textContent=visible.length+' '+t('places');
-}
 
 /* cross-tab sync */
 function reloadData(){
@@ -1123,7 +1114,7 @@ function reloadData(){
   for(var k in l1Mk){delete l1Mk[k];}
   // ricrea tutti i marker con i dati aggiornati
   DATA.places.forEach(function(p){addL1(p);});
-  refreshL1();buildDD();updCount();buildPWCats();
+  refreshL1();buildDD();buildPWCats();
   document.getElementById('pw-cn').textContent=DATA.places.length;
   toast('🔄 '+(lang==='en'?'Map updated':'Mappa aggiornata'));
 }
@@ -1149,13 +1140,12 @@ function buildDD(){
   h+='<button class="ddcat" onclick="selCat(\'all\')">'
     +'<div class="dcdot" style="background:var(--g400);"></div>'
     +'<div class="dcname">🗺 '+t('all_places')+'</div>'
-    +'<div class="dccount">'+DATA.places.length+'</div></button>';
+    +'</button>';
   DATA.cats.forEach(function(c){
-    var n=DATA.places.filter(function(p){return p.cat===c.id;}).length;
     h+='<button class="ddcat" onclick="selCat(\''+c.id+'\')">'
       +'<div class="dcdot" style="background:'+c.color+';"></div>'
       +'<div class="dcname">'+renderIcon(c.icon)+' '+catName(c)+'</div>'
-      +'<div class="dccount">'+n+'</div></button>';
+      +'</button>';
   });
   h+='<hr class="dddiv">';
   h+='<div class="ddlbl">'+t('vibe')+' <span class="ddlbl-badge">'+t('soon')+'</span></div>';
@@ -1180,7 +1170,6 @@ function refreshL1(){
     var show=activeFilter==='all'||p.cat===activeFilter;
     if(show)m.addTo(map_o);else m.remove();
   });
-  updCount();
   if(activeFilter!=='all'){
     var vis=DATA.places.filter(function(p){return p.cat===activeFilter;});
     if(vis.length){
@@ -1662,7 +1651,6 @@ function bootApp(d){
   document.getElementById('topbar').style.display='flex';
   document.getElementById('search-bar').style.display='block';
   document.getElementById('fab').style.display='flex';
-  document.getElementById('cpill').style.display='block';
   setTimeout(function(){document.getElementById('splash').classList.add('hide');},1400);
 }
 
