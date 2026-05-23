@@ -1083,7 +1083,7 @@ function showActBubble(a, latlng){
   document.getElementById('amp-sheet').style.padding = '0 16px calc(env(safe-area-inset-bottom, 0px) + 20px)';
   document.getElementById('amp-center').style.display=isMobile?'none':'';
   document.getElementById(titleId).textContent=a.name;
-  document.getElementById(typeId).innerHTML=renderIcon(at.icon,'white')+' '+atName(at);
+  document.getElementById(typeId).innerHTML=renderIcon(at.icon,at.color||'#374151')+' '+atName(at);
   var imgEl=document.getElementById(imgId);
   if(a.coverPhoto){imgEl.src=a.coverPhoto;imgEl.style.display='block';}
   else imgEl.style.display='none';
