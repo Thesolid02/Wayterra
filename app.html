@@ -375,8 +375,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .bc-acts{display:flex;gap:4px;margin-bottom:5px;}
 .bc-act-ico{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .bc-act-ico i{font-size:10px;color:white;}
-.bc-gems{font-size:.75rem;color:var(--g500);}
-.bc-btn{width:100%;padding:9px;background:var(--g900);border:none;border-radius:var(--r);font-family:var(--f);font-size:.82rem;font-weight:600;color:#fff;cursor:pointer;}</style>
+.bc-gems{font-size:.75rem;color:var(--g500);}</style>
 </head>
 <body>
 
@@ -1082,7 +1081,7 @@ function showL2(place){
     el.style.zIndex=100+i;
     el.addEventListener('click',function(e){
       e.stopPropagation();
-      showActBubble(a,[a.lat,a.lng]);
+      if(window.innerWidth<768){showActBubbleBottomCard(a,place.id);}else{showActBubble(a,[a.lat,a.lng]);}
     });
     var m=new mapboxgl.Marker({element:el,anchor:'bottom'})
       .setLngLat([a.lng,a.lat])
@@ -1364,21 +1363,62 @@ function showBottomCard(p){
   document.getElementById('bc-region').textContent=p.region||'';
   var types={};
   (p.activities||[]).forEach(function(a){types[a.type]=atypeOf(a.type);});
-  document.getElementById('bc-acts').innerHTML=Object.values(types).map(function(at){
-    return '<div class="bc-act-ico" style="background:'+(at.color||'#374151')+';">'+renderIcon(at.icon,'white')+'</div>';
+  var actsHtml=Object.entries(types).map(function(entry){
+    var typeId=entry[0]; var at=entry[1];
+    var actNames=(p.activities||[]).filter(function(a){return a.type===typeId;}).map(function(a){return a.name;}).join(', ');
+    return '<div class="bc-act-ico" style="background:'+(at.color||'#374151')+';position:relative;" title="'+actNames+'" onclick="showActIconTooltip(this,\''+actNames.replace(/'/g,"\\'")+'\')">'
+      +renderIcon(at.icon,'white')+'</div>';
   }).join('');
-  document.getElementById('bc-gems').textContent=sc?sc.gems+' '+sc.label:'';
-  var btn=document.getElementById('bc-btn');
-  btn.textContent=t('discover');
-  btn.onclick=function(){
-    closeBottomCard();
+  document.getElementById('bc-acts').innerHTML=actsHtml;
+  var gemsHtml=sc?'<span class="bc-gems-ico" onclick="openGemTooltip(this,scoreColor('+p.hiddenScore+'))" style="cursor:pointer;">'+sc.gems+'</span>':'';
+  document.getElementById('bc-gems').innerHTML=gemsHtml;
+  var card=document.getElementById('bottom-card');
+  card.onclick=function(e){
+    if(e.target.closest('.bc-act-ico')||e.target.closest('.bc-gems-ico'))return;
+    if(p.premium&&!unlocked){showPW();return;}
     currentPlace=p;
+    closeBottomCard();
     openDetail();
   };
-  document.getElementById('bottom-card').classList.add('show');
+  card.classList.add('show');
 }
 function closeBottomCard(){
   document.getElementById('bottom-card').classList.remove('show');
+}
+function showActIconTooltip(el, names){
+  var existing=document.getElementById('act-icon-tooltip');
+  if(existing)existing.remove();
+  var tt=document.createElement('div');
+  tt.id='act-icon-tooltip';
+  tt.style.cssText='position:fixed;background:rgba(17,24,39,.85);color:#fff;font-size:.72rem;padding:4px 8px;border-radius:6px;z-index:500;pointer-events:none;white-space:nowrap;';
+  tt.textContent=names;
+  document.body.appendChild(tt);
+  var rect=el.getBoundingClientRect();
+  tt.style.left=(rect.left+rect.width/2-tt.offsetWidth/2)+'px';
+  tt.style.top=(rect.top-tt.offsetHeight-6)+'px';
+  setTimeout(function(){if(tt.parentNode)tt.remove();},2000);
+}
+function showActBubbleBottomCard(a, placeId){
+  var p=DATA.places.find(function(x){return x.id===placeId;});
+  var at=atypeOf(a.type);
+  var imgWrap=document.getElementById('bc-img-wrap');
+  if(a.coverPhoto){
+    imgWrap.innerHTML='<img class="bc-img" src="'+a.coverPhoto+'" alt="">';
+  } else {
+    imgWrap.innerHTML='<div class="bc-img-placeholder" style="background:'+(at.color||'#374151')+';">'+renderIcon(at.icon,'white')+'</div>';
+  }
+  document.getElementById('bc-cat').textContent=atName(at);
+  document.getElementById('bc-cat').style.color=at.color||'#374151';
+  document.getElementById('bc-name').textContent=a.name;
+  document.getElementById('bc-region').textContent=p?p.name:'';
+  document.getElementById('bc-acts').innerHTML='';
+  document.getElementById('bc-gems').innerHTML='';
+  var card=document.getElementById('bottom-card');
+  card.onclick=function(e){
+    currentPlace=p;
+    openActPopup(a.id,placeId,null);
+  };
+  card.classList.add('show');
 }
 
 /* ═══ DETAIL PAGE ═══ */
@@ -1808,7 +1848,7 @@ window.addEventListener('DOMContentLoaded',function(){
       <div class="bc-gems" id="bc-gems"></div>
     </div>
   </div>
-  <button class="bc-btn" id="bc-btn"></button>
+  <div style="text-align:center;margin-top:6px;font-size:.7rem;color:var(--g400);">Tocca per il dettaglio →</div>
 </div>
 </body>
 </html>
