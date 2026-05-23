@@ -981,6 +981,7 @@ function addCityLabels(){
     el.className='city-label-mk';
     el.textContent=c.name;
     el.style.cssText='font-size:'+(c.big?'15px':'12px')+';font-weight:500;color:'+(c.big?'#3a3a38':'#888780')+';letter-spacing:.02em;pointer-events:none;text-shadow:0 0 4px rgba(242,238,234,.9),0 0 8px rgba(242,238,234,.7);white-space:nowrap;';
+    el.style.zIndex='-1';
     new mapboxgl.Marker({element:el,anchor:'center'})
       .setLngLat([c.lng,c.lat])
       .addTo(map_o);
@@ -1017,6 +1018,7 @@ function addL1(p){
   var m=new mapboxgl.Marker({element:el,anchor:'center'})
     .setLngLat([p.lng,p.lat])
     .addTo(map_o);
+  m.getElement().style.zIndex='10';
   el.addEventListener('click',function(e){
     e.stopPropagation();
     if(p.premium&&!unlocked){showPW();return;}
