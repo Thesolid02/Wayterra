@@ -150,6 +150,11 @@ section{padding:80px 24px;}
 .feat-ico{width:44px;height:44px;min-width:44px;border-radius:var(--r);background:var(--w);border:1px solid var(--g200);display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:var(--sh-sm);}
 .feat-t{font-size:.92rem;font-weight:700;color:var(--g900);margin-bottom:4px;}
 .feat-d{font-size:.82rem;color:var(--g500);line-height:1.65;}
+.hs-btn{margin-top:8px;background:#1d4ed8;color:#fff;border:none;border-radius:100px;font-size:.75rem;padding:4px 12px;cursor:pointer;}
+.hs-tooltip{margin-top:10px;background:var(--g100);border-radius:10px;padding:10px 12px;font-size:.78rem;color:var(--g700);}
+.hs-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.hs-gems{font-size:1rem;white-space:nowrap;}
+.hs-note{margin-top:6px;font-size:.72rem;color:var(--g500);font-style:italic;}
 
 /* ── HIDDENNESS ── */
 .gem-rows{display:flex;flex-direction:column;gap:10px;margin-top:28px;max-width:580px;}
@@ -443,29 +448,15 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="s-sub" data-t="feat-sub">Every place has what normal guides never tell you.</div>
     <div class="feats-grid">
       <div class="feat"><div class="feat-ico">🤫</div><div><div class="feat-t" data-t="feat1-t">The local secret</div><div class="feat-d" data-t="feat1-d">For every place, the one thing you won't find on Google. The detail that makes the whole trip worth it.</div></div></div>
-      <div class="feat"><div class="feat-ico">📍</div><div><div class="feat-t" data-t="feat2-t">Real-time GPS map</div><div class="feat-d" data-t="feat2-d">Open the app and see all hidden places around you. Filter by category or mood.</div></div></div>
-      <div class="feat"><div class="feat-ico">🎯</div><div><div class="feat-t" data-t="feat3-t">Two levels of exploration</div><div class="feat-d" data-t="feat3-d">Choose a place, then discover geo-referenced activities with their own pins on the map.</div></div></div>
-      <div class="feat"><div class="feat-ico">💎</div><div><div class="feat-t" data-t="feat4-t">Hiddenness Score</div><div class="feat-d" data-t="feat4-d">Know exactly how secret each place still is — before the crowds find it.</div></div></div>
+      <div class="feat"><div class="feat-ico">📍</div><div><div class="feat-t" data-t="feat2-t">Open the map, let yourself wander</div><div class="feat-d" data-t="feat2-d">Tap a pin, explore nearby activities, discover what's around — even 10 minutes from home.</div></div></div>
+      <div class="feat"><div class="feat-ico">🎯</div><div><div class="feat-t" data-t="feat3-t">From the place to the experience</div><div class="feat-d" data-t="feat3-d">Each hidden spot comes with its own activities — hikes, restaurants, viewpoints — geo-pinned on the map.</div></div></div>
+      <div class="feat"><div class="feat-ico">💎</div><div><div class="feat-t" data-t="feat4-t">Hiddenness Score</div><div class="feat-d" data-t="feat4-d">Know exactly how secret each place still is — before the crowds find it.</div><button class="hs-btn" onclick="var t=this.nextElementSibling;t.style.display=t.style.display==='block'?'none':'block'">Te lo spiego meglio 😊</button><div class="hs-tooltip" style="display:none;"><div class="hs-row"><span class="hs-gems">💎💎💎</span><span><strong>Hidden gem</strong> — Only locals know it</span></div><div class="hs-row"><span class="hs-gems">💎💎<span style="filter:grayscale(1) opacity(.25)">💎</span></span><span><strong>Known to few</strong> — Not yet on the tourist radar</span></div><div class="hs-row"><span class="hs-gems">💎<span style="filter:grayscale(1) opacity(.25)">💎💎</span></span><span><strong>Starting to spread</strong> — Visit before it goes mainstream</span></div><div class="hs-note">Updated manually — no algorithm.</div></div></div></div>
       <div class="feat"><div class="feat-ico">🔄</div><div><div class="feat-t" data-t="feat5-t">Seasonal updates</div><div class="feat-d" data-t="feat5-d">New places every season. Buy once, get updates forever.</div></div></div>
       <div class="feat"><div class="feat-ico">📱</div><div><div class="feat-t" data-t="feat6-t">Any device, no install</div><div class="feat-d" data-t="feat6-d">Pure web app. Works on iPhone, Android, tablet and desktop.</div></div></div>
     </div>
   </div>
 </section>
 
-<!-- HIDDENNESS SCORE -->
-<section style="background:var(--g50);">
-  <div class="si">
-    <div class="badge" data-t="score-badge">Hiddenness Score</div>
-    <div class="s-title" data-t="score-title">Know how secret<br>a place really is</div>
-    <div class="s-sub" data-t="score-sub">No stars, no reviews. Just how far each place is from the tourist radar.</div>
-    <div class="gem-rows">
-      <div class="gem-row"><div class="gem-ico">💎💎💎</div><div><div class="gem-t" data-t="gem1-t">Hidden gem</div><div class="gem-d" data-t="gem1-d">Only locals know it. No guidebook, no influencer has ever been there.</div></div></div>
-      <div class="gem-row"><div class="gem-ico">💎💎</div><div><div class="gem-t" data-t="gem2-t">Known to few</div><div class="gem-d" data-t="gem2-d">Popular in the area, not yet on the organized tourism radar.</div></div></div>
-      <div class="gem-row"><div class="gem-ico">💎</div><div><div class="gem-t" data-t="gem3-t">Starting to spread</div><div class="gem-d" data-t="gem3-d">Still authentic, but worth visiting before it goes mainstream.</div></div></div>
-    </div>
-    <div class="gem-note" data-t="gem-note">Updated manually by the team — no algorithm, just direct field observation.</div>
-  </div>
-</section>
 
 <!-- REGIONS ROADMAP -->
 <section class="regions-sec">
@@ -585,8 +576,8 @@ var T={
     'feat-title':'Not a guidebook.<br>A discovery.',
     'feat-sub':'Every place has what normal guides never tell you.',
     'feat1-t':'The local secret','feat1-d':'For every place, the one thing you won\'t find on Google. The detail that makes the whole trip worth it.',
-    'feat2-t':'Real-time GPS map','feat2-d':'Open the app and see all hidden places around you. Filter by category or mood.',
-    'feat3-t':'Two levels of exploration','feat3-d':'Choose a place, then discover geo-referenced activities with their own pins on the map.',
+    'feat2-t':'Open the map, let yourself wander','feat2-d':'Tap a pin, explore nearby activities, discover what\'s around — even 10 minutes from home.',
+    'feat3-t':'From the place to the experience','feat3-d':'Each hidden spot comes with its own activities — hikes, restaurants, viewpoints — geo-pinned on the map.',
     'feat4-t':'Hiddenness Score','feat4-d':'Know exactly how secret each place still is — before the crowds find it.',
     'feat5-t':'Seasonal updates','feat5-d':'New places every season. Buy once, get updates forever.',
     'feat6-t':'Any device, no install','feat6-d':'Pure web app. Works on iPhone, Android, tablet and desktop.',
@@ -659,8 +650,8 @@ var T={
     'feat-title':'Non è una guida.<br>È una scoperta.',
     'feat-sub':'Ogni luogo ha quello che le guide normali non ti dicono mai.',
     'feat1-t':'Il segreto locale','feat1-d':'Per ogni posto, la cosa che non trovi su Google. Il dettaglio che vale da solo il prezzo.',
-    'feat2-t':'Mappa GPS in tempo reale','feat2-d':'Apri l\'app e vedi tutti i luoghi nascosti intorno a te. Filtra per categoria o mood.',
-    'feat3-t':'Due livelli di esplorazione','feat3-d':'Scegli un luogo, poi scopri le attività specifiche con pin geo-referenziati sulla mappa.',
+    'feat2-t':'Apri la mappa, lasciati trasportare','feat2-d':'Tocca un pin, esplora le attività vicine, scopri cosa c\'è intorno — anche a 10 minuti da casa.',
+    'feat3-t':'Dal luogo all\'esperienza','feat3-d':'Ogni posto nascosto ha le sue attività — escursioni, ristoranti, punti panoramici — geo-referenziate sulla mappa.',
     'feat4-t':'Hiddenness Score','feat4-d':'Sai sempre quanto è ancora segreto ogni luogo — prima che lo trovino tutti.',
     'feat5-t':'Aggiornamenti stagionali','feat5-d':'Nuovi luoghi ogni stagione. Acquisti una volta, aggiornamenti sempre gratis.',
     'feat6-t':'Su qualsiasi dispositivo','feat6-d':'Web app pura. Funziona su iPhone, Android, tablet e desktop.',
