@@ -344,6 +344,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .pw-cl{font-size:.68rem;color:var(--g400);text-align:right;}
 .pw-buy{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.92rem;font-weight:700;cursor:pointer;margin-bottom:10px;}
 .pw-trust{display:flex;align-items:center;justify-content:center;gap:5px;font-size:.7rem;color:var(--g400);}
+.pw-already{display:block;width:100%;padding:11px;background:none;border:1.5px solid var(--blue);border-radius:var(--rl);font-family:var(--f);font-size:.88rem;font-weight:600;color:var(--blue);cursor:pointer;margin-top:10px;}
 .pw-demo{display:block;text-align:center;margin-top:10px;background:none;border:none;font-family:var(--f);font-size:.7rem;color:var(--g300);text-decoration:underline;cursor:pointer;}
 
 /* ── SPLASH ── */
@@ -578,6 +579,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
     </div>
     <button class="pw-buy" id="pw-buy" onclick="handleBuy()">Acquista e inizia a esplorare →</button>
     <div class="pw-trust" data-t="trust">🔒 Pagamento sicuro · Accesso immediato</div>
+    <button class="pw-already" onclick="devUnlock()" data-t="already_bought">Ho già acquistato</button>
     <button class="pw-demo" onclick="devUnlock()" data-t="demo">[Demo] Simula acquisto completato</button>
     <button class="pw-demo" onclick="adminAccess()" style="margin-top:4px;">[Admin] Accesso sviluppatore</button>
   </div>
@@ -586,7 +588,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 <script>
 /* ═══ STORAGE KEYS ═══ */
 var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1'};
-var BUY_URL='https://tuosito.com/acquista';
+var BUY_URL='https://mattiagold.gumroad.com/l/wayterra';
 
 /* ═══ TRANSLATIONS ═══ */
 var T={
@@ -616,6 +618,7 @@ var T={
     price_note:'pagamento unico · accesso a vita',
     trust:'🔒 Pagamento sicuro · Accesso immediato',
     demo:'[Demo] Simula acquisto completato',
+    already_bought:'Ho già acquistato',
     feat1_t:'Mappa GPS',feat1_d:'Tutti i luoghi intorno a te',
     feat2_t:'Segreto locale',feat2_d:'La cosa che non trovi su Google',
     feat3_t:'Due livelli',feat3_d:'Luoghi + attività geo-referenziate',
@@ -649,6 +652,7 @@ var T={
     price_note:'one-time payment · lifetime access',
     trust:'🔒 Secure payment · Instant access',
     demo:'[Demo] Simulate completed purchase',
+    already_bought:'I already purchased',
     feat1_t:'GPS Map',feat1_d:'All places around you in real time',
     feat2_t:'Local secret',feat2_d:'The thing you won\'t find on Google',
     feat3_t:'Two levels',feat3_d:'Places + geo-referenced activities',
@@ -1635,7 +1639,7 @@ function showPW(){
 function hidePW(){
   document.getElementById('pw').style.display='none';
 }
-function handleBuy(){window.location.href=BUY_URL;}
+function handleBuy(){window.open(BUY_URL,'_blank');}
 function adminAccess(){
   var pw=prompt('Password admin:');
   if(pw==='wayterra2025'){
