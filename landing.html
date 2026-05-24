@@ -139,7 +139,7 @@ section{padding:80px 24px;}
 @media(min-width:600px){.cats-grid{grid-template-columns:repeat(4,1fr);}}
 .cat-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:var(--rl);padding:20px 16px;text-align:center;transition:all .18s;cursor:default;}
 .cat-card:hover{background:rgba(255,255,255,.09);transform:translateY(-2px);}
-.cat-ico{font-size:1.8rem;margin-bottom:10px;}
+.cat-ico{font-size:1.8rem;margin-bottom:10px;display:flex;justify-content:center;}
 .cat-n{font-size:.88rem;font-weight:700;color:#fff;margin-bottom:4px;}
 .cat-d{font-size:.76rem;color:rgba(255,255,255,.45);line-height:1.55;}
 
@@ -427,10 +427,10 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="badge" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.45);" data-t="cats-badge">Explore by type</div>
     <div class="s-title" style="color:#fff;font-family:var(--fs);" data-t="cats-title">Every kind of<br>hidden place</div>
     <div class="cats-grid">
-      <div class="cat-card"><div class="cat-ico">🏘</div><div class="cat-n" data-t="cat1-n">Villages</div><div class="cat-d" data-t="cat1-d">Forgotten towns, total silence. Zero tourists.</div></div>
-      <div class="cat-card"><div class="cat-ico">🍽</div><div class="cat-n" data-t="cat2-n">Where to eat</div><div class="cat-d" data-t="cat2-d">Authentic trattorias, real flavors, no signage.</div></div>
-      <div class="cat-card"><div class="cat-ico">📸</div><div class="cat-n" data-t="cat3-n">Photo spots</div><div class="cat-d" data-t="cat3-d">Breathtaking locations nobody has on Instagram.</div></div>
-      <div class="cat-card"><div class="cat-ico">🌿</div><div class="cat-n" data-t="cat4-n">Nature</div><div class="cat-d" data-t="cat4-d">Volcanic lakes, ancient forests, wild canyons.</div></div>
+      <div class="cat-card"><div class="cat-ico"><div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2.5px solid rgba(255,255,255,.8);box-shadow:0 2px 8px rgba(0,0,0,.2);background:#dc6b2f;"><i class="ti ti-building-castle" style="color:#fff;font-size:22px;"></i></div></div><div class="cat-n" data-t="cat1-n">Villages</div><div class="cat-d" data-t="cat1-d">Forgotten towns, total silence. Zero tourists.</div></div>
+      <div class="cat-card"><div class="cat-ico"><div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2.5px solid rgba(255,255,255,.8);box-shadow:0 2px 8px rgba(0,0,0,.2);background:#ca8a04;"><i class="ti ti-tools-kitchen-2" style="color:#fff;font-size:22px;"></i></div></div><div class="cat-n" data-t="cat2-n">Where to eat</div><div class="cat-d" data-t="cat2-d">Authentic trattorias, real flavors, no signage.</div></div>
+      <div class="cat-card"><div class="cat-ico"><div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2.5px solid rgba(255,255,255,.8);box-shadow:0 2px 8px rgba(0,0,0,.2);background:#7c3aed;"><i class="ti ti-camera" style="color:#fff;font-size:22px;"></i></div></div><div class="cat-n" data-t="cat3-n">Photo spots</div><div class="cat-d" data-t="cat3-d">Breathtaking locations nobody has on Instagram.</div></div>
+      <div class="cat-card"><div class="cat-ico"><div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2.5px solid rgba(255,255,255,.8);box-shadow:0 2px 8px rgba(0,0,0,.2);background:#16a34a;"><i class="ti ti-leaf" style="color:#fff;font-size:22px;"></i></div></div><div class="cat-n" data-t="cat4-n">Nature</div><div class="cat-d" data-t="cat4-d">Volcanic lakes, ancient forests, wild canyons.</div></div>
     </div>
   </div>
 </section>
