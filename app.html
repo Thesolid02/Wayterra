@@ -8,6 +8,7 @@
 <title>Wayterra — Discover hidden places</title>
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+<script src="https://gumroad.com/js/gumroad.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
@@ -577,7 +578,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
       <div><div class="pw-pn">€ 9</div><div class="pw-pnote" data-t="price_note">pagamento unico · accesso a vita</div></div>
       <div><div class="pw-cn" id="pw-cn">—</div><div class="pw-cl" data-t="places_lbl">luoghi nel Lazio</div></div>
     </div>
-    <button class="pw-buy" id="pw-buy" onclick="handleBuy()">Acquista e inizia a esplorare →</button>
+    <a class="gumroad-button" href="https://mattiagold.gumroad.com/l/wayterra" data-gumroad-overlay-checkout="true" style="width:100%;text-align:center;display:block;">Unlock all places — €9</a>
     <div class="pw-trust" data-t="trust">🔒 Pagamento sicuro · Accesso immediato</div>
     <button class="pw-already" onclick="devUnlock()" data-t="already_bought">Ho già acquistato</button>
     <button class="pw-demo" onclick="devUnlock()" data-t="demo">[Demo] Simula acquisto completato</button>
@@ -813,7 +814,6 @@ function applyTranslations(){
   document.getElementById('fav-title').textContent=t('favorites');
   document.getElementById('pw-h').innerHTML=t('pw_h');
   document.getElementById('pw-s').textContent=t('pw_s');
-  document.getElementById('pw-buy').textContent=t('pw_buy');
   document.querySelectorAll('[data-t]').forEach(function(el){
     var k=el.getAttribute('data-t');
     if(T[lang][k])el.textContent=T[lang][k];
