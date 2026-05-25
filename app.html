@@ -47,7 +47,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .fav-btn{background:var(--w);border-radius:100px;box-shadow:var(--sh-sm);
   border:0.5px solid var(--g200);width:38px;height:38px;display:flex;align-items:center;
   justify-content:center;cursor:pointer;font-size:1.1rem;transition:all .15s;}
-.fav-btn.has-items{color:#ef4444;}
+.fav-btn.has-items{color:#2563eb;}
 
 /* ── SEARCH DROPDOWN ── */
 #search-bar{position:fixed;z-index:300;top:calc(env(safe-area-inset-top,0px) + 62px);left:14px;right:14px;}
@@ -203,7 +203,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-header-name{font-size:1rem;font-weight:700;color:var(--g900);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .dp-save{width:34px;height:34px;border-radius:50%;background:var(--g50);border:0.5px solid var(--g200);
   display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:1rem;}
-.dp-save.saved{background:#fef2f2;color:#ef4444;border-color:#fecaca;}
+.dp-save.saved{background:#eff6ff;color:#2563eb;border-color:#bfdbfe;}
 .dp-hero{height:200px;position:relative;flex-shrink:0;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:3rem;}
 .dp-hero img{width:100%;height:100%;object-fit:cover;display:block;}
 .dp-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.35) 0%,transparent 60%);}
@@ -317,8 +317,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .fav-item-actions{display:flex;gap:6px;}
 .fav-item-map{flex:1;padding:5px;background:var(--g900);color:#fff;border:none;border-radius:7px;
   font-family:var(--f);font-size:.74rem;font-weight:600;cursor:pointer;}
-.fav-item-rm{width:28px;padding:5px;background:none;border:0.5px solid #fecaca;border-radius:7px;
-  font-size:.85rem;cursor:pointer;color:#ef4444;}
+.fav-item-rm{width:28px;padding:5px;background:none;border:0.5px solid #bfdbfe;border-radius:7px;
+  font-size:.85rem;cursor:pointer;color:#2563eb;}
 
 /* ── PAYWALL ── */
 #pw{position:fixed;inset:0;z-index:600;display:flex;flex-direction:column;overflow-y:auto;background:var(--w);}
@@ -427,7 +427,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
       <button class="lang-btn on" id="btn-it" onclick="setLang('it')">IT</button>
       <button class="lang-btn off" id="btn-en" onclick="setLang('en')">EN</button>
     </div>
-    <button class="fav-btn" id="fav-btn" onclick="openFavPage()">♡</button>
+    <button class="fav-btn" id="fav-btn" onclick="openFavPage()"><i class="ti ti-bookmark"></i></button>
   </div>
 </div>
 
@@ -498,7 +498,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   <div class="dp-header">
     <button class="dp-back" onclick="closeDetail()">←</button>
     <div class="dp-header-name" id="dp-name"></div>
-    <button class="dp-save" id="dp-save">♡</button>
+    <button class="dp-save" id="dp-save"><i class="ti ti-bookmark"></i></button>
   </div>
   <div class="dp-hero" id="dp-hero">
     <div class="dp-hero-overlay"></div>
@@ -603,12 +603,12 @@ var T={
     discover:'Scopri il luogo →',
     unlock:'🔒 Sblocca con Premium',
     maps:'Apri in Google Maps →',
-    saved:'Salvato ♥',
+    saved:'Salvato',
     secret_lbl:'Il segreto locale',
     activities:'Cosa fare qui',
     favorites:'I miei preferiti',
     no_favorites:'Nessun preferito',
-    no_favorites_desc:'Tocca il cuore su un luogo per salvarlo qui.',
+    no_favorites_desc:'Tocca il segnalibro su un luogo per salvarlo qui.',
     see_map:'Vedi sulla mappa',
     see_detail:'Vedi dettaglio',
     places:'luoghi',
@@ -637,12 +637,12 @@ var T={
     discover:'Discover this place →',
     unlock:'🔒 Unlock with Premium',
     maps:'Open in Google Maps →',
-    saved:'Saved ♥',
+    saved:'Saved',
     secret_lbl:'The local secret',
     activities:'Things to do here',
     favorites:'My favorites',
     no_favorites:'No favorites yet',
-    no_favorites_desc:'Tap the heart on a place to save it here.',
+    no_favorites_desc:'Tap the bookmark on a place to save it here.',
     see_map:'See on map',
     see_detail:'See details',
     places:'places',
@@ -1555,8 +1555,8 @@ function closeDetail(){
 function setupDpSave(id){
   var sv=document.getElementById('dp-save');
   sv.className='dp-save'+(favs.has(id)?' saved':'');
-  sv.textContent=favs.has(id)?'♥':'♡';
-  sv.onclick=function(){toggleFav(id);sv.className='dp-save'+(favs.has(id)?' saved':'');sv.textContent=favs.has(id)?'♥':'♡';};
+  sv.innerHTML=favs.has(id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';
+  sv.onclick=function(){toggleFav(id);sv.className='dp-save'+(favs.has(id)?' saved':'');sv.innerHTML=favs.has(id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';};
 }
 
 /* ═══ FAVORITES ═══ */
@@ -1568,7 +1568,7 @@ function toggleFav(id){
 function updFavBtn(){
   var btn=document.getElementById('fav-btn');
   if(!btn)return;
-  btn.textContent=favs.size>0?'♥':'♡';
+  btn.innerHTML=favs.size>0?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';
   btn.className='fav-btn'+(favs.size>0?' has-items':'');
 }
 function openFavPage(){
@@ -1579,7 +1579,7 @@ function openFavPage(){
   document.getElementById('fav-count').textContent=favList.length>0?favList.length+' '+t('places'):'';
   if(favList.length===0){
     scroll.innerHTML='<div class="fav-empty">'
-      +'<div class="fav-empty-ico">♡</div>'
+      +'<div class="fav-empty-ico"><i class="ti ti-bookmark"></i></div>'
       +'<div class="fav-empty-title">'+t('no_favorites')+'</div>'
       +'<div class="fav-empty-desc">'+t('no_favorites_desc')+'</div>'
       +'</div>';
@@ -1598,7 +1598,7 @@ function openFavPage(){
         +'<div class="fav-item-actions">'
         +'<button class="fav-item-map" onclick="goToFav('+p.id+')" style="flex:1;">'+t('see_detail')+'</button>'
         +'<button class="fav-item-map" onclick="openFavMaps('+p.id+')" style="flex:0 0 auto;padding:5px 8px;background:var(--g100);color:var(--g700);">🗺</button>'
-        +'<button class="fav-item-rm" onclick="removeFav('+p.id+')">♥</button>'
+        +'<button class="fav-item-rm" onclick="removeFav('+p.id+')" title="Rimuovi"><i class="ti ti-bookmark-filled"></i></button>'
         +'</div>'
         +'</div>'
         +'</div>';
