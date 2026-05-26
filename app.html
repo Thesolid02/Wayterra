@@ -943,18 +943,78 @@ function initMap(){
   map_o.on('style.load',function(){
     DATA.places.forEach(function(p){addL1(p);});
     addCityLabels();
+
+    map_o.addSource('places',{
+      type:'geojson',
+      data:{
+        type:'FeatureCollection',
+        features:DATA.places.map(function(p){
+          return {type:'Feature',geometry:{type:'Point',coordinates:[p.lng,p.lat]},properties:{id:p.id,cat:p.cat,premium:p.premium}};
+        })
+      },
+      cluster:true,
+      clusterMaxZoom:10,
+      clusterRadius:50
+    });
+
+    map_o.addLayer({
+      id:'clusters',
+      type:'circle',
+      source:'places',
+      filter:['has','point_count'],
+      paint:{
+        'circle-color':'#dc6b2f',
+        'circle-radius':['step',['get','point_count'],18,5,22,10,26],
+        'circle-stroke-width':2.5,
+        'circle-stroke-color':'white'
+      }
+    });
+
+    map_o.addLayer({
+      id:'cluster-count',
+      type:'symbol',
+      source:'places',
+      filter:['has','point_count'],
+      layout:{
+        'text-field':'{point_count_abbreviated}',
+        'text-font':['DIN Offc Pro Medium','Arial Unicode MS Bold'],
+        'text-size':12
+      },
+      paint:{'text-color':'white'}
+    });
+
+    map_o.on('click','clusters',function(e){
+      var features=map_o.queryRenderedFeatures(e.point,{layers:['clusters']});
+      var clusterId=features[0].properties.cluster_id;
+      map_o.getSource('places').getClusterExpansionZoom(clusterId,function(err,zoom){
+        if(err)return;
+        map_o.easeTo({center:features[0].geometry.coordinates,zoom:zoom});
+      });
+    });
+
+    map_o.on('mouseenter','clusters',function(){map_o.getCanvas().style.cursor='pointer';});
+    map_o.on('mouseleave','clusters',function(){map_o.getCanvas().style.cursor='';});
+
+    // hide individual markers at initial zoom (clusters active)
+    DATA.places.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
   map_o.on('click',function(){closeBubble();closeBottomCard();closeActMapPopup();if(ddOpen)closeDD();});
   map_o.on('zoomend',function(){
-    if(window.innerWidth>=768)return;
     var z=map_o.getZoom();
-    DATA.places.forEach(function(p){
-      var m=l1Mk[p.id];if(!m)return;
-      var el=createPinEl(p,false,z>=11);
-      m.getElement().innerHTML=el.innerHTML;
-    });
+    if(window.innerWidth<768){
+      DATA.places.forEach(function(p){
+        var m=l1Mk[p.id];if(!m)return;
+        var el=createPinEl(p,false,z>=11);
+        m.getElement().innerHTML=el.innerHTML;
+      });
+    }
+    if(z<=10){
+      DATA.places.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
+    } else {
+      if(activePId)dimL1(activePId);else restoreL1();
+    }
   });
   setTimeout(function(){
     if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(pos){
