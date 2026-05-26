@@ -1006,6 +1006,11 @@ function initMap(){
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
   map_o.on('click',function(){closeBubble();closeBottomCard();closeActMapPopup();if(ddOpen)closeDD();});
+  map_o.on('zoom',function(){
+    if(map_o.getZoom()<=10){
+      romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
+    }
+  });
   map_o.on('zoomend',function(){
     var z=map_o.getZoom();
     if(window.innerWidth<768){
