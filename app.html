@@ -749,7 +749,7 @@ var DEF_PLACES=[
 ];
 
 /* ═══ STATE ═══ */
-var map_o,userMk;
+var map_o,userMk,romaLabelMk;
 var activeFilter='all',level=1,activePId=null;
 var l1Mk={},l2Mk=[];
 var favs=new Set();
@@ -970,9 +970,11 @@ function initMap(){
     var z=map_o.getZoom();
     if(z<11){
       if(romaClusterMk)romaClusterMk.addTo(map_o);
+      if(romaLabelMk)romaLabelMk.addTo(map_o);
       romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
     } else {
       if(romaClusterMk)romaClusterMk.remove();
+      if(romaLabelMk)romaLabelMk.remove();
     }
   });
   map_o.on('zoomend',function(){
@@ -1020,9 +1022,10 @@ function addCityLabels(){
     el.textContent=c.name;
     el.style.cssText='font-size:'+(c.big?'11px':'12px')+';font-weight:'+(c.big?'400':'500')+';color:'+(c.big?'#3a3a38':'#888780')+';letter-spacing:.02em;pointer-events:none;text-shadow:0 0 4px rgba(242,238,234,.9),0 0 8px rgba(242,238,234,.7);white-space:nowrap;';
     el.style.zIndex='1';
-    new mapboxgl.Marker({element:el,anchor:'center',offset:c.name==='Roma'?[0,20]:[0,0]})
+    var mk=new mapboxgl.Marker({element:el,anchor:'center',offset:c.name==='Roma'?[0,20]:[0,0]})
       .setLngLat([c.lng,c.lat])
       .addTo(map_o);
+    if(c.name==='Roma')romaLabelMk=mk;
   });
 }
 
