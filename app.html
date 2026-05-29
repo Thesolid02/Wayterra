@@ -494,6 +494,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 
 <div id="dp-lightbox" onclick="closeLightbox()">
   <img id="dp-lightbox-img" src="" alt="">
+  <video id="dp-lightbox-vid" controls autoplay playsinline style="max-width:100%;max-height:80vh;border-radius:var(--r);display:none;" onclick="event.stopPropagation()"></video>
   <button id="dp-lightbox-close" onclick="closeLightbox()">✕</button>
   <button class="dp-lightbox-prev" id="dp-lightbox-prev" onclick="event.stopPropagation();navigateLightbox(-1)">&#8249;</button>
   <button class="dp-lightbox-next" id="dp-lightbox-next" onclick="event.stopPropagation();navigateLightbox(1)">&#8250;</button>
@@ -929,15 +930,26 @@ function isVideo(src){
   var u=src.split('?')[0].toLowerCase();
   return u.endsWith('.mp4')||u.endsWith('.mov')||u.endsWith('.webm');
 }
+function showLightboxItem(src){
+  var img=document.getElementById('dp-lightbox-img');
+  var vid=document.getElementById('dp-lightbox-vid');
+  if(isVideo(src)){
+    img.style.display='none'; img.src='';
+    vid.src=src; vid.style.display='block';
+  } else {
+    vid.pause(); vid.src=''; vid.style.display='none';
+    img.src=src; img.style.display='';
+  }
+}
 function openLightbox(idx,p){
-  var gallery=(p.gallery||[]).filter(function(s){return s&&s.length>10&&!isVideo(s);});
-  if(!gallery[idx])return;
+  var gallery=(p.gallery||[]).filter(function(s){return s&&s.length>10;});
+  if(idx<0||idx>=gallery.length)return;
   currentLightboxGallery=gallery;
   currentLightboxIdx=idx;
   var lb=document.getElementById('dp-lightbox');
-  document.getElementById('dp-lightbox-img').src=gallery[idx];
-  document.getElementById('dp-lightbox-counter').textContent=(idx+1)+'/'+gallery.length;
   lb.classList.add('show');
+  showLightboxItem(gallery[idx]);
+  document.getElementById('dp-lightbox-counter').textContent=(idx+1)+'/'+gallery.length;
   var tx=0;
   lb.ontouchstart=function(e){tx=e.touches[0].clientX;};
   lb.ontouchend=function(e){
@@ -949,12 +961,15 @@ function navigateLightbox(dir){
   var n=currentLightboxGallery.length;
   if(!n)return;
   currentLightboxIdx=(currentLightboxIdx+dir+n)%n;
-  document.getElementById('dp-lightbox-img').src=currentLightboxGallery[currentLightboxIdx];
+  showLightboxItem(currentLightboxGallery[currentLightboxIdx]);
   document.getElementById('dp-lightbox-counter').textContent=(currentLightboxIdx+1)+'/'+n;
 }
 function closeLightbox(){
+  var vid=document.getElementById('dp-lightbox-vid');
+  vid.pause(); vid.src=''; vid.style.display='none';
+  var img=document.getElementById('dp-lightbox-img');
+  img.src=''; img.style.display='';
   document.getElementById('dp-lightbox').classList.remove('show');
-  document.getElementById('dp-lightbox-img').src='';
   document.getElementById('dp-lightbox').ontouchstart=null;
   document.getElementById('dp-lightbox').ontouchend=null;
 }
@@ -1559,19 +1574,14 @@ function openDetail(){
   var gallWrap=document.getElementById('dp-gallery-wrap');
   var gallery=(p.gallery||[]).filter(function(s){return s&&s.length>10;});
   if(gallery.length){
-    var imgs=gallery.filter(function(s){return!isVideo(s);});
-    var vids=gallery.filter(function(s){return isVideo(s);});
-    var html='<div class="dp-gallery-lbl">📷 Foto</div>';
-    if(imgs.length){
-      html+='<div class="dp-gallery">'
-        +imgs.map(function(src,i){
-          return'<img src="'+src+'" alt="" onclick="openLightbox(\''+i+'\',currentPlace)">';
-        }).join('')
-        +'</div>';
-    }
-    vids.forEach(function(src){
-      html+='<video controls playsinline src="'+src+'" style="width:100%;border-radius:var(--r);margin-bottom:8px;"></video>';
-    });
+    var html='<div class="dp-gallery-lbl">📷 Foto</div><div class="dp-gallery">'
+      +gallery.map(function(src,i){
+        if(isVideo(src)){
+          return'<video src="'+src+'" preload="metadata" onclick="openLightbox('+i+',currentPlace)" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);cursor:pointer;display:block;"></video>';
+        }
+        return'<img src="'+src+'" alt="" onclick="openLightbox('+i+',currentPlace)">';
+      }).join('')
+      +'</div>';
     gallWrap.innerHTML=html;
   } else {
     gallWrap.innerHTML='';
