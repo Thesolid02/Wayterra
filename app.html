@@ -222,8 +222,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-gallery img{width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;border:0.5px solid var(--g200);}
 .dp-gallery-item{position:relative;width:72px;height:72px;flex-shrink:0;}
 .dp-gallery-item video{width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;border:0.5px solid var(--g200);display:block;}
-.dp-gallery-item .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;border-radius:8px;}
-.dp-gallery-item .play-overlay span{width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.52);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;line-height:1;padding-left:2px;}
+.dp-gallery-item .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;border-radius:8px;background:rgba(0,0,0,.3);}
+.dp-gallery-item .play-overlay i{color:#fff;font-size:1.5rem;}
 .dp-gallery-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:8px;}
 .dp-acts-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:10px;}
 /* activity detail popup */
@@ -1578,10 +1578,11 @@ function openDetail(){
   var gallWrap=document.getElementById('dp-gallery-wrap');
   var gallery=(p.gallery||[]).filter(function(s){return s&&s.length>10;});
   if(gallery.length){
-    var html='<div class="dp-gallery-lbl">📷 Foto</div><div class="dp-gallery">'
+    var lbl=lang==='en'?'📷 Gallery':'📷 Galleria';
+    var html='<div class="dp-gallery-lbl">'+lbl+'</div><div class="dp-gallery">'
       +gallery.map(function(src,i){
         if(isVideo(src)){
-          return'<div class="dp-gallery-item" onclick="openLightbox('+i+',currentPlace)"><video src="'+src+'" preload="metadata"></video><div class="play-overlay"><span>&#9654;</span></div></div>';
+          return'<div class="dp-gallery-item" onclick="openLightbox('+i+',currentPlace)"><video src="'+src+'" preload="auto" muted playsinline></video><div class="play-overlay"><i class="ti ti-player-play-filled"></i></div></div>';
         }
         return'<img src="'+src+'" alt="" onclick="openLightbox('+i+',currentPlace)">';
       }).join('')
