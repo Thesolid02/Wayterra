@@ -923,8 +923,14 @@ function closeActPopup(){
   document.getElementById('act-popup').classList.remove('show');
 }
 
+function isVideo(src){
+  if(!src)return false;
+  if(src.startsWith('video:'))return true;
+  var u=src.split('?')[0].toLowerCase();
+  return u.endsWith('.mp4')||u.endsWith('.mov')||u.endsWith('.webm');
+}
 function openLightbox(idx,p){
-  var gallery=(p.gallery||[]).filter(function(s){return s&&s.length>10;});
+  var gallery=(p.gallery||[]).filter(function(s){return s&&s.length>10&&!isVideo(s);});
   if(!gallery[idx])return;
   currentLightboxGallery=gallery;
   currentLightboxIdx=idx;
@@ -1553,12 +1559,20 @@ function openDetail(){
   var gallWrap=document.getElementById('dp-gallery-wrap');
   var gallery=(p.gallery||[]).filter(function(s){return s&&s.length>10;});
   if(gallery.length){
-    gallWrap.innerHTML='<div class="dp-gallery-lbl">📷 Foto</div>'
-      +'<div class="dp-gallery">'
-      +gallery.map(function(src,i){
-        return'<img src="'+src+'" alt="" onclick="openLightbox(\''+i+'\',currentPlace)">';
-      }).join('')
-      +'</div>';
+    var imgs=gallery.filter(function(s){return!isVideo(s);});
+    var vids=gallery.filter(function(s){return isVideo(s);});
+    var html='<div class="dp-gallery-lbl">📷 Foto</div>';
+    if(imgs.length){
+      html+='<div class="dp-gallery">'
+        +imgs.map(function(src,i){
+          return'<img src="'+src+'" alt="" onclick="openLightbox(\''+i+'\',currentPlace)">';
+        }).join('')
+        +'</div>';
+    }
+    vids.forEach(function(src){
+      html+='<video controls playsinline src="'+src+'" style="width:100%;border-radius:var(--r);margin-bottom:8px;"></video>';
+    });
+    gallWrap.innerHTML=html;
   } else {
     gallWrap.innerHTML='';
   }

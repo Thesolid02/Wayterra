@@ -103,6 +103,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
 .pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:10px;}
 .pi{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--g200);}
 .pi img{width:100%;height:68px;object-fit:cover;display:block;}
+.pi video{width:100%;height:68px;object-fit:cover;display:block;}
 .pirm{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(220,38,38,.88);color:#fff;border:none;cursor:pointer;font-size:.55rem;display:flex;align-items:center;justify-content:center;}
 .cv-prev{margin-top:8px;max-width:160px;}
 .cv-prev img{width:100%;height:80px;object-fit:cover;border-radius:var(--r);border:1px solid var(--g200);}
@@ -260,13 +261,21 @@ textarea.ft{resize:vertical;line-height:1.65;}
       </div>
     </div>
     <div class="fg">
-      <label>Galleria (max 6 foto)</label>
-      <label class="pa" style="display:block;">
-        <input type="file" id="ginp" accept="image/*" multiple onchange="handleGallery(this)" style="display:none;">
-        <div style="font-size:1.3rem;margin-bottom:4px;">🖼</div>
-        <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Aggiungi foto alla galleria</div>
-        <div style="font-size:.72rem;color:var(--g400);margin-top:3px;">Clicca per selezionare (max 6)</div>
-      </label>
+      <label>Galleria (max 6 foto/video)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <label class="pa" style="display:block;flex:1;min-width:140px;">
+          <input type="file" id="ginp" accept="image/*" multiple onchange="handleGallery(this)" style="display:none;">
+          <div style="font-size:1.3rem;margin-bottom:4px;">🖼</div>
+          <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Aggiungi foto</div>
+          <div style="font-size:.72rem;color:var(--g400);margin-top:3px;">Clicca per selezionare (max 6)</div>
+        </label>
+        <label class="pa" style="display:block;flex:1;min-width:140px;">
+          <input type="file" id="vinp" accept="video/*" multiple onchange="handleGalleryVideo(this)" style="display:none;">
+          <div style="font-size:1.3rem;margin-bottom:4px;">🎬</div>
+          <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Aggiungi video</div>
+          <div style="font-size:.72rem;color:var(--g400);margin-top:3px;">Clicca per selezionare</div>
+        </label>
+      </div>
       <div class="pg" id="ggrid"></div>
     </div>
     <div class="sdiv">Info pratiche (pillole)</div>
@@ -768,6 +777,24 @@ function uploadToStorage(file, callback){
 // mantieni compatibilità con vecchio nome
 function compressImage(file, callback){ uploadToStorage(file, callback); }
 
+function uploadVideoToStorage(file, callback){
+  var ext=(file.name.split('.').pop()||'mp4').toLowerCase();
+  var filename=Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;
+  fetch(SB_STORAGE_URL+filename,{
+    method:'POST',
+    headers:{
+      'apikey':SB_KEY,
+      'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':file.type||'video/mp4',
+      'x-upsert':'true'
+    },
+    body:file
+  })
+  .then(function(res){if(!res.ok)throw new Error('Upload failed: '+res.status);return res.json();})
+  .then(function(){callback(SB_PUBLIC_URL+filename);})
+  .catch(function(err){toast('⚠️ Errore upload video: '+err.message,'err');});
+}
+
 // ═══ TABS ═══
 function switchTab(t,btn){
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
@@ -960,11 +987,33 @@ function handleGallery(inp){
   });
   inp.value='';
 }
+function handleGalleryVideo(inp){
+  var files=Array.from(inp.files),rem=6-galleryData.length,toLoad=files.slice(0,rem);
+  if(!toLoad.length){toast('Massimo 6 elementi nella galleria','err');return;}
+  toast('Caricamento video…');
+  var done=0;
+  toLoad.forEach(function(f){
+    uploadVideoToStorage(f,function(url){
+      galleryData.push(url); renderGGrid();
+      done++; if(done===toLoad.length) toast('Video aggiunto ✓','ok');
+    });
+  });
+  inp.value='';
+}
+function isVideo(src){
+  if(!src)return false;
+  if(src.startsWith('video:'))return true;
+  var u=src.split('?')[0].toLowerCase();
+  return u.endsWith('.mp4')||u.endsWith('.mov')||u.endsWith('.webm');
+}
 function removeGPhoto(i){ galleryData.splice(i,1); renderGGrid(); }
 function renderGGrid(){
   document.getElementById('ggrid').innerHTML=galleryData.map(function(src,i){
+    var preview=isVideo(src)
+      ?'<video src="'+src+'" muted playsinline style="width:100%;height:68px;object-fit:cover;display:block;"></video>'
+      :'<img src="'+src+'">';
     return '<div class="pi">'+(i===0?'<div style="position:absolute;bottom:3px;left:3px;font-size:.5rem;font-weight:700;padding:2px 5px;border-radius:3px;background:rgba(37,99,235,.85);color:#fff;">COVER</div>':'')
-      +'<img src="'+src+'"><button class="pirm" onclick="removeGPhoto('+i+')">✕</button></div>';
+      +preview+'<button class="pirm" onclick="removeGPhoto('+i+')">✕</button></div>';
   }).join('');
 }
 function updGrad(){
