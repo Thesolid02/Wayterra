@@ -100,6 +100,8 @@ section{padding:80px 24px;}
 @media(min-width:768px){.preview-inner{grid-template-columns:1fr 1fr;gap:60px;}}
 .preview-text .badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);}
 .preview-text .s-title{color:#fff;}
+.highlight-marker{position:relative;display:inline;color:white;z-index:1;padding:2px 5px;}
+.highlight-marker::before{content:'';position:absolute;top:-2px;left:-3px;width:calc(100% + 6px);height:calc(100% + 4px);z-index:-1;background:#dc6b2f;clip-path:polygon(2% 15%, 8% 5%, 95% 0%, 100% 10%, 98% 85%, 92% 100%, 5% 95%, 0% 80%);}
 .preview-text .s-sub{color:rgba(255,255,255,.55);}
 .preview-steps{margin-top:28px;display:flex;flex-direction:column;gap:16px;}
 .preview-step{display:flex;align-items:flex-start;gap:14px;}
@@ -336,8 +338,8 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   <div class="si preview-inner">
     <div class="preview-text">
       <div class="badge" data-t="prev-badge">How it works</div>
-      <div class="s-title" data-t="prev-title">Two taps to<br>a hidden place</div>
-      <p class="s-sub" style="color:rgba(255,255,255,.5);" data-t="prev-sub">No long reads. No algorithm. Just open the map and start exploring.</p>
+      <div class="s-title" data-t="prev-title">Explore <span class="highlight-marker">hidden places</span> like a true local.</div>
+      <p class="s-sub" style="color:rgba(255,255,255,.5);" data-t="prev-sub">Save hours of searching on blogs, Instagram and TikTok. No algorithm. Only authentic hidden places, recommended by those who truly know the area.</p>
       <div class="preview-steps">
         <div class="preview-step">
           <div class="ps-num">1</div>
@@ -563,8 +565,8 @@ var T={
     'pp-bub-score':'💎💎💎 Hidden gem',
     'pp-bub-btn':'Discover this place →',
     'prev-badge':'How it works',
-    'prev-title':'Two taps to<br>a hidden place',
-    'prev-sub':'No long reads. No algorithm. Just open the map and start exploring.',
+    'prev-title':'Explore <span class=\'highlight-marker\'>hidden places</span> like a true local.',
+    'prev-sub':'Save hours of searching on blogs, Instagram and TikTok. No algorithm. Only authentic hidden places, recommended by those who truly know the area.',
     'step1-t':'Open the map','step1-d':'All places appear around you, organized by category.',
     'step2-t':'Select a place','step2-d':'Every place is a discovery',
     'step3-t':'Decide what to do','step3-d':'In your chosen place, explore everything you can do — activities, where to eat, where to stay. Plan your day perfectly.',
@@ -637,8 +639,8 @@ var T={
     'pp-bub-score':'💎💎💎 Gemma nascosta',
     'pp-bub-btn':'Scopri il luogo →',
     'prev-badge':'Come funziona',
-    'prev-title':'Due tap per<br>un luogo nascosto',
-    'prev-sub':'Nessuna lettura. Nessun algoritmo. Apri la mappa e inizia a esplorare.',
+    'prev-title':'Esplora <span class=\'highlight-marker\'>luoghi nascosti</span> come un vero local.',
+    'prev-sub':'Risparmia ore e ore di ricerche su blog, Instagram e Tik Tok. Nessun algoritmo. Solo luoghi autentici e nascosti, consigliati da chi conosce veramente il territorio.',
     'step1-t':'Apri la mappa','step1-d':'Tutti i luoghi appaiono intorno a te, organizzati per categoria.',
     'step2-t':'Seleziona il luogo','step2-d':'Ogni luogo è una scoperta',
     'step3-t':'Decidi cosa fare','step3-d':'Nel luogo scelto esplora tutto quello che puoi fare, attività, dove mangiare, dove dormire. Organizza al meglio la tua giornata',
