@@ -220,6 +220,10 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-pill{font-size:.71rem;font-weight:500;padding:5px 11px;border-radius:100px;border:1px solid var(--g200);background:var(--w);color:var(--g700);}
 .dp-gallery{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
 .dp-gallery img{width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;border:0.5px solid var(--g200);}
+.dp-gallery-item{position:relative;width:72px;height:72px;flex-shrink:0;}
+.dp-gallery-item video{width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;border:0.5px solid var(--g200);display:block;}
+.dp-gallery-item .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;border-radius:8px;}
+.dp-gallery-item .play-overlay span{width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.52);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;line-height:1;padding-left:2px;}
 .dp-gallery-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:8px;}
 .dp-acts-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:10px;}
 /* activity detail popup */
@@ -1577,7 +1581,7 @@ function openDetail(){
     var html='<div class="dp-gallery-lbl">📷 Foto</div><div class="dp-gallery">'
       +gallery.map(function(src,i){
         if(isVideo(src)){
-          return'<video src="'+src+'" preload="metadata" onclick="openLightbox('+i+',currentPlace)" style="width:100%;height:200px;object-fit:cover;border-radius:var(--r);cursor:pointer;display:block;"></video>';
+          return'<div class="dp-gallery-item" onclick="openLightbox('+i+',currentPlace)"><video src="'+src+'" preload="metadata"></video><div class="play-overlay"><span>&#9654;</span></div></div>';
         }
         return'<img src="'+src+'" alt="" onclick="openLightbox('+i+',currentPlace)">';
       }).join('')
