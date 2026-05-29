@@ -221,16 +221,16 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <div class="g2">
       <div class="fg full"><label>Nome *</label><input type="text" id="p-name" placeholder="Es. Civita di Bagnoregio"></div>
       <div class="fg"><label>Regione</label><input type="text" id="p-region" placeholder="Es. Viterbo · Alto Lazio"></div>
-      <div class="fg"><label>Categoria *</label><select class="fs" id="p-cat"></select></div>
+      <div class="fg"><label>Categoria</label><select class="fs" id="p-cat"></select></div>
       <div class="fg"><label>Latitudine *</label><input type="number" id="p-lat" step="0.0001" placeholder="42.6274"></div>
       <div class="fg"><label>Longitudine *</label><input type="number" id="p-lng" step="0.0001" placeholder="12.1134"></div>
     </div>
     <div class="sdiv">Contenuto</div>
-    <div class="fg"><label>Tagline *</label><input type="text" id="p-tagline" placeholder="Frase breve che cattura l'essenza del luogo"></div>
+    <div class="fg"><label>Tagline</label><input type="text" id="p-tagline" placeholder="Frase breve che cattura l'essenza del luogo"></div>
     <div class="fg"><label>Tagline EN <span style="font-size:.68rem;font-weight:400;color:var(--g400);">opzionale — se vuoto usa l'italiano</span></label><input type="text" id="p-tagline-en" placeholder="Short phrase capturing the essence of the place"></div>
-    <div class="fg"><label>Descrizione *</label><textarea class="ft" id="p-desc" rows="4" placeholder="Descrizione completa…"></textarea></div>
+    <div class="fg"><label>Descrizione</label><textarea class="ft" id="p-desc" rows="4" placeholder="Descrizione completa…"></textarea></div>
     <div class="fg"><label>Description EN <span style="font-size:.68rem;font-weight:400;color:var(--g400);">opzionale</span></label><textarea class="ft" id="p-desc-en" rows="4" placeholder="Full description in English…"></textarea></div>
-    <div class="fg"><label>🤫 Segreto locale *</label><textarea class="ft" id="p-secret" rows="3" placeholder="La cosa che non trovi su Google…"></textarea></div>
+    <div class="fg"><label>🤫 Segreto locale</label><textarea class="ft" id="p-secret" rows="3" placeholder="La cosa che non trovi su Google…"></textarea></div>
     <div class="fg"><label>🤫 Local secret EN <span style="font-size:.68rem;font-weight:400;color:var(--g400);">opzionale</span></label><textarea class="ft" id="p-secret-en" rows="3" placeholder="The thing you won't find on Google…"></textarea></div>
     <div class="sdiv">🔭 Hiddenness Score</div>
     <div style="background:var(--g50);border-radius:var(--rl);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:14px;" id="score-preview-wrap">
@@ -990,7 +990,7 @@ function addActRow(a){
     +'<button class="btn bd sm ico" onclick="this.closest(\'.arow-wrap\').remove()">✕</button></div>'
     +'<div class="g2">'
     +'<div class="fg"><label>Nome *</label><input type="text" class="ar-name" placeholder="Es. Sentiero del tufo"></div>'
-    +'<div class="fg"><label>Tipo *</label><select class="fs ar-type" onchange="onTypeChange(this,\''+rid+'\')">'+opts+'</select></div>'
+    +'<div class="fg"><label>Tipo</label><select class="fs ar-type" onchange="onTypeChange(this,\''+rid+'\')">'+opts+'</select></div>'
     +'<div class="fg"><label>Latitudine <span style="font-weight:400;color:var(--g400);">opzionale</span></label><input type="text" class="ar-lat" placeholder="lascia vuoto = solo card"></div>'
     +'<div class="fg"><label>Longitudine <span style="font-weight:400;color:var(--g400);">opzionale</span></label><input type="text" class="ar-lng" placeholder="lascia vuoto = solo card"></div>'
     +'</div>'
@@ -1097,7 +1097,6 @@ function savePlace(){
   var descEn=document.getElementById('p-desc-en').value.trim();
   if(!name){toast('Nome obbligatorio','err');return;}
   if(isNaN(lat)||isNaN(lng)){toast('Coordinate obbligatorie','err');return;}
-  if(!tagline||!desc){toast('Tagline e descrizione obbligatorie','err');return;}
 
   var pills=['p-p1','p-p2','p-p3','p-p4'].map(function(id){return document.getElementById(id).value.trim();}).filter(Boolean);
   var c1=document.getElementById('p-c1').value.trim()||'#8c6250';
