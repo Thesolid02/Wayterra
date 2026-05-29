@@ -1590,7 +1590,8 @@ function openDetail(){
   tEl.style.borderColor=c.color;
   document.getElementById('dp-desc').textContent=(lang==='en'&&p.descEn?p.descEn:p.desc)||'';
   document.getElementById('dp-secret').textContent=(lang==='en'&&p.secretEn?p.secretEn:p.secret)||'';
-  document.getElementById('dp-pills').innerHTML=(p.pills||[]).map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('');
+  var activePills=(lang==='en'&&p.pillsEn&&p.pillsEn.length?p.pillsEn:p.pills)||[];
+  document.getElementById('dp-pills').innerHTML=activePills.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('');
 
   // gallery
   var gallWrap=document.getElementById('dp-gallery-wrap');
@@ -1901,7 +1902,7 @@ window.addEventListener('DOMContentLoaded',function(){
   },8000);
 
   Promise.all([
-    fetch(SB_URL+'/rest/v1/places?select=id,cat,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
+    fetch(SB_URL+'/rest/v1/places?select=id,cat,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,pills_en,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
     fetch(SB_URL+'/rest/v1/categories?select=*&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activity_types?select=*&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activities?select=*&order=place_id,sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];})
@@ -1932,7 +1933,7 @@ window.addEventListener('DOMContentLoaded',function(){
         tagline:row.tagline||'',taglineEn:row.tagline_en||'',
         desc:row.description||'',descEn:row.description_en||'',
         secret:row.secret||'',secretEn:row.secret_en||'',
-        pills:row.pills||[],gradient:row.gradient||'linear-gradient(135deg,#888,#555)',
+        pills:row.pills||[],pillsEn:row.pills_en||[],gradient:row.gradient||'linear-gradient(135deg,#888,#555)',
         maps:row.maps_url||'',coverPhoto:row.cover_photo||'',gallery:row.gallery||[],
         hiddenScore:row.hidden_score||0,premium:row.premium||false,
         activities:acts
