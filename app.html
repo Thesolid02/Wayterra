@@ -760,6 +760,24 @@ var DEF_PLACES=[
    ]}
 ];
 
+/* ═══ SPECS TRANSLATION ═══ */
+var specsDict={
+  'Lunghezza':'Length','Difficoltà':'Difficulty','Dislivello':'Elevation gain',
+  'Durata':'Duration','Distanza':'Distance','Accesso':'Access','Orari':'Hours',
+  'Ingresso':'Entrance','Periodo migliore':'Best period','Costo':'Cost',
+  'Parcheggio':'Parking','Prenotazione':'Booking','Età minima':'Min age',
+  'Attrezzatura':'Equipment','Guida':'Guide','Tipo':'Type','Prezzo':'Price',
+  'Specialità':'Specialty','Momento':'Moment','Obiettivo':'Lens',
+  'Facile':'Easy','Media':'Medium','Difficile':'Hard','Impegnativo':'Challenging',
+  'Libero':'Free','Gratuito':'Free','Obbligatoria':'Required',
+  'Consigliata':'Recommended','Non necessaria':'Not required',
+  'Sempre aperto':'Always open','Solo a piedi':'On foot only','Vietato':'Forbidden'
+};
+function translateSpec(text){
+  if(lang!=='en')return text;
+  return specsDict[text]||text;
+}
+
 /* ═══ STATE ═══ */
 var map_o,userMk,romaLabelMk;
 var activeFilter='all',level=1,activePId=null;
@@ -850,7 +868,7 @@ function openActPopup(actId, placeId, triggerEl){
   if(actSecret) html+='<div class="act-bub-secret"><div class="act-bub-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+actSecret+'</p></div>';
   if(a.specs&&a.specs.length){
     html+='<div class="act-bub-specs">'
-      +a.specs.map(function(s){return'<div class="act-bub-spec"><span class="act-bub-spec-k">'+s.k+'</span><span class="act-bub-spec-v">'+s.v+'</span></div>';}).join('')
+      +a.specs.map(function(s){return'<div class="act-bub-spec"><span class="act-bub-spec-k">'+translateSpec(s.k)+'</span><span class="act-bub-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')
       +'</div>';
   }
   if(a.maps) html+='<button class="act-bub-maps" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>';
@@ -898,7 +916,7 @@ function openActPopup(actId, placeId, triggerEl){
       +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
       +(actDesc?'<div class="act-popup-desc">'+actDesc+'</div>':'')
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+actSecret+'</p></div>':'')
-      +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+s.k+'</span><span class="act-popup-spec-v">'+s.v+'</span></div>';}).join('')+'</div>':'')
+      +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
       +(a.maps?'<button class="act-popup-maps-btn" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'');
     document.getElementById('act-popup').classList.add('show');
   }
@@ -1229,7 +1247,7 @@ function showActBubble(a, latlng){
   var secEl=document.getElementById(secretId);
   if(secretText){document.getElementById(secretLblId).textContent=t('secret_lbl');document.getElementById(secretTxtId).textContent=secretText;secEl.style.display='';}
   else secEl.style.display='none';
-  var specs=(a.specs||[]).map(function(s){return '<span class="amp-spec">'+s.k+': '+s.v+'</span>';}).join('');
+  var specs=(a.specs||[]).map(function(s){return '<span class="amp-spec">'+translateSpec(s.k)+': '+translateSpec(s.v)+'</span>';}).join('');
   document.getElementById(specsId).innerHTML=specs;
   var mapsBtn=document.getElementById(mapsId);
   mapsBtn.textContent=t('maps');
