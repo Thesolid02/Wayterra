@@ -24,6 +24,18 @@ body{font-family:var(--f);background:var(--g50);color:var(--g900);min-height:100
 .tb-badge{font-size:.62rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.55);}
 .tb-sync{font-size:.7rem;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;}
+.tb-right{position:relative;display:flex;align-items:center;gap:8px;}
+.tb-nav{display:flex;gap:8px;align-items:center;}
+.tb-hamburger{display:none;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:1.2rem;cursor:pointer;}
+.tb-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,.18);padding:8px;z-index:400;min-width:180px;}
+.tb-dropdown.open{display:block;}
+.tb-dropdown a,.tb-dropdown button{display:block;width:100%;padding:10px 16px;border:none;background:none;font-family:var(--f);font-size:.85rem;font-weight:500;color:var(--g800);cursor:pointer;border-radius:7px;text-align:left;text-decoration:none;box-sizing:border-box;}
+.tb-dropdown a:hover,.tb-dropdown button:hover{background:var(--g100);}
+@media(max-width:768px){
+  .tb-nav{display:none;}
+  .tb-hamburger{display:flex;}
+  .topbar{padding:0 16px;}
+}
 .tabs{background:var(--w);border-bottom:1px solid var(--g200);display:flex;padding:0 24px;}
 .tab{padding:13px 18px;border:none;background:none;font-family:var(--f);font-size:.83rem;font-weight:600;color:var(--g400);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
 .tab:hover{color:var(--g700);}.tab.on{color:var(--g900);border-color:var(--blue);}
@@ -161,12 +173,24 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <span class="tb-badge">Admin</span>
     <span class="tb-sync"><span class="sync-dot"></span> Sync attivo</span>
   </div>
-  <div style="display:flex;gap:8px;">
-    <a href="app.html" target="_blank" class="btn bs sm">🗺 Apri app</a>
-    <button class="btn bok sm" onclick="openExport()">⬇ Esporta</button>
-    <button class="btn bs sm" onclick="resetUnlock()" id="unlock-btn" style="display:none;">🔓 Reset unlock</button>
-    <button class="btn bok sm" onclick="migrateImagesToStorage()" id="migrate-img-btn" title="Sposta le immagini base64 su Supabase Storage">☁️ Migra immagini</button>
-    <button class="btn bp" onclick="openAddPlace()">+ Nuovo luogo</button>
+  <div class="tb-right">
+    <div class="tb-nav">
+      <a href="app.html" target="_blank" class="btn bs sm">🗺 Apri app</a>
+      <button class="btn bok sm" onclick="openExport()">⬇ Esporta</button>
+      <button class="btn bs sm" onclick="resetUnlock()" id="unlock-btn" style="display:none;">🔓 Reset unlock</button>
+      <button class="btn bok sm" onclick="migrateImagesToStorage()" id="migrate-img-btn" title="Sposta le immagini base64 su Supabase Storage">☁️ Migra immagini</button>
+      <button class="btn bp" onclick="openAddPlace()">+ Nuovo luogo</button>
+    </div>
+    <button class="tb-hamburger" id="tb-hamburger" onclick="toggleNavMenu()" aria-label="Menu">
+      <i class="ti ti-menu-2"></i>
+    </button>
+    <div class="tb-dropdown" id="tb-dropdown">
+      <a href="app.html" target="_blank">🗺 Apri app</a>
+      <button onclick="openExport();toggleNavMenu()">⬇ Esporta</button>
+      <button id="unlock-btn-m" style="display:none;" onclick="resetUnlock();toggleNavMenu()">🔓 Reset unlock</button>
+      <button onclick="migrateImagesToStorage();toggleNavMenu()">☁️ Migra immagini</button>
+      <button onclick="openAddPlace();toggleNavMenu()">+ Nuovo luogo</button>
+    </div>
   </div>
 </div>
 
@@ -1429,8 +1453,25 @@ document.querySelectorAll('.ov').forEach(function(o){
   o.addEventListener('click',function(e){if(e.target===o){o.classList.remove('on');editPId=null;}});
 });
 document.addEventListener('keydown',function(e){
-  if(e.key==='Escape') document.querySelectorAll('.ov.on').forEach(function(o){o.classList.remove('on');});
+  if(e.key==='Escape'){
+    document.querySelectorAll('.ov.on').forEach(function(o){o.classList.remove('on');});
+    document.getElementById('tb-dropdown').classList.remove('open');
+  }
 });
+document.addEventListener('click',function(e){
+  var dd=document.getElementById('tb-dropdown');
+  var hb=document.getElementById('tb-hamburger');
+  if(dd.classList.contains('open')&&!dd.contains(e.target)&&e.target!==hb&&!hb.contains(e.target)){
+    dd.classList.remove('open');
+  }
+});
+function toggleNavMenu(){
+  document.getElementById('tb-dropdown').classList.toggle('open');
+}
+function syncUnlockBtnMobile(){
+  var show=document.getElementById('unlock-btn').style.display!=='none';
+  document.getElementById('unlock-btn-m').style.display=show?'':'none';
+}
 
 // ═══ SCORE / PREMIUM HELPERS ═══
 function scoreInfo(s){
@@ -1557,6 +1598,7 @@ function checkUnlockStatus(){
   var isUnlocked=localStorage.getItem('WT_UNLOCKED_v2')==='1';
   var btn=document.getElementById('unlock-btn');
   if(btn)btn.style.display=isUnlocked?'inline-flex':'none';
+  syncUnlockBtnMobile();
 }
 
 // boot asincrono — load gestisce render internamente
