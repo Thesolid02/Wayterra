@@ -1590,7 +1590,6 @@ function openDetail(){
   tEl.style.borderColor=c.color;
   document.getElementById('dp-desc').textContent=(lang==='en'&&p.descEn?p.descEn:p.desc)||'';
   document.getElementById('dp-secret').textContent=(lang==='en'&&p.secretEn?p.secretEn:p.secret)||'';
-  console.log('lang:', lang, 'pillsEn:', p.pillsEn, 'pills:', p.pills);
   var pills=(lang==='en'&&p.pillsEn&&p.pillsEn.length>0)?p.pillsEn:(p.pills||[]);
   document.getElementById('dp-pills').innerHTML=pills.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('');
 
