@@ -829,6 +829,15 @@ function scoreColor(s){
 function catName(c){return lang==='en'&&c.nameEn?c.nameEn:c.name;}
 function atName(a){return lang==='en'&&a.nameEn?a.nameEn:a.name;}
 function renderIcon(icon,color){color=color||'inherit';return icon&&icon.startsWith('ti-')?'<i class="ti '+icon+'" style="color:'+color+';"></i>':(icon||'');}
+function formatText(text){
+  if(!text)return '';
+  return text
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>');
+}
 
 /* ═══ LANGUAGE ═══ */
 function setLang(l){
@@ -864,7 +873,7 @@ function openActPopup(actId, placeId, triggerEl){
   if(a.coverPhoto) html+='<img class="act-bub-img" src="'+a.coverPhoto+'" alt="">';
   var actDesc=lang==='en'&&a.descEn?a.descEn:a.desc;
   var actSecret=lang==='en'&&a.secretEn?a.secretEn:a.secret;
-  if(actDesc) html+='<div class="act-bub-desc">'+actDesc+'</div>';
+  if(actDesc) html+='<div class="act-bub-desc"><p>'+formatText(actDesc)+'</p></div>';
   if(actSecret) html+='<div class="act-bub-secret"><div class="act-bub-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+actSecret+'</p></div>';
   if(a.specs&&a.specs.length){
     html+='<div class="act-bub-specs">'
@@ -914,7 +923,7 @@ function openActPopup(actId, placeId, triggerEl){
     document.getElementById('act-popup-body-mobile').innerHTML=
       '<div class="act-popup-type">'+renderIcon(at.icon,at.color||'#374151')+' '+atName(at)+'</div>'
       +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
-      +(actDesc?'<div class="act-popup-desc">'+actDesc+'</div>':'')
+      +(actDesc?'<div class="act-popup-desc"><p>'+formatText(actDesc)+'</p></div>':'')
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+actSecret+'</p></div>':'')
       +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
       +(a.maps?'<button class="act-popup-maps-btn" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'');
@@ -1239,13 +1248,13 @@ function showActBubble(a, latlng){
   var imgEl=document.getElementById(imgId);
   if(a.coverPhoto){imgEl.src=a.coverPhoto;imgEl.style.display='block';}
   else imgEl.style.display='none';
-  document.getElementById(descId).textContent=(lang==='en'&&a.descEn?a.descEn:a.desc)||'';
+  document.getElementById(descId).innerHTML='<p>'+formatText((lang==='en'&&a.descEn?a.descEn:a.desc)||'')+'</p>';
   var secretId=isMobile?'amp-secret':'amp-secret-d';
   var secretTxtId=isMobile?'amp-secret-txt':'amp-secret-txt-d';
   var secretLblId=isMobile?'amp-secret-lbl-m':'amp-secret-lbl-d';
   var secretText=(lang==='en'&&a.secretEn?a.secretEn:a.secret)||'';
   var secEl=document.getElementById(secretId);
-  if(secretText){document.getElementById(secretLblId).textContent=t('secret_lbl');document.getElementById(secretTxtId).textContent=secretText;secEl.style.display='';}
+  if(secretText){document.getElementById(secretLblId).textContent=t('secret_lbl');document.getElementById(secretTxtId).innerHTML='<p>'+formatText(secretText)+'</p>';secEl.style.display='';}
   else secEl.style.display='none';
   var specs=(a.specs||[]).map(function(s){return '<span class="amp-spec">'+translateSpec(s.k)+': '+translateSpec(s.v)+'</span>';}).join('');
   document.getElementById(specsId).innerHTML=specs;
@@ -1588,8 +1597,8 @@ function openDetail(){
   var tEl=document.getElementById('dp-tagline');
   tEl.textContent=(lang==='en'&&p.taglineEn?p.taglineEn:p.tagline)||'';
   tEl.style.borderColor=c.color;
-  document.getElementById('dp-desc').textContent=(lang==='en'&&p.descEn?p.descEn:p.desc)||'';
-  document.getElementById('dp-secret').textContent=(lang==='en'&&p.secretEn?p.secretEn:p.secret)||'';
+  document.getElementById('dp-desc').innerHTML='<p>'+formatText((lang==='en'&&p.descEn?p.descEn:p.desc)||'')+'</p>';
+  document.getElementById('dp-secret').innerHTML='<p>'+formatText((lang==='en'&&p.secretEn?p.secretEn:p.secret)||'')+'</p>';
   var pills=(lang==='en'&&p.pillsEn&&p.pillsEn.length>0)?p.pillsEn:(p.pills||[]);
   document.getElementById('dp-pills').innerHTML=pills.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('');
 
