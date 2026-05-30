@@ -270,6 +270,12 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;font-weight:500;"><input type="radio" name="p-premium" id="p-prem" value="true"> <span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:5px;font-size:.75rem;font-weight:600;">🔒 Premium</span></label>
     </div>
     <div style="font-size:.7rem;color:var(--g400);margin-bottom:12px;line-height:1.5;">Free: visibile a tutti. Premium: pin con lucchetto, card oscurata, paywall.</div>
+    <div class="sdiv">⭐ Autenticità</div>
+    <div id="p-verified-wrap" onclick="toggleVerified()" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border-radius:var(--rl);border:1px solid var(--g200);background:var(--g50);margin-bottom:12px;transition:all .14s;user-select:none;">
+      <i class="ti ti-star" id="p-verified-icon" style="font-size:1.1rem;color:var(--g400);"></i>
+      <span style="font-size:.83rem;font-weight:500;">Luogo autentico al 100%</span>
+    </div>
+    <input type="hidden" id="p-verified" value="false">
     <div class="sdiv">Foto <span style="font-weight:400;font-size:.68rem;color:var(--g400);">(compresse automaticamente)</span></div>
     <div class="fg">
       <label>Foto copertina</label>
@@ -527,6 +533,7 @@ function rowToPlace(row, acts){
     gallery: row.gallery||[],
     hiddenScore: row.hidden_score||0,
     premium: row.premium||false,
+    verified: row.verified||false,
     activities: (acts||[]).filter(function(a){return a.place_id===row.id;}).map(actRowToAct)
   };
 }
@@ -571,7 +578,8 @@ function placeToRow(p){
     cover_photo: p.coverPhoto||'',
     gallery: p.gallery||[],
     hidden_score: p.hiddenScore||0,
-    premium: p.premium||false
+    premium: p.premium||false,
+    verified: p.verified||false
   };
 }
 
@@ -906,7 +914,7 @@ function renderPlaces(){
     rows+='<tr style="'+(ex?'background:var(--g50);':'')+'">'
       +'<td><button class="btn bs sm ico" onclick="toggleExp('+p.id+')">'+(ex?'▲':'▼')+'</button></td>'
       +'<td>'+thHtml+'</td>'
-      +'<td><div class="tb">'+iconHtml(c.icon)+' '+p.name+'</div><div class="tm" style="font-size:.72rem;color:var(--g400);">'+(p.region||'')+'</div></td>'
+      +'<td><div class="tb">'+iconHtml(c.icon)+' '+p.name+(p.verified?' <i class="ti ti-star-filled" style="color:#2563eb;font-size:.78rem;vertical-align:middle;" title="Autentico"></i>':'')+'</div><div class="tm" style="font-size:.72rem;color:var(--g400);">'+(p.region||'')+'</div></td>'
       +'<td><div class="tt">'+(p.tagline||'—')+'</div></td>'
       +'<td><span class="abadge">'+n+'</span></td>'
       +'<td>'+scoreCell(p)+'</td>'
@@ -952,6 +960,7 @@ function clearPForm(){
   document.getElementById('cprev').style.display='none';
   document.getElementById('p-score').value=50; updScore();
   document.getElementById('p-free').checked=true;
+  setVerified(false);
   document.getElementById('ggrid').innerHTML='';
   document.getElementById('arows').innerHTML='';
   updGrad();
@@ -979,6 +988,7 @@ function fillPForm(p){
   updScore();
   if(p.premium){document.getElementById('p-prem').checked=true;}
   else{document.getElementById('p-free').checked=true;}
+  setVerified(p.verified||false);
   var hx=(p.gradient||'').match(/#[0-9a-fA-F]{3,6}/g)||[];
   document.getElementById('p-c1').value=hx[0]||'';
   document.getElementById('p-c2').value=hx[1]||'';
@@ -1219,6 +1229,7 @@ function savePlace(){
     lat:lat, lng:lng, tagline:tagline, desc:desc,
     hiddenScore:parseInt(document.getElementById('p-score').value)||0,
     premium:document.querySelector('input[name="p-premium"]:checked')&&document.querySelector('input[name="p-premium"]:checked').value==='true',
+    verified:document.getElementById('p-verified').value==='true',
     secret:document.getElementById('p-secret').value.trim(),
     secretEn:document.getElementById('p-secret-en').value.trim(),
     taglineEn:taglineEn,
@@ -1529,6 +1540,25 @@ function updScore(){
   if(lbl){lbl.textContent=si.label;lbl.style.color=si.color;}
   if(wrap){wrap.style.background=si.bg;wrap.style.borderLeft='3px solid '+si.color;}
   if(desc)desc.textContent=v>=80?'Il luogo è ancora un segreto. Solo chi sa, sa.':v>=60?'Abbastanza nascosto: noto ai locali ma poco sui circuiti turistici.':'Comincia a essere conosciuto.';
+}
+
+function setVerified(val){
+  var inp=document.getElementById('p-verified');
+  var wrap=document.getElementById('p-verified-wrap');
+  var icon=document.getElementById('p-verified-icon');
+  if(!inp||!wrap||!icon) return;
+  inp.value=val?'true':'false';
+  if(val){
+    wrap.style.background='#eff6ff';wrap.style.borderColor='#2563eb';
+    icon.className='ti ti-star-filled';icon.style.color='#2563eb';
+  } else {
+    wrap.style.background='var(--g50)';wrap.style.borderColor='var(--g200)';
+    icon.className='ti ti-star';icon.style.color='var(--g400)';
+  }
+}
+function toggleVerified(){
+  var inp=document.getElementById('p-verified');
+  setVerified(inp.value!=='true');
 }
 
 // ═══ BOOT ═══
