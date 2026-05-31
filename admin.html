@@ -710,10 +710,8 @@ function placeToRow(p){
 
 // converte oggetto activity → riga DB activities
 function actToRow(a, placeId){
-  return {
-    id: a.id,
+  var row={
     place_id: placeId,
-    type: a.type,
     name: a.name,
     lat: a.lat||null,
     lng: a.lng||null,
@@ -731,6 +729,11 @@ function actToRow(a, placeId){
     gallery: a.gallery||[],
     maps_url: a.maps||''
   };
+  // includi id solo se è un record esistente (non generato localmente)
+  if(a.id) row.id=a.id;
+  // includi type solo se valorizzato (evita errori FK su city activities)
+  if(a.type!=null&&a.type!=='') row.type=a.type;
+  return row;
 }
 
 // converte riga DB categories → formato interno
@@ -1942,7 +1945,7 @@ function saveCityAct(){
     if(k) specs.push({k:k,v:v});
   });
   var obj={
-    id:editCityActId||Date.now(),
+    id:editCityActId||undefined,
     type:null,
     name:name,
     lat:lat, lng:lng,
