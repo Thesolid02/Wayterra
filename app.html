@@ -1203,9 +1203,8 @@ function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
     m.getElement().innerHTML=createPinEl(p,false,false).innerHTML;
-    var modeMatch=(p.mode||'outside')===mapMode;
-    var catMatch=activeFilter==='all'||(mapMode==='city'?p.experienceTypeId===activeFilter:p.cat===activeFilter);
-    if(modeMatch&&catMatch)m.addTo(map_o);else m.remove();
+    var show=(p.mode||'outside')===mapMode&&catMatchFn(p);
+    if(show)m.addTo(map_o);else m.remove();
   });
 }
 function refreshL1markers(){
@@ -1349,7 +1348,7 @@ function buildDD(){
     +'<div class="dcdot" style="background:var(--g400);"></div>'
     +'<div class="dcname">🗺 '+t('all_places')+'</div>'
     +'</button>';
-  var filterList=mapMode==='city'?(DATA.expTypes.length?DATA.expTypes:DATA.cats):DATA.cats;
+  var filterList=mapMode==='city'?(DATA.expTypes.length?DATA.expTypes:DATA.cats):(DATA.placeTypes.length?DATA.placeTypes:DATA.cats);
   filterList.forEach(function(c){
     h+='<button class="ddcat" onclick="selCat(\''+c.id+'\')">'
       +'<div class="dcdot" style="background:'+c.color+';"></div>'
@@ -1370,7 +1369,7 @@ function selCat(id){
   var inp=document.getElementById('sinp'),cl=document.getElementById('sclear');
   if(id==='all'){inp.value='';inp.placeholder=t('search_placeholder');cl.style.display='none';}
   else{
-    var c=mapMode==='city'?expTypeOf(id):catOf(id);
+    var c=mapMode==='city'?expTypeOf(id):placeTypeOf(id);
     inp.value=catName(c)||id;cl.style.display='block';
   }
   refreshL1();
@@ -1393,15 +1392,19 @@ function setMapMode(mode){
   buildDD();
   refreshL1();
 }
+function catMatchFn(p){
+  if(activeFilter==='all')return true;
+  if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId===activeFilter;});
+  return p.place_types_id===activeFilter;
+}
 function refreshL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    var modeMatch=(p.mode||'outside')===mapMode;
-    var catMatch=activeFilter==='all'||(mapMode==='city'?p.experienceTypeId===activeFilter:p.cat===activeFilter);
-    if(modeMatch&&catMatch)m.addTo(map_o);else m.remove();
+    var show=(p.mode||'outside')===mapMode&&catMatchFn(p);
+    if(show)m.addTo(map_o);else m.remove();
   });
   if(activeFilter!=='all'){
-    var vis=DATA.places.filter(function(p){return p.cat===activeFilter;});
+    var vis=DATA.places.filter(function(p){return (p.mode||'outside')===mapMode&&catMatchFn(p);});
     if(vis.length){
       var lngs=vis.map(function(p){return p.lng;});
       var lats=vis.map(function(p){return p.lat;});
