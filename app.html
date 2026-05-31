@@ -2001,6 +2001,7 @@ window.addEventListener('DOMContentLoaded',function(){
 
     var cats_=catRows&&catRows.length?catRows.map(function(r){return{id:r.id,icon:r.icon,name:r.name,nameEn:r.name_en||r.name,color:r.color};}):JSON.parse(JSON.stringify(DEF_CATS));
     var atypes_=atypeRows&&atypeRows.length?atypeRows.map(function(r){return{id:r.id,icon:r.icon,name:r.name,nameEn:r.name_en||r.name,color:r.color};}):JSON.parse(JSON.stringify(DEF_ATYPES));
+    console.log('placeTypeRows:', placeTypeRows, 'expTypeRows:', expTypeRows);
     var placeTypes_=placeTypeRows&&placeTypeRows.length?placeTypeRows.map(function(r){return{id:r.id,name:r.name,nameEn:r.name_en||r.name,icon:r.icon,color:r.color,sortOrder:r.sort_order};}):[];
     var expTypes_=expTypeRows&&expTypeRows.length?expTypeRows.map(function(r){return{id:r.id,name:r.name,nameEn:r.name_en||r.name,icon:r.icon,color:r.color,sortOrder:r.sort_order};}):[];
     var expSubtypes_=expSubtypeRows&&expSubtypeRows.length?expSubtypeRows.map(function(r){return{id:r.id,experienceTypeId:r.experience_type_id,name:r.name,nameEn:r.name_en||r.name,icon:r.icon,color:r.color};}):[];
