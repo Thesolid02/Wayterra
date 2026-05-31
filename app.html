@@ -1275,7 +1275,7 @@ function showCityActivityBottomCard(a){
   document.getElementById('bc-cat').textContent=(lang==='en'&&et.nameEn?et.nameEn:et.name)||'';
   document.getElementById('bc-cat').style.color=et.color||'#374151';
   document.getElementById('bc-name').textContent=a.name;
-  document.getElementById('bc-region').textContent='';
+  document.getElementById('bc-region').textContent=a.region||'';
   document.getElementById('bc-acts').innerHTML='';
   document.getElementById('bc-gems').innerHTML='';
   var card=document.getElementById('bottom-card');
