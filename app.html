@@ -1118,7 +1118,7 @@ function initMap(){
     clEl.innerHTML='<div style="width:40px;height:40px;border-radius:50%;background:#dc6b2f;border:2.5px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer;color:white;font-size:13px;font-weight:700;">'+(DATA.cityActivities&&DATA.cityActivities.length?DATA.cityActivities.length:romaPlaces.length)+'</div>';
     clEl.addEventListener('click',function(e){
       e.stopPropagation();
-      map_o.easeTo({center:[12.4964,41.9028],zoom:11,duration:600});
+      setMapMode('city');
     });
     romaClusterMk=new mapboxgl.Marker({element:clEl,anchor:'center'})
       .setLngLat([12.4964,41.9028])
