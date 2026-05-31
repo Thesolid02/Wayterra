@@ -31,7 +31,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 /* ── TOP BAR ── */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:300;
   padding:0 14px;padding-top:calc(env(safe-area-inset-top,0px) + 10px);padding-bottom:10px;
-  pointer-events:none;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  pointer-events:none;display:flex;flex-direction:column;gap:6px;}
+#topbar-row1{display:flex;align-items:center;justify-content:space-between;}
 .brand-pill{pointer-events:all;background:var(--w);border-radius:100px;box-shadow:var(--sh-md);
   padding:7px 14px 7px 9px;display:flex;align-items:center;gap:7px;border:0.5px solid var(--g200);}
 .brand-name{font-size:.88rem;font-weight:700;color:var(--g900);letter-spacing:-.02em;}
@@ -417,32 +418,36 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 
 <!-- TOP BAR -->
 <div id="topbar" style="display:none">
-  <div class="brand-pill">
-    <svg width="24" height="24" viewBox="0 0 200 200" fill="none">
-      <circle cx="100" cy="100" r="88" stroke="#2d5a27" stroke-width="10" fill="none"/>
-      <polygon points="100,8 107,32 100,26 93,32" fill="#e8721a"/>
-      <polygon points="100,192 107,168 100,174 93,168" fill="#2d5a27"/>
-      <polygon points="192,100 168,107 174,100 168,93" fill="#2d5a27"/>
-      <polygon points="8,100 32,107 26,100 32,93" fill="#2d5a27"/>
-      <path d="M58 75 L100 68 L142 75 L142 138 L100 145 L58 138 Z" fill="#e8e0b8" stroke="#2d5a27" stroke-width="4" stroke-linejoin="round"/>
-      <line x1="100" y1="68" x2="100" y2="145" stroke="#2d5a27" stroke-width="2.5" stroke-dasharray="4 3"/>
-      <ellipse cx="76" cy="118" rx="14" ry="8" fill="#5a9e50" opacity=".7"/>
-      <circle cx="72" cy="128" r="3.5" fill="#e8721a"/>
-      <circle cx="115" cy="98" r="3" fill="#e8721a" opacity=".8"/>
-      <polygon points="128,90 120,96 124,104 136,94" fill="#e8721a"/>
-    </svg>
-    <span class="brand-name">Wayterra</span>
-  </div>
-  <div class="mode-toggle">
-    <button id="mode-fuori" class="mode-btn" onclick="setMapMode('outside')" style="background:#16a34a;color:#fff;">Fuori porta</button>
-    <button id="mode-roma" class="mode-btn" onclick="setMapMode('city')" style="background:#f3f4f6;color:#6b7280;">Roma</button>
-  </div>
-  <div class="tb-right">
-    <div class="lang-sw">
-      <button class="lang-btn on" id="btn-it" onclick="setLang('it')">IT</button>
-      <button class="lang-btn off" id="btn-en" onclick="setLang('en')">EN</button>
+  <div id="topbar-row1">
+    <div class="brand-pill">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none">
+        <circle cx="100" cy="100" r="88" stroke="#2d5a27" stroke-width="10" fill="none"/>
+        <polygon points="100,8 107,32 100,26 93,32" fill="#e8721a"/>
+        <polygon points="100,192 107,168 100,174 93,168" fill="#2d5a27"/>
+        <polygon points="192,100 168,107 174,100 168,93" fill="#2d5a27"/>
+        <polygon points="8,100 32,107 26,100 32,93" fill="#2d5a27"/>
+        <path d="M58 75 L100 68 L142 75 L142 138 L100 145 L58 138 Z" fill="#e8e0b8" stroke="#2d5a27" stroke-width="4" stroke-linejoin="round"/>
+        <line x1="100" y1="68" x2="100" y2="145" stroke="#2d5a27" stroke-width="2.5" stroke-dasharray="4 3"/>
+        <ellipse cx="76" cy="118" rx="14" ry="8" fill="#5a9e50" opacity=".7"/>
+        <circle cx="72" cy="128" r="3.5" fill="#e8721a"/>
+        <circle cx="115" cy="98" r="3" fill="#e8721a" opacity=".8"/>
+        <polygon points="128,90 120,96 124,104 136,94" fill="#e8721a"/>
+      </svg>
+      <span class="brand-name">Wayterra</span>
     </div>
-    <button class="fav-btn" id="fav-btn" onclick="openFavPage()"><i class="ti ti-bookmark"></i></button>
+    <div class="tb-right">
+      <div class="lang-sw">
+        <button class="lang-btn on" id="btn-it" onclick="setLang('it')">IT</button>
+        <button class="lang-btn off" id="btn-en" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="fav-btn" id="fav-btn" onclick="openFavPage()"><i class="ti ti-bookmark"></i></button>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:center;">
+    <div class="mode-toggle">
+      <button id="mode-fuori" class="mode-btn" onclick="setMapMode('outside')" style="background:#16a34a;color:#fff;">Fuori porta</button>
+      <button id="mode-roma" class="mode-btn" onclick="setMapMode('city')" style="background:#f3f4f6;color:#6b7280;">Roma</button>
+    </div>
   </div>
 </div>
 
