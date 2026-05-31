@@ -1245,8 +1245,8 @@ function openCityActivityDetail(a){
       +(a.gallery&&a.gallery.length?'<div class="dp-gallery" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;">'
         +a.gallery.map(function(url,i){
           var isVid=/\.(mp4|mov|webm)$/i.test(url);
-          if(isVid){return'<div style="position:relative;width:100%;min-width:0;aspect-ratio:1;border-radius:var(--r);overflow:hidden;cursor:pointer;" onclick="openLightboxFromCityAct('+i+')">'
-            +'<video src="'+url+'#t=0.1" style="width:100%;height:100%;object-fit:cover;display:block;" preload="auto" muted playsinline></video>'
+          if(isVid){return'<div style="position:relative;aspect-ratio:1/1;border-radius:var(--r);overflow:hidden;cursor:pointer;display:block;" onclick="openLightboxFromCityAct('+i+')">'
+            +'<video src="'+url+'#t=0.001" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;" preload="metadata" muted playsinline></video>'
             +'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;"><i class="ti ti-player-play" style="font-size:16px;color:white;"></i></div></div>'
             +'</div>';}
           return'<img src="'+url+'" style="aspect-ratio:1;object-fit:cover;border-radius:var(--r);cursor:pointer;width:100%;" onclick="openLightboxFromCityAct('+i+')" alt="">';
@@ -1282,7 +1282,7 @@ function openCityActivityDetail(a){
     var gallery=(a.gallery||[]).filter(function(s){return s&&s.length>10;});
     _cityActGallery=gallery;
     document.getElementById('dp-gallery-wrap').innerHTML=gallery.length
-      ?'<div class="dp-gallery-lbl">📷 '+(lang==='en'?'Gallery':'Galleria')+'</div><div class="dp-gallery">'+gallery.map(function(src,i){return'<img src="'+src+'" alt="" onclick="openLightboxFromCityAct('+i+')">';}).join('')+'</div>'
+      ?'<div class="dp-gallery-lbl">📷 '+(lang==='en'?'Gallery':'Galleria')+'</div><div class="dp-gallery">'+gallery.map(function(src,i){var isVid=/\.(mp4|mov|webm)$/i.test(src);if(isVid){return'<div style="position:relative;aspect-ratio:1/1;border-radius:var(--r);overflow:hidden;cursor:pointer;display:block;" onclick="openLightboxFromCityAct('+i+')">'+'<video src="'+src+'#t=0.001" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;" preload="metadata" muted playsinline></video>'+'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;"><i class="ti ti-player-play" style="font-size:16px;color:white;"></i></div></div>'+'</div>';}return'<img src="'+src+'" alt="" onclick="openLightboxFromCityAct('+i+')">';}).join('')+'</div>'
       :'';
     document.getElementById('dp-acts-lbl').style.display='none';
     document.getElementById('dp-acts-grid').innerHTML='';
