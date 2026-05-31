@@ -1394,8 +1394,8 @@ function setMapMode(mode){
 }
 function catMatchFn(p){
   if(activeFilter==='all')return true;
-  if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId===activeFilter;});
-  return p.place_types_id===activeFilter;
+  if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId==activeFilter;});
+  return p.placeTypeId!=null?p.placeTypeId==activeFilter:p.cat===activeFilter;
 }
 function refreshL1(){
   DATA.places.forEach(function(p){
