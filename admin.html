@@ -179,6 +179,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <button class="btn bok sm" onclick="openExport()">⬇ Esporta</button>
       <button class="btn bs sm" onclick="resetUnlock()" id="unlock-btn" style="display:none;">🔓 Reset unlock</button>
       <button class="btn bok sm" onclick="migrateImagesToStorage()" id="migrate-img-btn" title="Sposta le immagini base64 su Supabase Storage">☁️ Migra immagini</button>
+      <button class="btn bs" onclick="openAddCityAct()">🏙 Nuova attività Roma</button>
       <button class="btn bp" onclick="openAddPlace()">+ Nuovo luogo</button>
     </div>
     <button class="tb-hamburger" id="tb-hamburger" onclick="toggleNavMenu()" aria-label="Menu">
@@ -189,6 +190,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <button onclick="openExport();toggleNavMenu()">⬇ Esporta</button>
       <button id="unlock-btn-m" style="display:none;" onclick="resetUnlock();toggleNavMenu()">🔓 Reset unlock</button>
       <button onclick="migrateImagesToStorage();toggleNavMenu()">☁️ Migra immagini</button>
+      <button onclick="openAddCityAct();toggleNavMenu()">🏙 Nuova attività Roma</button>
       <button onclick="openAddPlace();toggleNavMenu()">+ Nuovo luogo</button>
     </div>
   </div>
@@ -443,6 +445,79 @@ textarea.ft{resize:vertical;line-height:1.65;}
 </div>
 </div>
 
+<!-- MODAL ATTIVITÀ ROMA -->
+<div class="ov" id="m-city-act">
+<div class="modal">
+  <div class="mh"><div class="mh-t" id="mca-title">Nuova attività Roma</div><button class="mx" onclick="closeCityAct()">✕</button></div>
+  <div class="mc">
+    <div style="display:flex;align-items:center;gap:8px;background:#eff6ff;border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:.78rem;color:#2563eb;font-weight:500;">🏙 Attività standalone — appare direttamente sulla mappa di Roma</div>
+    <div class="sdiv">Info base</div>
+    <div class="g2">
+      <div class="fg full"><label>Nome *</label><input type="text" id="ca-name" placeholder="Es. Campo de' Fiori al tramonto"></div>
+      <div class="fg"><label>Tipo esperienza</label><select class="fs" id="ca-exp-type" onchange="onCityActExpTypeChange()"><option value="">— nessuno —</option></select></div>
+      <div class="fg"><label>Sottotipo esperienza</label><select class="fs" id="ca-exp-subtype"><option value="">— nessuno —</option></select></div>
+      <div class="fg"><label>Regione</label><input type="text" id="ca-region" placeholder="Es. Roma · Lazio"></div>
+      <div class="fg"><label>Città</label><input type="text" id="ca-city" value="roma" readonly style="background:var(--g50);color:var(--g500);"></div>
+      <div class="fg"><label>Latitudine</label><input type="number" id="ca-lat" step="0.0001" placeholder="41.8967"></div>
+      <div class="fg"><label>Longitudine</label><input type="number" id="ca-lng" step="0.0001" placeholder="12.4764"></div>
+    </div>
+    <div class="sdiv">Contenuto</div>
+    <div class="fg"><label>Descrizione</label><textarea class="ft" id="ca-desc" rows="3" placeholder="Descrizione completa…"></textarea></div>
+    <div class="fg"><label>Description EN <span style="font-size:.68rem;font-weight:400;color:var(--g400);">opzionale</span></label><textarea class="ft" id="ca-desc-en" rows="3"></textarea></div>
+    <div class="fg"><label>🤫 Segreto locale</label><textarea class="ft" id="ca-secret" rows="2" placeholder="Il dettaglio che fa la differenza…"></textarea></div>
+    <div class="fg"><label>🤫 Secret EN <span style="font-size:.68rem;font-weight:400;color:var(--g400);">opzionale</span></label><textarea class="ft" id="ca-secret-en" rows="2"></textarea></div>
+    <div class="sdiv">🔒 Accesso</div>
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;font-weight:500;"><input type="radio" name="ca-premium" id="ca-free" value="false" checked> <span style="background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:5px;font-size:.75rem;font-weight:600;">🟢 Free</span></label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;font-weight:500;"><input type="radio" name="ca-premium" id="ca-prem-ca" value="true"> <span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:5px;font-size:.75rem;font-weight:600;">🔒 Premium</span></label>
+    </div>
+    <div class="sdiv">Caratteristiche specifiche</div>
+    <div class="specs-box">
+      <div class="specs-hd"><div class="specs-hd-lbl">Specifiche</div><button class="btn bs sm" onclick="addSpecRow('ca-main','','')">+ Aggiungi</button></div>
+      <div class="spec-rows" id="spec-rows-ca-main"></div>
+    </div>
+    <div class="sdiv" style="margin-top:14px;">Foto <span style="font-weight:400;font-size:.68rem;color:var(--g400);">(compresse automaticamente)</span></div>
+    <div class="fg">
+      <label>Foto copertina</label>
+      <label class="pa" style="display:block;">
+        <input type="file" id="ca-cinp" accept="image/*" onchange="handleCityActCover(this)" style="display:none;">
+        <div style="font-size:1.3rem;margin-bottom:4px;">📸</div>
+        <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Carica copertina</div>
+        <div style="font-size:.7rem;color:var(--g400);margin-top:2px;">Compressa automaticamente</div>
+      </label>
+      <div id="ca-cprev" class="cv-prev" style="display:none;">
+        <img id="ca-cimg" src="" alt="">
+        <button class="btn bd sm" style="margin-top:5px;width:100%;" onclick="removeCityActCover()">Rimuovi</button>
+      </div>
+    </div>
+    <div class="fg">
+      <label>Galleria (max 6 foto/video)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <label class="pa" style="display:block;flex:1;min-width:140px;">
+          <input type="file" id="ca-ginp" accept="image/*" multiple onchange="handleCityActGallery(this)" style="display:none;">
+          <div style="font-size:1.3rem;margin-bottom:4px;">🖼</div>
+          <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Aggiungi foto</div>
+          <div style="font-size:.72rem;color:var(--g400);margin-top:3px;">Clicca per selezionare</div>
+        </label>
+        <label class="pa" style="display:block;flex:1;min-width:140px;">
+          <input type="file" id="ca-vinp" accept="video/*" multiple onchange="handleCityActGalleryVideo(this)" style="display:none;">
+          <div style="font-size:1.3rem;margin-bottom:4px;">🎬</div>
+          <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Aggiungi video</div>
+          <div style="font-size:.72rem;color:var(--g400);margin-top:3px;">Clicca per selezionare</div>
+        </label>
+      </div>
+      <div class="pg" id="ca-ggrid"></div>
+    </div>
+    <div class="sdiv" style="margin-top:6px;">Google Maps URL</div>
+    <div class="fg"><input type="url" id="ca-maps" placeholder="https://maps.google.com/?q=…"><span class="fh">Vuoto = generato automaticamente dal nome</span></div>
+  </div>
+  <div class="mf">
+    <button class="btn bs" onclick="closeCityAct()">Annulla</button>
+    <button class="btn bp" onclick="saveCityAct()">Salva attività</button>
+  </div>
+</div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -504,10 +579,11 @@ var DEF_PLACES = [
 
 // ═══ STATE ═══
 var places=[], cats=[], atypes=[], placeTypes=[], expTypes=[], expSubtypes=[];
-var editPId=null, editCId=null, editAId=null;
+var editPId=null, editCId=null, editAId=null, editCityActId=null;
 var delId=null, delType=null, delParent=null;
 var expId=null;
 var coverData='', galleryData=[];
+var cityActCoverData='', cityActGalleryData=[];
 
 // ═══ SUPABASE CONFIG ═══
 var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
@@ -1685,6 +1761,147 @@ function setVerified(val){
 function toggleVerified(){
   var inp=document.getElementById('p-verified');
   setVerified(inp.value!=='true');
+}
+
+// ═══ CITY ACTIVITY (place_id=null) ═══
+function upsertCityAct(a){
+  var row=actToRow(a,null);
+  return sbFetch('activities',{
+    method:'POST',
+    headers:{
+      'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json',
+      'Prefer':'resolution=merge-duplicates,return=representation'
+    },
+    body:JSON.stringify(row)
+  }).then(function(r){if(!r.ok)throw new Error('upsert city act HTTP '+r.status);return r.json();});
+}
+
+function openAddCityAct(){
+  editCityActId=null; cityActCoverData=''; cityActGalleryData=[];
+  document.getElementById('mca-title').textContent='Nuova attività Roma';
+  clearCityActForm();
+  document.getElementById('m-city-act').classList.add('on');
+}
+function closeCityAct(){ document.getElementById('m-city-act').classList.remove('on'); editCityActId=null; }
+
+function clearCityActForm(){
+  populateCityActExpTypeSelect();
+  ['ca-name','ca-region','ca-desc','ca-desc-en','ca-secret','ca-secret-en','ca-maps'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('ca-city').value='roma';
+  document.getElementById('ca-lat').value=''; document.getElementById('ca-lng').value='';
+  document.getElementById('ca-cprev').style.display='none';
+  document.getElementById('ca-ggrid').innerHTML='';
+  document.getElementById('spec-rows-ca-main').innerHTML='';
+  document.getElementById('ca-exp-subtype').innerHTML='<option value="">— nessuno —</option>';
+  document.getElementById('ca-free').checked=true;
+}
+
+function populateCityActExpTypeSelect(){
+  var sel=document.getElementById('ca-exp-type');
+  if(!sel)return;
+  sel.innerHTML='<option value="">— nessuno —</option>';
+  (expTypes||[]).forEach(function(et){
+    var o=document.createElement('option');
+    o.value=et.id;
+    o.textContent=(et.icon?et.icon+' ':'')+et.name;
+    sel.appendChild(o);
+  });
+}
+
+function onCityActExpTypeChange(){
+  var typeId=document.getElementById('ca-exp-type').value;
+  populateExpSubtypeSelect(document.getElementById('ca-exp-subtype'),typeId,null);
+}
+
+function saveCityAct(){
+  var name=document.getElementById('ca-name').value.trim();
+  if(!name){toast('Nome obbligatorio','err');return;}
+  var rawLat=document.getElementById('ca-lat').value.trim();
+  var rawLng=document.getElementById('ca-lng').value.trim();
+  var lat=rawLat!==''?parseFloat(rawLat):null;
+  var lng=rawLng!==''?parseFloat(rawLng):null;
+  var rawExpType=document.getElementById('ca-exp-type').value;
+  var rawExpSubtype=document.getElementById('ca-exp-subtype').value;
+  var specs=[];
+  document.querySelectorAll('#spec-rows-ca-main .spec-row').forEach(function(sr){
+    var k=(sr.querySelector('.spec-k')&&sr.querySelector('.spec-k').value||'').trim();
+    var v=(sr.querySelector('.spec-v')&&sr.querySelector('.spec-v').value||'').trim();
+    if(k) specs.push({k:k,v:v});
+  });
+  var obj={
+    id:editCityActId||Date.now(),
+    type:null,
+    name:name,
+    lat:lat, lng:lng,
+    region:document.getElementById('ca-region').value.trim(),
+    city:'roma',
+    premium:!!(document.querySelector('input[name="ca-premium"]:checked')&&document.querySelector('input[name="ca-premium"]:checked').value==='true'),
+    experienceTypeId:rawExpType?parseInt(rawExpType)||null:null,
+    experienceSubtypeId:rawExpSubtype?parseInt(rawExpSubtype)||null:null,
+    desc:document.getElementById('ca-desc').value.trim(),
+    descEn:document.getElementById('ca-desc-en').value.trim(),
+    secret:document.getElementById('ca-secret').value.trim(),
+    secretEn:document.getElementById('ca-secret-en').value.trim(),
+    specs:specs,
+    coverPhoto:cityActCoverData,
+    gallery:cityActGalleryData.slice(),
+    maps:document.getElementById('ca-maps').value.trim()||'https://maps.google.com/?q='+encodeURIComponent(name)
+  };
+  upsertCityAct(obj)
+    .then(function(){toast(editCityActId?'Attività aggiornata ✓':'Attività Roma aggiunta ✓','ok');})
+    .catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
+  closeCityAct();
+}
+
+function handleCityActCover(inp){
+  var f=inp.files[0]; if(!f)return;
+  toast('Compressione foto…');
+  compressImage(f,function(data){
+    cityActCoverData=data;
+    document.getElementById('ca-cimg').src=data;
+    document.getElementById('ca-cprev').style.display='block';
+    toast('Copertina caricata ✓','ok');
+  });
+  inp.value='';
+}
+function removeCityActCover(){ cityActCoverData=''; document.getElementById('ca-cprev').style.display='none'; }
+
+function handleCityActGallery(inp){
+  var files=Array.from(inp.files),rem=6-cityActGalleryData.length,toLoad=files.slice(0,rem);
+  if(!toLoad.length){toast('Massimo 6 foto','err');return;}
+  toast('Caricamento foto…');
+  var done=0;
+  toLoad.forEach(function(f){
+    compressImage(f,function(data){
+      cityActGalleryData.push(data); renderCityActGGrid();
+      done++; if(done===toLoad.length) toast('Galleria aggiornata ✓','ok');
+    });
+  });
+  inp.value='';
+}
+function handleCityActGalleryVideo(inp){
+  var files=Array.from(inp.files),rem=6-cityActGalleryData.length,toLoad=files.slice(0,rem);
+  if(!toLoad.length){toast('Massimo 6 elementi','err');return;}
+  toast('Caricamento video…');
+  var done=0;
+  toLoad.forEach(function(f){
+    uploadVideoToStorage(f,function(url){
+      cityActGalleryData.push(url); renderCityActGGrid();
+      done++; if(done===toLoad.length) toast('Video aggiunto ✓','ok');
+    });
+  });
+  inp.value='';
+}
+function removeCityActGPhoto(i){ cityActGalleryData.splice(i,1); renderCityActGGrid(); }
+function renderCityActGGrid(){
+  document.getElementById('ca-ggrid').innerHTML=cityActGalleryData.map(function(src,i){
+    var preview=isVideo(src)
+      ?'<video src="'+src+'" muted playsinline style="width:100%;height:68px;object-fit:cover;display:block;"></video>'
+      :'<img src="'+src+'">';
+    return '<div class="pi">'+(i===0?'<div style="position:absolute;bottom:3px;left:3px;font-size:.5rem;font-weight:700;padding:2px 5px;border-radius:3px;background:rgba(37,99,235,.85);color:#fff;">COVER</div>':'')
+      +preview+'<button class="pirm" onclick="removeCityActGPhoto('+i+')">✕</button></div>';
+  }).join('');
 }
 
 // ═══ BOOT ═══
