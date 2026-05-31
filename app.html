@@ -1954,6 +1954,8 @@ function normalizeData(d){
 
 function bootApp(d){
   DATA=d;
+  console.log('cityActivities:', DATA.cityActivities ? DATA.cityActivities.length : 'non esiste');
+  console.log('activities totali:', DATA.places.reduce(function(acc,p){return acc+(p.activities||[]).length;},0));
   lang=localStorage.getItem(K.LANG)||'it';
   unlocked=checkUnlock();
   loadFavs();
