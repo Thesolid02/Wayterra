@@ -1251,7 +1251,8 @@ function addCityActivityMarker(a){
   m.getElement().style.zIndex='2';
   el.addEventListener('click',function(e){
     e.stopPropagation();
-    showCityActivityBottomCard(a);
+    if(window.innerWidth<768)showCityActivityBottomCard(a);
+    else openCityActivityDetail(a);
   });
   l1Mk['ca_'+a.id]=m;
 }
