@@ -43,6 +43,9 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   cursor:pointer;border:none;background:none;font-family:var(--f);transition:all .15s;}
 .lang-btn.on{background:var(--g900);color:#fff;}
 .lang-btn.off{color:var(--g400);}
+/* mode toggle */
+.mode-toggle{pointer-events:all;display:flex;background:var(--g100);border-radius:100px;padding:3px;gap:2px;box-shadow:var(--sh-sm);}
+.mode-btn{font-size:.72rem;font-weight:600;padding:4px 12px;border-radius:100px;border:none;cursor:pointer;font-family:var(--f);transition:all .15s;white-space:nowrap;}
 /* favorites icon */
 .fav-btn{background:var(--w);border-radius:100px;box-shadow:var(--sh-sm);
   border:0.5px solid var(--g200);width:38px;height:38px;display:flex;align-items:center;
@@ -430,6 +433,10 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
     </svg>
     <span class="brand-name">Wayterra</span>
   </div>
+  <div class="mode-toggle">
+    <button id="mode-fuori" class="mode-btn" onclick="setMapMode('outside')" style="background:#16a34a;color:#fff;">Fuori porta</button>
+    <button id="mode-roma" class="mode-btn" onclick="setMapMode('city')" style="background:#f3f4f6;color:#6b7280;">Roma</button>
+  </div>
   <div class="tb-right">
     <div class="lang-sw">
       <button class="lang-btn on" id="btn-it" onclick="setLang('it')">IT</button>
@@ -600,7 +607,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 
 <script>
 /* ═══ STORAGE KEYS ═══ */
-var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1'};
+var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1'};
 var BUY_URL='https://mattiagold.gumroad.com/l/wayterra';
 
 /* ═══ TRANSLATIONS ═══ */
@@ -676,7 +683,7 @@ var T={
 };
 
 /* ═══ DATA ═══ */
-var DATA={places:[],cats:[],atypes:[]};
+var DATA={places:[],cats:[],atypes:[],placeTypes:[],expTypes:[],expSubtypes:[]};
 var DEF_CATS=[
   {id:'borgo',icon:'🏘',name:'Borghi',nameEn:'Villages',color:'#dc6b2f'},
   {id:'nature',icon:'🌿',name:'Parchi e natura',nameEn:'Parks & nature',color:'#16a34a'},
@@ -788,6 +795,7 @@ var currentPlace=null;
 var currentLightboxIdx=0,currentLightboxGallery=[];
 var lang='it';
 var unlocked=false;
+var mapMode='outside';
 
 function t(key){return T[lang][key]||T['it'][key]||key;}
 
@@ -800,10 +808,14 @@ function loadData(){
     if(typeof p.hiddenScore==='undefined')p.hiddenScore=0;
     return p;
   });
+  var rpt=localStorage.getItem(K.PT),ret=localStorage.getItem(K.ET),res=localStorage.getItem(K.ES);
   return{
     places:ps,
     cats:rc?JSON.parse(rc):JSON.parse(JSON.stringify(DEF_CATS)),
-    atypes:ra?JSON.parse(ra):JSON.parse(JSON.stringify(DEF_ATYPES))
+    atypes:ra?JSON.parse(ra):JSON.parse(JSON.stringify(DEF_ATYPES)),
+    placeTypes:rpt?JSON.parse(rpt):[],
+    expTypes:ret?JSON.parse(ret):[],
+    expSubtypes:res?JSON.parse(res):[]
   };
 }
 function initDefaults(){
@@ -1033,6 +1045,9 @@ function closeLightbox(){
 
 function catOf(id){return DATA.cats.find(function(c){return c.id===id;})||{icon:'📍',name:id,nameEn:id,color:'#888'};}
 function atypeOf(id){return DATA.atypes.find(function(a){return a.id===id;})||{icon:'📍',name:id,nameEn:id,color:'#888'};}
+function placeTypeOf(id){return DATA.placeTypes.find(function(t){return t.id===id;})||{};}
+function expTypeOf(id){return DATA.expTypes.find(function(t){return t.id===id;})||{};}
+function expSubtypeOf(id){return DATA.expSubtypes.find(function(t){return t.id===id;})||{};}
 
 function initMap(){
   var isMobile=window.innerWidth<600;
@@ -1162,8 +1177,8 @@ function createPinEl(p, dim, showName){
 function addL1(p){
   var el=createPinEl(p,false,false);
   var m=new mapboxgl.Marker({element:el,anchor:'center'})
-    .setLngLat([p.lng,p.lat])
-    .addTo(map_o);
+    .setLngLat([p.lng,p.lat]);
+  if((p.mode||'outside')===mapMode)m.addTo(map_o);
   m.getElement().style.zIndex='2';
   el.addEventListener('click',function(e){
     e.stopPropagation();
@@ -1188,8 +1203,9 @@ function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
     m.getElement().innerHTML=createPinEl(p,false,false).innerHTML;
-    var show=activeFilter==='all'||p.cat===activeFilter;
-    if(show)m.addTo(map_o);else m.remove();
+    var modeMatch=(p.mode||'outside')===mapMode;
+    var catMatch=activeFilter==='all'||(mapMode==='city'?p.experienceTypeId===activeFilter:p.cat===activeFilter);
+    if(modeMatch&&catMatch)m.addTo(map_o);else m.remove();
   });
 }
 function refreshL1markers(){
@@ -1333,7 +1349,8 @@ function buildDD(){
     +'<div class="dcdot" style="background:var(--g400);"></div>'
     +'<div class="dcname">🗺 '+t('all_places')+'</div>'
     +'</button>';
-  DATA.cats.forEach(function(c){
+  var filterList=mapMode==='city'?(DATA.expTypes.length?DATA.expTypes:DATA.cats):DATA.cats;
+  filterList.forEach(function(c){
     h+='<button class="ddcat" onclick="selCat(\''+c.id+'\')">'
       +'<div class="dcdot" style="background:'+c.color+';"></div>'
       +'<div class="dcname">'+renderIcon(c.icon)+' '+catName(c)+'</div>'
@@ -1352,15 +1369,36 @@ function selCat(id){
   activeFilter=id;closeDD();
   var inp=document.getElementById('sinp'),cl=document.getElementById('sclear');
   if(id==='all'){inp.value='';inp.placeholder=t('search_placeholder');cl.style.display='none';}
-  else{var c=catOf(id);inp.value=catName(c);cl.style.display='block';}
+  else{
+    var c=mapMode==='city'?expTypeOf(id):catOf(id);
+    inp.value=catName(c)||id;cl.style.display='block';
+  }
   refreshL1();
 }
 function clearSearch(){selCat('all');}
+function setMapMode(mode){
+  mapMode=mode;
+  activeFilter='all';
+  document.getElementById('sinp').value='';
+  document.getElementById('sinp').placeholder=t('search_placeholder');
+  document.getElementById('sclear').style.display='none';
+  var btnRoma=document.getElementById('mode-roma');
+  var btnFuori=document.getElementById('mode-fuori');
+  if(btnRoma){
+    btnRoma.style.background=mode==='city'?'#dc6b2f':'#f3f4f6';
+    btnRoma.style.color=mode==='city'?'#fff':'#6b7280';
+    btnFuori.style.background=mode==='outside'?'#16a34a':'#f3f4f6';
+    btnFuori.style.color=mode==='outside'?'#fff':'#6b7280';
+  }
+  buildDD();
+  refreshL1();
+}
 function refreshL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    var show=activeFilter==='all'||p.cat===activeFilter;
-    if(show)m.addTo(map_o);else m.remove();
+    var modeMatch=(p.mode||'outside')===mapMode;
+    var catMatch=activeFilter==='all'||(mapMode==='city'?p.experienceTypeId===activeFilter:p.cat===activeFilter);
+    if(modeMatch&&catMatch)m.addTo(map_o);else m.remove();
   });
   if(activeFilter!=='all'){
     var vis=DATA.places.filter(function(p){return p.cat===activeFilter;});
@@ -1903,6 +1941,8 @@ function normalizeData(d){
   if(d.places)d.places=d.places.map(function(p){
     if(typeof p.premium==='undefined')p.premium=false;
     if(typeof p.hiddenScore==='undefined')p.hiddenScore=0;
+    if(typeof p.mode==='undefined')p.mode='outside';
+    if(typeof p.city==='undefined')p.city='';
     return p;
   });
   return d;
@@ -1937,14 +1977,17 @@ window.addEventListener('DOMContentLoaded',function(){
   },8000);
 
   Promise.all([
-    fetch(SB_URL+'/rest/v1/places?select=id,cat,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,pills_en,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
+    fetch(SB_URL+'/rest/v1/places?select=id,cat,place_type_id,mode,city,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,pills_en,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
     fetch(SB_URL+'/rest/v1/categories?select=*&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activity_types?select=*&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];}),
-    fetch(SB_URL+'/rest/v1/activities?select=*&order=place_id,sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];})
+    fetch(SB_URL+'/rest/v1/activities?select=*&order=place_id,sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
+    fetch(SB_URL+'/rest/v1/place_types?select=id,name,name_en,icon,color,sort_order&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
+    fetch(SB_URL+'/rest/v1/experience_types?select=id,name,name_en,icon,color,sort_order&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
+    fetch(SB_URL+'/rest/v1/experience_subtypes?select=id,experience_type_id,name,name_en,icon,color&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];})
   ])
   .then(function(results){
     clearTimeout(timeout);
-    var placeRows=results[0], catRows=results[1], atypeRows=results[2], actRows=results[3];
+    var placeRows=results[0], catRows=results[1], atypeRows=results[2], actRows=results[3], placeTypeRows=results[4], expTypeRows=results[5], expSubtypeRows=results[6];
 
     if(!placeRows||!placeRows.length){
       initDefaults();
@@ -1954,16 +1997,23 @@ window.addEventListener('DOMContentLoaded',function(){
 
     var cats_=catRows&&catRows.length?catRows.map(function(r){return{id:r.id,icon:r.icon,name:r.name,nameEn:r.name_en||r.name,color:r.color};}):JSON.parse(JSON.stringify(DEF_CATS));
     var atypes_=atypeRows&&atypeRows.length?atypeRows.map(function(r){return{id:r.id,icon:r.icon,name:r.name,nameEn:r.name_en||r.name,color:r.color};}):JSON.parse(JSON.stringify(DEF_ATYPES));
+    var placeTypes_=placeTypeRows&&placeTypeRows.length?placeTypeRows.map(function(r){return{id:r.id,name:r.name,nameEn:r.name_en||r.name,icon:r.icon,color:r.color,sortOrder:r.sort_order};}):[];
+    var expTypes_=expTypeRows&&expTypeRows.length?expTypeRows.map(function(r){return{id:r.id,name:r.name,nameEn:r.name_en||r.name,icon:r.icon,color:r.color,sortOrder:r.sort_order};}):[];
+    var expSubtypes_=expSubtypeRows&&expSubtypeRows.length?expSubtypeRows.map(function(r){return{id:r.id,experienceTypeId:r.experience_type_id,name:r.name,nameEn:r.name_en||r.name,icon:r.icon,color:r.color};}):[];
 
     var places_=placeRows.map(function(row){
       var acts=(actRows||[]).filter(function(a){return a.place_id===row.id;}).map(function(a){
         return{id:a.id,type:a.type,name:a.name,lat:a.lat||null,lng:a.lng||null,
                desc:a.description||'',descEn:a.description_en||'',
                secret:a.secret||'',secretEn:a.secret_en||'',specs:a.specs||[],
-               coverPhoto:a.cover_photo||'',maps:a.maps_url||''};
+               coverPhoto:a.cover_photo||'',maps:a.maps_url||'',
+               experienceTypeId:a.experience_type_id||null,
+               experienceSubtypeId:a.experience_subtype_id||null};
       });
       return{
-        id:row.id,cat:row.cat,name:row.name,region:row.region||'',
+        id:row.id,cat:row.cat,placeTypeId:row.place_type_id||null,
+        mode:row.mode||'outside',city:row.city||'',
+        name:row.name,region:row.region||'',
         lat:row.lat,lng:row.lng,
         tagline:row.tagline||'',taglineEn:row.tagline_en||'',
         desc:row.description||'',descEn:row.description_en||'',
@@ -1979,8 +2029,11 @@ window.addEventListener('DOMContentLoaded',function(){
     localStorage.setItem(K.P,JSON.stringify(places_));
     localStorage.setItem(K.C,JSON.stringify(cats_));
     localStorage.setItem(K.A,JSON.stringify(atypes_));
+    localStorage.setItem(K.PT,JSON.stringify(placeTypes_));
+    localStorage.setItem(K.ET,JSON.stringify(expTypes_));
+    localStorage.setItem(K.ES,JSON.stringify(expSubtypes_));
 
-    bootApp({places:places_,cats:cats_,atypes:atypes_});
+    bootApp({places:places_,cats:cats_,atypes:atypes_,placeTypes:placeTypes_,expTypes:expTypes_,expSubtypes:expSubtypes_});
   })
   .catch(function(err){
     clearTimeout(timeout);
