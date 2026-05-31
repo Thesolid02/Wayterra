@@ -198,6 +198,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
 
 <div class="tabs">
   <button class="tab on" onclick="switchTab('places',this)">Luoghi</button>
+  <button class="tab" onclick="switchTab('cityacts',this)">🏙 Attività Roma</button>
   <button class="tab" onclick="switchTab('cats',this)">Categorie</button>
   <button class="tab" onclick="switchTab('actypes',this)">Tipi attività</button>
 </div>
@@ -215,6 +216,28 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <tbody id="tbody"></tbody>
     </table>
     <div class="empty" id="empty" style="display:none"><div style="font-size:2.2rem;margin-bottom:8px;">🗺</div><p>Nessun luogo trovato</p></div>
+  </div>
+</div>
+</div>
+
+<div class="pane" id="pane-cityacts">
+<div class="page">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+    <div>
+      <div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Attività Roma</div>
+      <div style="font-size:.82rem;color:var(--g400);">Attività standalone — appaiono direttamente sulla mappa di Roma (<code>place_id = null</code>)</div>
+    </div>
+    <button class="btn bp" onclick="openAddCityAct()">+ Nuova attività Roma</button>
+  </div>
+  <div class="toolbar">
+    <div class="sw"><span class="si">⌕</span><input type="text" id="ca-srch" placeholder="Cerca per nome o regione…" oninput="renderCityActs()"></div>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:44px;">Foto</th><th>Nome</th><th>Tipo esperienza</th><th style="width:130px;">Coordinate</th><th style="width:72px;"></th></tr></thead>
+      <tbody id="ca-tbody"></tbody>
+    </table>
+    <div class="empty" id="empty-ca" style="display:none"><div style="font-size:2.2rem;margin-bottom:8px;">🏙</div><p>Nessuna attività Roma. Aggiungine una!</p></div>
   </div>
 </div>
 </div>
@@ -578,7 +601,7 @@ var DEF_PLACES = [
 ];
 
 // ═══ STATE ═══
-var places=[], cats=[], atypes=[], placeTypes=[], expTypes=[], expSubtypes=[];
+var places=[], cats=[], atypes=[], placeTypes=[], expTypes=[], expSubtypes=[], cityActs=[];
 var editPId=null, editCId=null, editAId=null, editCityActId=null;
 var delId=null, delType=null, delParent=null;
 var expId=null;
@@ -748,10 +771,11 @@ function load(){
     expTypes    = etRows.map(rowToExpType);
     expSubtypes = estRows.map(rowToExpSubtype);
     places = placeRows.map(function(row){return rowToPlace(row, actRows);});
+    cityActs = actRows.filter(function(a){return a.place_id===null||a.place_id===undefined;}).map(actRowToAct);
     if(!cats.length)   cats   = JSON.parse(JSON.stringify(DEF_CATS));
     if(!atypes.length) atypes = JSON.parse(JSON.stringify(DEF_ATYPES));
     var el=document.getElementById('sb-loading');if(el)el.remove();
-    renderStats();populateCatFilter();renderPlaces();checkUnlockStatus();
+    renderStats();populateCatFilter();renderPlaces();renderCityActs();checkUnlockStatus();
     // banner migrazione se Supabase è vuoto ma localStorage ha dati
     if(!places.length){
       var rp=localStorage.getItem('WT_PLACES_v2');
@@ -957,6 +981,7 @@ function switchTab(t,btn){
   document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('on');});
   btn.classList.add('on');
   document.getElementById('pane-'+t).classList.add('on');
+  if(t==='cityacts') renderCityActs();
   if(t==='cats') renderCats();
   if(t==='actypes') renderAtypes();
 }
@@ -1629,6 +1654,7 @@ function openDel(id,type,parent){
   else if(type==='cat'){var c=cats.find(function(x){return x.id===id;});name=c?((c.icon&&!c.icon.startsWith('ti-')?c.icon+' ':'')+c.name):'?';}
   else if(type==='atype'){var a=atypes.find(function(x){return x.id===id;});name=a?((a.icon&&!a.icon.startsWith('ti-')?a.icon+' ':'')+a.name):'?';}
   else if(type==='act'){var pp=places.find(function(x){return x.id===parent;});var aa=pp&&(pp.activities||[]).find(function(x){return x.id===id;});name=aa?aa.name:'?';}
+  else if(type==='city-act'){var ca=cityActs.find(function(x){return x.id===id;});name=ca?ca.name:'?';}
   document.getElementById('dname').textContent=name;
   document.getElementById('m-del').classList.add('on');
 }
@@ -1654,6 +1680,12 @@ function confirmDel(){
       places[pi].activities=(places[pi].activities||[]).filter(function(a){return a.id!==delId;});
       upsert(places[pi]).catch(function(e){toast('⚠️ '+e.message,'err');});
     }
+  } else if(delType==='city-act'){
+    sbFetch('activities?id=eq.'+delId,{method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+    }).catch(function(e){toast('⚠️ '+e.message,'err');});
+    cityActs=cityActs.filter(function(a){return a.id!==delId;});
+    renderCityActs();
   }
   closeDel();renderStats();renderPlaces();renderCats();renderAtypes();populateCatFilter();
   toast('Eliminato ✓','ok');
@@ -1763,6 +1795,78 @@ function toggleVerified(){
   setVerified(inp.value!=='true');
 }
 
+// ═══ CITY ACTS LIST ═══
+function renderCityActs(){
+  var q=((document.getElementById('ca-srch')||{}).value||'').toLowerCase();
+  var filtered=cityActs.filter(function(a){
+    return !q||(a.name||'').toLowerCase().indexOf(q)>=0||(a.region||'').toLowerCase().indexOf(q)>=0;
+  });
+  var tb=document.getElementById('ca-tbody');
+  var em=document.getElementById('empty-ca');
+  if(!tb)return;
+  em.style.display=filtered.length?'none':'block';
+  if(!filtered.length){tb.innerHTML='';return;}
+  var rows='';
+  filtered.forEach(function(a){
+    var et=(expTypes||[]).find(function(x){return x.id===a.experienceTypeId;})||null;
+    var est=(expSubtypes||[]).find(function(x){return x.id===a.experienceSubtypeId;})||null;
+    var thHtml=a.coverPhoto?'<img class="thimg" src="'+a.coverPhoto+'" alt="">':'<div class="the">📷</div>';
+    var etName=et?((et.icon&&!et.icon.startsWith('ti-')?et.icon+' ':'')+et.name):'<span style="color:var(--g400);">—</span>';
+    var estName=est?'<div class="tm">'+est.name+'</div>':'';
+    var premBadge=a.premium?'<span style="font-size:.68rem;font-weight:600;padding:1px 6px;border-radius:100px;background:#eff6ff;color:#2563eb;border:0.5px solid rgba(37,99,235,.2);margin-left:4px;">🔒</span>':'';
+    var coords=a.lat!=null?'<span style="font-family:monospace;font-size:.75rem;">'+a.lat.toFixed(4)+', '+a.lng.toFixed(4)+'</span>':'<span style="color:var(--g400);font-size:.78rem;">—</span>';
+    rows+='<tr>'
+      +'<td>'+thHtml+'</td>'
+      +'<td><div class="tb">'+a.name+premBadge+'</div><div class="tm">'+(a.region||'')+'</div></td>'
+      +'<td><div style="font-size:.8rem;">'+etName+'</div>'+estName+'</td>'
+      +'<td>'+coords+'</td>'
+      +'<td><div class="tac">'
+      +'<button class="btn bs sm ico" onclick="openEditCityAct('+a.id+')">✏️</button>'
+      +'<button class="btn bd sm ico" onclick="openDel('+a.id+',\'city-act\')">🗑</button>'
+      +'</div></td></tr>';
+  });
+  tb.innerHTML=rows;
+}
+
+function openEditCityAct(id){
+  var a=cityActs.find(function(x){return x.id===id;});
+  if(!a)return;
+  editCityActId=id;
+  cityActCoverData=a.coverPhoto||'';
+  cityActGalleryData=(a.gallery||[]).slice();
+  document.getElementById('mca-title').textContent='Modifica — '+a.name;
+  clearCityActForm();
+  fillCityActForm(a);
+  document.getElementById('m-city-act').classList.add('on');
+}
+
+function fillCityActForm(a){
+  populateCityActExpTypeSelect();
+  document.getElementById('ca-name').value=a.name||'';
+  document.getElementById('ca-region').value=a.region||'';
+  document.getElementById('ca-city').value=a.city||'roma';
+  document.getElementById('ca-lat').value=a.lat!=null?a.lat:'';
+  document.getElementById('ca-lng').value=a.lng!=null?a.lng:'';
+  document.getElementById('ca-desc').value=a.desc||'';
+  document.getElementById('ca-desc-en').value=a.descEn||'';
+  document.getElementById('ca-secret').value=a.secret||'';
+  document.getElementById('ca-secret-en').value=a.secretEn||'';
+  document.getElementById('ca-maps').value=a.maps||'';
+  if(a.premium){document.getElementById('ca-prem-ca').checked=true;}
+  else{document.getElementById('ca-free').checked=true;}
+  if(a.experienceTypeId){
+    document.getElementById('ca-exp-type').value=a.experienceTypeId;
+    populateExpSubtypeSelect(document.getElementById('ca-exp-subtype'),a.experienceTypeId,a.experienceSubtypeId);
+  }
+  if(a.coverPhoto){
+    document.getElementById('ca-cimg').src=a.coverPhoto;
+    document.getElementById('ca-cprev').style.display='block';
+  }
+  renderCityActGGrid();
+  document.getElementById('spec-rows-ca-main').innerHTML='';
+  (a.specs||[]).forEach(function(s){addSpecRow('ca-main',s.k,s.v);});
+}
+
 // ═══ CITY ACTIVITY (place_id=null) ═══
 function upsertCityAct(a){
   var row=actToRow(a,null);
@@ -1856,13 +1960,24 @@ function saveCityAct(){
     gallery:cityActGalleryData.slice(),
     maps:document.getElementById('ca-maps').value.trim()||'https://maps.google.com/?q='+encodeURIComponent(name)
   };
+  var wasEditId=editCityActId;
+  closeCityAct();
   upsertCityAct(obj)
-    .then(function(){toast(editCityActId?'Attività aggiornata ✓':'Attività Roma aggiunta ✓','ok');})
+    .then(function(rows){
+      var saved=(rows&&rows[0])?actRowToAct(rows[0]):obj;
+      if(wasEditId){
+        var i=cityActs.findIndex(function(a){return a.id===wasEditId;});
+        if(i>=0)cityActs[i]=saved; else cityActs.push(saved);
+      } else {
+        cityActs.push(saved);
+      }
+      renderCityActs();
+      toast(wasEditId?'Attività aggiornata ✓':'Attività Roma aggiunta ✓','ok');
+    })
     .catch(function(e){
       console.error('Errore salvataggio city activity:', e, JSON.stringify(e));
       toast('⚠️ Errore: '+e.message,'err');
     });
-  closeCityAct();
 }
 
 function handleCityActCover(inp){
