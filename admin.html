@@ -250,6 +250,20 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div class="fg"><label>Latitudine *</label><input type="number" id="p-lat" step="0.0001" placeholder="42.6274"></div>
       <div class="fg"><label>Longitudine *</label><input type="number" id="p-lng" step="0.0001" placeholder="12.1134"></div>
     </div>
+    <div class="g2" style="margin-top:0;">
+      <div class="fg">
+        <label>Modalità</label>
+        <div style="display:flex;gap:8px;margin-top:2px;">
+          <button type="button" id="p-mode-outside" class="btn bp sm" onclick="setPlaceMode('outside')">🌿 Fuori porta</button>
+          <button type="button" id="p-mode-city" class="btn bs sm" onclick="setPlaceMode('city')">🏙 Roma</button>
+        </div>
+        <input type="hidden" id="p-mode" value="outside">
+      </div>
+      <div class="fg" id="p-place-type-wrap">
+        <label>Tipo luogo <span style="font-size:.68rem;font-weight:400;color:var(--g400);">Fuori porta</span></label>
+        <select class="fs" id="p-place-type"></select>
+      </div>
+    </div>
     <div class="sdiv">Contenuto</div>
     <div class="fg"><label>Tagline</label><input type="text" id="p-tagline" placeholder="Frase breve che cattura l'essenza del luogo"></div>
     <div class="fg"><label>Tagline EN <span style="font-size:.68rem;font-weight:400;color:var(--g400);">opzionale — se vuoto usa l'italiano</span></label><input type="text" id="p-tagline-en" placeholder="Short phrase capturing the essence of the place"></div>
@@ -489,7 +503,7 @@ var DEF_PLACES = [
 ];
 
 // ═══ STATE ═══
-var places=[], cats=[], atypes=[];
+var places=[], cats=[], atypes=[], placeTypes=[], expTypes=[], expSubtypes=[];
 var editPId=null, editCId=null, editAId=null;
 var delId=null, delType=null, delParent=null;
 var expId=null;
@@ -515,6 +529,9 @@ function rowToPlace(row, acts){
   return {
     id: row.id,
     cat: row.cat,
+    placeTypeId: row.place_types_id||null,
+    mode: row.mode||'outside',
+    city: row.city||'',
     name: row.name,
     region: row.region||'',
     lat: row.lat,
@@ -546,12 +563,18 @@ function actRowToAct(a){
     name: a.name,
     lat: a.lat||null,
     lng: a.lng||null,
+    region: a.region||'',
+    city: a.city||'',
+    premium: a.premium||false,
+    experienceTypeId: a.experience_type_id||null,
+    experienceSubtypeId: a.experience_subtype_id||null,
     desc: a.description||'',
     descEn: a.description_en||'',
     secret: a.secret||'',
     secretEn: a.secret_en||'',
     specs: a.specs||[],
     coverPhoto: a.cover_photo||'',
+    gallery: a.gallery||[],
     maps: a.maps_url||''
   };
 }
@@ -561,6 +584,9 @@ function placeToRow(p){
   return {
     id: p.id,
     cat: p.cat,
+    mode: p.mode||'outside',
+    city: p.city||'',
+    place_types_id: p.placeTypeId||null,
     name: p.name,
     region: p.region||'',
     lat: p.lat,
@@ -592,12 +618,18 @@ function actToRow(a, placeId){
     name: a.name,
     lat: a.lat||null,
     lng: a.lng||null,
+    region: a.region||'',
+    city: a.city||'',
+    premium: a.premium||false,
+    experience_type_id: a.experienceTypeId||null,
+    experience_subtype_id: a.experienceSubtypeId||null,
     description: a.desc||'',
     description_en: a.descEn||'',
     secret: a.secret||'',
     secret_en: a.secretEn||'',
     specs: a.specs||[],
     cover_photo: a.coverPhoto||'',
+    gallery: a.gallery||[],
     maps_url: a.maps||''
   };
 }
@@ -611,6 +643,9 @@ function rowToCat(row){
 function rowToAtype(row){
   return {id:row.id, icon:row.icon, name:row.name, nameEn:row.name_en||row.name, color:row.color, presets:row.presets||[]};
 }
+function rowToPlaceType(row){ return {id:row.id,name:row.name,nameEn:row.name_en||row.name,icon:row.icon||'',color:row.color||'#374151'}; }
+function rowToExpType(row){ return {id:row.id,name:row.name,nameEn:row.name_en||row.name,icon:row.icon||'',color:row.color||'#374151'}; }
+function rowToExpSubtype(row){ return {id:row.id,experienceTypeId:row.experience_type_id,name:row.name,nameEn:row.name_en||row.name,icon:row.icon||'',color:row.color||''}; }
 
 // ═══ LOAD ═══
 function load(){
@@ -618,17 +653,24 @@ function load(){
     '<div id="sb-loading" style="position:fixed;inset:0;z-index:9999;background:rgba(255,255,255,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-family:var(--f);">'
     +'<div style="font-size:1.8rem;">⏳</div><div style="font-size:.9rem;color:var(--g500);">Caricamento dati...</div></div>');
 
-  // carica categorie, tipi attività, luoghi e attività in parallelo
+  // carica tutte le tabelle in parallelo
   Promise.all([
     sbFetch('categories?select=*&order=sort_order').then(function(r){return r.json();}),
     sbFetch('activity_types?select=*&order=id').then(function(r){return r.json();}),
     sbFetch('places?select=*&order=id').then(function(r){return r.json();}),
-    sbFetch('activities?select=*&order=place_id,sort_order').then(function(r){return r.json();})
+    sbFetch('activities?select=*&order=place_id,sort_order').then(function(r){return r.json();}),
+    sbFetch('place_types?select=*&order=id').then(function(r){return r.json();}),
+    sbFetch('experience_types?select=*&order=id').then(function(r){return r.json();}),
+    sbFetch('experience_subtypes?select=*&order=id').then(function(r){return r.json();})
   ])
   .then(function(results){
     var catRows=results[0], atypeRows=results[1], placeRows=results[2], actRows=results[3];
-    cats   = catRows.map(rowToCat);
-    atypes = atypeRows.map(rowToAtype);
+    var ptRows=results[4], etRows=results[5], estRows=results[6];
+    cats        = catRows.map(rowToCat);
+    atypes      = atypeRows.map(rowToAtype);
+    placeTypes  = ptRows.map(rowToPlaceType);
+    expTypes    = etRows.map(rowToExpType);
+    expSubtypes = estRows.map(rowToExpSubtype);
     places = placeRows.map(function(row){return rowToPlace(row, actRows);});
     if(!cats.length)   cats   = JSON.parse(JSON.stringify(DEF_CATS));
     if(!atypes.length) atypes = JSON.parse(JSON.stringify(DEF_ATYPES));
@@ -863,6 +905,52 @@ function populateCatSelect(){
   });
 }
 
+function setPlaceMode(mode){
+  document.getElementById('p-mode').value=mode;
+  var btnOut=document.getElementById('p-mode-outside');
+  var btnCity=document.getElementById('p-mode-city');
+  var ptWrap=document.getElementById('p-place-type-wrap');
+  if(btnOut&&btnCity){
+    if(mode==='outside'){
+      btnOut.className='btn bp sm'; btnCity.className='btn bs sm';
+      if(ptWrap)ptWrap.style.display='';
+    } else {
+      btnOut.className='btn bs sm'; btnCity.className='btn bp sm';
+      if(ptWrap)ptWrap.style.display='none';
+    }
+  }
+  populatePlaceTypeSelect();
+}
+
+function populatePlaceTypeSelect(){
+  var sel=document.getElementById('p-place-type');
+  if(!sel)return;
+  sel.innerHTML='<option value="">— nessuno —</option>';
+  (placeTypes||[]).forEach(function(pt){
+    var o=document.createElement('option');
+    o.value=pt.id;
+    o.textContent=(pt.icon?pt.icon+' ':'')+pt.name;
+    sel.appendChild(o);
+  });
+}
+
+function populateExpSubtypeSelect(sel, typeId, selectedId){
+  if(!sel)return;
+  sel.innerHTML='<option value="">— nessuno —</option>';
+  (expSubtypes||[]).filter(function(s){return s.experienceTypeId==typeId;}).forEach(function(s){
+    var o=document.createElement('option');
+    o.value=s.id;
+    o.textContent=(s.icon?s.icon+' ':'')+s.name;
+    if(selectedId&&s.id==selectedId)o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+function onExpTypeChange(sel, rid){
+  var row=document.getElementById('ar-'+rid);
+  if(row)populateExpSubtypeSelect(row.querySelector('.ar-exp-subtype'), sel.value, null);
+}
+
 // ═══ STATS ═══
 function renderStats(){
   var h='<div class="stat"><div class="stat-n">'+places.length+'</div><div class="stat-l">Luoghi totali</div></div>';
@@ -964,6 +1052,7 @@ function clearPForm(){
   document.getElementById('ggrid').innerHTML='';
   document.getElementById('arows').innerHTML='';
   updGrad();
+  setPlaceMode('outside');
 }
 function fillPForm(p){
   populateCatSelect();
@@ -994,6 +1083,9 @@ function fillPForm(p){
   document.getElementById('p-c2').value=hx[1]||'';
   document.getElementById('p-c3').value=hx[2]||'';
   updGrad();
+  setPlaceMode(p.mode||'outside');
+  var ptSel=document.getElementById('p-place-type');
+  if(ptSel&&p.placeTypeId) ptSel.value=p.placeTypeId;
   if(p.coverPhoto){document.getElementById('cimg').src=p.coverPhoto;document.getElementById('cprev').style.display='block';}
   else document.getElementById('cprev').style.display='none';
   renderGGrid();
@@ -1075,6 +1167,9 @@ function addActRow(a){
   div.id='ar-'+rid;
   div.className='arow-wrap';
 
+  var expTypeOpts='<option value="">— nessuno —</option>';
+  expTypes.forEach(function(et){expTypeOpts+='<option value="'+et.id+'">'+(et.icon?et.icon+' ':'')+et.name+'</option>';});
+
   var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
     +'<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);">Attività</div>'
     +'<button class="btn bd sm ico" onclick="this.closest(\'.arow-wrap\').remove()">✕</button></div>'
@@ -1084,6 +1179,15 @@ function addActRow(a){
     +'<div class="fg"><label>Latitudine <span style="font-weight:400;color:var(--g400);">opzionale</span></label><input type="text" class="ar-lat" placeholder="lascia vuoto = solo card"></div>'
     +'<div class="fg"><label>Longitudine <span style="font-weight:400;color:var(--g400);">opzionale</span></label><input type="text" class="ar-lng" placeholder="lascia vuoto = solo card"></div>'
     +'</div>'
+    +'<div class="g2" style="margin-top:0;">'
+    +'<div class="fg"><label>Tipo esperienza</label><select class="fs ar-exp-type" onchange="onExpTypeChange(this,\''+rid+'\')">'+expTypeOpts+'</select></div>'
+    +'<div class="fg"><label>Sottotipo esperienza</label><select class="fs ar-exp-subtype"><option value="">— nessuno —</option></select></div>'
+    +'</div>'
+    +'<div class="g2" style="margin-top:0;">'
+    +'<div class="fg"><label>Regione</label><input type="text" class="ar-region" placeholder="Es. Lazio"></div>'
+    +'<div class="fg"><label>Città</label><input type="text" class="ar-city" placeholder="Es. Roma"></div>'
+    +'</div>'
+    +'<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.82rem;font-weight:500;margin-bottom:12px;"><input type="checkbox" class="ar-premium"> <span style="background:#eff6ff;color:#2563eb;padding:2px 8px;border-radius:5px;font-size:.75rem;font-weight:600;">🔒 Premium</span></label>'
     +'<div style="background:#eff6ff;border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:.67rem;color:#2563eb;line-height:1.55;">ℹ️ Con coordinate → pin L2 sulla mappa con tooltip. Senza coordinate → icona nella card fumetto, non sulla mappa.</div>'
     +'<div class="fg"><label>Descrizione</label><textarea class="ft ar-desc" rows="2"></textarea></div>'
     +'<div class="fg"><label>Description EN</label><textarea class="ft ar-desc-en" rows="2"></textarea></div>'
@@ -1106,7 +1210,8 @@ function addActRow(a){
     +'</div></div>'
     +'<div class="fg"><label>Google Maps URL</label><input type="url" class="ar-maps" placeholder="https://maps.google.com/?q=…"></div>'
     +'<input type="hidden" class="ar-id" value="'+rid+'">'
-    +'<input type="hidden" class="ar-cover" value="">';
+    +'<input type="hidden" class="ar-cover" value="">'
+    +'<input type="hidden" class="ar-gallery" value="[]">';
 
   div.innerHTML=html;
   document.getElementById('arows').appendChild(div);
@@ -1122,9 +1227,17 @@ function addActRow(a){
     div.querySelector('.ar-secret-en').value=a.secretEn||'';
     div.querySelector('.ar-maps').value=a.maps||'';
     div.querySelector('.ar-cover').value=a.coverPhoto||'';
+    div.querySelector('.ar-region').value=a.region||'';
+    div.querySelector('.ar-city').value=a.city||'';
+    div.querySelector('.ar-premium').checked=a.premium||false;
+    div.querySelector('.ar-gallery').value=JSON.stringify(a.gallery||[]);
     if(a.coverPhoto){
       document.getElementById('aimg-'+rid).src=a.coverPhoto;
       document.getElementById('ap-'+rid).style.display='block';
+    }
+    if(a.experienceTypeId){
+      div.querySelector('.ar-exp-type').value=a.experienceTypeId;
+      populateExpSubtypeSelect(div.querySelector('.ar-exp-subtype'), a.experienceTypeId, a.experienceSubtypeId);
     }
     (a.specs||[]).forEach(function(s){ addSpecRow(rid, s.k, s.v); });
   }
@@ -1208,23 +1321,36 @@ function savePlace(){
       var v=(sr.querySelector('.spec-v')&&sr.querySelector('.spec-v').value||'').trim();
       if(k) specs.push({k:k,v:v});
     });
+    var rawExpType=row.querySelector('.ar-exp-type')&&row.querySelector('.ar-exp-type').value||'';
+    var rawExpSubtype=row.querySelector('.ar-exp-subtype')&&row.querySelector('.ar-exp-subtype').value||'';
     activities.push({
       id:parseInt(row.querySelector('.ar-id')&&row.querySelector('.ar-id').value)||Date.now(),
       type:row.querySelector('.ar-type')&&row.querySelector('.ar-type').value||'poi',
       name:n, lat:hasCoords?alat:null, lng:hasCoords?alng:null,
+      region:(row.querySelector('.ar-region')&&row.querySelector('.ar-region').value||'').trim(),
+      city:(row.querySelector('.ar-city')&&row.querySelector('.ar-city').value||'').trim(),
+      premium:!!(row.querySelector('.ar-premium')&&row.querySelector('.ar-premium').checked),
+      experienceTypeId:rawExpType?parseInt(rawExpType)||null:null,
+      experienceSubtypeId:rawExpSubtype?parseInt(rawExpSubtype)||null:null,
       desc:(row.querySelector('.ar-desc')&&row.querySelector('.ar-desc').value||'').trim(),
       descEn:(row.querySelector('.ar-desc-en')&&row.querySelector('.ar-desc-en').value||'').trim(),
       secret:(row.querySelector('.ar-secret')&&row.querySelector('.ar-secret').value||'').trim(),
       secretEn:(row.querySelector('.ar-secret-en')&&row.querySelector('.ar-secret-en').value||'').trim(),
       specs:specs,
       maps:(row.querySelector('.ar-maps')&&row.querySelector('.ar-maps').value||'').trim()||'https://maps.google.com/?q='+encodeURIComponent(n),
-      coverPhoto:(row.querySelector('.ar-cover')&&row.querySelector('.ar-cover').value||'')
+      coverPhoto:(row.querySelector('.ar-cover')&&row.querySelector('.ar-cover').value||''),
+      gallery:JSON.parse(row.querySelector('.ar-gallery')&&row.querySelector('.ar-gallery').value||'[]')
     });
   });
 
+  var placeMode=document.getElementById('p-mode').value||'outside';
+  var rawPT=document.getElementById('p-place-type').value;
   var obj={
     id:editPId||Date.now(),
     cat:document.getElementById('p-cat').value,
+    mode:placeMode,
+    city:placeMode==='city'?'roma':'',
+    placeTypeId:placeMode==='outside'&&rawPT?parseInt(rawPT)||null:null,
     name:name, region:document.getElementById('p-region').value.trim(),
     lat:lat, lng:lng, tagline:tagline, desc:desc,
     hiddenScore:parseInt(document.getElementById('p-score').value)||0,
