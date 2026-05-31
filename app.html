@@ -607,7 +607,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 
 <script>
 /* ═══ STORAGE KEYS ═══ */
-var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1'};
+var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1',CA:'WT_CITY_ACTIVITIES_v1'};
 var BUY_URL='https://mattiagold.gumroad.com/l/wayterra';
 
 /* ═══ TRANSLATIONS ═══ */
@@ -683,7 +683,7 @@ var T={
 };
 
 /* ═══ DATA ═══ */
-var DATA={places:[],cats:[],atypes:[],placeTypes:[],expTypes:[],expSubtypes:[]};
+var DATA={places:[],cats:[],atypes:[],placeTypes:[],expTypes:[],expSubtypes:[],cityActivities:[]};
 var DEF_CATS=[
   {id:'borgo',icon:'🏘',name:'Borghi',nameEn:'Villages',color:'#dc6b2f'},
   {id:'nature',icon:'🌿',name:'Parchi e natura',nameEn:'Parks & nature',color:'#16a34a'},
@@ -808,14 +808,15 @@ function loadData(){
     if(typeof p.hiddenScore==='undefined')p.hiddenScore=0;
     return p;
   });
-  var rpt=localStorage.getItem(K.PT),ret=localStorage.getItem(K.ET),res=localStorage.getItem(K.ES);
+  var rpt=localStorage.getItem(K.PT),ret=localStorage.getItem(K.ET),res=localStorage.getItem(K.ES),rca=localStorage.getItem(K.CA);
   return{
     places:ps,
     cats:rc?JSON.parse(rc):JSON.parse(JSON.stringify(DEF_CATS)),
     atypes:ra?JSON.parse(ra):JSON.parse(JSON.stringify(DEF_ATYPES)),
     placeTypes:rpt?JSON.parse(rpt):[],
     expTypes:ret?JSON.parse(ret):[],
-    expSubtypes:res?JSON.parse(res):[]
+    expSubtypes:res?JSON.parse(res):[],
+    cityActivities:rca?JSON.parse(rca):[]
   };
 }
 function initDefaults(){
@@ -2029,6 +2030,16 @@ window.addEventListener('DOMContentLoaded',function(){
       };
     });
 
+    var cityActivities_=(actRows||[]).filter(function(a){return a.place_id===null||a.place_id===undefined;}).map(function(a){
+      return{id:a.id,type:a.type,name:a.name,lat:a.lat||null,lng:a.lng||null,
+             desc:a.description||'',descEn:a.description_en||'',
+             secret:a.secret||'',secretEn:a.secret_en||'',specs:a.specs||[],
+             coverPhoto:a.cover_photo||'',maps:a.maps_url||'',
+             experienceTypeId:a.experience_type_id||null,
+             experienceSubtypeId:a.experience_subtype_id||null,
+             gallery:a.gallery||[]};
+    });
+
     // salva cache locale
     localStorage.setItem(K.P,JSON.stringify(places_));
     localStorage.setItem(K.C,JSON.stringify(cats_));
@@ -2036,8 +2047,9 @@ window.addEventListener('DOMContentLoaded',function(){
     localStorage.setItem(K.PT,JSON.stringify(placeTypes_));
     localStorage.setItem(K.ET,JSON.stringify(expTypes_));
     localStorage.setItem(K.ES,JSON.stringify(expSubtypes_));
+    localStorage.setItem(K.CA,JSON.stringify(cityActivities_));
 
-    bootApp({places:places_,cats:cats_,atypes:atypes_,placeTypes:placeTypes_,expTypes:expTypes_,expSubtypes:expSubtypes_});
+    bootApp({places:places_,cats:cats_,atypes:atypes_,placeTypes:placeTypes_,expTypes:expTypes_,expSubtypes:expSubtypes_,cityActivities:cityActivities_});
   })
   .catch(function(err){
     clearTimeout(timeout);
