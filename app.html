@@ -1352,7 +1352,7 @@ function buildDD(){
   filterList.forEach(function(c){
     h+='<button class="ddcat" onclick="selCat(\''+c.id+'\')">'
       +'<div class="dcdot" style="background:'+c.color+';"></div>'
-      +'<div class="dcname">'+renderIcon(c.icon)+' '+catName(c)+'</div>'
+      +'<div class="dcname">'+renderIcon(c.icon,'white')+' '+(lang==='en'&&c.nameEn?c.nameEn:c.name)+'</div>'
       +'</button>';
   });
   h+='<hr class="dddiv">';
@@ -1394,7 +1394,7 @@ function setMapMode(mode){
 }
 function catMatchFn(p){
   if(activeFilter==='all')return true;
-  if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId==activeFilter;});
+  if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId===parseInt(activeFilter);});
   return p.placeTypeId!=null?p.placeTypeId==activeFilter:p.cat===activeFilter;
 }
 function refreshL1(){
