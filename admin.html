@@ -1874,6 +1874,7 @@ function fillCityActForm(a){
 function upsertCityAct(a){
   var row=actToRow(a,null);
   console.log('upsertCityAct row:', JSON.stringify(row));
+  console.log('PAYLOAD:', JSON.stringify(row, null, 2));
   return sbFetch('activities',{
     method:'POST',
     headers:{
