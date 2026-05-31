@@ -1619,7 +1619,7 @@ function setMapModePopup(mode){
   if(mode==='city'){
     if(romaClusterMk)romaClusterMk.remove();
     if(romaLabelMk)romaLabelMk.remove();
-    if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:12,duration:800});
+    if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:10,duration:800});
   } else {
     if(map_o){
       var z=map_o.getZoom();
