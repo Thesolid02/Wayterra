@@ -1228,6 +1228,7 @@ function showCityActivityBottomCard(a){
 var _cityActGallery=[];
 function openLightboxFromCityAct(idx){openLightbox(idx,{gallery:_cityActGallery});}
 function openCityActivityDetail(a){
+  console.log('cityActivity gallery:', a.gallery);
   var et=expTypeOf(a.experienceTypeId);
   var etName=lang==='en'&&et.nameEn?et.nameEn:(et.name||'');
   var actDesc=lang==='en'&&a.descEn?a.descEn:(a.desc||'');
