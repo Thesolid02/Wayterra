@@ -1977,7 +1977,7 @@ window.addEventListener('DOMContentLoaded',function(){
   },8000);
 
   Promise.all([
-    fetch(SB_URL+'/rest/v1/places?select=id,cat,place_type_id,mode,city,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,pills_en,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
+    fetch(SB_URL+'/rest/v1/places?select=id,cat,place_types_id,mode,city,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,pills_en,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
     fetch(SB_URL+'/rest/v1/categories?select=*&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activity_types?select=*&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activities?select=*&order=place_id,sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
@@ -2011,7 +2011,7 @@ window.addEventListener('DOMContentLoaded',function(){
                experienceSubtypeId:a.experience_subtype_id||null};
       });
       return{
-        id:row.id,cat:row.cat,placeTypeId:row.place_type_id||null,
+        id:row.id,cat:row.cat,placeTypeId:row.place_types_id||null,
         mode:row.mode||'outside',city:row.city||'',
         name:row.name,region:row.region||'',
         lat:row.lat,lng:row.lng,
