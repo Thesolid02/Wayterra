@@ -1766,6 +1766,7 @@ function toggleVerified(){
 // ═══ CITY ACTIVITY (place_id=null) ═══
 function upsertCityAct(a){
   var row=actToRow(a,null);
+  console.log('upsertCityAct row:', JSON.stringify(row));
   return sbFetch('activities',{
     method:'POST',
     headers:{
@@ -1774,7 +1775,14 @@ function upsertCityAct(a){
       'Prefer':'resolution=merge-duplicates,return=representation'
     },
     body:JSON.stringify(row)
-  }).then(function(r){if(!r.ok)throw new Error('upsert city act HTTP '+r.status);return r.json();});
+  }).then(function(r){
+    if(!r.ok){
+      return r.text().then(function(body){
+        throw new Error('HTTP '+r.status+' — '+body);
+      });
+    }
+    return r.json();
+  });
 }
 
 function openAddCityAct(){
@@ -1850,7 +1858,10 @@ function saveCityAct(){
   };
   upsertCityAct(obj)
     .then(function(){toast(editCityActId?'Attività aggiornata ✓':'Attività Roma aggiunta ✓','ok');})
-    .catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
+    .catch(function(e){
+      console.error('Errore salvataggio city activity:', e, JSON.stringify(e));
+      toast('⚠️ Errore: '+e.message,'err');
+    });
   closeCityAct();
 }
 
