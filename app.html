@@ -1342,6 +1342,7 @@ document.addEventListener('visibilitychange',function(){
 
 /* ═══ DROPDOWN — solo categorie + vibe disabled ═══ */
 function buildDD(){
+  console.log('buildDD mapMode:', mapMode, 'placeTypes:', DATA.placeTypes.length, 'expTypes:', DATA.expTypes.length);
   var dd=document.getElementById('sdd');
   var h='<div class="ddlbl">'+t('categories')+'</div>';
   h+='<button class="ddcat" onclick="selCat(\'all\')">'
