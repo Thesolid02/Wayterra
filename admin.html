@@ -687,14 +687,25 @@ var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
 
 function sbFetch(path,opts){
-  return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
+  var method=(opts&&opts.method)||'GET';
+  var url=SB_URL+'/rest/v1/'+path;
+  console.log('sbFetch:',method,url);
+  return fetch(url,Object.assign({
     headers:{
       'apikey':SB_KEY,
       'Authorization':'Bearer '+SB_KEY,
       'Content-Type':'application/json',
       'Prefer':'return=representation'
     }
-  },opts||{}));
+  },opts||{})).then(function(r){
+    if(!r.ok){
+      return r.text().then(function(body){
+        console.error('sbFetch error:',method,url,r.status,body);
+        throw new Error('HTTP '+r.status+' — '+body);
+      });
+    }
+    return r;
+  });
 }
 
 // converte riga DB → oggetto place usato dall'app
