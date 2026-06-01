@@ -399,6 +399,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .udot{width:14px;height:14px;border-radius:50%;background:var(--blue);border:2.5px solid #fff;box-shadow:0 0 0 4px rgba(37,99,235,.2);}
 .pin-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(17,24,39,.85);color:#fff;font-size:.7rem;font-weight:600;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:9999;}
 @media(hover:hover){.pin-hover-wrap:hover .pin-tooltip{display:block;}}
+.pin-hover-wrap:hover{z-index:9999 !important;}
+.pin-hover-wrap:hover .pin-tooltip{z-index:9999 !important;}
 #bottom-card{position:fixed;bottom:0;left:0;right:0;background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;border-top:0.5px solid var(--g200);padding:10px 14px 20px;z-index:300;display:none;box-shadow:0 -4px 20px rgba(0,0,0,.1);}
 #bottom-card.show{display:block;}
 .bc-handle{width:28px;height:3px;border-radius:2px;background:var(--g300);margin:0 auto 10px;}
@@ -1226,6 +1228,8 @@ function addL1(p){
     .setLngLat([p.lng,p.lat]);
   if((p.mode||'outside')===mapMode)m.addTo(map_o);
   m.getElement().style.zIndex='2';
+  el.addEventListener('mouseenter',function(){el.style.zIndex='9999';});
+  el.addEventListener('mouseleave',function(){el.style.zIndex='';});
   el.addEventListener('click',function(e){
     e.stopPropagation();
     if(p.premium&&!unlocked){showPW();return;}
