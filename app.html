@@ -1260,6 +1260,8 @@ function addCityActivityMarker(a){
     .setLngLat([a.lng,a.lat])
     .addTo(map_o);
   m.getElement().style.zIndex='2';
+  el.addEventListener('mouseenter',function(){el.style.zIndex='9999';});
+  el.addEventListener('mouseleave',function(){el.style.zIndex='';});
   el.addEventListener('click',function(e){
     e.stopPropagation();
     if(isPremium){showPW();return;}
@@ -1416,6 +1418,8 @@ function showL2(place){
     var el=document.createElement('div');
     el.innerHTML=l2Html(a);
     el.style.zIndex=100+i;
+    el.addEventListener('mouseenter',function(){el.style.zIndex='9999';});
+    el.addEventListener('mouseleave',function(){el.style.zIndex='';});
     el.addEventListener('click',function(e){
       e.stopPropagation();
       if(window.innerWidth<768){showActBubbleBottomCard(a,place.id);}else{showActBubble(a,[a.lat,a.lng]);}
