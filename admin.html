@@ -1303,7 +1303,7 @@ function addActRow(a){
     +'<div class="spec-rows" id="spec-rows-'+rid+'"></div>'
     +'<div class="presets-row" id="presets-'+rid+'"></div>'
     +'</div></div>'
-    +'<div class="fg"><label>Foto attività (opzionale)</label>'
+    +'<div class="fg"><label>Foto copertina attività (opzionale)</label>'
     +'<label class="pa" style="padding:10px;display:block;cursor:pointer;">'
     +'<input type="file" id="ai-'+rid+'" accept="image/*" onchange="handleActPhoto(this,\''+rid+'\')" style="display:none;">'
     +'<div style="font-size:.78rem;font-weight:600;color:var(--g700);">📸 Carica foto (compressa automaticamente)</div>'
@@ -1312,6 +1312,21 @@ function addActRow(a){
     +'<img id="aimg-'+rid+'" src="" style="width:100%;max-width:150px;height:72px;object-fit:cover;border-radius:var(--r);border:1px solid var(--g200);">'
     +'<button class="btn bd sm" style="margin-top:4px;" onclick="removeActPhoto(\''+rid+'\')">Rimuovi</button>'
     +'</div></div>'
+    +'<div class="fg"><label>Galleria attività <span style="font-size:.68rem;font-weight:400;color:var(--g400);">max 6 foto/video</span></label>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+    +'<label class="pa" style="display:block;flex:1;min-width:120px;padding:10px;">'
+    +'<input type="file" accept="image/*" multiple onchange="handleActGallery(this,\''+rid+'\')" style="display:none;">'
+    +'<div style="font-size:1.1rem;margin-bottom:2px;">🖼</div>'
+    +'<div style="font-size:.75rem;font-weight:600;color:var(--g700);">Foto</div>'
+    +'</label>'
+    +'<label class="pa" style="display:block;flex:1;min-width:120px;padding:10px;">'
+    +'<input type="file" accept="video/*" multiple onchange="handleActGalleryVideo(this,\''+rid+'\')" style="display:none;">'
+    +'<div style="font-size:1.1rem;margin-bottom:2px;">🎬</div>'
+    +'<div style="font-size:.75rem;font-weight:600;color:var(--g700);">Video</div>'
+    +'</label>'
+    +'</div>'
+    +'<div class="pg" id="ag-'+rid+'"></div>'
+    +'</div>'
     +'<div class="fg"><label>Google Maps URL</label><input type="url" class="ar-maps" placeholder="https://maps.google.com/?q=…"></div>'
     +'<input type="hidden" class="ar-id" value="'+rid+'">'
     +'<input type="hidden" class="ar-cover" value="">'
@@ -1335,6 +1350,7 @@ function addActRow(a){
     div.querySelector('.ar-city').value=a.city||'';
     div.querySelector('.ar-premium').checked=a.premium||false;
     div.querySelector('.ar-gallery').value=JSON.stringify(a.gallery||[]);
+    renderActGGrid(rid);
     if(a.coverPhoto){
       document.getElementById('aimg-'+rid).src=a.coverPhoto;
       document.getElementById('ap-'+rid).style.display='block';
@@ -1392,6 +1408,60 @@ function removeActPhoto(rid){
   var row=document.getElementById('ar-'+rid);
   if(row) row.querySelector('.ar-cover').value='';
   document.getElementById('ap-'+rid).style.display='none';
+}
+function handleActGallery(inp, rid){
+  var files=Array.from(inp.files);
+  var row=document.getElementById('ar-'+rid); if(!row)return;
+  var cur=JSON.parse(row.querySelector('.ar-gallery').value||'[]');
+  var rem=6-cur.length, toLoad=files.slice(0,rem);
+  if(!toLoad.length){toast('Massimo 6 elementi','err');return;}
+  toast('Caricamento foto…');
+  var done=0;
+  toLoad.forEach(function(f){
+    compressImage(f,function(data){
+      cur.push(data);
+      row.querySelector('.ar-gallery').value=JSON.stringify(cur);
+      renderActGGrid(rid);
+      done++; if(done===toLoad.length) toast('Galleria aggiornata ✓','ok');
+    });
+  });
+  inp.value='';
+}
+function handleActGalleryVideo(inp, rid){
+  var files=Array.from(inp.files);
+  var row=document.getElementById('ar-'+rid); if(!row)return;
+  var cur=JSON.parse(row.querySelector('.ar-gallery').value||'[]');
+  var rem=6-cur.length, toLoad=files.slice(0,rem);
+  if(!toLoad.length){toast('Massimo 6 elementi','err');return;}
+  toast('Caricamento video…');
+  var done=0;
+  toLoad.forEach(function(f){
+    uploadVideoToStorage(f,function(url){
+      cur.push(url);
+      row.querySelector('.ar-gallery').value=JSON.stringify(cur);
+      renderActGGrid(rid);
+      done++; if(done===toLoad.length) toast('Video aggiunto ✓','ok');
+    });
+  });
+  inp.value='';
+}
+function removeActGPhoto(rid, i){
+  var row=document.getElementById('ar-'+rid); if(!row)return;
+  var cur=JSON.parse(row.querySelector('.ar-gallery').value||'[]');
+  cur.splice(i,1);
+  row.querySelector('.ar-gallery').value=JSON.stringify(cur);
+  renderActGGrid(rid);
+}
+function renderActGGrid(rid){
+  var row=document.getElementById('ar-'+rid); if(!row)return;
+  var cur=JSON.parse(row.querySelector('.ar-gallery').value||'[]');
+  var grid=document.getElementById('ag-'+rid); if(!grid)return;
+  grid.innerHTML=cur.map(function(src,i){
+    var preview=isVideo(src)
+      ?'<video src="'+src+'" muted playsinline style="width:100%;height:68px;object-fit:cover;display:block;"></video>'
+      :'<img src="'+src+'">';
+    return '<div class="pi">'+preview+'<button class="pirm" onclick="removeActGPhoto(\''+rid+'\','+i+')">✕</button></div>';
+  }).join('');
 }
 
 function savePlace(){
