@@ -952,6 +952,7 @@ function openActPopup(actId, placeId, triggerEl){
   var at=atypeOf(a.type);
 
   // contenuto comune
+  _actGallery=(a.gallery||[]).filter(function(s){return s&&s.length>10;});
   var html='<div class="act-bub-type">'+renderIcon(at.icon,at.color||'#374151')+' '+atName(at)+'</div>';
   if(a.coverPhoto) html+='<img class="act-bub-img" src="'+a.coverPhoto+'" alt="">';
   var actDesc=lang==='en'&&a.descEn?a.descEn:a.desc;
@@ -962,6 +963,17 @@ function openActPopup(actId, placeId, triggerEl){
     html+='<div class="act-bub-specs">'
       +a.specs.map(function(s){return'<div class="act-bub-spec"><span class="act-bub-spec-k">'+translateSpec(s.k)+'</span><span class="act-bub-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')
       +'</div>';
+  }
+  if(_actGallery.length){
+    html+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:1fr;margin-bottom:12px;">'
+      +_actGallery.map(function(url,i){
+        var isVid=isVideo(url);
+        if(isVid){return'<div style="width:100%;aspect-ratio:1;overflow:hidden;border-radius:var(--r);cursor:pointer;position:relative;" onclick="openLightboxFromAct('+i+')">'
+          +'<video src="'+url+'" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>'
+          +'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);border-radius:var(--r);"><i class="ti ti-player-play-filled" style="color:#fff;font-size:1.4rem;"></i></div>'
+          +'</div>';}
+        return'<img src="'+url+'" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--r);cursor:pointer;display:block;" onclick="openLightboxFromAct('+i+')" alt="">';
+      }).join('')+'</div>';
   }
   if(a.maps) html+='<button class="act-bub-maps" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>';
 
@@ -1009,6 +1021,15 @@ function openActPopup(actId, placeId, triggerEl){
       +(actDesc?'<div class="act-popup-desc" id="act-popup-desc-el"></div>':'')
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+actSecret+'</p></div>':'')
       +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
+      +(_actGallery.length?'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:1fr;margin-bottom:12px;">'
+        +_actGallery.map(function(url,i){
+          var isVid=isVideo(url);
+          if(isVid){return'<div style="width:100%;aspect-ratio:1;overflow:hidden;border-radius:var(--r);cursor:pointer;position:relative;" onclick="openLightboxFromAct('+i+')">'
+            +'<video src="'+url+'" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>'
+            +'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);border-radius:var(--r);"><i class="ti ti-player-play-filled" style="color:#fff;font-size:1.4rem;"></i></div>'
+            +'</div>';}
+          return'<img src="'+url+'" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--r);cursor:pointer;display:block;" onclick="openLightboxFromAct('+i+')" alt="">';
+        }).join('')+'</div>':'')
       +(a.maps?'<button class="act-popup-maps-btn" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'');
     if(actDesc) renderExpandableText(actDesc,'act-popup-desc-el',200);
     document.getElementById('act-popup').classList.add('show');
@@ -1290,6 +1311,8 @@ function showCityActivityBottomCard(a){
 }
 var _cityActGallery=[];
 function openLightboxFromCityAct(idx){openLightbox(idx,{gallery:_cityActGallery});}
+var _actGallery=[];
+function openLightboxFromAct(idx){openLightbox(idx,{gallery:_actGallery});}
 function openCityActivityDetail(a){
   var et=expTypeOf(a.experienceTypeId);
   var etName=lang==='en'&&et.nameEn?et.nameEn:(et.name||'');
