@@ -2055,10 +2055,17 @@ function saveExpSubtype(){
   var icon=document.getElementById('est-icon').value.trim();
   var color=document.getElementById('est-color').value.trim()||'';
   if(!name){toast('Nome obbligatorio','err');return;}
-  var obj={id:editESTId||null,experienceTypeId:etId,name:name,nameEn:nameEn,icon:icon,color:color};
   var wasId=editESTId;
+  var obj={id:wasId||null,experienceTypeId:etId,name:name,nameEn:nameEn,icon:icon,color:color};
   closeExpSubtype();
-  upsertExpSubtype(obj).then(function(rows){
+  var req=wasId
+    ?sbFetch('experience_subtypes?id=eq.'+wasId,{
+        method:'PATCH',
+        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+        body:JSON.stringify({name:name,name_en:nameEn,icon:icon,color:color})
+      }).then(function(r){return r.json();})
+    :upsertExpSubtype(obj);
+  req.then(function(rows){
     var saved=(rows&&rows[0])?rowToExpSubtype(rows[0]):obj;
     if(wasId){var i=expSubtypes.findIndex(function(s){return s.id==wasId;});if(i>=0)expSubtypes[i]=saved;else expSubtypes.push(saved);}
     else expSubtypes.push(saved);
