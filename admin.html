@@ -49,9 +49,16 @@ body{font-family:var(--f);background:var(--g50);color:var(--g900);min-height:100
 .ico{width:32px;height:32px;padding:0;border-radius:var(--r);justify-content:center;font-size:.85rem;border-color:var(--g200);}
 .page{max-width:1080px;margin:0 auto;}
 .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
-.stat{background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);padding:14px 18px;flex:1;min-width:110px;}
+.stat{background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);padding:14px 18px;flex:1;min-width:110px;position:relative;}
 .stat-n{font-size:1.7rem;font-weight:700;line-height:1;margin-bottom:2px;}
 .stat-l{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);}
+.stat-info-btn{background:none;border:none;cursor:pointer;color:var(--g400);padding:2px;font-size:1rem;line-height:1;display:inline-flex;align-items:center;}
+.stat-info-btn:hover{color:var(--blue);}
+.stat-info-popup{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--w);border:1px solid var(--g200);border-radius:var(--r);padding:10px 14px;font-size:.76rem;color:var(--g600);z-index:100;box-shadow:0 4px 16px rgba(0,0,0,.1);line-height:1.9;white-space:pre-line;}
+.stat-info-popup.open{display:block;}
+.et-acc{border-top:1px solid var(--g100);margin-top:10px;padding-top:10px;}
+.est-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--g100);}
+.est-row:last-child{border:none;}
 .toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
 .sw{position:relative;flex:1;min-width:180px;}
 .sw input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--g200);border-radius:var(--rl);font-family:var(--f);font-size:.83rem;background:var(--w);color:var(--g900);outline:none;}
@@ -178,7 +185,6 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <a href="app.html" target="_blank" class="btn bs sm">🗺 Apri app</a>
       <button class="btn bok sm" onclick="openExport()">⬇ Esporta</button>
       <button class="btn bs sm" onclick="resetUnlock()" id="unlock-btn" style="display:none;">🔓 Reset unlock</button>
-      <button class="btn bok sm" onclick="migrateImagesToStorage()" id="migrate-img-btn" title="Sposta le immagini base64 su Supabase Storage">☁️ Migra immagini</button>
       <button class="btn bs" onclick="openAddCityAct()">🏙 Nuova attività Roma</button>
       <button class="btn bp" onclick="openAddPlace()">+ Nuovo luogo</button>
     </div>
@@ -189,7 +195,6 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <a href="app.html" target="_blank">🗺 Apri app</a>
       <button onclick="openExport();toggleNavMenu()">⬇ Esporta</button>
       <button id="unlock-btn-m" style="display:none;" onclick="resetUnlock();toggleNavMenu()">🔓 Reset unlock</button>
-      <button onclick="migrateImagesToStorage();toggleNavMenu()">☁️ Migra immagini</button>
       <button onclick="openAddCityAct();toggleNavMenu()">🏙 Nuova attività Roma</button>
       <button onclick="openAddPlace();toggleNavMenu()">+ Nuovo luogo</button>
     </div>
@@ -199,8 +204,8 @@ textarea.ft{resize:vertical;line-height:1.65;}
 <div class="tabs">
   <button class="tab on" onclick="switchTab('places',this)">Luoghi</button>
   <button class="tab" onclick="switchTab('cityacts',this)">🏙 Attività Roma</button>
-  <button class="tab" onclick="switchTab('cats',this)">Categorie</button>
-  <button class="tab" onclick="switchTab('actypes',this)">Tipi attività</button>
+  <button class="tab" onclick="switchTab('placetypes',this)">Tipologie luogo</button>
+  <button class="tab" onclick="switchTab('experience',this)">Experience</button>
 </div>
 
 <div class="pane on" id="pane-places">
@@ -259,6 +264,26 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <button class="btn bp" onclick="openAddAtype()">+ Nuovo tipo</button>
   </div>
   <div class="atgrid" id="atgrid"></div>
+</div>
+</div>
+
+<div class="pane" id="pane-placetypes">
+<div class="page">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+    <div><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Tipologie luogo</div><div style="font-size:.82rem;color:var(--g400);">Classificazione dei luoghi fuori porta.</div></div>
+    <button class="btn bp" onclick="openAddPlaceType()">+ Nuova tipologia</button>
+  </div>
+  <div class="clist" id="pt-list"></div>
+</div>
+</div>
+
+<div class="pane" id="pane-experience">
+<div class="page">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+    <div><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Experience</div><div style="font-size:.82rem;color:var(--g400);">Tipologie di esperienza e relative sottotipologie.</div></div>
+    <button class="btn bp" onclick="openAddExpType()">+ Nuova experience</button>
+  </div>
+  <div class="clist" id="et-list"></div>
 </div>
 </div>
 
@@ -409,6 +434,54 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <button class="btn bs sm" style="margin-top:8px;" onclick="addAtPresetRow('')">+ Aggiungi campo</button>
   </div>
   <div class="mf"><button class="btn bs" onclick="closeAt()">Annulla</button><button class="btn bp" onclick="saveAt()">Salva</button></div>
+</div>
+</div>
+
+<!-- MODAL TIPOLOGIA LUOGO -->
+<div class="ov" id="m-pt">
+<div class="modal" style="max-width:440px;">
+  <div class="mh"><div class="mh-t" id="m-pt-title">Nuova tipologia</div><button class="mx" onclick="closePlaceType()">✕</button></div>
+  <div class="mc">
+    <div class="fg"><label>Icona</label><input type="hidden" id="pt-icon"><button type="button" class="icon-pick-btn" id="pt-icon-btn" onclick="openIconPicker(function(ic){document.getElementById('pt-icon').value=ic;updatePTIconBtn();},document.getElementById('pt-icon').value,document.getElementById('pt-color').value)"><span id="pt-icon-display">Seleziona icona →</span></button></div>
+    <div class="fg"><label>Nome *</label><input type="text" id="pt-name" placeholder="Es. Borgo"></div>
+    <div class="fg"><label>Nome EN</label><input type="text" id="pt-name-en" placeholder="Es. Village"></div>
+    <div class="fg"><label>Colore hex</label><input type="text" id="pt-color" placeholder="#374151" oninput="document.getElementById('pt-color-pv').style.background=this.value||'#ccc'"></div>
+    <div style="height:28px;border-radius:var(--r);border:1px solid var(--g200);margin-top:4px;transition:background .2s;" id="pt-color-pv"></div>
+    <div class="fg" style="margin-top:12px;"><label>Sort order</label><input type="number" id="pt-sort" placeholder="0" min="0"></div>
+  </div>
+  <div class="mf"><button class="btn bs" onclick="closePlaceType()">Annulla</button><button class="btn bp" onclick="savePlaceType()">Salva</button></div>
+</div>
+</div>
+
+<!-- MODAL EXPERIENCE TYPE -->
+<div class="ov" id="m-et">
+<div class="modal" style="max-width:440px;">
+  <div class="mh"><div class="mh-t" id="m-et-title">Nuova experience</div><button class="mx" onclick="closeExpType()">✕</button></div>
+  <div class="mc">
+    <div class="fg"><label>Icona</label><input type="hidden" id="et-icon"><button type="button" class="icon-pick-btn" id="et-icon-btn" onclick="openIconPicker(function(ic){document.getElementById('et-icon').value=ic;updateETIconBtn();},document.getElementById('et-icon').value,document.getElementById('et-color').value)"><span id="et-icon-display">Seleziona icona →</span></button></div>
+    <div class="fg"><label>Nome *</label><input type="text" id="et-name" placeholder="Es. Avventura"></div>
+    <div class="fg"><label>Nome EN</label><input type="text" id="et-name-en" placeholder="Es. Adventure"></div>
+    <div class="fg"><label>Colore hex</label><input type="text" id="et-color" placeholder="#374151" oninput="document.getElementById('et-color-pv').style.background=this.value||'#ccc'"></div>
+    <div style="height:28px;border-radius:var(--r);border:1px solid var(--g200);margin-top:4px;transition:background .2s;" id="et-color-pv"></div>
+    <div class="fg" style="margin-top:12px;"><label>Sort order</label><input type="number" id="et-sort" placeholder="0" min="0"></div>
+  </div>
+  <div class="mf"><button class="btn bs" onclick="closeExpType()">Annulla</button><button class="btn bp" onclick="saveExpType()">Salva</button></div>
+</div>
+</div>
+
+<!-- MODAL EXPERIENCE SUBTYPE -->
+<div class="ov" id="m-est">
+<div class="modal" style="max-width:440px;">
+  <div class="mh"><div class="mh-t" id="m-est-title">Nuova sottotipologia</div><button class="mx" onclick="closeExpSubtype()">✕</button></div>
+  <div class="mc">
+    <input type="hidden" id="est-exp-type-id">
+    <div class="fg"><label>Icona</label><input type="hidden" id="est-icon"><button type="button" class="icon-pick-btn" id="est-icon-btn" onclick="openIconPicker(function(ic){document.getElementById('est-icon').value=ic;updateESTIconBtn();},document.getElementById('est-icon').value,document.getElementById('est-color').value)"><span id="est-icon-display">Seleziona icona →</span></button></div>
+    <div class="fg"><label>Nome *</label><input type="text" id="est-name" placeholder="Es. Trekking"></div>
+    <div class="fg"><label>Nome EN</label><input type="text" id="est-name-en" placeholder="Es. Hiking"></div>
+    <div class="fg"><label>Colore hex</label><input type="text" id="est-color" placeholder="#374151" oninput="document.getElementById('est-color-pv').style.background=this.value||'#ccc'"></div>
+    <div style="height:28px;border-radius:var(--r);border:1px solid var(--g200);margin-top:4px;transition:background .2s;" id="est-color-pv"></div>
+  </div>
+  <div class="mf"><button class="btn bs" onclick="closeExpSubtype()">Annulla</button><button class="btn bp" onclick="saveExpSubtype()">Salva</button></div>
 </div>
 </div>
 
@@ -603,6 +676,7 @@ var DEF_PLACES = [
 // ═══ STATE ═══
 var places=[], cats=[], atypes=[], placeTypes=[], expTypes=[], expSubtypes=[], cityActs=[];
 var editPId=null, editCId=null, editAId=null, editCityActId=null;
+var editPTId=null, editETId=null, editESTId=null;
 var delId=null, delType=null, delParent=null;
 var expId=null;
 var coverData='', galleryData=[];
@@ -888,6 +962,39 @@ function upsertAtype(a){
   });
 }
 
+// ═══ UPSERT TIPOLOGIA LUOGO ═══
+function upsertPlaceType(pt){
+  var body={name:pt.name,name_en:pt.nameEn||pt.name,icon:pt.icon||'',color:pt.color||'#374151',sort_order:pt.sortOrder||0};
+  if(pt.id) body.id=pt.id;
+  return sbFetch('place_types',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'},
+    body:JSON.stringify(body)
+  }).then(function(r){return r.json();});
+}
+
+// ═══ UPSERT EXPERIENCE TYPE ═══
+function upsertExpType(et){
+  var body={name:et.name,name_en:et.nameEn||et.name,icon:et.icon||'',color:et.color||'#374151',sort_order:et.sortOrder||0};
+  if(et.id) body.id=et.id;
+  return sbFetch('experience_types',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'},
+    body:JSON.stringify(body)
+  }).then(function(r){return r.json();});
+}
+
+// ═══ UPSERT EXPERIENCE SUBTYPE ═══
+function upsertExpSubtype(est){
+  var body={experience_type_id:est.experienceTypeId,name:est.name,name_en:est.nameEn||est.name,icon:est.icon||'',color:est.color||''};
+  if(est.id) body.id=est.id;
+  return sbFetch('experience_subtypes',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'},
+    body:JSON.stringify(body)
+  }).then(function(r){return r.json();});
+}
+
 // ═══ MIGRAZIONE DA LOCALSTORAGE ═══
 function migrateToSupabase(){
   var rp=localStorage.getItem('WT_PLACES_v2');
@@ -987,6 +1094,8 @@ function switchTab(t,btn){
   if(t==='cityacts') renderCityActs();
   if(t==='cats') renderCats();
   if(t==='actypes') renderAtypes();
+  if(t==='placetypes') renderPlaceTypes();
+  if(t==='experience') renderExpTypes();
 }
 
 // ═══ HELPERS ═══
@@ -1057,14 +1166,31 @@ function onExpTypeChange(sel, rid){
 
 // ═══ STATS ═══
 function renderStats(){
-  var h='<div class="stat"><div class="stat-n">'+places.length+'</div><div class="stat-l">Luoghi totali</div></div>';
-  cats.forEach(function(c){
-    var n=places.filter(function(p){return p.cat===c.id;}).length;
-    h+='<div class="stat"><div class="stat-n" style="color:'+c.color+'">'+n+'</div><div class="stat-l">'+c.name+'</div></div>';
+  var ptMap={};
+  places.forEach(function(p){
+    if((p.mode||'outside')!=='city'){
+      var k=p.placeTypeId||'_other';
+      ptMap[k]=(ptMap[k]||0)+1;
+    }
   });
-  var ta=places.reduce(function(s,p){return s+(p.activities||[]).length;},0);
-  h+='<div class="stat"><div class="stat-n" style="color:var(--blue)">'+ta+'</div><div class="stat-l">Attività L2</div></div>';
+  var breakdown=Object.keys(ptMap).map(function(k){
+    var pt=placeTypes.find(function(t){return t.id==k;});
+    return (pt?pt.name:'Altro')+': '+ptMap[k];
+  }).join('\n')||'Nessuna tipologia assegnata';
+  var h='<div class="stat">'
+    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;">'
+    +'<div><div class="stat-n">'+places.length+'</div><div class="stat-l">Luoghi totali</div></div>'
+    +'<button class="stat-info-btn" onclick="toggleStatInfo(event)" title="Dettaglio per tipologia"><i class="ti ti-info-circle"></i></button>'
+    +'</div>'
+    +'<div class="stat-info-popup" id="stat-places-popup">'+breakdown+'</div>'
+    +'</div>';
+  h+='<div class="stat"><div class="stat-n" style="color:var(--blue)">'+cityActs.length+'</div><div class="stat-l">Attività Roma</div></div>';
   document.getElementById('stats').innerHTML=h;
+}
+function toggleStatInfo(e){
+  e.stopPropagation();
+  var p=document.getElementById('stat-places-popup');
+  if(p) p.classList.toggle('open');
 }
 
 // ═══ PLACES TABLE ═══
@@ -1719,6 +1845,229 @@ function saveAt(){
   closeAt();renderAtypes();
 }
 
+// ═══ PLACE TYPES CRUD ═══
+function renderPlaceTypes(){
+  document.getElementById('pt-list').innerHTML=placeTypes.length
+    ?placeTypes.map(function(pt){
+      return '<div class="ci">'
+        +'<div class="cdot" style="background:'+(pt.color||'#374151')+';"></div>'
+        +'<div class="cico">'+iconHtml(pt.icon)+'</div>'
+        +'<div class="cinfo"><div class="cname">'+pt.name+'</div>'
+        +'<div class="cmeta"><span>EN: '+pt.nameEn+'</span><span>sort: '+(pt.sortOrder||0)+'</span></div></div>'
+        +'<div class="tac">'
+        +'<button class="btn bs sm ico" onclick="openEditPlaceType('+pt.id+')">✏️</button>'
+        +'<button class="btn bd sm ico" onclick="openDel('+pt.id+',\'place-type\')">🗑</button>'
+        +'</div></div>';
+    }).join('')
+    :'<div class="empty">Nessuna tipologia. Aggiungine una.</div>';
+}
+function openAddPlaceType(){
+  editPTId=null;
+  document.getElementById('m-pt-title').textContent='Nuova tipologia';
+  document.getElementById('pt-icon').value='';
+  document.getElementById('pt-icon-display').textContent='Seleziona icona →';
+  document.getElementById('pt-name').value='';
+  document.getElementById('pt-name-en').value='';
+  document.getElementById('pt-color').value='';
+  document.getElementById('pt-color-pv').style.background='#ccc';
+  document.getElementById('pt-sort').value='0';
+  document.getElementById('m-pt').classList.add('on');
+}
+function openEditPlaceType(id){
+  var pt=placeTypes.find(function(t){return t.id==id;});
+  if(!pt)return;
+  editPTId=pt.id;
+  document.getElementById('m-pt-title').textContent='Modifica tipologia';
+  document.getElementById('pt-icon').value=pt.icon||'';
+  updatePTIconBtn();
+  document.getElementById('pt-name').value=pt.name||'';
+  document.getElementById('pt-name-en').value=pt.nameEn||'';
+  document.getElementById('pt-color').value=pt.color||'';
+  document.getElementById('pt-color-pv').style.background=pt.color||'#ccc';
+  document.getElementById('pt-sort').value=pt.sortOrder||0;
+  document.getElementById('m-pt').classList.add('on');
+}
+function closePlaceType(){document.getElementById('m-pt').classList.remove('on');editPTId=null;}
+function updatePTIconBtn(){
+  var ic=document.getElementById('pt-icon').value.trim();
+  var el=document.getElementById('pt-icon-display');
+  if(ic&&ic.startsWith('ti-'))el.innerHTML='<i class="ti '+ic+'" style="font-size:1rem;"></i> '+ic;
+  else el.textContent=ic||'Seleziona icona →';
+}
+function savePlaceType(){
+  var name=document.getElementById('pt-name').value.trim();
+  var nameEn=document.getElementById('pt-name-en').value.trim()||name;
+  var icon=document.getElementById('pt-icon').value.trim();
+  var color=document.getElementById('pt-color').value.trim()||'#374151';
+  var sortOrder=parseInt(document.getElementById('pt-sort').value)||0;
+  if(!name){toast('Nome obbligatorio','err');return;}
+  var obj={id:editPTId||null,name:name,nameEn:nameEn,icon:icon,color:color,sortOrder:sortOrder};
+  var wasId=editPTId;
+  closePlaceType();
+  upsertPlaceType(obj).then(function(rows){
+    var saved=(rows&&rows[0])?rowToPlaceType(rows[0]):obj;
+    if(wasId){var i=placeTypes.findIndex(function(t){return t.id==wasId;});if(i>=0)placeTypes[i]=saved;else placeTypes.push(saved);}
+    else placeTypes.push(saved);
+    renderPlaceTypes();
+    toast(wasId?'Tipologia aggiornata ✓':'Tipologia aggiunta ✓','ok');
+  }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
+}
+
+// ═══ EXPERIENCE TYPES + SUBTYPES CRUD ═══
+function renderExpTypes(){
+  document.getElementById('et-list').innerHTML=expTypes.length
+    ?expTypes.map(function(et){
+      var stCount=expSubtypes.filter(function(s){return s.experienceTypeId===et.id;}).length;
+      return '<div class="ci" id="etc-'+et.id+'" style="flex-wrap:wrap;align-items:stretch;">'
+        +'<div style="display:flex;width:100%;align-items:center;gap:12px;">'
+        +'<div class="cdot" style="background:'+(et.color||'#374151')+';"></div>'
+        +'<div class="cico">'+iconHtml(et.icon)+'</div>'
+        +'<div class="cinfo"><div class="cname">'+et.name+'</div>'
+        +'<div class="cmeta"><span>EN: '+et.nameEn+'</span><span>'+stCount+' sottotipologie</span></div></div>'
+        +'<div class="tac">'
+        +'<button class="btn bs sm ico" onclick="toggleEtAcc(\''+et.id+'\')" title="Espandi sottotipologie"><i class="ti ti-chevron-down" id="et-chev-'+et.id+'"></i></button>'
+        +'<button class="btn bs sm ico" onclick="openEditExpType(\''+et.id+'\')">✏️</button>'
+        +'<button class="btn bd sm ico" onclick="openDel(\''+et.id+'\',\'exp-type\')">🗑</button>'
+        +'</div></div>'
+        +'<div class="et-acc" id="eta-'+et.id+'" style="display:none;width:100%;">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+        +'<span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);">Sottotipologie</span>'
+        +'<button class="btn bp sm" onclick="openAddExpSubtype(\''+et.id+'\')">+ Aggiungi</button>'
+        +'</div>'
+        +'<div id="est-list-'+et.id+'">'+renderExpSubtypesList(et.id)+'</div>'
+        +'</div>'
+        +'</div>';
+    }).join('')
+    :'<div class="empty">Nessuna experience. Aggiungine una.</div>';
+}
+function renderExpSubtypesList(etId){
+  var subs=expSubtypes.filter(function(s){return s.experienceTypeId===etId;});
+  if(!subs.length)return '<div style="font-size:.8rem;color:var(--g400);padding:4px 0 8px;">Nessuna sottotipologia.</div>';
+  return subs.map(function(s){
+    return '<div class="est-row">'
+      +'<div style="width:8px;height:8px;border-radius:50%;background:'+(s.color||'#374151')+';flex-shrink:0;"></div>'
+      +'<div style="width:28px;height:28px;border-radius:6px;background:'+(s.color||'#374151')+'20;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+iconHtml(s.icon)+'</div>'
+      +'<div style="flex:1;"><div style="font-size:.83rem;font-weight:600;color:var(--g900);">'+s.name+'</div>'
+      +(s.nameEn&&s.nameEn!==s.name?'<div style="font-size:.72rem;color:var(--g400);">EN: '+s.nameEn+'</div>':'')
+      +'</div>'
+      +'<div class="tac">'
+      +'<button class="btn bs sm ico" onclick="openEditExpSubtype(\''+s.id+'\')">✏️</button>'
+      +'<button class="btn bd sm ico" onclick="openDel(\''+s.id+'\',\'exp-subtype\')">🗑</button>'
+      +'</div></div>';
+  }).join('');
+}
+function toggleEtAcc(etId){
+  var acc=document.getElementById('eta-'+etId);
+  if(!acc)return;
+  var open=acc.style.display!=='none';
+  acc.style.display=open?'none':'block';
+  var chev=document.getElementById('et-chev-'+etId);
+  if(chev)chev.className=open?'ti ti-chevron-down':'ti ti-chevron-up';
+}
+function openAddExpType(){
+  editETId=null;
+  document.getElementById('m-et-title').textContent='Nuova experience';
+  document.getElementById('et-icon').value='';
+  document.getElementById('et-icon-display').textContent='Seleziona icona →';
+  document.getElementById('et-name').value='';
+  document.getElementById('et-name-en').value='';
+  document.getElementById('et-color').value='';
+  document.getElementById('et-color-pv').style.background='#ccc';
+  document.getElementById('et-sort').value='0';
+  document.getElementById('m-et').classList.add('on');
+}
+function openEditExpType(id){
+  var et=expTypes.find(function(t){return t.id==id;});
+  if(!et)return;
+  editETId=et.id;
+  document.getElementById('m-et-title').textContent='Modifica experience';
+  document.getElementById('et-icon').value=et.icon||'';
+  updateETIconBtn();
+  document.getElementById('et-name').value=et.name||'';
+  document.getElementById('et-name-en').value=et.nameEn||'';
+  document.getElementById('et-color').value=et.color||'';
+  document.getElementById('et-color-pv').style.background=et.color||'#ccc';
+  document.getElementById('et-sort').value=et.sortOrder||0;
+  document.getElementById('m-et').classList.add('on');
+}
+function closeExpType(){document.getElementById('m-et').classList.remove('on');editETId=null;}
+function updateETIconBtn(){
+  var ic=document.getElementById('et-icon').value.trim();
+  var el=document.getElementById('et-icon-display');
+  if(ic&&ic.startsWith('ti-'))el.innerHTML='<i class="ti '+ic+'" style="font-size:1rem;"></i> '+ic;
+  else el.textContent=ic||'Seleziona icona →';
+}
+function saveExpType(){
+  var name=document.getElementById('et-name').value.trim();
+  var nameEn=document.getElementById('et-name-en').value.trim()||name;
+  var icon=document.getElementById('et-icon').value.trim();
+  var color=document.getElementById('et-color').value.trim()||'#374151';
+  var sortOrder=parseInt(document.getElementById('et-sort').value)||0;
+  if(!name){toast('Nome obbligatorio','err');return;}
+  var obj={id:editETId||null,name:name,nameEn:nameEn,icon:icon,color:color,sortOrder:sortOrder};
+  var wasId=editETId;
+  closeExpType();
+  upsertExpType(obj).then(function(rows){
+    var saved=(rows&&rows[0])?rowToExpType(rows[0]):obj;
+    if(wasId){var i=expTypes.findIndex(function(t){return t.id==wasId;});if(i>=0)expTypes[i]=saved;else expTypes.push(saved);}
+    else expTypes.push(saved);
+    renderExpTypes();
+    toast(wasId?'Experience aggiornata ✓':'Experience aggiunta ✓','ok');
+  }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
+}
+function openAddExpSubtype(etId){
+  editESTId=null;
+  document.getElementById('m-est-title').textContent='Nuova sottotipologia';
+  document.getElementById('est-exp-type-id').value=etId;
+  document.getElementById('est-icon').value='';
+  document.getElementById('est-icon-display').textContent='Seleziona icona →';
+  document.getElementById('est-name').value='';
+  document.getElementById('est-name-en').value='';
+  document.getElementById('est-color').value='';
+  document.getElementById('est-color-pv').style.background='#ccc';
+  document.getElementById('m-est').classList.add('on');
+}
+function openEditExpSubtype(id){
+  var s=expSubtypes.find(function(x){return x.id==id;});
+  if(!s)return;
+  editESTId=s.id;
+  document.getElementById('m-est-title').textContent='Modifica sottotipologia';
+  document.getElementById('est-exp-type-id').value=s.experienceTypeId;
+  document.getElementById('est-icon').value=s.icon||'';
+  updateESTIconBtn();
+  document.getElementById('est-name').value=s.name||'';
+  document.getElementById('est-name-en').value=s.nameEn||'';
+  document.getElementById('est-color').value=s.color||'';
+  document.getElementById('est-color-pv').style.background=s.color||'#ccc';
+  document.getElementById('m-est').classList.add('on');
+}
+function closeExpSubtype(){document.getElementById('m-est').classList.remove('on');editESTId=null;}
+function updateESTIconBtn(){
+  var ic=document.getElementById('est-icon').value.trim();
+  var el=document.getElementById('est-icon-display');
+  if(ic&&ic.startsWith('ti-'))el.innerHTML='<i class="ti '+ic+'" style="font-size:1rem;"></i> '+ic;
+  else el.textContent=ic||'Seleziona icona →';
+}
+function saveExpSubtype(){
+  var etId=document.getElementById('est-exp-type-id').value;
+  var name=document.getElementById('est-name').value.trim();
+  var nameEn=document.getElementById('est-name-en').value.trim()||name;
+  var icon=document.getElementById('est-icon').value.trim();
+  var color=document.getElementById('est-color').value.trim()||'';
+  if(!name){toast('Nome obbligatorio','err');return;}
+  var obj={id:editESTId||null,experienceTypeId:etId,name:name,nameEn:nameEn,icon:icon,color:color};
+  var wasId=editESTId;
+  closeExpSubtype();
+  upsertExpSubtype(obj).then(function(rows){
+    var saved=(rows&&rows[0])?rowToExpSubtype(rows[0]):obj;
+    if(wasId){var i=expSubtypes.findIndex(function(s){return s.id==wasId;});if(i>=0)expSubtypes[i]=saved;else expSubtypes.push(saved);}
+    else expSubtypes.push(saved);
+    var listEl=document.getElementById('est-list-'+etId);
+    if(listEl)listEl.innerHTML=renderExpSubtypesList(etId);
+    toast(wasId?'Sottotipologia aggiornata ✓':'Sottotipologia aggiunta ✓','ok');
+  }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
+}
+
 // ═══ DELETE ═══
 function openDel(id,type,parent){
   delId=id;delType=type;delParent=parent||null;
@@ -1728,6 +2077,9 @@ function openDel(id,type,parent){
   else if(type==='atype'){var a=atypes.find(function(x){return x.id===id;});name=a?((a.icon&&!a.icon.startsWith('ti-')?a.icon+' ':'')+a.name):'?';}
   else if(type==='act'){var pp=places.find(function(x){return x.id===parent;});var aa=pp&&(pp.activities||[]).find(function(x){return x.id===id;});name=aa?aa.name:'?';}
   else if(type==='city-act'){var ca=cityActs.find(function(x){return x.id===id;});name=ca?ca.name:'?';}
+  else if(type==='place-type'){var pt=placeTypes.find(function(x){return x.id==id;});name=pt?pt.name:'?';}
+  else if(type==='exp-type'){var et=expTypes.find(function(x){return x.id==id;});name=et?et.name:'?';}
+  else if(type==='exp-subtype'){var es=expSubtypes.find(function(x){return x.id==id;});name=es?es.name:'?';}
   document.getElementById('dname').textContent=name;
   document.getElementById('m-del').classList.add('on');
 }
@@ -1759,6 +2111,28 @@ function confirmDel(){
     }).catch(function(e){toast('⚠️ '+e.message,'err');});
     cityActs=cityActs.filter(function(a){return a.id!==delId;});
     renderCityActs();
+  } else if(delType==='place-type'){
+    sbFetch('place_types?id=eq.'+delId,{method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+    }).catch(function(e){toast('⚠️ '+e.message,'err');});
+    placeTypes=placeTypes.filter(function(t){return t.id!=delId;});
+    renderPlaceTypes();
+  } else if(delType==='exp-type'){
+    sbFetch('experience_types?id=eq.'+delId,{method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+    }).catch(function(e){toast('⚠️ '+e.message,'err');});
+    expTypes=expTypes.filter(function(t){return t.id!=delId;});
+    expSubtypes=expSubtypes.filter(function(s){return s.experienceTypeId!=delId;});
+    renderExpTypes();
+  } else if(delType==='exp-subtype'){
+    sbFetch('experience_subtypes?id=eq.'+delId,{method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+    }).catch(function(e){toast('⚠️ '+e.message,'err');});
+    var _etId=null;
+    var _s=expSubtypes.find(function(s){return s.id==delId;});
+    if(_s)_etId=_s.experienceTypeId;
+    expSubtypes=expSubtypes.filter(function(s){return s.id!=delId;});
+    if(_etId){var _listEl=document.getElementById('est-list-'+_etId);if(_listEl)_listEl.innerHTML=renderExpSubtypesList(_etId);}
   }
   closeDel();renderStats();renderPlaces();renderCats();renderAtypes();populateCatFilter();
   toast('Eliminato ✓','ok');
@@ -1789,6 +2163,9 @@ document.addEventListener('click',function(e){
   var hb=document.getElementById('tb-hamburger');
   if(dd.classList.contains('open')&&!dd.contains(e.target)&&e.target!==hb&&!hb.contains(e.target)){
     dd.classList.remove('open');
+  }
+  if(!e.target.closest('.stat-info-btn')){
+    document.querySelectorAll('.stat-info-popup.open').forEach(function(el){el.classList.remove('open');});
   }
 });
 function toggleNavMenu(){
