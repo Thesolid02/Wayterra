@@ -1971,32 +1971,34 @@ function openDetail(){
     actsLbl.textContent=t('activities');
     var groups={};var groupOrder=[];
     acts.forEach(function(a){
-      if(!groups[a.type]){groups[a.type]=[];groupOrder.push(a.type);}
-      groups[a.type].push(a);
+      var gKey=a.experienceTypeId||('_t_'+a.type);
+      if(!groups[gKey]){groups[gKey]=[];groupOrder.push(gKey);}
+      groups[gKey].push(a);
     });
-    actsGrid.innerHTML=groupOrder.map(function(typeId){
-      var at=atypeOf(typeId);
-      var groupActs=groups[typeId];
-      // header: usa expType del primo elemento del gruppo se disponibile
-      var et0=expTypeOf(groupActs[0]&&groupActs[0].experienceTypeId||null);
-      var hdrIcon=(et0&&et0.icon)?et0.icon:at.icon;
-      var hdrColor=(et0&&et0.color)?et0.color:(at.color||'#374151');
+    actsGrid.innerHTML=groupOrder.map(function(gKey){
+      var groupActs=groups[gKey];
+      var isExpType=String(gKey).indexOf('_t_')!==0;
+      var et=isExpType?expTypeOf(gKey):null;
+      var at=isExpType?{}:atypeOf(String(gKey).slice(3));
+      var hdrIcon=(et&&et.icon)?et.icon:at.icon;
+      var hdrColor=(et&&et.color)?et.color:(at.color||'#374151');
+      var hdrName=isExpType?(lang==='en'&&et.nameEn?et.nameEn:et.name)||(et.name||String(gKey)):atName(at);
       var rows=groupActs.map(function(a){
         var hasDetail=!!(a.desc||a.secret||(a.specs&&a.specs.length)||a.coverPhoto||a.maps);
-        var et=expTypeOf(a.experienceTypeId);
+        var aet=isExpType?et:expTypeOf(a.experienceTypeId);
         var est=a.experienceSubtypeId?expSubtypeOf(a.experienceSubtypeId):null;
-        var rowIcon=(est&&est.icon)?est.icon:(et&&et.icon?et.icon:at.icon);
-        var rowColor=(est&&est.color)?est.color:(et&&et.color?et.color:(at.color||'#374151'));
+        var rowIcon=(est&&est.icon)?est.icon:(aet&&aet.icon?aet.icon:at.icon);
+        var rowColor=(est&&est.color)?est.color:(aet&&aet.color?aet.color:(at.color||'#374151'));
         return '<div class="dp-act-row"'+(hasDetail?' onclick="openActPopup('+a.id+','+p.id+',this)"':'')+' >'
           +'<div class="dp-act-row-ico" style="background:'+rowColor+'22;">'+renderIcon(rowIcon,rowColor)+'</div>'
           +'<div class="dp-act-row-name">'+a.name+'</div>'
           +(hasDetail?'<span class="dp-act-row-arrow">→</span>':'')
           +'</div>';
       }).join('');
-      return '<div class="dp-act-group" data-type="'+typeId+'">'
-        +'<div class="dp-act-group-header" onclick="toggleActGroup(\''+typeId+'\')">'
+      return '<div class="dp-act-group" data-type="'+gKey+'">'
+        +'<div class="dp-act-group-header" onclick="toggleActGroup(\''+gKey+'\')">'
         +'<div class="dp-act-group-circle" style="background:'+hdrColor+';">'+renderIcon(hdrIcon,'white')+'</div>'
-        +'<div class="dp-act-group-name">'+atName(at)+'</div>'
+        +'<div class="dp-act-group-name">'+hdrName+'</div>'
         +'<div class="dp-act-group-count">'+groupActs.length+'</div>'
         +'<i class="ti ti-chevron-right dp-act-group-chevron"></i>'
         +'</div>'
