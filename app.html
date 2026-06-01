@@ -1381,7 +1381,11 @@ function refreshL1markers(){
 /* L2 markers — solo se coordinate presenti */
 function l2Html(a){
   var at=atypeOf(a.type);
-  return '<div class="mk2"><div class="mk2-tooltip">'+a.name+'</div><div class="mk2-pin" style="background:'+at.color+';">'+renderIcon(at.icon,'white')+'</div><div class="mk2-stem"></div></div>';
+  var et=expTypeOf(a.experienceTypeId);
+  var est=a.experienceSubtypeId?expSubtypeOf(a.experienceSubtypeId):null;
+  var icon=(est&&est.icon)?est.icon:(et&&et.icon?et.icon:at.icon);
+  var color=(est&&est.color)?est.color:(et&&et.color?et.color:(at.color||'#374151'));
+  return '<div class="mk2"><div class="mk2-tooltip">'+a.name+'</div><div class="mk2-pin" style="background:'+color+';">'+renderIcon(icon,'white')+'</div><div class="mk2-stem"></div></div>';
 }
 function haversine(lat1,lng1,lat2,lng2){
   var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
@@ -1973,17 +1977,25 @@ function openDetail(){
     actsGrid.innerHTML=groupOrder.map(function(typeId){
       var at=atypeOf(typeId);
       var groupActs=groups[typeId];
+      // header: usa expType del primo elemento del gruppo se disponibile
+      var et0=expTypeOf(groupActs[0]&&groupActs[0].experienceTypeId||null);
+      var hdrIcon=(et0&&et0.icon)?et0.icon:at.icon;
+      var hdrColor=(et0&&et0.color)?et0.color:(at.color||'#374151');
       var rows=groupActs.map(function(a){
         var hasDetail=!!(a.desc||a.secret||(a.specs&&a.specs.length)||a.coverPhoto||a.maps);
+        var et=expTypeOf(a.experienceTypeId);
+        var est=a.experienceSubtypeId?expSubtypeOf(a.experienceSubtypeId):null;
+        var rowIcon=(est&&est.icon)?est.icon:(et&&et.icon?et.icon:at.icon);
+        var rowColor=(est&&est.color)?est.color:(et&&et.color?et.color:(at.color||'#374151'));
         return '<div class="dp-act-row"'+(hasDetail?' onclick="openActPopup('+a.id+','+p.id+',this)"':'')+' >'
-          +'<div class="dp-act-row-ico" style="background:'+at.color+'22;">'+renderIcon(at.icon,at.color||'#374151')+'</div>'
+          +'<div class="dp-act-row-ico" style="background:'+rowColor+'22;">'+renderIcon(rowIcon,rowColor)+'</div>'
           +'<div class="dp-act-row-name">'+a.name+'</div>'
           +(hasDetail?'<span class="dp-act-row-arrow">→</span>':'')
           +'</div>';
       }).join('');
       return '<div class="dp-act-group" data-type="'+typeId+'">'
         +'<div class="dp-act-group-header" onclick="toggleActGroup(\''+typeId+'\')">'
-        +'<div class="dp-act-group-circle" style="background:'+at.color+';">'+renderIcon(at.icon,'white')+'</div>'
+        +'<div class="dp-act-group-circle" style="background:'+hdrColor+';">'+renderIcon(hdrIcon,'white')+'</div>'
         +'<div class="dp-act-group-name">'+atName(at)+'</div>'
         +'<div class="dp-act-group-count">'+groupActs.length+'</div>'
         +'<i class="ti ti-chevron-right dp-act-group-chevron"></i>'
