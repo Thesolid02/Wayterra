@@ -1108,7 +1108,7 @@ function initMap(){
   map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
   map_o.on('style.load',function(){
     romaPlaces=DATA.places.filter(function(p){
-      return haversine(p.lat,p.lng,41.9028,12.4964)<=20;
+      return (p.mode||'outside')==='city';
     });
 
     DATA.places.forEach(function(p){addL1(p);});
