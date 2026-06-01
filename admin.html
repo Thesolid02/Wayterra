@@ -2065,13 +2065,15 @@ function saveExpSubtype(){
         body:JSON.stringify({name:name,name_en:nameEn,icon:icon,color:color,experience_type_id:parseInt(etId)})
       }).then(function(r){return r.json();})
     :upsertExpSubtype(obj);
-  req.then(function(rows){
-    var saved=(rows&&rows[0])?rowToExpSubtype(rows[0]):obj;
-    if(wasId){var i=expSubtypes.findIndex(function(s){return s.id==wasId;});if(i>=0)expSubtypes[i]=saved;else expSubtypes.push(saved);}
-    else expSubtypes.push(saved);
-    var listEl=document.getElementById('est-list-'+etId);
-    if(listEl)listEl.innerHTML=renderExpSubtypesList(etId);
-    toast(wasId?'Sottotipologia aggiornata ✓':'Sottotipologia aggiunta ✓','ok');
+  req.then(function(){
+    return sbFetch('experience_subtypes?order=id',{method:'GET',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+      .then(function(r){return r.json();})
+      .then(function(rows){
+        expSubtypes=rows.map(rowToExpSubtype);
+        var listEl=document.getElementById('est-list-'+etId);
+        if(listEl)listEl.innerHTML=renderExpSubtypesList(etId);
+        toast(wasId?'Sottotipologia aggiornata ✓':'Sottotipologia aggiunta ✓','ok');
+      });
   }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
 }
 
