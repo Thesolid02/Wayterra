@@ -2062,7 +2062,7 @@ function saveExpSubtype(){
     ?sbFetch('experience_subtypes?id=eq.'+wasId,{
         method:'PATCH',
         headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
-        body:JSON.stringify({name:name,name_en:nameEn,icon:icon,color:color})
+        body:JSON.stringify({name:name,name_en:nameEn,icon:icon,color:color,experience_type_id:parseInt(etId)})
       }).then(function(r){return r.json();})
     :upsertExpSubtype(obj);
   req.then(function(rows){
