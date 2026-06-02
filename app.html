@@ -66,6 +66,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #filter-overlay.show{display:block;}
 #filter-popup{position:fixed;bottom:0;left:0;right:0;z-index:501;background:var(--w);
   border-radius:var(--rxl) var(--rxl) 0 0;
+  max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);
   transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);}
 #filter-popup.show{transform:translateY(0);transition:transform .3s cubic-bezier(.33,1,.68,1);}
@@ -79,7 +80,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   cursor:pointer;transition:all .15s;text-align:center;color:var(--g700);}
 .fp-mode-btn.active-outside{background:#f0fdf4;border-color:#16a34a;color:#16a34a;}
 .fp-mode-btn.active-city{background:#fff7ed;border-color:#dc6b2f;color:#dc6b2f;}
-.fp-cats{display:flex;flex-direction:column;padding:0 8px 8px;max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.fp-cats{display:flex;flex-direction:column;padding:0 8px 8px;}
 .fp-cat-btn{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);
   border:none;background:none;width:100%;text-align:left;font-family:var(--f);
   cursor:pointer;transition:background .12s;}
