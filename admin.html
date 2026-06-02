@@ -895,7 +895,7 @@ function load(){
 // ═══ SAVE LUOGO (upsert place + activities) ═══
 function upsert(p){
   var row=placeToRow(p);
-  // upsert place
+  var savedId;
   return sbFetch('places',{
     method:'POST',
     headers:{
@@ -906,15 +906,15 @@ function upsert(p){
     },
     body:JSON.stringify(row)
   })
-  .then(function(r){if(!r.ok)throw new Error('place upsert HTTP '+r.status);return r.json();})
-  .then(function(){
-    // cancella attività vecchie e reinserisce
-    return sbFetch('activities?place_id=eq.'+p.id,{method:'DELETE',
+  .then(function(r){return r.json();})
+  .then(function(rows){
+    savedId=(rows&&rows[0])?rows[0].id:p.id;
+    return sbFetch('activities?place_id=eq.'+savedId,{method:'DELETE',
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}});
   })
   .then(function(){
     var acts=p.activities||[];
-    if(!acts.length)return;
+    if(!acts.length)return savedId;
     return sbFetch('activities',{
       method:'POST',
       headers:{
@@ -924,9 +924,9 @@ function upsert(p){
         'Prefer':'resolution=merge-duplicates,return=representation'
       },
       body:JSON.stringify(acts.map(function(a,i){
-        var r=actToRow(a,p.id);r.sort_order=i;return r;
+        var r=actToRow(a,savedId);r.sort_order=i;return r;
       }))
-    });
+    }).then(function(){return savedId;});
   });
 }
 
@@ -1676,19 +1676,21 @@ function savePlace(){
     coverPhoto:coverData, gallery:galleryData.slice()
   };
 
-  if(editPId){
-    var i=places.findIndex(function(p){return p.id===editPId;});
-    if(i>=0) places[i]=obj;
-  } else {
-    places.push(obj);
-  }
-  // salva su Supabase
-  upsert(obj).then(function(){
-    toast(editPId?'Aggiornato ✓ — visibile subito sull\'app':'Aggiunto ✓ — visibile subito sull\'app','ok');
+  var wasEditId=editPId;
+  closePlace();
+  upsert(obj).then(function(savedId){
+    var saved=Object.assign({},obj,{id:savedId||obj.id});
+    if(wasEditId){
+      var i=places.findIndex(function(p){return p.id===wasEditId;});
+      if(i>=0) places[i]=saved; else places.push(saved);
+    } else {
+      places.push(saved);
+    }
+    renderStats(); renderPlaces();
+    toast(wasEditId?'Aggiornato ✓ — visibile subito sull\'app':'Aggiunto ✓ — visibile subito sull\'app','ok');
   }).catch(function(e){
     toast('⚠️ Errore salvataggio: '+e.message,'err');
   });
-  closePlace(); renderStats(); renderPlaces();
 }
 
 function openAddAct(pid){
