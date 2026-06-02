@@ -603,7 +603,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
     <div class="amp-type" id="amp-type-d"></div>
     <img class="amp-img" id="amp-img-d" src="" alt="" style="display:none;">
     <div id="amp-score-d" style="display:none;"></div>
-    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><button class="amp-maps" id="amp-maps-d"></button></div>
+    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div id="amp-pills-d"></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><button class="amp-maps" id="amp-maps-d"></button></div>
   </div>
 </div>
 
@@ -1343,11 +1343,13 @@ function openCityActivityDetail(a){
     document.getElementById('act-popup-title').textContent=a.name;
     var _bkm=document.getElementById('act-popup-bkm');
     if(_bkm){_bkm.style.display='';_bkm.innerHTML=favActs.has(a.id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';_bkm.onclick=function(){toggleFavAct(a.id);};}
+    var _pillsM=(lang==='en'&&a.pillsEn&&a.pillsEn.length)?a.pillsEn:(a.pills||[]);
     document.getElementById('act-popup-body-mobile').innerHTML=
       '<div class="act-popup-type">'+renderIcon(et.icon,et.color||'#374151')+' '+etName+'</div>'
       +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
       +(actDesc?'<div class="act-popup-desc" id="act-popup-desc-el"></div>':'')
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+formatText(actSecret)+'</p></div>':'')
+      +(_pillsM.length?'<div class="dp-pills">'+_pillsM.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('')+'</div>':'')
       +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
       +(a.gallery&&a.gallery.length?'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:1fr;margin-bottom:12px;">'
         +a.gallery.map(function(url,i){
@@ -1384,6 +1386,9 @@ function openCityActivityDetail(a){
       document.getElementById('amp-secret-txt-d').innerHTML='<p>'+formatText(actSecret)+'</p>';
       secElD.style.display='';
     } else secElD.style.display='none';
+    var _pillsD=(lang==='en'&&a.pillsEn&&a.pillsEn.length)?a.pillsEn:(a.pills||[]);
+    var pillsElD=document.getElementById('amp-pills-d');
+    if(pillsElD)pillsElD.innerHTML=_pillsD.length?'<div class="dp-pills">'+_pillsD.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('')+'</div>':'';
     document.getElementById('amp-specs-d').innerHTML=(a.specs||[]).map(function(s){return'<span class="amp-spec">'+translateSpec(s.k)+': '+translateSpec(s.v)+'</span>';}).join('');
     var gallery=(a.gallery||[]).filter(function(s){return s&&s.length>10;});
     _cityActGallery=gallery;
@@ -2392,7 +2397,8 @@ window.addEventListener('DOMContentLoaded',function(){
                coverPhoto:a.cover_photo||'',maps:a.maps_url||'',
                experienceTypeId:a.experience_type_id||null,
                experienceSubtypeId:a.experience_subtype_id||null,
-               gallery:a.gallery||[]};
+               gallery:a.gallery||[],
+               pills:a.pills||[],pillsEn:a.pills_en||[]};
       });
       return{
         id:row.id,cat:row.cat,placeTypeId:row.place_types_id||null,
@@ -2418,7 +2424,8 @@ window.addEventListener('DOMContentLoaded',function(){
              experienceTypeId:a.experience_type_id||null,
              experienceSubtypeId:a.experience_subtype_id||null,
              gallery:a.gallery||[],
-             hiddenScore:a.hidden_score||0};
+             hiddenScore:a.hidden_score||0,
+             pills:a.pills||[],pillsEn:a.pills_en||[]};
     });
 
     // salva cache locale

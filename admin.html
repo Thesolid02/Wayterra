@@ -605,6 +605,17 @@ textarea.ft{resize:vertical;line-height:1.65;}
       </div>
       <div class="pg" id="ca-ggrid"></div>
     </div>
+    <div class="sdiv" style="margin-top:6px;">Info pratiche (pillole)</div>
+    <div class="g2">
+      <div class="fg"><label>Pill 1 IT</label><input type="text" id="ca-p1" placeholder="Es. Centro storico"></div>
+      <div class="fg"><label>Pill 1 EN</label><input type="text" id="ca-p1en" placeholder="Ex. Historic center"></div>
+      <div class="fg"><label>Pill 2 IT</label><input type="text" id="ca-p2" placeholder="Es. 10 min a piedi"></div>
+      <div class="fg"><label>Pill 2 EN</label><input type="text" id="ca-p2en" placeholder="Ex. 10 min walk"></div>
+      <div class="fg"><label>Pill 3 IT</label><input type="text" id="ca-p3" placeholder="Es. Aperto 24h"></div>
+      <div class="fg"><label>Pill 3 EN</label><input type="text" id="ca-p3en" placeholder="Ex. Open 24h"></div>
+      <div class="fg"><label>Pill 4 IT</label><input type="text" id="ca-p4" placeholder="Es. Ingresso gratuito"></div>
+      <div class="fg"><label>Pill 4 EN</label><input type="text" id="ca-p4en" placeholder="Ex. Free entrance"></div>
+    </div>
     <div class="sdiv" style="margin-top:6px;">Google Maps URL</div>
     <div class="fg"><input type="url" id="ca-maps" placeholder="https://maps.google.com/?q=…"><span class="fh">Vuoto = generato automaticamente dal nome</span></div>
   </div>
@@ -761,7 +772,9 @@ function actRowToAct(a){
     coverPhoto: a.cover_photo||'',
     gallery: a.gallery||[],
     maps: a.maps_url||'',
-    hiddenScore: a.hidden_score||0
+    hiddenScore: a.hidden_score||0,
+    pills: a.pills||[],
+    pillsEn: a.pills_en||[]
   };
 }
 
@@ -815,7 +828,9 @@ function actToRow(a, placeId){
     cover_photo: a.coverPhoto||'',
     gallery: a.gallery||[],
     maps_url: a.maps||'',
-    hidden_score: a.hiddenScore||0
+    hidden_score: a.hiddenScore||0,
+    pills: a.pills||[],
+    pills_en: a.pillsEn||[]
   };
   // includi id solo se è un record esistente (non generato localmente)
   if(a.id) row.id=a.id;
@@ -2328,6 +2343,9 @@ function fillCityActForm(a){
   document.getElementById('ca-secret-en').value=a.secretEn||'';
   document.getElementById('ca-maps').value=a.maps||'';
   document.getElementById('ca-score').value=a.hiddenScore||0;
+  var _cp=a.pills||[], _cpen=a.pillsEn||[];
+  ['ca-p1','ca-p2','ca-p3','ca-p4'].forEach(function(id,i){document.getElementById(id).value=_cp[i]||'';});
+  ['ca-p1en','ca-p2en','ca-p3en','ca-p4en'].forEach(function(id,i){document.getElementById(id).value=_cpen[i]||'';});
   if(a.premium){document.getElementById('ca-prem-ca').checked=true;}
   else{document.getElementById('ca-free').checked=true;}
   if(a.experienceTypeId){
@@ -2378,6 +2396,7 @@ function clearCityActForm(){
   populateCityActExpTypeSelect();
   ['ca-name','ca-region','ca-desc','ca-desc-en','ca-secret','ca-secret-en','ca-maps'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('ca-score').value=0;
+  ['ca-p1','ca-p2','ca-p3','ca-p4','ca-p1en','ca-p2en','ca-p3en','ca-p4en'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('ca-city').value='roma';
   document.getElementById('ca-lat').value=''; document.getElementById('ca-lng').value='';
   document.getElementById('ca-cprev').style.display='none';
@@ -2437,7 +2456,9 @@ function saveCityAct(){
     coverPhoto:cityActCoverData,
     gallery:cityActGalleryData.slice(),
     maps:document.getElementById('ca-maps').value.trim()||'https://maps.google.com/?q='+encodeURIComponent(name),
-    hiddenScore:parseInt(document.getElementById('ca-score').value)||0
+    hiddenScore:parseInt(document.getElementById('ca-score').value)||0,
+    pills:['ca-p1','ca-p2','ca-p3','ca-p4'].map(function(id){return document.getElementById(id).value.trim();}).filter(Boolean),
+    pillsEn:['ca-p1en','ca-p2en','ca-p3en','ca-p4en'].map(function(id){return document.getElementById(id).value.trim();}).filter(Boolean)
   };
   var wasEditId=editCityActId;
   closeCityAct();
