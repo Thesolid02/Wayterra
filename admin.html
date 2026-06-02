@@ -296,7 +296,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <div class="g2">
       <div class="fg full"><label>Nome *</label><input type="text" id="p-name" placeholder="Es. Civita di Bagnoregio"></div>
       <div class="fg"><label>Regione</label><input type="text" id="p-region" placeholder="Es. Viterbo · Alto Lazio"></div>
-      <div class="fg"><label>Categoria</label><select class="fs" id="p-cat"></select></div>
+      <input type="hidden" id="p-cat" value="">
       <div class="fg"><label>Latitudine *</label><input type="number" id="p-lat" step="0.0001" placeholder="42.6274"></div>
       <div class="fg"><label>Longitudine *</label><input type="number" id="p-lng" step="0.0001" placeholder="12.1134"></div>
     </div>
@@ -1415,8 +1415,7 @@ function addActRow(a){
     +'<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);">Attività</div>'
     +'<button class="btn bd sm ico" onclick="this.closest(\'.arow-wrap\').remove()">✕</button></div>'
     +'<div class="g2">'
-    +'<div class="fg"><label>Nome *</label><input type="text" class="ar-name" placeholder="Es. Sentiero del tufo"></div>'
-    +'<div class="fg"><label>Tipo</label><select class="fs ar-type" onchange="onTypeChange(this,\''+rid+'\')">'+opts+'</select></div>'
+    +'<div class="fg full"><label>Nome *</label><input type="text" class="ar-name" placeholder="Es. Sentiero del tufo"></div>'
     +'<div class="fg"><label>Latitudine <span style="font-weight:400;color:var(--g400);">opzionale</span></label><input type="text" class="ar-lat" placeholder="lascia vuoto = solo card"></div>'
     +'<div class="fg"><label>Longitudine <span style="font-weight:400;color:var(--g400);">opzionale</span></label><input type="text" class="ar-lng" placeholder="lascia vuoto = solo card"></div>'
     +'</div>'
@@ -1636,7 +1635,7 @@ function savePlace(){
     var rawExpSubtype=row.querySelector('.ar-exp-subtype')&&row.querySelector('.ar-exp-subtype').value||'';
     activities.push({
       id:parseInt(row.querySelector('.ar-id')&&row.querySelector('.ar-id').value)||Date.now(),
-      type:row.querySelector('.ar-type')&&row.querySelector('.ar-type').value||'poi',
+      type:row.querySelector('.ar-type')&&row.querySelector('.ar-type').value||null,
       name:n, lat:hasCoords?alat:null, lng:hasCoords?alng:null,
       region:(row.querySelector('.ar-region')&&row.querySelector('.ar-region').value||'').trim(),
       city:(row.querySelector('.ar-city')&&row.querySelector('.ar-city').value||'').trim(),
