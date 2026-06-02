@@ -1323,7 +1323,8 @@ function showCityActivityBottomCard(a){
   document.getElementById('bc-name').textContent=a.name;
   document.getElementById('bc-region').textContent=a.region||'';
   document.getElementById('bc-acts').innerHTML='';
-  document.getElementById('bc-gems').innerHTML='';
+  var sc=scoreColor(a.hiddenScore);
+  document.getElementById('bc-gems').innerHTML=sc?'<div style="display:flex;align-items:center;gap:4px;margin-top:3px;">'+sc.gems+'<span style="font-size:.72rem;color:'+sc.color+';">'+sc.label+'</span></div>':'';
   var card=document.getElementById('bottom-card');
   card.onclick=function(){closeBottomCard();openCityActivityDetail(a);};
   card.classList.add('show');
@@ -1342,11 +1343,9 @@ function openCityActivityDetail(a){
     document.getElementById('act-popup-title').textContent=a.name;
     var _bkm=document.getElementById('act-popup-bkm');
     if(_bkm){_bkm.style.display='';_bkm.innerHTML=favActs.has(a.id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';_bkm.onclick=function(){toggleFavAct(a.id);};}
-    var _sc=scoreColor(a.hiddenScore);
     document.getElementById('act-popup-body-mobile').innerHTML=
       '<div class="act-popup-type">'+renderIcon(et.icon,et.color||'#374151')+' '+etName+'</div>'
       +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
-      +(_sc?'<div style="padding:8px 12px;display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:'+_sc.color+';background:'+_sc.bg+';border:1px solid '+_sc.border+';border-radius:var(--r);margin-bottom:10px;">'+_sc.gems+' '+_sc.label+'</div>':'')
       +(actDesc?'<div class="act-popup-desc" id="act-popup-desc-el"></div>':'')
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+formatText(actSecret)+'</p></div>':'')
       +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
