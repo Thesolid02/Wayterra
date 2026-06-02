@@ -602,6 +602,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
     <div class="amp-header"><div class="amp-title" id="amp-title-d"></div><div style="display:flex;gap:6px;align-items:center;"><button class="amp-close" id="amp-bkm-d" style="display:none;"><i class="ti ti-bookmark"></i></button><button class="amp-close" onclick="closeActMapPopup()">✕</button></div></div>
     <div class="amp-type" id="amp-type-d"></div>
     <img class="amp-img" id="amp-img-d" src="" alt="" style="display:none;">
+    <div id="amp-score-d" style="display:none;"></div>
     <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><button class="amp-maps" id="amp-maps-d"></button></div>
   </div>
 </div>
@@ -1344,10 +1345,8 @@ function openCityActivityDetail(a){
     var _sc=scoreColor(a.hiddenScore);
     document.getElementById('act-popup-body-mobile').innerHTML=
       '<div class="act-popup-type">'+renderIcon(et.icon,et.color||'#374151')+' '+etName+'</div>'
-      +(a.coverPhoto?'<div style="position:relative;margin-bottom:10px;">'
-        +'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="" style="margin-bottom:0;">'
-        +(_sc?'<div style="position:absolute;top:6px;right:6px;background:'+_sc.bg+';border:1px solid '+_sc.border+';border-radius:20px;padding:3px 8px;display:flex;align-items:center;gap:4px;font-size:.7rem;font-weight:700;color:'+_sc.color+';">'+_sc.gems+' '+_sc.label+'</div>':'')
-        +'</div>':'')
+      +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
+      +(_sc?'<div style="padding:8px 12px;display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:'+_sc.color+';background:'+_sc.bg+';border:1px solid '+_sc.border+';border-radius:var(--r);margin-bottom:10px;">'+_sc.gems+' '+_sc.label+'</div>':'')
       +(actDesc?'<div class="act-popup-desc" id="act-popup-desc-el"></div>':'')
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+formatText(actSecret)+'</p></div>':'')
       +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
@@ -1372,20 +1371,12 @@ function openCityActivityDetail(a){
     if(_bkmd){_bkmd.style.display='';_bkmd.innerHTML=favActs.has(a.id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';_bkmd.onclick=function(){toggleFavAct(a.id);};}
     var imgEl=document.getElementById('amp-img-d');
     var _scD=scoreColor(a.hiddenScore);
-    var existOvl=document.getElementById('amp-score-ovl-d');
-    if(existOvl)existOvl.remove();
-    if(a.coverPhoto){
-      imgEl.src=a.coverPhoto;imgEl.style.display='block';
-      if(_scD){
-        var ovlD=document.createElement('div');
-        ovlD.id='amp-score-ovl-d';
-        ovlD.style.cssText='position:absolute;top:6px;right:6px;background:'+_scD.bg+';border:1px solid '+_scD.border+';border-radius:20px;padding:3px 8px;display:flex;align-items:center;gap:4px;font-size:.7rem;font-weight:700;color:'+_scD.color+';z-index:2;';
-        ovlD.innerHTML=_scD.gems+' '+_scD.label;
-        if(imgEl.parentElement.style.position!=='relative')imgEl.parentElement.style.position='relative';
-        imgEl.parentElement.appendChild(ovlD);
-      }
-    } else {
-      imgEl.style.display='none';
+    var scoreElD=document.getElementById('amp-score-d');
+    if(a.coverPhoto){imgEl.src=a.coverPhoto;imgEl.style.display='block';}
+    else imgEl.style.display='none';
+    if(scoreElD){
+      if(_scD){scoreElD.style.cssText='padding:8px 12px;display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:'+_scD.color+';background:'+_scD.bg+';border-bottom:0.5px solid '+_scD.border+';';scoreElD.innerHTML=_scD.gems+' '+_scD.label;}
+      else{scoreElD.style.display='none';scoreElD.innerHTML='';}
     }
     renderExpandableText(actDesc,'amp-desc-d',200);
     var secElD=document.getElementById('amp-secret-d');
@@ -2121,40 +2112,70 @@ function openFavPage(){
   title.textContent=t('favorites');
   var scroll=document.getElementById('fav-scroll');
   var favList=DATA.places.filter(function(p){return favs.has(p.id);});
-  document.getElementById('fav-count').textContent=favList.length>0?favList.length+' '+t('places'):'';
-  if(favList.length===0){
+  var favActList=(DATA.cityActivities||[]).filter(function(a){return favActs.has(a.id);});
+  var total=favList.length+favActList.length;
+  document.getElementById('fav-count').textContent=total>0?total+' '+t('places'):'';
+  if(total===0){
     scroll.innerHTML='<div class="fav-empty">'
       +'<div class="fav-empty-ico"><i class="ti ti-bookmark"></i></div>'
       +'<div class="fav-empty-title">'+t('no_favorites')+'</div>'
       +'<div class="fav-empty-desc">'+t('no_favorites_desc')+'</div>'
       +'</div>';
   } else {
-    scroll.innerHTML='<div class="fav-list">'+favList.map(function(p){
-      var c=placeTypeOf(p.placeTypeId);
-      var sc=scoreColor(p.hiddenScore);
-      var scoreBadge=sc&&p.hiddenScore?'<div class="fav-item-score" style="background:'+sc.bg+';color:'+sc.color+';border:0.5px solid '+sc.border+';font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:4px;">'+sc.gems+' '+sc.label+'</div>':'';
-      var imgHtml=p.coverPhoto?'<img src="'+p.coverPhoto+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:1.6rem;">'+renderIcon(c.icon)+'</span>';
-      return '<div class="fav-item">'
-        +'<div class="fav-item-img" style="background:'+p.gradient+';">'+imgHtml+'</div>'
-        +'<div class="fav-item-body">'
-        +'<div class="fav-item-cat" style="color:'+c.color+';">'+renderIcon(c.icon)+' '+catName(c)+'</div>'
-        +'<div class="fav-item-name">'+p.name+'</div>'
-        +scoreBadge
-        +'<div class="fav-item-actions">'
-        +'<button class="fav-item-map" onclick="goToFav('+p.id+')" style="flex:1;">'+t('see_detail')+'</button>'
-        +'<button class="fav-item-map" onclick="openFavMaps('+p.id+')" style="flex:0 0 auto;padding:5px 8px;background:var(--g100);color:var(--g700);">🗺</button>'
-        +'<button class="fav-item-rm" onclick="removeFav('+p.id+')" title="Rimuovi"><i class="ti ti-bookmark-filled"></i></button>'
-        +'</div>'
-        +'</div>'
-        +'</div>';
-    }).join('')+'</div>';
+    var html='';
+    var sectionLbl='font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);padding:4px 2px 8px;display:block;';
+    if(favList.length>0){
+      if(favActList.length>0)html+='<div style="'+sectionLbl+'">'+(lang==='en'?'Places':'Luoghi')+'</div>';
+      html+='<div class="fav-list">'+favList.map(function(p){
+        var c=placeTypeOf(p.placeTypeId);
+        var sc=scoreColor(p.hiddenScore);
+        var scoreBadge=sc&&p.hiddenScore?'<div class="fav-item-score" style="background:'+sc.bg+';color:'+sc.color+';border:0.5px solid '+sc.border+';font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:4px;">'+sc.gems+' '+sc.label+'</div>':'';
+        var imgHtml=p.coverPhoto?'<img src="'+p.coverPhoto+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:1.6rem;">'+renderIcon(c.icon)+'</span>';
+        return '<div class="fav-item">'
+          +'<div class="fav-item-img" style="background:'+p.gradient+';">'+imgHtml+'</div>'
+          +'<div class="fav-item-body">'
+          +'<div class="fav-item-cat" style="color:'+c.color+';">'+renderIcon(c.icon)+' '+catName(c)+'</div>'
+          +'<div class="fav-item-name">'+p.name+'</div>'
+          +scoreBadge
+          +'<div class="fav-item-actions">'
+          +'<button class="fav-item-map" onclick="goToFav('+p.id+')" style="flex:1;">'+t('see_detail')+'</button>'
+          +'<button class="fav-item-map" onclick="openFavMaps('+p.id+')" style="flex:0 0 auto;padding:5px 8px;background:var(--g100);color:var(--g700);">🗺</button>'
+          +'<button class="fav-item-rm" onclick="removeFav('+p.id+')" title="Rimuovi"><i class="ti ti-bookmark-filled"></i></button>'
+          +'</div>'
+          +'</div>'
+          +'</div>';
+      }).join('')+'</div>';
+    }
+    if(favActList.length>0){
+      html+='<div style="'+sectionLbl+(favList.length>0?'margin-top:14px;':'')+'">'+(lang==='en'?'Activities':'Attività Roma')+'</div>';
+      html+='<div class="fav-list">'+favActList.map(function(a){
+        var et=expTypeOf(a.experienceTypeId);
+        var etName=lang==='en'&&et.nameEn?et.nameEn:(et.name||'');
+        var sc=scoreColor(a.hiddenScore);
+        var scoreBadge=sc&&a.hiddenScore?'<div class="fav-item-score" style="background:'+sc.bg+';color:'+sc.color+';border:0.5px solid '+sc.border+';font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:4px;">'+sc.gems+' '+sc.label+'</div>':'';
+        var imgHtml=a.coverPhoto?'<img src="'+a.coverPhoto+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:1.6rem;">'+renderIcon(et.icon,et.color||'#374151')+'</span>';
+        return '<div class="fav-item">'
+          +'<div class="fav-item-img" style="background:#f1f5f9;">'+imgHtml+'</div>'
+          +'<div class="fav-item-body">'
+          +'<div class="fav-item-cat" style="color:'+(et.color||'#374151')+';">'+renderIcon(et.icon,et.color||'#374151')+' '+etName+'</div>'
+          +'<div class="fav-item-name">'+a.name+'</div>'
+          +scoreBadge
+          +'<div class="fav-item-actions">'
+          +'<button class="fav-item-map" onclick="openCityActById('+a.id+')" style="flex:1;">'+t('see_detail')+'</button>'
+          +'<button class="fav-item-rm" onclick="removeFavAct('+a.id+')" title="Rimuovi"><i class="ti ti-bookmark-filled"></i></button>'
+          +'</div>'
+          +'</div>'
+          +'</div>';
+      }).join('')+'</div>';
+    }
+    scroll.innerHTML=html;
   }
   document.getElementById('fav-page').classList.add('show');
 }
 function closeFavPage(){document.getElementById('fav-page').classList.remove('show');}
-function removeFav(id){
-  favs.delete(id);saveFavs();updFavBtn();openFavPage();
-}
+function removeFav(id){favs.delete(id);saveFavs();updFavBtn();openFavPage();}
+function removeFavAct(id){favActs.delete(id);saveFavActs();openFavPage();}
+function openCityActById(id){var a=(DATA.cityActivities||[]).find(function(x){return x.id===id;});if(a){closeFavPage();openCityActivityDetail(a);}}
 function goToFav(id){
   closeFavPage();
   var p=DATA.places.find(function(x){return x.id===id;});
