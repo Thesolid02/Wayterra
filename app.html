@@ -1113,7 +1113,10 @@ function closeLightbox(){
 
 function catOf(id){return DATA.cats.find(function(c){return c.id===id;})||{icon:'📍',name:id,nameEn:id,color:'#888'};}
 function atypeOf(id){return DATA.atypes.find(function(a){return a.id===id;})||{icon:'📍',name:id,nameEn:id,color:'#888'};}
-function placeTypeOf(id){return DATA.placeTypes.find(function(t){return t.id===id;})||{};}
+function placeTypeOf(id){
+  if(!id)return{name:'',nameEn:'',icon:'ti-map-pin',color:'#374151'};
+  return DATA.placeTypes.find(function(t){return t.id===id;})||{name:'',nameEn:'',icon:'ti-map-pin',color:'#374151'};
+}
 function expTypeOf(id){return DATA.expTypes.find(function(t){return t.id===id;})||{};}
 function expSubtypeOf(id){return DATA.expSubtypes.find(function(t){return t.id===id;})||{};}
 
@@ -1221,7 +1224,7 @@ function addCityLabels(){
 
 /* L1 html — FREE vs PREMIUM */
 function l1Html(p,dim,showName){
-  var c=catOf(p.cat);
+  var c=placeTypeOf(p.placeTypeId);
   var isPremium=p.premium&&!unlocked;
   var dimStyle=dim?'opacity:.25;transform:scale(.75);':'';
   if(isPremium){
@@ -1423,7 +1426,7 @@ function haversine(lat1,lng1,lat2,lng2){
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 function l1NearbyHtml(p){
-  var c=catOf(p.cat);
+  var c=placeTypeOf(p.placeTypeId);
   var isPremium=p.premium&&!unlocked;
   if(isPremium){
     return '<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
@@ -1681,7 +1684,7 @@ function setMapMode(mode){setMapModePopup(mode);}
 function catMatchFn(p){
   if(activeFilter==='all')return true;
   if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId===parseInt(activeFilter);});
-  return p.placeTypeId!=null?p.placeTypeId==activeFilter:p.cat===activeFilter;
+  return p.placeTypeId==activeFilter;
 }
 function refreshL1(){
   if(mapMode==='city'){
@@ -1742,7 +1745,7 @@ function exitL2(){
 
 /* ═══ BUBBLE CARD ═══ */
 function showBubble(p){
-  var c=catOf(p.cat);
+  var c=placeTypeOf(p.placeTypeId);
   var isPremium=p.premium&&!unlocked;
   var sc=scoreColor(p.hiddenScore);
 
@@ -1845,7 +1848,7 @@ function positionBubble(p){
 }
 function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
 function showBottomCard(p){
-  var c=catOf(p.cat);
+  var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
   var imgWrap=document.getElementById('bc-img-wrap');
   if(p.coverPhoto){
@@ -1921,7 +1924,7 @@ function openDetail(){
   if(!currentPlace||!hasDetail(currentPlace))return;
   if(currentPlace.premium&&!unlocked){showPW();return;}
   var p=currentPlace;
-  var c=catOf(p.cat);
+  var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
 
   document.getElementById('dp-tagline').style.display='';
@@ -2091,7 +2094,7 @@ function openFavPage(){
       +'</div>';
   } else {
     scroll.innerHTML='<div class="fav-list">'+favList.map(function(p){
-      var c=catOf(p.cat);
+      var c=placeTypeOf(p.placeTypeId);
       var sc=scoreColor(p.hiddenScore);
       var scoreBadge=sc&&p.hiddenScore?'<div class="fav-item-score" style="background:'+sc.bg+';color:'+sc.color+';border:0.5px solid '+sc.border+';font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:4px;">'+sc.gems+' '+sc.label+'</div>':'';
       var imgHtml=p.coverPhoto?'<img src="'+p.coverPhoto+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:1.6rem;">'+renderIcon(c.icon)+'</span>';
@@ -2132,7 +2135,8 @@ function openFavMaps(id){
 
 /* ═══ PAYWALL ═══ */
 function buildPWCats(){
-  document.getElementById('pw-cats').innerHTML=DATA.cats.map(function(c){
+  var typeList=DATA.placeTypes.length?DATA.placeTypes:DATA.cats;
+  document.getElementById('pw-cats').innerHTML=typeList.map(function(c){
     return'<span class="pw-cat" style="color:'+c.color+';">'+renderIcon(c.icon)+' '+catName(c)+'</span>';
   }).join('');
 }
