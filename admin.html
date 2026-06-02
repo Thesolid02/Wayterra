@@ -355,13 +355,13 @@ textarea.ft{resize:vertical;line-height:1.65;}
       </div>
     </div>
     <div class="fg">
-      <label>Galleria (max 6 foto/video)</label>
+      <label>Galleria</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <label class="pa" style="display:block;flex:1;min-width:140px;">
           <input type="file" id="ginp" accept="image/*" multiple onchange="handleGallery(this)" style="display:none;">
           <div style="font-size:1.3rem;margin-bottom:4px;">🖼</div>
           <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Aggiungi foto</div>
-          <div style="font-size:.72rem;color:var(--g400);margin-top:3px;">Clicca per selezionare (max 6)</div>
+          <div style="font-size:.72rem;color:var(--g400);margin-top:3px;">Clicca per selezionare</div>
         </label>
         <label class="pa" style="display:block;flex:1;min-width:140px;">
           <input type="file" id="vinp" accept="video/*" multiple onchange="handleGalleryVideo(this)" style="display:none;">
@@ -587,7 +587,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
       </div>
     </div>
     <div class="fg">
-      <label>Galleria (max 6 foto/video)</label>
+      <label>Galleria</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <label class="pa" style="display:block;flex:1;min-width:140px;">
           <input type="file" id="ca-ginp" accept="image/*" multiple onchange="handleCityActGallery(this)" style="display:none;">
@@ -1354,8 +1354,7 @@ function handleCover(inp){
 function removeCover(){ coverData=''; document.getElementById('cprev').style.display='none'; }
 
 function handleGallery(inp){
-  var files=Array.from(inp.files), rem=6-galleryData.length, toLoad=files.slice(0,rem);
-  if(!toLoad.length){toast('Massimo 6 foto','err');return;}
+  var toLoad=Array.from(inp.files);
   toast('Caricamento foto…');
   var done=0;
   toLoad.forEach(function(f){
@@ -1367,8 +1366,7 @@ function handleGallery(inp){
   inp.value='';
 }
 function handleGalleryVideo(inp){
-  var files=Array.from(inp.files),rem=6-galleryData.length,toLoad=files.slice(0,rem);
-  if(!toLoad.length){toast('Massimo 6 elementi nella galleria','err');return;}
+  var toLoad=Array.from(inp.files);
   toast('Caricamento video…');
   var done=0;
   toLoad.forEach(function(f){
@@ -1453,7 +1451,7 @@ function addActRow(a){
     +'<img id="aimg-'+rid+'" src="" style="width:100%;max-width:150px;height:72px;object-fit:cover;border-radius:var(--r);border:1px solid var(--g200);">'
     +'<button class="btn bd sm" style="margin-top:4px;" onclick="removeActPhoto(\''+rid+'\')">Rimuovi</button>'
     +'</div></div>'
-    +'<div class="fg"><label>Galleria attività <span style="font-size:.68rem;font-weight:400;color:var(--g400);">max 6 foto/video</span></label>'
+    +'<div class="fg"><label>Galleria attività</label>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap;">'
     +'<label class="pa" style="display:block;flex:1;min-width:120px;padding:10px;">'
     +'<input type="file" accept="image/*" multiple onchange="handleActGallery(this,\''+rid+'\')" style="display:none;">'
@@ -1554,8 +1552,7 @@ function handleActGallery(inp, rid){
   var files=Array.from(inp.files);
   var row=document.getElementById('ar-'+rid); if(!row)return;
   var cur=JSON.parse(row.querySelector('.ar-gallery').value||'[]');
-  var rem=6-cur.length, toLoad=files.slice(0,rem);
-  if(!toLoad.length){toast('Massimo 6 elementi','err');return;}
+  var toLoad=files;
   toast('Caricamento foto…');
   var done=0;
   toLoad.forEach(function(f){
@@ -1572,8 +1569,7 @@ function handleActGalleryVideo(inp, rid){
   var files=Array.from(inp.files);
   var row=document.getElementById('ar-'+rid); if(!row)return;
   var cur=JSON.parse(row.querySelector('.ar-gallery').value||'[]');
-  var rem=6-cur.length, toLoad=files.slice(0,rem);
-  if(!toLoad.length){toast('Massimo 6 elementi','err');return;}
+  var toLoad=files;
   toast('Caricamento video…');
   var done=0;
   toLoad.forEach(function(f){
@@ -2471,8 +2467,7 @@ function handleCityActCover(inp){
 function removeCityActCover(){ cityActCoverData=''; document.getElementById('ca-cprev').style.display='none'; }
 
 function handleCityActGallery(inp){
-  var files=Array.from(inp.files),rem=6-cityActGalleryData.length,toLoad=files.slice(0,rem);
-  if(!toLoad.length){toast('Massimo 6 foto','err');return;}
+  var toLoad=Array.from(inp.files);
   toast('Caricamento foto…');
   var done=0;
   toLoad.forEach(function(f){
@@ -2484,8 +2479,7 @@ function handleCityActGallery(inp){
   inp.value='';
 }
 function handleCityActGalleryVideo(inp){
-  var files=Array.from(inp.files),rem=6-cityActGalleryData.length,toLoad=files.slice(0,rem);
-  if(!toLoad.length){toast('Massimo 6 elementi','err');return;}
+  var toLoad=Array.from(inp.files);
   toast('Caricamento video…');
   var done=0;
   toLoad.forEach(function(f){
