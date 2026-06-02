@@ -567,6 +567,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;font-weight:500;"><input type="radio" name="ca-premium" id="ca-free" value="false" checked> <span style="background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:5px;font-size:.75rem;font-weight:600;">🟢 Free</span></label>
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;font-weight:500;"><input type="radio" name="ca-premium" id="ca-prem-ca" value="true"> <span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:5px;font-size:.75rem;font-weight:600;">🔒 Premium</span></label>
     </div>
+    <div class="fg" style="margin-top:10px;"><label>Hiddenness Score <span style="font-size:.68rem;font-weight:400;color:var(--g400);">0–100</span></label><input type="number" id="ca-score" min="0" max="100" step="1" value="0" placeholder="0"></div>
     <div class="sdiv">Caratteristiche specifiche</div>
     <div class="specs-box">
       <div class="specs-hd"><div class="specs-hd-lbl">Specifiche</div><button class="btn bs sm" onclick="addSpecRow('ca-main','','')">+ Aggiungi</button></div>
@@ -759,7 +760,8 @@ function actRowToAct(a){
     specs: a.specs||[],
     coverPhoto: a.cover_photo||'',
     gallery: a.gallery||[],
-    maps: a.maps_url||''
+    maps: a.maps_url||'',
+    hiddenScore: a.hidden_score||0
   };
 }
 
@@ -812,7 +814,8 @@ function actToRow(a, placeId){
     specs: a.specs||[],
     cover_photo: a.coverPhoto||'',
     gallery: a.gallery||[],
-    maps_url: a.maps||''
+    maps_url: a.maps||'',
+    hidden_score: a.hiddenScore||0
   };
   // includi id solo se è un record esistente (non generato localmente)
   if(a.id) row.id=a.id;
@@ -2324,6 +2327,7 @@ function fillCityActForm(a){
   document.getElementById('ca-secret').value=a.secret||'';
   document.getElementById('ca-secret-en').value=a.secretEn||'';
   document.getElementById('ca-maps').value=a.maps||'';
+  document.getElementById('ca-score').value=a.hiddenScore||0;
   if(a.premium){document.getElementById('ca-prem-ca').checked=true;}
   else{document.getElementById('ca-free').checked=true;}
   if(a.experienceTypeId){
@@ -2373,6 +2377,7 @@ function closeCityAct(){ document.getElementById('m-city-act').classList.remove(
 function clearCityActForm(){
   populateCityActExpTypeSelect();
   ['ca-name','ca-region','ca-desc','ca-desc-en','ca-secret','ca-secret-en','ca-maps'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('ca-score').value=0;
   document.getElementById('ca-city').value='roma';
   document.getElementById('ca-lat').value=''; document.getElementById('ca-lng').value='';
   document.getElementById('ca-cprev').style.display='none';
@@ -2431,7 +2436,8 @@ function saveCityAct(){
     specs:specs,
     coverPhoto:cityActCoverData,
     gallery:cityActGalleryData.slice(),
-    maps:document.getElementById('ca-maps').value.trim()||'https://maps.google.com/?q='+encodeURIComponent(name)
+    maps:document.getElementById('ca-maps').value.trim()||'https://maps.google.com/?q='+encodeURIComponent(name),
+    hiddenScore:parseInt(document.getElementById('ca-score').value)||0
   };
   var wasEditId=editCityActId;
   closeCityAct();
