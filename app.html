@@ -66,7 +66,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #filter-overlay.show{display:block;}
 #filter-popup{position:fixed;bottom:0;left:0;right:0;z-index:501;background:var(--w);
   border-radius:var(--rxl) var(--rxl) 0 0;
-  max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  max-height:80dvh;overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);
   transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);}
 #filter-popup.show{transform:translateY(0);transition:transform .3s cubic-bezier(.33,1,.68,1);}
@@ -877,9 +877,9 @@ function initDefaults(){
   if(!localStorage.getItem(K.C))localStorage.setItem(K.C,JSON.stringify(DEF_CATS));
   if(!localStorage.getItem(K.A))localStorage.setItem(K.A,JSON.stringify(DEF_ATYPES));
 }
-function loadFavs(){var f=localStorage.getItem(K.FAV);if(f){JSON.parse(f).forEach(function(id){favs.add(id);});}updFavBtn();}
+function loadFavs(){if(!favs)favs=new Set();var f=localStorage.getItem(K.FAV);if(f){JSON.parse(f).forEach(function(id){favs.add(id);});}updFavBtn();}
 function saveFavs(){localStorage.setItem(K.FAV,JSON.stringify(Array.from(favs)));}
-function loadFavActs(){var f=localStorage.getItem('WT_FAV_ACTS');if(f){JSON.parse(f).forEach(function(id){favActs.add(id);});}}
+function loadFavActs(){if(!favActs)favActs=new Set();var f=localStorage.getItem('WT_FAV_ACTS');if(f){JSON.parse(f).forEach(function(id){favActs.add(id);});}}
 function saveFavActs(){localStorage.setItem('WT_FAV_ACTS',JSON.stringify(Array.from(favActs)));}
 function toggleFavAct(id){if(favActs.has(id))favActs.delete(id);else{favActs.add(id);toast(t('saved'));}saveFavActs();updFavBtn();if(document.getElementById('fav-page')&&document.getElementById('fav-page').classList.contains('show')){openFavPage();}
 _updateCityActBkm(id);}
@@ -2115,7 +2115,8 @@ function toggleFav(id){
   saveFavs();updFavBtn();
 }
 function updFavBtn(){
-  var hasAny=favs.size>0||favActs.size>0;
+  var totalFavs=(favs?favs.size:0)+(favActs?favActs.size:0);
+  var hasAny=totalFavs>0;
   var btn=document.getElementById('fav-btn');
   if(btn){
     btn.innerHTML=hasAny?'<i class="ti ti-bookmark-filled" style="color:#2563eb;"></i>':'<i class="ti ti-bookmark"></i>';
