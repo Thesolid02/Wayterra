@@ -2106,11 +2106,11 @@ function toggleFav(id){
   saveFavs();updFavBtn();
 }
 function updFavBtn(){
-  var btn=document.getElementById('fav-btn');
-  if(!btn)return;
   var hasAny=favs.size>0||favActs.size>0;
-  btn.innerHTML=hasAny?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';
-  btn.className='fav-btn'+(hasAny?' has-items':'');
+  var btn=document.getElementById('fav-btn');
+  if(btn){
+    btn.innerHTML=hasAny?'<i class="ti ti-bookmark-filled" style="color:#2563eb;"></i>':'<i class="ti ti-bookmark"></i>';
+  }
 }
 function openFavPage(){
   var title=document.getElementById('fav-title');
