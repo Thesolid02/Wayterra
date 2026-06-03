@@ -1881,6 +1881,7 @@ function positionBubble(p){
 }
 function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
 function showBottomCard(p){
+  console.log('activities:', (p.activities||[]).map(function(a){return {id:a.id, type:a.type, experienceTypeId:a.experienceTypeId};}));
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
   var imgWrap=document.getElementById('bc-img-wrap');
