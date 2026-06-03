@@ -965,7 +965,7 @@ function openActPopup(actId, placeId, triggerEl){
   if(!p)return;
   var a=(p.activities||[]).find(function(x){return x.id===actId;});
   if(!a)return;
-  var at=atypeOf(a.type);
+  var at=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);
 
   // contenuto comune
   _actGallery=(a.gallery||[]).filter(function(s){return s&&s.length>10;});
@@ -1508,7 +1508,7 @@ function showL2(place){
 function clearL2(){l2Mk.forEach(function(m){m.remove();});l2Mk.length=0;closeActMapPopup();}
 
 function showActBubble(a, latlng){
-  var at=atypeOf(a.type);
+  var at=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);
   var isMobile=window.innerWidth<768;
   var titleId=isMobile?'amp-title':'amp-title-d';
   var typeId=isMobile?'amp-type':'amp-type-d';
@@ -1930,7 +1930,7 @@ function showActIconTooltip(el, names){
 }
 function showActBubbleBottomCard(a, placeId){
   var p=DATA.places.find(function(x){return x.id===placeId;});
-  var at=atypeOf(a.type);
+  var at=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);
   var imgWrap=document.getElementById('bc-img-wrap');
   if(a.coverPhoto){
     imgWrap.innerHTML='<img class="bc-img" src="'+a.coverPhoto+'" alt="">';
