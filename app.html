@@ -877,7 +877,7 @@ function initDefaults(){
   if(!localStorage.getItem(K.C))localStorage.setItem(K.C,JSON.stringify(DEF_CATS));
   if(!localStorage.getItem(K.A))localStorage.setItem(K.A,JSON.stringify(DEF_ATYPES));
 }
-function loadFavs(){if(!favs)favs=new Set();var f=localStorage.getItem(K.FAV);if(f){JSON.parse(f).forEach(function(id){favs.add(id);});}updFavBtn();}
+function loadFavs(){if(!favs)favs=new Set();var f=localStorage.getItem(K.FAV);if(f){JSON.parse(f).forEach(function(id){favs.add(id);});}}
 function saveFavs(){localStorage.setItem(K.FAV,JSON.stringify(Array.from(favs)));}
 function loadFavActs(){if(!favActs)favActs=new Set();var f=localStorage.getItem('WT_FAV_ACTS');if(f){JSON.parse(f).forEach(function(id){favActs.add(id);});}}
 function saveFavActs(){localStorage.setItem('WT_FAV_ACTS',JSON.stringify(Array.from(favActs)));}
