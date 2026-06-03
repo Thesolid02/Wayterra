@@ -1894,7 +1894,10 @@ function showBottomCard(p){
   document.getElementById('bc-name').textContent=p.name;
   document.getElementById('bc-region').textContent=p.region||'';
   var types={};
-  (p.activities||[]).forEach(function(a){types[a.type]=atypeOf(a.type);});
+  (p.activities||[]).forEach(function(a){
+    var key=a.experienceTypeId||a.type||'unknown';
+    if(!types[key]){types[key]=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);}
+  });
   var actsHtml=Object.entries(types).map(function(entry){
     var at=entry[1];
     var typeName=atName(at);
