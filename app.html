@@ -965,6 +965,7 @@ function openActPopup(actId, placeId, triggerEl){
   if(!p)return;
   var a=(p.activities||[]).find(function(x){return x.id===actId;});
   if(!a)return;
+  console.log('activity experienceTypeId:', a.experienceTypeId, 'type:', a.type);
   var at=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);
 
   // contenuto comune
@@ -1929,6 +1930,7 @@ function showActIconTooltip(el, names){
   setTimeout(function(){if(tt.parentNode)tt.remove();},2000);
 }
 function showActBubbleBottomCard(a, placeId){
+  console.log('activity experienceTypeId:', a.experienceTypeId, 'type:', a.type);
   var p=DATA.places.find(function(x){return x.id===placeId;});
   var at=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);
   var imgWrap=document.getElementById('bc-img-wrap');
