@@ -2180,7 +2180,7 @@ function openFavPage(){
 }
 function closeFavPage(){document.getElementById('fav-page').classList.remove('show');}
 function removeFav(id){favs.delete(id);saveFavs();updFavBtn();openFavPage();}
-function removeFavAct(id){favActs.delete(id);saveFavActs();openFavPage();}
+function removeFavAct(id){favActs.delete(id);saveFavActs();updFavBtn();openFavPage();}
 function openCityActById(id){var a=(DATA.cityActivities||[]).find(function(x){return x.id===id;});if(a){closeFavPage();openCityActivityDetail(a);}}
 function goToFav(id){
   closeFavPage();
