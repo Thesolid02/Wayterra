@@ -881,7 +881,8 @@ function loadFavs(){var f=localStorage.getItem(K.FAV);if(f){JSON.parse(f).forEac
 function saveFavs(){localStorage.setItem(K.FAV,JSON.stringify(Array.from(favs)));}
 function loadFavActs(){var f=localStorage.getItem('WT_FAV_ACTS');if(f){JSON.parse(f).forEach(function(id){favActs.add(id);});}}
 function saveFavActs(){localStorage.setItem('WT_FAV_ACTS',JSON.stringify(Array.from(favActs)));}
-function toggleFavAct(id){if(favActs.has(id))favActs.delete(id);else{favActs.add(id);toast(t('saved'));}saveFavActs();updFavBtn();_updateCityActBkm(id);}
+function toggleFavAct(id){if(favActs.has(id))favActs.delete(id);else{favActs.add(id);toast(t('saved'));}saveFavActs();updFavBtn();if(document.getElementById('fav-page')&&document.getElementById('fav-page').classList.contains('show')){openFavPage();}
+_updateCityActBkm(id);}
 function _updateCityActBkm(id){
   var bkm=document.getElementById('act-popup-bkm');
   if(bkm){bkm.innerHTML=favActs.has(id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';}
