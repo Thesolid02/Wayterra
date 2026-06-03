@@ -2108,8 +2108,9 @@ function toggleFav(id){
 function updFavBtn(){
   var btn=document.getElementById('fav-btn');
   if(!btn)return;
-  btn.innerHTML=favs.size>0?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';
-  btn.className='fav-btn'+(favs.size>0?' has-items':'');
+  var hasAny=favs.size>0||favActs.size>0;
+  btn.innerHTML=hasAny?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';
+  btn.className='fav-btn'+(hasAny?' has-items':'');
 }
 function openFavPage(){
   var title=document.getElementById('fav-title');
