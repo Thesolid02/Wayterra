@@ -965,7 +965,6 @@ function openActPopup(actId, placeId, triggerEl){
   if(!p)return;
   var a=(p.activities||[]).find(function(x){return x.id===actId;});
   if(!a)return;
-  console.log('activity experienceTypeId:', a.experienceTypeId, 'type:', a.type);
   var at=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);
 
   // contenuto comune
@@ -1839,12 +1838,13 @@ function showBubble(p){
   if(acts.length&&!isPremium){
     var seenTypes=[];
     var uniqueActs=acts.filter(function(a){
-      if(seenTypes.indexOf(a.type)===-1){seenTypes.push(a.type);return true;}
+      var key=a.experienceTypeId||a.type||'unknown';
+      if(seenTypes.indexOf(key)===-1){seenTypes.push(key);return true;}
       return false;
     });
     actsEl.innerHTML=uniqueActs.map(function(a){
-      var at=atypeOf(a.type);
-      return '<div class="bubble-act-ico">'+renderIcon(at.icon)+'<div class="btt">'+atName(at)+'</div></div>';
+      var at=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);
+      return '<div class="bubble-act-ico">'+renderIcon(at.icon,'white')+'<div class="btt">'+(lang==='en'&&at.nameEn?at.nameEn:at.name||'')+'</div></div>';
     }).join('');
     actsEl.style.display='flex';
   } else actsEl.style.display='none';
@@ -1881,7 +1881,6 @@ function positionBubble(p){
 }
 function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
 function showBottomCard(p){
-  console.log('activities:', (p.activities||[]).map(function(a){return {id:a.id, type:a.type, experienceTypeId:a.experienceTypeId};}));
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
   var imgWrap=document.getElementById('bc-img-wrap');
@@ -1934,7 +1933,6 @@ function showActIconTooltip(el, names){
   setTimeout(function(){if(tt.parentNode)tt.remove();},2000);
 }
 function showActBubbleBottomCard(a, placeId){
-  console.log('activity experienceTypeId:', a.experienceTypeId, 'type:', a.type);
   var p=DATA.places.find(function(x){return x.id===placeId;});
   var at=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);
   var imgWrap=document.getElementById('bc-img-wrap');
