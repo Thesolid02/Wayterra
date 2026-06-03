@@ -1474,13 +1474,17 @@ function showL2(place){
   if(place.premium&&!unlocked)return;
   (place.activities||[]).forEach(function(a,i){
     if(!a.lat||!a.lng)return;
+    var isPremiumAct=a.premium&&!unlocked;
     var el=document.createElement('div');
-    el.innerHTML=l2Html(a);
+    el.innerHTML=isPremiumAct
+      ?'<div class="mk2"><div class="mk2-tooltip">🔒 Premium</div><div class="mk2-pin" style="background:#374151;border:2px dashed rgba(255,255,255,.5);"><i class="ti ti-lock" style="color:white;font-size:12px;"></i></div><div class="mk2-stem"></div></div>'
+      :l2Html(a);
     el.style.zIndex=100+i;
     el.addEventListener('mouseenter',function(){el.style.zIndex='9999';});
     el.addEventListener('mouseleave',function(){el.style.zIndex='';});
     el.addEventListener('click',function(e){
       e.stopPropagation();
+      if(isPremiumAct){showPW();return;}
       if(window.innerWidth<768){showActBubbleBottomCard(a,place.id);}else{showActBubble(a,[a.lat,a.lng]);}
     });
     var m=new mapboxgl.Marker({element:el,anchor:'bottom'})
@@ -2399,6 +2403,7 @@ window.addEventListener('DOMContentLoaded',function(){
     var places_=placeRows.map(function(row){
       var acts=(actRows||[]).filter(function(a){return a.place_id===row.id;}).map(function(a){
         return{id:a.id,type:a.type,name:a.name,lat:a.lat||null,lng:a.lng||null,
+               premium:a.premium||false,
                desc:a.description||'',descEn:a.description_en||'',
                secret:a.secret||'',secretEn:a.secret_en||'',specs:a.specs||[],
                coverPhoto:a.cover_photo||'',maps:a.maps_url||'',
