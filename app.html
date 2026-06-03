@@ -2115,8 +2115,8 @@ function toggleFav(id){
   saveFavs();updFavBtn();
 }
 function updFavBtn(){
-  var totalFavs=(favs?favs.size:0)+(favActs?favActs.size:0);
-  var hasAny=totalFavs>0;
+  console.log('updFavBtn - favs:', favs?favs.size:'null', 'favActs:', favActs?favActs.size:'null');
+  var hasAny=(favs?favs.size:0)>0||(favActs?favActs.size:0)>0;
   var btn=document.getElementById('fav-btn');
   if(btn){
     btn.innerHTML=hasAny?'<i class="ti ti-bookmark-filled" style="color:#2563eb;"></i>':'<i class="ti ti-bookmark"></i>';
