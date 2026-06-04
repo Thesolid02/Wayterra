@@ -1676,7 +1676,6 @@ function savePlace(){
   var rawPT=document.getElementById('p-place-type').value;
   var obj={
     id:editPId||Date.now(),
-    cat:document.getElementById('p-cat').value,
     mode:placeMode,
     city:placeMode==='city'?'roma':'',
     placeTypeId:placeMode==='outside'&&rawPT?parseInt(rawPT)||null:null,
