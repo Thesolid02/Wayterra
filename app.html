@@ -994,37 +994,7 @@ function openActPopup(actId, placeId, triggerEl){
   if(a.maps) html+='<button class="act-bub-maps" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>';
 
   if(window.innerWidth>=768){
-    // rimuovi selezione e fumetto precedente
-    document.querySelectorAll('.dp-act-card.act-selected,.dp-act-row.act-selected').forEach(function(el){el.classList.remove('act-selected');});
-    var existing=document.getElementById('act-inline-bubble');
-    if(existing)existing.remove();
-
-    if(triggerEl)triggerEl.classList.add('act-selected');
-
-    // costruisci fumetto con freccia posizionata dinamicamente
-    var arrowLeft=24; // default
-    if(triggerEl){
-      var grid=document.getElementById('dp-acts-grid');
-      var gridRect=grid.getBoundingClientRect();
-      var cardRect=triggerEl.getBoundingClientRect();
-      arrowLeft=Math.round((cardRect.left-gridRect.left)+(cardRect.width/2)-8);
-      if(arrowLeft<8)arrowLeft=8;
-    }
-    var bubbleHTML='<div class="act-inline-bubble show" id="act-inline-bubble">'
-      +'<div class="act-bubble-arrow" style="left:'+arrowLeft+'px;"></div>'
-      +'<div class="act-bub-header">'
-      +'<div class="act-bub-title">'+a.name+'</div>'
-      +'<button class="act-bub-close" onclick="closeInlineBubble()">✕</button>'
-      +'</div>'
-      +'<div class="act-bub-body">'+html+'</div>'
-      +'</div>';
-
-    // inserisci subito dopo la card cliccata
-    if(triggerEl){
-      triggerEl.insertAdjacentHTML('afterend', bubbleHTML);
-    } else {
-      document.getElementById('dp-acts-grid').insertAdjacentHTML('afterend', bubbleHTML);
-    }
+    showActBubble(a,[a.lat,a.lng]);
   } else {
     // mobile: bottom sheet
     var mobileHtml=html
@@ -1769,7 +1739,7 @@ function handleL1Click(place){
   document.getElementById('lv2-bar').style.display='flex';
   document.getElementById('lv2-label').textContent=place.premium&&!unlocked?t('premium_name'):place.name;
   setTimeout(function(){
-    if(window.innerWidth<768){showBottomCard(place);}else{showBubble(place);}
+    if(window.innerWidth<768){showBottomCard(place);}else{openDetail();}
   },500);
 }
 function exitL2(){
