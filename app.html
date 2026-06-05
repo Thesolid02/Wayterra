@@ -1744,7 +1744,11 @@ function handleL1Click(place){
 }
 function exitL2(){
   level=1;activePId=null;currentPlace=null;
-  if(window.innerWidth>=768){document.getElementById('detail-page').classList.remove('show');}
+  if(window.innerWidth>=768){
+    document.getElementById('detail-page').classList.remove('show');
+    document.getElementById('map').classList.remove('panel-open');
+    setTimeout(function(){map_o.resize();},320);
+  }
   closeBubble();clearL2();restoreL1();
   document.getElementById('lv2-bar').style.display='none';
   map_o.flyTo({center:[12.5,41.9],zoom:9,duration:700});
