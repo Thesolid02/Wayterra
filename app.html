@@ -72,6 +72,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);}
 #filter-popup.show{transform:translateY(0);transition:transform .3s cubic-bezier(.33,1,.68,1);}
 .fp-handle{width:32px;height:3px;border-radius:2px;background:var(--g300);margin:12px auto 20px;}
+.fp-header{display:none;}
 .fp-close{display:none;}
 @media(min-width:768px){
   #filter-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);bottom:auto;right:auto;
@@ -80,9 +81,11 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
     transition:transform .25s cubic-bezier(.33,1,.68,1),opacity .25s;}
   #filter-popup.show{transform:translate(-50%,-50%);opacity:1;pointer-events:auto;}
   .fp-handle{display:none;}
-  .fp-close{display:flex;position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;
-    background:var(--g100);border:none;cursor:pointer;align-items:center;justify-content:center;
-    font-size:.85rem;color:var(--g500);}
+  .fp-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;
+    border-bottom:0.5px solid var(--g100);margin-bottom:8px;}
+  .fp-header-title{font-size:.88rem;font-weight:500;color:var(--g900);}
+  .fp-close{display:flex;width:28px;height:28px;border-radius:50%;background:var(--g100);border:none;
+    cursor:pointer;align-items:center;justify-content:center;font-size:.85rem;color:var(--g500);}
   .fp-close:hover{background:var(--g200);}
 }
 .fp-section-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
@@ -494,7 +497,10 @@ lottie.loadAnimation({
 <div id="filter-overlay" onclick="closeFilterPopup()"></div>
 <div id="filter-popup">
   <div class="fp-handle"></div>
-  <button class="fp-close" onclick="closeFilterPopup()">✕</button>
+  <div class="fp-header">
+    <span class="fp-header-title" data-t="filters">Filtri</span>
+    <button class="fp-close" onclick="closeFilterPopup()">✕</button>
+  </div>
   <div class="fp-section-lbl" data-t="where_to_go">Dove vuoi andare?</div>
   <div class="fp-mode-row">
     <button class="fp-mode-btn active-outside" id="fp-btn-fuori" onclick="setMapModePopup('outside')">🌿 <span data-t="outside">Fuori porta</span></button>
@@ -716,7 +722,8 @@ var T={
     feat4_t:'Hiddenness Score',feat4_d:'Sai sempre quanto è segreto',
     premium_name:'Luogo riservato',
     premium_region:'Contenuto Premium',
-    explorer_label:'Quanto vuoi essere un vero esploratore?'
+    explorer_label:'Quanto vuoi essere un vero esploratore?',
+    filters:'Filtri'
   },
   en:{
     search_placeholder:'Where do you want to go?',
@@ -757,7 +764,8 @@ var T={
     feat4_t:'Hiddenness Score',feat4_d:'Always know how secret it is',
     premium_name:'Reserved place',
     premium_region:'Premium content',
-    explorer_label:'How much of a true explorer do you want to be?'
+    explorer_label:'How much of a true explorer do you want to be?',
+    filters:'Filters'
   }
 };
 
