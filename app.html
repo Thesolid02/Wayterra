@@ -2087,8 +2087,11 @@ function toggleFav(id){
   saveFavs();updFavBtn();
 }
 function updFavBtn(){
-  console.log('updFavBtn - favs:', favs?favs.size:'null', 'favActs:', favActs?favActs.size:'null');
-  var hasAny=(favs?favs.size:0)>0||(favActs?favActs.size:0)>0;
+  var favsRaw=localStorage.getItem('WT_FAVS_v1');
+  var favActsRaw=localStorage.getItem('WT_FAV_ACTS');
+  var favsArr=favsRaw?JSON.parse(favsRaw):[];
+  var favActsArr=favActsRaw?JSON.parse(favActsRaw):[];
+  var hasAny=favsArr.length>0||favActsArr.length>0;
   var btn=document.getElementById('fav-btn');
   if(btn){
     btn.innerHTML=hasAny?'<i class="ti ti-bookmark-filled" style="color:#2563eb;"></i>':'<i class="ti ti-bookmark"></i>';
