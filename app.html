@@ -101,6 +101,11 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .fp-acc-body.open{display:flex;}
 .fp-subtype-pill{font-size:.78rem;font-weight:600;padding:5px 12px;border-radius:100px;border:1.5px solid var(--g200);background:var(--g50);cursor:pointer;font-family:var(--f);transition:all .15s;color:var(--g700);}
 .fp-subtype-pill.selected{background:var(--g100);}
+/* hidden score filter */
+.fp-diamond-row{display:flex;gap:20px;align-items:center;justify-content:center;padding:0 16px 4px;}
+.fp-diamond-btn{background:none;border:none;cursor:pointer;font-size:1.8rem;padding:6px 10px;border-radius:var(--r);transition:all .15s;line-height:1;font-family:var(--f);}
+.fp-diamond-btn:active{transform:scale(.85);}
+.fp-hidden-sel-lbl{font-size:.82rem;font-weight:700;text-align:center;padding:4px 16px 4px;min-height:20px;}
 
 /* ── L2 BAR ── */
 #lv2-bar{position:fixed;z-index:300;top:calc(env(safe-area-inset-top,0px) + 62px);
@@ -484,6 +489,15 @@ lottie.loadAnimation({
   <div class="fp-section-lbl" data-t="categories">Categorie</div>
   <div class="fp-cats" id="fp-cats"></div>
   <hr class="fp-divider">
+  <div class="fp-section-lbl">Quanto vuoi essere un vero esploratore?</div>
+  <div class="fp-diamond-row">
+    <button class="fp-diamond-btn" id="fp-d1" onclick="selHiddenFilter('low')">💎</button>
+    <button class="fp-diamond-btn" id="fp-d2" onclick="selHiddenFilter('mid')">💎</button>
+    <button class="fp-diamond-btn" id="fp-d3" onclick="selHiddenFilter('high')">💎</button>
+  </div>
+  <div class="fp-hidden-sel-lbl" id="fp-hidden-sel-lbl"></div>
+  <div style="text-align:center;padding-bottom:12px;"><a class="fp-reset-link" id="fp-hidden-reset" onclick="selHiddenFilter('all')" style="display:none;font-size:.75rem;color:var(--g400);text-decoration:underline;cursor:pointer;">Reset filtro</a></div>
+  <hr class="fp-divider">
   <div class="fp-section-lbl">Vibe <span class="fp-badge" data-t="soon">Presto</span></div>
   <div class="fp-vibe-item"><span style="font-size:1rem;flex-shrink:0;">💑</span><span class="fp-vibe-name" data-t="vibe_romantic">Romantico</span></div>
   <div class="fp-vibe-item"><span style="font-size:1rem;flex-shrink:0;">🎬</span><span class="fp-vibe-name" data-t="vibe_cinematic">Cinematografico</span></div>
@@ -837,6 +851,7 @@ function translateSpec(text){
 /* ═══ STATE ═══ */
 var map_o,userMk,romaLabelMk,romaClusterMk;
 var activeFilter='all',activeSubtype=null,level=1,activePId=null;
+var activeHiddenFilter='all';
 var l1Mk={},l2Mk=[];
 var favs=new Set();
 var favActs=new Set();
@@ -1632,7 +1647,39 @@ function selSubtype(id){
 }
 function updateFilterDot(){
   var dot=document.getElementById('filter-dot');
-  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||mapMode!=='outside'?' active':'');
+  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||mapMode!=='outside'||activeHiddenFilter!=='all'?' active':'');
+}
+function buildHiddenFilter(){
+  var hf=activeHiddenFilter;
+  var d1=document.getElementById('fp-d1');
+  var d2=document.getElementById('fp-d2');
+  var d3=document.getElementById('fp-d3');
+  var lbl=document.getElementById('fp-hidden-sel-lbl');
+  var rst=document.getElementById('fp-hidden-reset');
+  if(!d1)return;
+  var gray='filter:grayscale(1) opacity(.3);font-size:1.8rem;';
+  var act='filter:none;font-size:1.8rem;transform:scale(1.15);';
+  if(hf==='low'){
+    d1.style.cssText=act;d2.style.cssText=gray;d3.style.cssText=gray;
+    lbl.textContent=lang==='en'?'Starting to spread':'Inizia a circolare';lbl.style.color='#991b1b';
+  } else if(hf==='mid'){
+    d1.style.cssText=act;d2.style.cssText=act;d3.style.cssText=gray;
+    lbl.textContent=lang==='en'?'Known to few':'Lo sanno in pochi';lbl.style.color='#b45309';
+  } else if(hf==='high'){
+    d1.style.cssText=act;d2.style.cssText=act;d3.style.cssText=act;
+    lbl.textContent=lang==='en'?'Hidden gem':'Gemma nascosta';lbl.style.color='#166534';
+  } else {
+    d1.style.cssText=gray;d2.style.cssText=gray;d3.style.cssText=gray;
+    lbl.textContent='';lbl.style.color='';
+  }
+  if(rst)rst.style.display=hf!=='all'?'block':'none';
+}
+function selHiddenFilter(lv){
+  activeHiddenFilter=lv;
+  buildHiddenFilter();
+  if(lv!=='all')closeFilterPopup();
+  updateFilterDot();
+  refreshL1();
 }
 function openFilterPopup(){
   var fpFuori=document.getElementById('fp-btn-fuori');
@@ -1642,6 +1689,7 @@ function openFilterPopup(){
     fpRoma.className='fp-mode-btn'+(mapMode==='city'?' active-city':'');
   }
   buildFilterCats();
+  buildHiddenFilter();
   document.getElementById('filter-overlay').classList.add('show');
   document.getElementById('filter-popup').classList.add('show');
   filterOpen=true;
@@ -1662,6 +1710,7 @@ function setMapModePopup(mode){
   mapMode=mode;
   activeFilter='all';
   activeSubtype=null;
+  activeHiddenFilter='all';
   var fpFuori=document.getElementById('fp-btn-fuori');
   var fpRoma=document.getElementById('fp-btn-roma');
   if(fpFuori){
@@ -1689,18 +1738,28 @@ function catMatchFn(p){
   if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId===parseInt(activeFilter);});
   return p.placeTypeId==activeFilter;
 }
+function hiddenMatchFn(score){
+  var hf=activeHiddenFilter;
+  if(hf==='all')return true;
+  var s=score||0;
+  if(hf==='high')return s>=70;
+  if(hf==='mid')return s>=40&&s<70;
+  if(hf==='low')return s>0&&s<40;
+  return true;
+}
 function refreshL1(){
   if(mapMode==='city'){
     DATA.places.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
     clearCityActivityMarkers();
     (DATA.cityActivities||[]).forEach(function(a){
-      var show=activeSubtype!==null?a.experienceSubtypeId===activeSubtype
+      var catShow=activeSubtype!==null?a.experienceSubtypeId===activeSubtype
                :activeFilter==='all'||a.experienceTypeId===parseInt(activeFilter);
-      if(show)addCityActivityMarker(a);
+      if(catShow&&hiddenMatchFn(a.hiddenScore))addCityActivityMarker(a);
     });
-    if(activeSubtype!==null||activeFilter!=='all'){
+    if(activeSubtype!==null||activeFilter!=='all'||activeHiddenFilter!=='all'){
       var vis=(DATA.cityActivities||[]).filter(function(a){
-        return (activeSubtype!==null?a.experienceSubtypeId===activeSubtype:a.experienceTypeId===parseInt(activeFilter))&&a.lat&&a.lng;
+        var catShow=activeSubtype!==null?a.experienceSubtypeId===activeSubtype:activeFilter==='all'||a.experienceTypeId===parseInt(activeFilter);
+        return catShow&&hiddenMatchFn(a.hiddenScore)&&a.lat&&a.lng;
       });
       if(vis.length){
         var lngs=vis.map(function(a){return a.lng;});
@@ -1713,11 +1772,11 @@ function refreshL1(){
   clearCityActivityMarkers();
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    var show=(p.mode||'outside')==='outside'&&catMatchFn(p);
+    var show=(p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore);
     if(show)m.addTo(map_o);else m.remove();
   });
-  if(activeFilter!=='all'){
-    var vis=DATA.places.filter(function(p){return (p.mode||'outside')==='outside'&&catMatchFn(p);});
+  if(activeFilter!=='all'||activeHiddenFilter!=='all'){
+    var vis=DATA.places.filter(function(p){return (p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore);});
     if(vis.length){
       var lngs=vis.map(function(p){return p.lng;});
       var lats=vis.map(function(p){return p.lat;});
