@@ -2221,7 +2221,12 @@ function locateMe(){
     map_o.jumpTo({center:[pos.coords.longitude,pos.coords.latitude],zoom:13});
     if(userMk)userMk.setLngLat([pos.coords.longitude,pos.coords.latitude]);
     toast('📍 '+(lang==='en'?'Location updated':'Posizione aggiornata'));
-  },function(){toast(lang==='en'?'Could not get location':'Impossibile ottenere la posizione');});
+  },function(err){
+    var msg=lang==='en'
+      ?'👀 Hmm, I can\'t access your location. Try enabling location access for this site in your browser settings.'
+      :'👀 mmmh purtroppo non riesco ad accedere alla tua posizione. Prova ad abilitare l\'accesso alla posizione per questo sito nelle impostazioni del tuo browser.';
+    toast(msg,'err',5000);
+  });
 }
 
 function gemTooltipHtml(currentSc){
