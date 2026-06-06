@@ -9,6 +9,7 @@
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 <script src="https://gumroad.com/js/gumroad.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
@@ -420,24 +421,20 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 <body>
 
 <div id="splash">
-  <svg width="68" height="68" viewBox="0 0 200 200" fill="none">
-    <circle cx="100" cy="100" r="88" stroke="#2d5a27" stroke-width="10" fill="none"/>
-    <polygon points="100,8 107,32 100,26 93,32" fill="#e8721a"/>
-    <polygon points="100,192 107,168 100,174 93,168" fill="#2d5a27"/>
-    <polygon points="192,100 168,107 174,100 168,93" fill="#2d5a27"/>
-    <polygon points="8,100 32,107 26,100 32,93" fill="#2d5a27"/>
-    <path d="M58 75 L100 68 L142 75 L142 138 L100 145 L58 138 Z" fill="#e8e0b8" stroke="#2d5a27" stroke-width="4" stroke-linejoin="round"/>
-    <line x1="100" y1="68" x2="100" y2="145" stroke="#2d5a27" stroke-width="2.5" stroke-dasharray="4 3"/>
-    <ellipse cx="76" cy="118" rx="14" ry="8" fill="#5a9e50" opacity=".7"/>
-    <ellipse cx="124" cy="112" rx="12" ry="7" fill="#5a9e50" opacity=".65"/>
-    <circle cx="72" cy="128" r="3.5" fill="#e8721a"/>
-    <circle cx="115" cy="98" r="3" fill="#e8721a" opacity=".8"/>
-    <polygon points="128,90 120,96 124,104 136,94" fill="#e8721a"/>
-  </svg>
+  <div id="lottie-loader" style="width:120px;height:120px;margin:0 auto;"></div>
   <div class="sp-n">Wayterra</div>
   <div class="sp-s">Discover hidden places</div>
   <div class="sp-dot"></div>
 </div>
+<script>
+lottie.loadAnimation({
+  container:document.getElementById('lottie-loader'),
+  renderer:'svg',
+  loop:true,
+  autoplay:true,
+  path:'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/6cd1f2c4-1172-11ee-8e6d-4fb0902f9b7b.json'
+});
+</script>
 
 <div id="toast"></div>
 <div id="map"></div>
