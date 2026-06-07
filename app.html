@@ -1008,7 +1008,7 @@ function translateSpec(text){
 }
 
 /* ═══ STATE ═══ */
-var map_o,userMk,romaLabelMk,romaClusterMk;
+var map_o,userMk,romaMk;
 var activeFilter='all',activeSubtype=null,level=1,activePId=null;
 var activeHiddenFilter='all';
 var l1Mk={},l2Mk=[];
@@ -1409,7 +1409,7 @@ function expSubtypeOf(id){return DATA.expSubtypes.find(function(t){return t.id==
 function initMap(){
   var isMobile=window.innerWidth<600;
   var romaPlaces=[];
-  romaClusterMk=null;
+  romaMk=null;
   mapboxgl.accessToken='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
   map_o=new mapboxgl.Map({
     container:'map',
@@ -1426,16 +1426,7 @@ function initMap(){
 
     DATA.places.forEach(function(p){addL1(p);});
     addCityLabels();
-
-    var clEl=document.createElement('div');
-    clEl.innerHTML='<div style="width:40px;height:40px;border-radius:50%;background:#dc6b2f;border:2.5px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer;color:white;font-size:13px;font-weight:700;">'+(DATA.cityActivities&&DATA.cityActivities.length?DATA.cityActivities.length:romaPlaces.length)+'</div>';
-    clEl.addEventListener('click',function(e){
-      e.stopPropagation();
-      setMapMode('city');
-    });
-    romaClusterMk=new mapboxgl.Marker({element:clEl,anchor:'center'})
-      .setLngLat([12.4964,41.9028])
-      .addTo(map_o);
+    addRomaPin();
 
     // initial state: zoom < 11, hide individual Roma markers
     romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
@@ -1447,12 +1438,10 @@ function initMap(){
     if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(z<11){
-      if(romaClusterMk)romaClusterMk.addTo(map_o);
-      if(romaLabelMk)romaLabelMk.addTo(map_o);
+      if(romaMk)romaMk.addTo(map_o);
       romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
     } else {
-      if(romaClusterMk)romaClusterMk.remove();
-      if(romaLabelMk)romaLabelMk.remove();
+      if(romaMk)romaMk.remove();
     }
   });
   map_o.on('zoomend',function(){
@@ -1481,7 +1470,6 @@ function initMap(){
 
 function addCityLabels(){
   var cities=[
-    {name:'Roma',lng:12.4964,lat:41.9028,big:true},
     {name:'Viterbo',lng:12.1047,lat:42.4168,big:false},
     {name:'Rieti',lng:12.8564,lat:42.4045,big:false},
     {name:'Latina',lng:12.9034,lat:41.4677,big:false},
@@ -1501,11 +1489,24 @@ function addCityLabels(){
     el.textContent=c.name;
     el.style.cssText='font-size:'+(c.big?'11px':'12px')+';font-weight:'+(c.big?'400':'500')+';color:'+(c.big?'#3a3a38':'#888780')+';letter-spacing:.02em;pointer-events:none;text-shadow:0 0 4px rgba(242,238,234,.9),0 0 8px rgba(242,238,234,.7);white-space:nowrap;';
     el.style.zIndex='1';
-    var mk=new mapboxgl.Marker({element:el,anchor:'center',offset:c.name==='Roma'?[0,20]:[0,0]})
+    var mk=new mapboxgl.Marker({element:el,anchor:'center'})
       .setLngLat([c.lng,c.lat])
       .addTo(map_o);
-    if(c.name==='Roma')romaLabelMk=mk;
   });
+}
+
+function addRomaPin(){
+  var el=document.createElement('div');
+  el.style.cssText='display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;';
+  el.innerHTML='<div style="width:38px;height:38px;border-radius:50%;background:#374151;border:2.5px solid white;box-shadow:0 3px 10px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;"><i class="ti ti-building-skyscraper" style="font-size:18px;color:white;"></i></div>'
+    +'<div style="font-size:9px;font-weight:600;color:#374151;background:rgba(255,255,255,.92);border-radius:4px;padding:1px 6px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.1);">Roma</div>';
+  el.addEventListener('click',function(e){
+    e.stopPropagation();
+    setMapMode('city');
+  });
+  romaMk=new mapboxgl.Marker({element:el,anchor:'center'})
+    .setLngLat([12.4964,41.9028])
+    .addTo(map_o);
 }
 
 /* L1 html — FREE vs PREMIUM */
@@ -2008,13 +2009,12 @@ function setMapModePopup(mode){
   updateFilterDot();
   buildFilterCats();
   if(mode==='city'){
-    if(romaClusterMk)romaClusterMk.remove();
-    if(romaLabelMk)romaLabelMk.remove();
+    if(romaMk)romaMk.remove();
     if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:10,duration:800});
   } else {
     if(map_o){
       var z=map_o.getZoom();
-      if(z<11){if(romaClusterMk)romaClusterMk.addTo(map_o);if(romaLabelMk)romaLabelMk.addTo(map_o);}
+      if(z<11){if(romaMk)romaMk.addTo(map_o);}
     }
     if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:8,duration:800});
   }
