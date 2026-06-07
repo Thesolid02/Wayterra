@@ -448,12 +448,13 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 /* ── ONBOARDING POPUP ── */
 #ob-overlay{display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.45);}
 #ob-overlay.show{display:block;}
-#ob-popup{position:fixed;bottom:0;left:0;right:0;z-index:651;background:var(--w);
-  border-radius:var(--rxl) var(--rxl) 0 0;
-  padding:0 20px calc(env(safe-area-inset-bottom,0px)+28px);
-  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);}
-#ob-popup.show{transform:translateY(0);transition:transform .3s cubic-bezier(.33,1,.68,1);}
-.ob-handle{width:32px;height:3px;border-radius:2px;background:var(--g300);margin:14px auto 20px;}
+#ob-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);z-index:651;
+  background:var(--w);border-radius:var(--rxl);padding:28px 20px 24px;
+  width:320px;max-width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.22);
+  opacity:0;pointer-events:none;
+  transition:transform .25s cubic-bezier(.33,1,.68,1),opacity .25s;}
+#ob-popup.show{transform:translate(-50%,-50%);opacity:1;pointer-events:auto;}
+.ob-handle{display:none;}
 .ob-emoji{font-size:2rem;text-align:center;margin-bottom:10px;}
 .ob-title{font-size:1.05rem;font-weight:700;color:var(--g900);text-align:center;margin-bottom:8px;font-family:var(--f);}
 .ob-sub{font-size:.8rem;color:var(--g500);text-align:center;line-height:1.55;margin-bottom:24px;font-family:var(--f);}
@@ -461,19 +462,14 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .ob-btn{position:relative;height:80px;border-radius:var(--r);border:none;overflow:hidden;
   background-size:cover;background-position:center;cursor:pointer;font-family:var(--f);
   width:100%;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.ob-btn-green{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');}
+.ob-btn-green{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');background-position:center 30%;}
 .ob-btn-orange{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/chris-czermak-7ybKmhDTcz0-unsplash.jpg');}
 .ob-btn-ov{position:absolute;inset:0;background:rgba(0,0,0,.38);transition:opacity .2s;pointer-events:none;}
 .ob-btn:active .ob-btn-ov{opacity:0;}
 .ob-btn-lbl{position:relative;z-index:1;color:#fff;font-size:.9rem;font-weight:700;
   text-shadow:0 1px 4px rgba(0,0,0,.55);font-family:var(--f);}
 @media(min-width:768px){
-  #ob-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);bottom:auto;right:auto;
-    width:340px;max-width:90vw;border-radius:var(--rxl);padding:28px 24px;
-    box-shadow:0 8px 40px rgba(0,0,0,.18);opacity:0;pointer-events:none;
-    transition:transform .25s cubic-bezier(.33,1,.68,1),opacity .25s;}
-  #ob-popup.show{transform:translate(-50%,-50%);opacity:1;pointer-events:auto;}
-  .ob-handle{display:none;}
+  #ob-popup{width:380px;}
 }
 
 /* ── SEARCH ── */
@@ -623,7 +619,6 @@ lottie.loadAnimation({
 <!-- ONBOARDING POPUP -->
 <div id="ob-overlay" onclick="closeOnboarding()"></div>
 <div id="ob-popup">
-  <div class="ob-handle"></div>
   <div class="ob-emoji">🗺️</div>
   <div class="ob-title" data-t="ob_title">Cosa vuoi fare oggi?</div>
   <div class="ob-sub" data-t="ob_sub">Non è una scelta definitiva. Se decidi di cambiare posto basta selezionarlo dal filtro nella mappa</div>
