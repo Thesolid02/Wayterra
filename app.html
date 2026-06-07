@@ -145,6 +145,11 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   width:46px;height:46px;border-radius:50%;border:0.5px solid var(--g200);background:var(--w);
   box-shadow:var(--sh-md);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;}
 #fab:active{transform:scale(.9);}
+/* MODE TOGGLE */
+#mode-toggle{position:fixed;bottom:100px;right:12px;display:flex;flex-direction:column;gap:5px;z-index:400;}
+.mode-sq-btn{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;box-sizing:border-box;transition:opacity .15s,border-color .15s;position:relative;padding:0;background:none;}
+.mode-sq-btn.msq-active{border-color:white;opacity:1;}
+.mode-sq-btn.msq-inactive{opacity:.65;border-color:transparent;}
 
 
 /* ── L1 MARKERS ── */
@@ -681,6 +686,19 @@ lottie.loadAnimation({
 </div>
 
 <button id="fab" style="display:none" onclick="locateMe()">📍</button>
+
+<div id="mode-toggle">
+  <button id="mode-btn-city" class="mode-sq-btn msq-inactive" onclick="setMapMode('city')" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/chris-czermak-7ybKmhDTcz0-unsplash.jpg');background-size:cover;background-position:center;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;">
+      <span style="font-size:.5rem;font-weight:700;color:white;letter-spacing:.02em;">Roma</span>
+    </div>
+  </button>
+  <button id="mode-btn-outside" class="mode-sq-btn msq-active" onclick="setMapMode('outside')" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');background-size:cover;background-position:center 30%;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,.2);display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;">
+      <span style="font-size:.5rem;font-weight:700;color:white;letter-spacing:.02em;text-align:center;line-height:1.2;">Fuori<br>porta</span>
+    </div>
+  </button>
+</div>
 
 
 <div id="act-popup">
@@ -2034,14 +2052,17 @@ function setMapModePopup(mode){
   }
   updateFilterDot();
   buildFilterCats();
+  var _mbCity=document.getElementById('mode-btn-city');
+  var _mbOut=document.getElementById('mode-btn-outside');
+  if(_mbCity&&_mbOut){
+    _mbCity.className='mode-sq-btn '+(mode==='city'?'msq-active':'msq-inactive');
+    _mbOut.className='mode-sq-btn '+(mode==='outside'?'msq-active':'msq-inactive');
+  }
   if(mode==='city'){
-    if(romaMk)romaMk.remove();
+    if(romaMk)romaMk.addTo(map_o);
     if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:10,duration:800});
   } else {
-    if(map_o){
-      var z=map_o.getZoom();
-      if(z<11){if(romaMk)romaMk.addTo(map_o);}
-    }
+    if(romaMk)romaMk.remove();
     if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:8,duration:800});
   }
   refreshL1();
