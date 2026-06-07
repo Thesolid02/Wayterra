@@ -149,7 +149,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #mode-toggle{position:fixed;bottom:100px;right:12px;display:flex;flex-direction:column;gap:5px;z-index:400;}
 .mode-sq-btn{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;box-sizing:border-box;transition:opacity .15s,border-color .15s;position:relative;padding:0;background:none;}
 .mode-sq-btn.msq-active{border-color:white;opacity:1;}
-.mode-sq-btn.msq-inactive{opacity:.65;border-color:transparent;}
+.mode-sq-btn.msq-inactive{opacity:.65;border-color:#dc6b2f;}
 
 
 /* ── L1 MARKERS ── */
@@ -1345,6 +1345,7 @@ function openActPopup(actId, placeId, triggerEl){
       +((a.maps||a.bookingUrl)?'<div style="display:flex;gap:8px;">'+(a.maps?'<button class="act-popup-maps-btn" style="flex:1;" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
     if(actDesc) renderExpandableText(actDesc,'act-popup-desc-el',200);
     document.getElementById('act-popup').classList.add('show');
+    hideModeToggle();
   }
 }
 function closeInlineBubble(){
@@ -1370,9 +1371,12 @@ function toggleActGroup(typeId){
 }
 function closeActPopup(){
   document.getElementById('act-popup').classList.remove('show');
+  showModeToggle();
 }
 
 function openBooking(url){if(url.startsWith('tel:')){window.location.href=url;}else{window.open(url,'_blank');}}
+function hideModeToggle(){var el=document.getElementById('mode-toggle');if(el)el.style.display='none';}
+function showModeToggle(){var el=document.getElementById('mode-toggle');if(el)el.style.display='flex';}
 function isVideo(src){
   if(!src)return false;
   if(src.startsWith('video:'))return true;
@@ -1626,6 +1630,7 @@ function showCityActivityBottomCard(a){
   var card=document.getElementById('bottom-card');
   card.onclick=function(){closeBottomCard();openCityActivityDetail(a);};
   card.classList.add('show');
+  hideModeToggle();
 }
 var _cityActGallery=[];
 function openLightboxFromCityAct(idx){openLightbox(idx,{gallery:_cityActGallery});}
@@ -1661,6 +1666,7 @@ function openCityActivityDetail(a){
       +((a.maps||a.bookingUrl)?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;">'+(a.maps?'<button class="act-popup-maps-btn" style="flex:1;" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
     if(actDesc)renderExpandableText(actDesc,'act-popup-desc-el',200);
     document.getElementById('act-popup').classList.add('show');
+    hideModeToggle();
   } else {
     document.getElementById('amp-sheet').style.display='none';
     document.getElementById('amp-center').style.display='';
@@ -1715,6 +1721,7 @@ function openCityActivityDetail(a){
       } else bookBtnD.style.display='none';
     }
     document.getElementById('act-map-popup').classList.add('show');
+    hideModeToggle();
   }
 }
 function clearCityActivityMarkers(){
@@ -1857,9 +1864,11 @@ function showActBubble(a, latlng){
     } else bookBtn.style.display='none';
   }
   document.getElementById('act-map-popup').classList.add('show');
+  hideModeToggle();
 }
 function closeActMapPopup(){
   document.getElementById('act-map-popup').classList.remove('show');
+  showModeToggle();
 }
 
 
@@ -2059,10 +2068,10 @@ function setMapModePopup(mode){
     _mbOut.className='mode-sq-btn '+(mode==='outside'?'msq-active':'msq-inactive');
   }
   if(mode==='city'){
-    if(romaMk)romaMk.addTo(map_o);
+    if(romaMk)romaMk.remove();
     if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:10,duration:800});
   } else {
-    if(romaMk)romaMk.remove();
+    if(romaMk&&map_o)romaMk.addTo(map_o);
     if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:8,duration:800});
   }
   refreshL1();
@@ -2285,9 +2294,11 @@ function showBottomCard(p){
     openDetail();
   };
   card.classList.add('show');
+  hideModeToggle();
 }
 function closeBottomCard(){
   document.getElementById('bottom-card').classList.remove('show');
+  showModeToggle();
 }
 function showActIconTooltip(el, names){
   var existing=document.getElementById('act-icon-tooltip');
@@ -2323,6 +2334,7 @@ function showActBubbleBottomCard(a, placeId){
     openActPopup(a.id,placeId,null);
   };
   card.classList.add('show');
+  hideModeToggle();
 }
 
 /* ═══ DETAIL PAGE ═══ */
@@ -2458,10 +2470,12 @@ function openDetail(){
     setTimeout(function(){map_o.resize();},320);
   }
   document.getElementById('detail-page').classList.add('show');
+  hideModeToggle();
 }
 function closeDetail(){
   document.getElementById('detail-page').classList.remove('show');
   closeInlineBubble();
+  showModeToggle();
   if(window.innerWidth>=768){
     document.getElementById('map').classList.remove('panel-open');
     setTimeout(function(){map_o.resize();},320);
