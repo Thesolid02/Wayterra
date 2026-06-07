@@ -1223,11 +1223,20 @@ function searchGoCityAct(id){
 function searchGoPlaceAct(placeId,actId){
   var p=(DATA.places||[]).find(function(x){return x.id===placeId;});
   if(!p)return;
+  var a=(p.activities||[]).find(function(x){return String(x.id)===String(actId);});
+  if(!a)return;
   closeSearch();
   var targetMode=p.mode||'outside';
   var needSwitch=mapMode!==targetMode;
   if(needSwitch)setMapMode(targetMode);
-  setTimeout(function(){handleL1Click(p);},needSwitch?900:50);
+  setTimeout(function(){
+    var lat=a.lat||p.lat,lng=a.lng||p.lng;
+    if(lat&&lng)map_o.flyTo({center:[lng,lat],zoom:14,duration:600});
+    setTimeout(function(){
+      if(window.innerWidth<768){showActBubbleBottomCard(a,placeId);}
+      else{showActBubble(a,[lat,lng]);}
+    },lat&&lng?500:0);
+  },needSwitch?900:50);
 }
 
 function setLang(l){
