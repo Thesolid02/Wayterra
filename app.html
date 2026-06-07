@@ -1631,7 +1631,7 @@ function openCityActivityDetail(a){
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+formatText(actSecret)+'</p></div>':'')
       +(_pillsM.length?'<div class="dp-pills">'+_pillsM.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('')+'</div>':'')
       +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
-      +(a.gallery&&a.gallery.length?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:8px;">'+(lang==='en'?'Gallery':'Galleria')+'</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:1fr;margin-bottom:12px;">'
+      +(a.gallery&&a.gallery.length?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:8px;">📷 '+(lang==='en'?'Gallery':'Galleria')+'</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:1fr;margin-bottom:12px;">'
         +a.gallery.map(function(url,i){
           var isVid=/\.(mp4|mov|webm)$/i.test(url);
           if(isVid){return'<div style="width:100%;aspect-ratio:1;overflow:hidden;border-radius:var(--r);cursor:pointer;position:relative;" onclick="openLightboxFromCityAct('+i+')">'
