@@ -750,14 +750,14 @@ lottie.loadAnimation({
     <div class="amp-header"><div class="amp-title" id="amp-title"></div><button class="amp-close" onclick="closeActMapPopup()">✕</button></div>
     <div class="amp-type" id="amp-type"></div>
     <img class="amp-img" id="amp-img" src="" alt="" style="display:none;">
-    <div class="amp-body"><div class="amp-desc" id="amp-desc"></div><div class="amp-secret" id="amp-secret" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-m"></span></div><p id="amp-secret-txt"></p></div><div class="amp-specs" id="amp-specs"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps" style="flex:1;"></button><button class="amp-maps" id="amp-book" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
+    <div class="amp-body"><div class="amp-desc" id="amp-desc"></div><div class="amp-secret" id="amp-secret" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-m"></span></div><p id="amp-secret-txt"></p></div><div class="amp-specs" id="amp-specs"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps" style="flex:1;"></button><button class="amp-maps" id="amp-book" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
   </div>
   <div class="amp-center" id="amp-center" style="display:none;">
     <div class="amp-header"><div class="amp-title" id="amp-title-d"></div><div style="display:flex;gap:6px;align-items:center;"><button class="amp-close" id="amp-bkm-d" style="display:none;"><i class="ti ti-bookmark"></i></button><button class="amp-close" onclick="closeActMapPopup()">✕</button></div></div>
     <div class="amp-type" id="amp-type-d"></div>
     <img class="amp-img" id="amp-img-d" src="" alt="" style="display:none;">
     <div id="amp-score-d" style="display:none;"></div>
-    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div id="amp-pills-d"></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps-d" style="flex:1;"></button><button class="amp-maps" id="amp-book-d" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
+    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div id="amp-pills-d"></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps-d" style="flex:1;"></button><button class="amp-maps" id="amp-book-d" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
   </div>
 </div>
 
@@ -1640,7 +1640,7 @@ function openCityActivityDetail(a){
             +'</div>';}
           return'<img src="'+url+'" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--r);cursor:pointer;display:block;" onclick="openLightboxFromCityAct('+i+')" alt="">';
         }).join('')+'</div>':'')
-      +((a.maps||a.bookingUrl)?'<div style="display:flex;gap:8px;">'+(a.maps?'<button class="act-popup-maps-btn" style="flex:1;" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
+      +((a.maps||a.bookingUrl)?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;">'+(a.maps?'<button class="act-popup-maps-btn" style="flex:1;" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
     if(actDesc)renderExpandableText(actDesc,'act-popup-desc-el',200);
     document.getElementById('act-popup').classList.add('show');
   } else {
