@@ -618,6 +618,8 @@ textarea.ft{resize:vertical;line-height:1.65;}
     </div>
     <div class="sdiv" style="margin-top:6px;">Google Maps URL</div>
     <div class="fg"><input type="url" id="ca-maps" placeholder="https://maps.google.com/?q=…"><span class="fh">Vuoto = generato automaticamente dal nome</span></div>
+    <div class="sdiv" style="margin-top:6px;">URL prenotazione / Telefono</div>
+    <div class="fg"><input type="text" id="ca-booking" placeholder="https://... oppure tel:+39..."></div>
   </div>
   <div class="mf">
     <button class="btn bs" onclick="closeCityAct()">Annulla</button>
@@ -772,6 +774,7 @@ function actRowToAct(a){
     coverPhoto: a.cover_photo||'',
     gallery: a.gallery||[],
     maps: a.maps_url||'',
+    bookingUrl: a.booking_url||'',
     hiddenScore: a.hidden_score||0,
     pills: a.pills||[],
     pillsEn: a.pills_en||[]
@@ -828,6 +831,7 @@ function actToRow(a, placeId){
     cover_photo: a.coverPhoto||'',
     gallery: a.gallery||[],
     maps_url: a.maps||'',
+    booking_url: a.bookingUrl||'',
     hidden_score: a.hiddenScore||0,
     pills: a.pills||[],
     pills_en: a.pillsEn||[]
@@ -1485,6 +1489,7 @@ function addActRow(a){
     +'<div class="pg" id="ag-'+rid+'"></div>'
     +'</div>'
     +'<div class="fg"><label>Google Maps URL</label><input type="url" class="ar-maps" placeholder="https://maps.google.com/?q=…"></div>'
+    +'<div class="fg"><label>URL prenotazione / Telefono</label><input type="text" class="ar-booking" placeholder="https://... oppure tel:+39..."></div>'
     +'<input type="hidden" class="ar-id" value="'+rid+'">'
     +'<input type="hidden" class="ar-cover" value="">'
     +'<input type="hidden" class="ar-gallery" value="[]">';
@@ -1502,6 +1507,7 @@ function addActRow(a){
     div.querySelector('.ar-secret').value=a.secret||'';
     div.querySelector('.ar-secret-en').value=a.secretEn||'';
     div.querySelector('.ar-maps').value=a.maps||'';
+    div.querySelector('.ar-booking').value=a.bookingUrl||'';
     div.querySelector('.ar-cover').value=a.coverPhoto||'';
     div.querySelector('.ar-region').value=a.region||'';
     div.querySelector('.ar-city').value=a.city||'';
@@ -1667,6 +1673,7 @@ function savePlace(){
       secretEn:(row.querySelector('.ar-secret-en')&&row.querySelector('.ar-secret-en').value||'').trim(),
       specs:specs,
       maps:(row.querySelector('.ar-maps')&&row.querySelector('.ar-maps').value||'').trim()||'https://maps.google.com/?q='+encodeURIComponent(n),
+      bookingUrl:(row.querySelector('.ar-booking')&&row.querySelector('.ar-booking').value||'').trim(),
       coverPhoto:(row.querySelector('.ar-cover')&&row.querySelector('.ar-cover').value||''),
       gallery:JSON.parse(row.querySelector('.ar-gallery')&&row.querySelector('.ar-gallery').value||'[]')
     });
@@ -2341,6 +2348,7 @@ function fillCityActForm(a){
   document.getElementById('ca-secret').value=a.secret||'';
   document.getElementById('ca-secret-en').value=a.secretEn||'';
   document.getElementById('ca-maps').value=a.maps||'';
+  document.getElementById('ca-booking').value=a.bookingUrl||'';
   document.getElementById('ca-score').value=a.hiddenScore||0;
   var _cp=a.pills||[], _cpen=a.pillsEn||[];
   ['ca-p1','ca-p2','ca-p3','ca-p4'].forEach(function(id,i){document.getElementById(id).value=_cp[i]||'';});
@@ -2393,7 +2401,7 @@ function closeCityAct(){ document.getElementById('m-city-act').classList.remove(
 
 function clearCityActForm(){
   populateCityActExpTypeSelect();
-  ['ca-name','ca-region','ca-desc','ca-desc-en','ca-secret','ca-secret-en','ca-maps'].forEach(function(id){document.getElementById(id).value='';});
+  ['ca-name','ca-region','ca-desc','ca-desc-en','ca-secret','ca-secret-en','ca-maps','ca-booking'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('ca-score').value=0;
   ['ca-p1','ca-p2','ca-p3','ca-p4','ca-p1en','ca-p2en','ca-p3en','ca-p4en'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('ca-city').value='roma';
@@ -2455,6 +2463,7 @@ function saveCityAct(){
     coverPhoto:cityActCoverData,
     gallery:cityActGalleryData.slice(),
     maps:document.getElementById('ca-maps').value.trim()||'https://maps.google.com/?q='+encodeURIComponent(name),
+    bookingUrl:document.getElementById('ca-booking').value.trim(),
     hiddenScore:parseInt(document.getElementById('ca-score').value)||0,
     pills:['ca-p1','ca-p2','ca-p3','ca-p4'].map(function(id){return document.getElementById(id).value.trim();}).filter(Boolean),
     pillsEn:['ca-p1en','ca-p2en','ca-p3en','ca-p4en'].map(function(id){return document.getElementById(id).value.trim();}).filter(Boolean)
