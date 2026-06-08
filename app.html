@@ -552,21 +552,23 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .rp-lock-ico{font-size:1rem;margin-bottom:5px;}
 .rp-card-locked .rp-card-name{font-size:.9rem;}
 .rp-soon-badge{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.85);padding:2px 8px;border-radius:100px;}
-/* topbar region pill */
+/* topbar region pill (desktop) */
 .region-pill{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);border-radius:100px;padding:3px 9px 3px 7px;display:flex;align-items:center;gap:4px;cursor:pointer;transition:background .12s;margin-left:2px;}
 .region-pill:active{background:rgba(22,163,74,.2);}
 .region-pill-name{font-size:.7rem;font-weight:700;color:#16a34a;letter-spacing:.01em;}
 .region-pill-arrow{font-size:.58rem;color:#16a34a;opacity:.7;}
-#topbar-row2{display:none;justify-content:center;pointer-events:none;}
-#topbar-row2 .region-pill{pointer-events:all;padding:2px 8px 2px 6px;}
-#topbar-row2 .region-pill-name{font-size:.625rem;}
+/* topbar region label (mobile inline) */
+.brand-rgn-mobile{display:none;font-size:10px;font-weight:700;color:#dc6b2f;cursor:pointer;margin-top:1px;letter-spacing:.01em;line-height:1;}
 @media(max-width:767px){
   .brand-pill .region-pill{display:none;}
-  #topbar-row2{display:flex;}
+  .brand-rgn-mobile{display:block;}
 }
+/* region page — desktop centering wrapper */
+.rp-content{width:100%;}
 @media(min-width:768px){
-  .rp-header{max-width:480px;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px;}
-  .rp-grid{max-width:480px;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px;}
+  .rp-content{max-width:480px;margin:0 auto;padding:0 24px;box-sizing:border-box;}
+  .rp-header{padding-left:0;padding-right:0;}
+  .rp-grid{padding-left:0;padding-right:0;}
 }</style>
 </head>
 <body>
@@ -592,6 +594,7 @@ lottie.loadAnimation({
 
 <!-- REGION PAGE -->
 <div id="region-page" class="gone">
+  <div class="rp-content">
   <div class="rp-header">
     <div class="rp-title" data-t="rp_title">Scegli la regione</div>
     <div class="rp-sub" data-t="rp_sub">Dove vuoi esplorare oggi?</div>
@@ -643,6 +646,7 @@ lottie.loadAnimation({
       </div>
     </div>
   </div>
+  </div>
 </div>
 
 <!-- TOP BAR -->
@@ -662,7 +666,10 @@ lottie.loadAnimation({
         <circle cx="115" cy="98" r="3" fill="#e8721a" opacity=".8"/>
         <polygon points="128,90 120,96 124,104 136,94" fill="#e8721a"/>
       </svg>
-      <span class="brand-name">Wayterra</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;">
+        <span class="brand-name">Wayterra</span>
+        <span class="brand-rgn-mobile" id="brand-rgn-mobile" onclick="showRegionPage()">Lazio ▾</span>
+      </div>
       <div class="region-pill" id="region-pill" onclick="showRegionPage()">
         <span class="region-pill-name" id="region-pill-name">Lazio</span>
         <span class="region-pill-arrow">▾</span>
@@ -679,12 +686,6 @@ lottie.loadAnimation({
         <div class="filter-dot" id="filter-dot"></div>
       </button>
       <button class="fav-btn" id="fav-btn" onclick="openFavPage()"><i class="ti ti-bookmark"></i></button>
-    </div>
-  </div>
-  <div id="topbar-row2">
-    <div class="region-pill" id="region-pill-2" onclick="showRegionPage()">
-      <span class="region-pill-name" id="region-pill-name-2">Lazio</span>
-      <span class="region-pill-arrow">▾</span>
     </div>
   </div>
 </div>
@@ -2863,8 +2864,8 @@ function updateRegionPill(regionId){
   var label=names[regionId]||(regionId.charAt(0).toUpperCase()+regionId.slice(1));
   var el=document.getElementById('region-pill-name');
   if(el)el.textContent=label;
-  var el2=document.getElementById('region-pill-name-2');
-  if(el2)el2.textContent=label;
+  var mob=document.getElementById('brand-rgn-mobile');
+  if(mob)mob.textContent=label+' ▾';
 }
 function showRegionToast(){
   showToast(t('rp_soon_toast'));
