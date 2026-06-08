@@ -2076,7 +2076,16 @@ function setMapModePopup(mode){
   }
   refreshL1();
 }
-function setMapMode(mode){setMapModePopup(mode);}
+function setMapMode(mode){
+  if(level===2)exitL2();
+  closeBubble();
+  document.getElementById('detail-page').classList.remove('show');
+  closeActPopup();
+  closeActMapPopup();
+  currentPlace=null;
+  activePId=null;
+  setMapModePopup(mode);
+}
 function catMatchFn(p){
   if(activeFilter==='all')return true;
   if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId===parseInt(activeFilter);});
