@@ -528,7 +528,36 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   .sp-handle{display:none;}
   #search-head{padding:10px 14px;}
   #search-results{max-height:calc(460px - 62px);}
-}</style>
+}
+
+/* ── REGION PAGE ── */
+#region-page{position:fixed;inset:0;z-index:600;background:#fafaf8;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:opacity .35s;}
+#region-page.fade-out{opacity:0;pointer-events:none;}
+#region-page.gone{display:none;}
+.rp-header{padding:calc(env(safe-area-inset-top,0px)+32px) 20px 20px;text-align:center;}
+.rp-title{font-size:1.4rem;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:6px;}
+.rp-sub{font-size:.86rem;color:var(--g500);line-height:1.5;}
+.rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px calc(env(safe-area-inset-bottom,0px)+36px);}
+.rp-card{position:relative;height:130px;border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+.rp-card:active{transform:scale(.97);}
+.rp-card-main{grid-column:1/-1;}
+.rp-card-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
+.rp-card-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 60%);}
+.rp-card-body{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px;}
+.rp-card-name{font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.01em;margin-bottom:4px;text-shadow:0 1px 6px rgba(0,0,0,.4);}
+.rp-card-sub{font-size:.72rem;color:rgba(255,255,255,.78);margin-bottom:10px;}
+.rp-card-btn{display:inline-flex;align-items:center;background:#dc6b2f;color:#fff;font-family:var(--f);font-size:.78rem;font-weight:700;padding:7px 14px;border-radius:100px;border:none;cursor:pointer;}
+.rp-card-locked{cursor:default;}
+.rp-card-locked .rp-card-bg{filter:saturate(.35);}
+.rp-card-locked .rp-card-ov{background:rgba(0,0,0,.55);}
+.rp-lock-ico{font-size:1rem;margin-bottom:5px;}
+.rp-card-locked .rp-card-name{font-size:.9rem;}
+.rp-soon-badge{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.85);padding:2px 8px;border-radius:100px;}
+/* topbar region pill */
+.region-pill{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);border-radius:100px;padding:3px 9px 3px 7px;display:flex;align-items:center;gap:4px;cursor:pointer;transition:background .12s;margin-left:2px;}
+.region-pill:active{background:rgba(22,163,74,.2);}
+.region-pill-name{font-size:.7rem;font-weight:700;color:#16a34a;letter-spacing:.01em;}
+.region-pill-arrow{font-size:.58rem;color:#16a34a;opacity:.7;}</style>
 </head>
 <body>
 
@@ -551,6 +580,61 @@ lottie.loadAnimation({
 <div id="toast"></div>
 <div id="map"></div>
 
+<!-- REGION PAGE -->
+<div id="region-page" class="gone">
+  <div class="rp-header">
+    <div class="rp-title" data-t="rp_title">Scegli la regione</div>
+    <div class="rp-sub" data-t="rp_sub">Dove vuoi esplorare oggi?</div>
+  </div>
+  <div class="rp-grid">
+    <div class="rp-card rp-card-main" onclick="selectRegion('lazio')">
+      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/guadagnolo-cover.jpg');"></div>
+      <div class="rp-card-ov"></div>
+      <div class="rp-card-body">
+        <div class="rp-card-name">Lazio</div>
+        <div class="rp-card-sub" id="rp-lazio-sub"></div>
+        <button class="rp-card-btn" id="rp-lazio-btn" data-t="rp_explore">Scopri →</button>
+      </div>
+    </div>
+    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
+      <div class="rp-card-bg" style="background:linear-gradient(135deg,#92400e,#b45309);"></div>
+      <div class="rp-card-ov"></div>
+      <div class="rp-card-body">
+        <div class="rp-lock-ico">🔒</div>
+        <div class="rp-card-name">Toscana</div>
+        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
+      </div>
+    </div>
+    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
+      <div class="rp-card-bg" style="background:linear-gradient(135deg,#0369a1,#1e40af);"></div>
+      <div class="rp-card-ov"></div>
+      <div class="rp-card-body">
+        <div class="rp-lock-ico">🔒</div>
+        <div class="rp-card-name">Campania</div>
+        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
+      </div>
+    </div>
+    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
+      <div class="rp-card-bg" style="background:linear-gradient(135deg,#15803d,#166534);"></div>
+      <div class="rp-card-ov"></div>
+      <div class="rp-card-body">
+        <div class="rp-lock-ico">🔒</div>
+        <div class="rp-card-name">Umbria</div>
+        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
+      </div>
+    </div>
+    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
+      <div class="rp-card-bg" style="background:linear-gradient(135deg,#1e3a8a,#312e81);"></div>
+      <div class="rp-card-ov"></div>
+      <div class="rp-card-body">
+        <div class="rp-lock-ico">🔒</div>
+        <div class="rp-card-name">Abruzzo</div>
+        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TOP BAR -->
 <div id="topbar" style="display:none">
   <div id="topbar-row1">
@@ -569,6 +653,10 @@ lottie.loadAnimation({
         <polygon points="128,90 120,96 124,104 136,94" fill="#e8721a"/>
       </svg>
       <span class="brand-name">Wayterra</span>
+      <div class="region-pill" id="region-pill" onclick="showRegionPage()">
+        <span class="region-pill-name" id="region-pill-name">Lazio</span>
+        <span class="region-pill-arrow">▾</span>
+      </div>
     </div>
     <div class="tb-right">
       <div class="lang-sw">
@@ -873,7 +961,12 @@ var T={
     ob_outside:'Gitarella fuori porta',
     ob_city:'Resto in città — Roma',
     search_cancel:'Chiudi',
-    no_results:'Nessun risultato'
+    no_results:'Nessun risultato',
+    rp_title:'Scegli la regione',
+    rp_sub:'Dove vuoi esplorare oggi?',
+    rp_explore:'Scopri →',
+    rp_soon:'Prossimamente',
+    rp_soon_toast:'Prossimamente!'
   },
   en:{
     search_placeholder:'Where do you want to go?',
@@ -922,7 +1015,12 @@ var T={
     ob_outside:'Outside the city',
     ob_city:'Stay in the city — Rome',
     search_cancel:'Close',
-    no_results:'No results'
+    no_results:'No results',
+    rp_title:'Choose your region',
+    rp_sub:'Where do you want to explore?',
+    rp_explore:'Explore →',
+    rp_soon:'Coming soon',
+    rp_soon_toast:'Coming soon!'
   }
 };
 
@@ -1279,6 +1377,7 @@ function applyTranslations(){
   });
   var si=document.getElementById('search-input');
   if(si)si.placeholder=t('search_placeholder');
+  updateRegionPageLang();
 }
 
 /* ═══ MAP ═══ */
@@ -2725,6 +2824,41 @@ function normalizeData(d){
   return d;
 }
 
+/* ═══ REGION PAGE ═══ */
+function showRegionPage(){
+  var el=document.getElementById('region-page');
+  if(!el)return;
+  el.classList.remove('gone');
+  el.classList.remove('fade-out');
+}
+function hideRegionPage(cb){
+  var el=document.getElementById('region-page');
+  if(!el){if(cb)cb();return;}
+  el.classList.add('fade-out');
+  setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
+}
+function selectRegion(regionId){
+  localStorage.setItem('WT_REGION',regionId);
+  updateRegionPill(regionId);
+  hideRegionPage(function(){showOnboarding();});
+}
+function updateRegionPill(regionId){
+  var el=document.getElementById('region-pill-name');
+  if(!el)return;
+  var names={lazio:'Lazio',toscana:'Toscana',campania:'Campania',umbria:'Umbria',abruzzo:'Abruzzo'};
+  el.textContent=names[regionId]||(regionId.charAt(0).toUpperCase()+regionId.slice(1));
+}
+function showRegionToast(){
+  showToast(t('rp_soon_toast'));
+}
+function updateRegionPageLang(){
+  var lazioSub=document.getElementById('rp-lazio-sub');
+  if(lazioSub){
+    var n=(DATA&&DATA.places)?DATA.places.length:0;
+    lazioSub.textContent=n+(lang==='en'?' places to discover':' luoghi da scoprire');
+  }
+}
+
 function bootApp(d){
   DATA=d;
   console.log('cityActivities:', DATA.cityActivities ? DATA.cityActivities.length : 'non esiste');
@@ -2742,9 +2876,16 @@ function bootApp(d){
   document.getElementById('pw-cn').textContent=DATA.places.length;
   document.getElementById('topbar').style.display='flex';
   document.getElementById('fab').style.display='flex';
+  updateRegionPageLang();
+  var savedRegion=localStorage.getItem('WT_REGION');
+  if(savedRegion)updateRegionPill(savedRegion);
   setTimeout(function(){
     document.getElementById('splash').classList.add('hide');
-    showOnboarding();
+    if(!localStorage.getItem('WT_REGION')){
+      showRegionPage();
+    } else {
+      showOnboarding();
+    }
   },1400);
 }
 
