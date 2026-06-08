@@ -95,7 +95,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .fp-mode-btn{position:relative;flex:1;height:72px;border-radius:var(--r);border:2px solid transparent;
   overflow:hidden;background-size:cover;background-position:center;cursor:pointer;
   font-family:var(--f);font-size:.82rem;font-weight:700;color:#fff;text-align:center;
-  display:flex;align-items:center;justify-content:center;transition:border-color .15s;box-sizing:border-box;}
+  display:flex;align-items:center;justify-content:center;transition:border-color .15s;box-sizing:border-box;transform:translateZ(0);}
 #fp-btn-fuori{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');}
 #fp-btn-roma{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/chris-czermak-7ybKmhDTcz0-unsplash.jpg');}
 .fp-mode-ov{position:absolute;inset:0;background:rgba(0,0,0,.42);transition:opacity .2s;pointer-events:none;}
@@ -1470,10 +1470,7 @@ function initMap(){
     if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(z<11){
-      if(romaMk)romaMk.addTo(map_o);
       romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
-    } else {
-      if(romaMk)romaMk.remove();
     }
   });
   map_o.on('zoomend',function(){
@@ -1538,8 +1535,8 @@ function addRomaPin(){
     setMapMode('city');
   });
   romaMk=new mapboxgl.Marker({element:el,anchor:'center'})
-    .setLngLat([12.4964,41.9028])
-    .addTo(map_o);
+    .setLngLat([12.4964,41.9028]);
+  if(mapMode==='city') romaMk.addTo(map_o);
 }
 
 /* L1 html — FREE vs PREMIUM */
@@ -2071,10 +2068,10 @@ function setMapModePopup(mode){
     _mbOut.className='mode-sq-btn '+(mode==='outside'?'msq-active':'msq-inactive');
   }
   if(mode==='city'){
-    if(romaMk)romaMk.remove();
+    if(romaMk&&map_o)romaMk.addTo(map_o);
     if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:10,duration:800});
   } else {
-    if(romaMk&&map_o)romaMk.addTo(map_o);
+    if(romaMk)romaMk.remove();
     if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:8,duration:800});
   }
   refreshL1();
