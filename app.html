@@ -1030,7 +1030,7 @@ function translateSpec(text){
 }
 
 /* ═══ STATE ═══ */
-var map_o,userMk,romaMk;
+var map_o,userMk;
 var activeFilter='all',activeSubtype=null,level=1,activePId=null;
 var activeHiddenFilter='all';
 var l1Mk={},l2Mk=[];
@@ -1441,7 +1441,7 @@ function expSubtypeOf(id){return DATA.expSubtypes.find(function(t){return t.id==
 function initMap(){
   var isMobile=window.innerWidth<600;
   var romaPlaces=[];
-  romaMk=null;
+
   mapboxgl.accessToken='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
   map_o=new mapboxgl.Map({
     container:'map',
@@ -1458,7 +1458,7 @@ function initMap(){
 
     DATA.places.forEach(function(p){addL1(p);});
     addCityLabels();
-    addRomaPin();
+
 
     // initial state: zoom < 11, hide individual Roma markers
     romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
@@ -1522,21 +1522,6 @@ function addCityLabels(){
       .setLngLat([c.lng,c.lat])
       .addTo(map_o);
   });
-}
-
-function addRomaPin(){
-  var el=document.createElement('div');
-  el.className='pin-hover-wrap';
-  el.style.cssText='position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;';
-  el.innerHTML='<div class="pin-tooltip">Roma</div>'
-    +'<div style="width:22px;height:22px;border-radius:50%;background:#374151;border:2.5px solid white;box-shadow:0 1px 3px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;"><i class="ti ti-building-skyscraper" style="font-size:11px;color:white;"></i></div>';
-  el.addEventListener('click',function(e){
-    e.stopPropagation();
-    setMapMode('city');
-  });
-  romaMk=new mapboxgl.Marker({element:el,anchor:'center'})
-    .setLngLat([12.4964,41.9028]);
-  if(mapMode==='city') romaMk.addTo(map_o);
 }
 
 /* L1 html — FREE vs PREMIUM */
@@ -2068,10 +2053,8 @@ function setMapModePopup(mode){
     _mbOut.className='mode-sq-btn '+(mode==='outside'?'msq-active':'msq-inactive');
   }
   if(mode==='city'){
-    if(romaMk&&map_o)romaMk.addTo(map_o);
     if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:10,duration:800});
   } else {
-    if(romaMk)romaMk.remove();
     if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:8,duration:800});
   }
   refreshL1();
