@@ -212,8 +212,8 @@ textarea.ft{resize:vertical;line-height:1.65;}
 <div class="page">
   <div class="stats" id="stats"></div>
   <div class="toolbar">
-    <div class="sw"><span class="si">⌕</span><input type="text" id="srch" placeholder="Cerca per nome o regione…" oninput="renderPlaces()"></div>
-    <select class="fs2" id="cflt" onchange="renderPlaces()"><option value="all">Tutte le categorie</option></select>
+    <div class="sw"><span class="si">⌕</span><input type="text" id="srch" placeholder="Cerca per nome o regione…" oninput="placesPage=1;renderPlaces()"></div>
+    <select class="fs2" id="cflt" onchange="placesPage=1;renderPlaces()"><option value="all">Tutte le categorie</option></select>
   </div>
   <div class="tw">
     <table>
@@ -222,6 +222,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
     </table>
     <div class="empty" id="empty" style="display:none"><div style="font-size:2.2rem;margin-bottom:8px;">🗺</div><p>Nessun luogo trovato</p></div>
   </div>
+  <div id="places-pager" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 0;font-size:.83rem;color:var(--g500);"></div>
 </div>
 </div>
 
@@ -235,7 +236,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <button class="btn bp" onclick="openAddCityAct()">+ Nuova attività Roma</button>
   </div>
   <div class="toolbar">
-    <div class="sw"><span class="si">⌕</span><input type="text" id="ca-srch" placeholder="Cerca per nome o regione…" oninput="renderCityActs()"></div>
+    <div class="sw"><span class="si">⌕</span><input type="text" id="ca-srch" placeholder="Cerca per nome o regione…" oninput="cityActsPage=1;renderCityActs()"></div>
   </div>
   <div class="tw">
     <table>
@@ -244,6 +245,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
     </table>
     <div class="empty" id="empty-ca" style="display:none"><div style="font-size:2.2rem;margin-bottom:8px;">🏙</div><p>Nessuna attività Roma. Aggiungine una!</p></div>
   </div>
+  <div id="ca-pager" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 0;font-size:.83rem;color:var(--g500);"></div>
 </div>
 </div>
 
@@ -693,6 +695,7 @@ var editPId=null, editCId=null, editAId=null, editCityActId=null;
 var editPTId=null, editETId=null, editESTId=null;
 var delId=null, delType=null, delParent=null;
 var expId=null;
+var placesPage=1, cityActsPage=1, PAGE_SIZE=10;
 var coverData='', galleryData=[];
 var cityActCoverData='', cityActGalleryData=[];
 
@@ -1239,10 +1242,16 @@ function renderPlaces(){
     return (cf==='all'||p.placeTypeId==cf)&&(!q||(p.name||'').toLowerCase().indexOf(q)>=0||(p.region||'').toLowerCase().indexOf(q)>=0);
   });
   var tb=document.getElementById('tbody');
+  var pager=document.getElementById('places-pager');
   document.getElementById('empty').style.display=filtered.length?'none':'block';
-  if(!filtered.length){tb.innerHTML='';return;}
+  if(!filtered.length){tb.innerHTML='';if(pager)pager.innerHTML='';return;}
+  var totalPages=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
+  if(placesPage>totalPages)placesPage=totalPages;
+  if(placesPage<1)placesPage=1;
+  var start=(placesPage-1)*PAGE_SIZE, end=start+PAGE_SIZE;
+  var paged=filtered.slice(start,end);
   var rows='';
-  filtered.forEach(function(p){
+  paged.forEach(function(p){
     var c=placeTypeOf(p.placeTypeId), n=(p.activities||[]).length, ex=expId===p.id;
     var thHtml=p.coverPhoto?'<img class="thimg" src="'+p.coverPhoto+'" alt="">':'<div class="the">📷</div>';
     var expContent='';
@@ -1288,6 +1297,13 @@ function renderPlaces(){
     }
   });
   tb.innerHTML=rows;
+  if(pager){
+    if(totalPages<=1){pager.innerHTML='';} else {
+      pager.innerHTML='<button class="btn bs sm" onclick="placesPage--;renderPlaces()" '+(placesPage<=1?'disabled':'')+'>&#8592;</button>'
+        +'<span style="min-width:80px;text-align:center;">'+placesPage+' / '+totalPages+'</span>'
+        +'<button class="btn bs sm" onclick="placesPage++;renderPlaces()" '+(placesPage>=totalPages?'disabled':'')+'>&#8594;</button>';
+    }
+  }
 }
 
 function toggleExp(id){ expId=expId===id?null:id; renderPlaces(); }
@@ -2299,11 +2315,17 @@ function renderCityActs(){
   });
   var tb=document.getElementById('ca-tbody');
   var em=document.getElementById('empty-ca');
+  var pager=document.getElementById('ca-pager');
   if(!tb)return;
   em.style.display=filtered.length?'none':'block';
-  if(!filtered.length){tb.innerHTML='';return;}
+  if(!filtered.length){tb.innerHTML='';if(pager)pager.innerHTML='';return;}
+  var totalPages=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
+  if(cityActsPage>totalPages)cityActsPage=totalPages;
+  if(cityActsPage<1)cityActsPage=1;
+  var start=(cityActsPage-1)*PAGE_SIZE, end=start+PAGE_SIZE;
+  var paged=filtered.slice(start,end);
   var rows='';
-  filtered.forEach(function(a){
+  paged.forEach(function(a){
     var et=(expTypes||[]).find(function(x){return x.id===a.experienceTypeId;})||null;
     var est=(expSubtypes||[]).find(function(x){return x.id===a.experienceSubtypeId;})||null;
     var thHtml=a.coverPhoto?'<img class="thimg" src="'+a.coverPhoto+'" alt="">':'<div class="the">📷</div>';
@@ -2322,6 +2344,13 @@ function renderCityActs(){
       +'</div></td></tr>';
   });
   tb.innerHTML=rows;
+  if(pager){
+    if(totalPages<=1){pager.innerHTML='';} else {
+      pager.innerHTML='<button class="btn bs sm" onclick="cityActsPage--;renderCityActs()" '+(cityActsPage<=1?'disabled':'')+'>&#8592;</button>'
+        +'<span style="min-width:80px;text-align:center;">'+cityActsPage+' / '+totalPages+'</span>'
+        +'<button class="btn bs sm" onclick="cityActsPage++;renderCityActs()" '+(cityActsPage>=totalPages?'disabled':'')+'>&#8594;</button>';
+    }
+  }
 }
 
 function openEditCityAct(id){
