@@ -534,7 +534,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #region-page{position:fixed;inset:0;z-index:600;background:#fafaf8;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:opacity .35s;}
 #region-page.fade-out{opacity:0;pointer-events:none;}
 #region-page.gone{display:none;}
-.rp-header{padding:calc(env(safe-area-inset-top,0px)+32px) 20px 20px;text-align:center;}
+.rp-header{padding:calc(env(safe-area-inset-top,0px)+32px) 16px 20px;text-align:center;}
 .rp-title{font-size:1.4rem;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:6px;}
 .rp-sub{font-size:.86rem;color:var(--g500);line-height:1.5;}
 .rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px calc(env(safe-area-inset-bottom,0px)+36px);}
@@ -548,8 +548,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .rp-card-sub{font-size:.72rem;color:rgba(255,255,255,.78);margin-bottom:10px;}
 .rp-card-btn{display:inline-flex;align-items:center;background:#dc6b2f;color:#fff;font-family:var(--f);font-size:.78rem;font-weight:700;padding:7px 14px;border-radius:100px;border:none;cursor:pointer;}
 .rp-card-locked{cursor:default;}
-.rp-card-locked .rp-card-bg{filter:saturate(.35);}
-.rp-card-locked .rp-card-ov{background:rgba(0,0,0,.55);}
+.rp-card-locked .rp-card-ov{background:rgba(0,0,0,.38);}
 .rp-lock-ico{font-size:1rem;margin-bottom:5px;}
 .rp-card-locked .rp-card-name{font-size:.9rem;}
 .rp-soon-badge{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.85);padding:2px 8px;border-radius:100px;}
@@ -557,7 +556,18 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .region-pill{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);border-radius:100px;padding:3px 9px 3px 7px;display:flex;align-items:center;gap:4px;cursor:pointer;transition:background .12s;margin-left:2px;}
 .region-pill:active{background:rgba(22,163,74,.2);}
 .region-pill-name{font-size:.7rem;font-weight:700;color:#16a34a;letter-spacing:.01em;}
-.region-pill-arrow{font-size:.58rem;color:#16a34a;opacity:.7;}</style>
+.region-pill-arrow{font-size:.58rem;color:#16a34a;opacity:.7;}
+#topbar-row2{display:none;justify-content:center;pointer-events:none;}
+#topbar-row2 .region-pill{pointer-events:all;padding:2px 8px 2px 6px;}
+#topbar-row2 .region-pill-name{font-size:.625rem;}
+@media(max-width:767px){
+  .brand-pill .region-pill{display:none;}
+  #topbar-row2{display:flex;}
+}
+@media(min-width:768px){
+  .rp-header{max-width:480px;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px;}
+  .rp-grid{max-width:480px;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px;}
+}</style>
 </head>
 <body>
 
@@ -597,7 +607,7 @@ lottie.loadAnimation({
       </div>
     </div>
     <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background:linear-gradient(135deg,#92400e,#b45309);"></div>
+      <div class="rp-card-bg" style="background:#c8d4b8;background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
         <div class="rp-lock-ico">🔒</div>
@@ -606,7 +616,7 @@ lottie.loadAnimation({
       </div>
     </div>
     <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background:linear-gradient(135deg,#0369a1,#1e40af);"></div>
+      <div class="rp-card-bg" style="background:#b8c8d4;background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
         <div class="rp-lock-ico">🔒</div>
@@ -615,7 +625,7 @@ lottie.loadAnimation({
       </div>
     </div>
     <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background:linear-gradient(135deg,#15803d,#166534);"></div>
+      <div class="rp-card-bg" style="background:#d4c8b8;background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
         <div class="rp-lock-ico">🔒</div>
@@ -624,7 +634,7 @@ lottie.loadAnimation({
       </div>
     </div>
     <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background:linear-gradient(135deg,#1e3a8a,#312e81);"></div>
+      <div class="rp-card-bg" style="background:#c8d4c0;background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
         <div class="rp-lock-ico">🔒</div>
@@ -669,6 +679,12 @@ lottie.loadAnimation({
         <div class="filter-dot" id="filter-dot"></div>
       </button>
       <button class="fav-btn" id="fav-btn" onclick="openFavPage()"><i class="ti ti-bookmark"></i></button>
+    </div>
+  </div>
+  <div id="topbar-row2">
+    <div class="region-pill" id="region-pill-2" onclick="showRegionPage()">
+      <span class="region-pill-name" id="region-pill-name-2">Lazio</span>
+      <span class="region-pill-arrow">▾</span>
     </div>
   </div>
 </div>
@@ -2843,10 +2859,12 @@ function selectRegion(regionId){
   hideRegionPage(function(){showOnboarding();});
 }
 function updateRegionPill(regionId){
-  var el=document.getElementById('region-pill-name');
-  if(!el)return;
   var names={lazio:'Lazio',toscana:'Toscana',campania:'Campania',umbria:'Umbria',abruzzo:'Abruzzo'};
-  el.textContent=names[regionId]||(regionId.charAt(0).toUpperCase()+regionId.slice(1));
+  var label=names[regionId]||(regionId.charAt(0).toUpperCase()+regionId.slice(1));
+  var el=document.getElementById('region-pill-name');
+  if(el)el.textContent=label;
+  var el2=document.getElementById('region-pill-name-2');
+  if(el2)el2.textContent=label;
 }
 function showRegionToast(){
   showToast(t('rp_soon_toast'));
