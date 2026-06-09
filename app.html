@@ -1173,10 +1173,10 @@ function translateSpec(text){
 
 /* ═══ STATE ═══ */
 var map_o,userMk;
-var activeFilter='all',activeSubtype=null,activeExpType=null,level=1,activePId=null;
+var activeFilter='all',activeSubtype=null,level=1,activePId=null;
 var activeHiddenFilter='all';
 var activeVibes=[];
-var pendingFilter='all',pendingSubtype=null,pendingExpType=null,pendingHiddenFilter='all',pendingVibes=[];
+var pendingFilter='all',pendingSubtype=null,pendingHiddenFilter='all',pendingVibes=[];
 var l1Mk={},l2Mk=[];
 var favs=new Set();
 var favActs=new Set();
@@ -2064,7 +2064,7 @@ function buildFilterCats(){
       var subs=(DATA.expSubtypes||[]).filter(function(s){return s.experienceTypeId===c.id;});
       var cname=(lang==='en'&&c.nameEn?c.nameEn:c.name);
       if(subs.length>0){
-        var parentSel=pendingExpType==c.id||subs.some(function(s){return s.id===pendingSubtype;});
+        var parentSel=pendingFilter==c.id||subs.some(function(s){return s.id===pendingSubtype;});
         h+='<div>'
           +'<button class="fp-acc-header'+(parentSel?' selected':'')+'" onclick="selExpType(\''+c.id+'\')">'
           +'<div class="fp-cat-dot" style="background:'+c.color+';flex-shrink:0;"></div>'
@@ -2081,7 +2081,7 @@ function buildFilterCats(){
           }).join('')
           +'</div></div>';
       } else {
-        h+='<button class="fp-cat-btn'+(pendingExpType==c.id?' selected':'')+'" onclick="selExpType(\''+c.id+'\')">'
+        h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selExpType(\''+c.id+'\')">'
           +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
           +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+cname+'</div>'
           +'</button>';
@@ -2103,8 +2103,8 @@ function buildFilterCats(){
     if(pendingSubtype!==null){
       var sub=DATA.expSubtypes.find(function(s){return s.id===pendingSubtype;});
       if(sub)openId='acc-'+sub.experienceTypeId;
-    } else if(pendingExpType!==null){
-      openId='acc-'+pendingExpType;
+    } else if(pendingFilter!=='all'){
+      openId='acc-'+pendingFilter;
     }
     if(openId){
       var body=document.getElementById(openId);
@@ -2128,13 +2128,12 @@ function toggleAcc(id){
 }
 function selSubtype(id){
   pendingSubtype=id;
-  pendingExpType=null;
   pendingFilter='all';
   buildFilterCats();
 }
 function updateFilterDot(){
   var dot=document.getElementById('filter-dot');
-  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||activeExpType!==null||mapMode!=='outside'||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
+  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||mapMode!=='outside'||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
 }
 function buildHiddenFilter(){
   var hf=pendingHiddenFilter;
@@ -2166,7 +2165,7 @@ function selHiddenFilter(lv){
   buildHiddenFilter();
 }
 function openFilterPopup(){
-  pendingFilter=activeFilter; pendingSubtype=activeSubtype; pendingExpType=activeExpType;
+  pendingFilter=activeFilter; pendingSubtype=activeSubtype;
   pendingHiddenFilter=activeHiddenFilter; pendingVibes=activeVibes.slice();
   var fpFuori=document.getElementById('fp-btn-fuori');
   var fpRoma=document.getElementById('fp-btn-roma');
@@ -2187,15 +2186,15 @@ function closeFilterPopup(){
   filterOpen=false;
 }
 function applyFilterPopup(){
-  activeFilter=pendingFilter; activeSubtype=pendingSubtype; activeExpType=pendingExpType;
+  activeFilter=pendingFilter; activeSubtype=pendingSubtype;
   activeHiddenFilter=pendingHiddenFilter; activeVibes=pendingVibes.slice();
   closeFilterPopup();
   updateFilterDot();
   refreshL1();
 }
 function clearAllFilters(){
-  pendingFilter='all'; pendingSubtype=null; pendingExpType=null; pendingHiddenFilter='all'; pendingVibes=[];
-  activeFilter='all'; activeSubtype=null; activeExpType=null; activeHiddenFilter='all'; activeVibes=[];
+  pendingFilter='all'; pendingSubtype=null; pendingHiddenFilter='all'; pendingVibes=[];
+  activeFilter='all'; activeSubtype=null; activeHiddenFilter='all'; activeVibes=[];
   buildFilterCats();
   buildHiddenFilter();
   refreshVibeButtons();
@@ -2206,20 +2205,18 @@ function clearAllFilters(){
 function selCat(id){
   pendingFilter=id;
   pendingSubtype=null;
-  pendingExpType=null;
   buildFilterCats();
 }
 function selExpType(id){
-  pendingExpType=id;
+  pendingFilter=id;
   pendingSubtype=null;
-  pendingFilter='all';
   toggleAcc('acc-'+id);
   buildFilterCats();
 }
 function setMapModePopup(mode){
   mapMode=mode;
-  activeFilter='all'; activeSubtype=null; activeExpType=null; activeHiddenFilter='all'; activeVibes=[];
-  pendingFilter='all'; pendingSubtype=null; pendingExpType=null; pendingHiddenFilter='all'; pendingVibes=[];
+  activeFilter='all'; activeSubtype=null; activeHiddenFilter='all'; activeVibes=[];
+  pendingFilter='all'; pendingSubtype=null; pendingHiddenFilter='all'; pendingVibes=[];
   var fpFuori=document.getElementById('fp-btn-fuori');
   var fpRoma=document.getElementById('fp-btn-roma');
   if(fpFuori){
@@ -2281,8 +2278,8 @@ function refreshVibeButtons(){
   });
 }
 function cityActMatchFn(a){
-  if(activeSubtype!==null)return a.experienceSubtypeId===activeSubtype;
-  if(activeExpType!==null)return a.experienceTypeId===activeExpType;
+  if(activeSubtype!==null)return a.experienceSubtypeId===parseInt(activeSubtype);
+  if(activeFilter!=='all')return a.experienceTypeId===parseInt(activeFilter);
   return true;
 }
 function refreshL1(){
