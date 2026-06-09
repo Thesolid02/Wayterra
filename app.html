@@ -1489,7 +1489,7 @@ function openActPopup(actId, placeId, triggerEl){
       +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
       +(actDesc?'<div class="act-popup-desc" id="act-popup-desc-el"></div>':'')
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+actSecret+'</p></div>':'')
-      +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
+      +(a.specs&&a.specs.length?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:6px;">'+(lang==='en'?'Specs':'Specifiche')+'</div><div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
       +(_actGallery.length?'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:1fr;margin-bottom:12px;">'
         +_actGallery.map(function(url,i){
           var isVid=isVideo(url);
@@ -1968,6 +1968,9 @@ function showL2(place){
       .addTo(map_o);
     l2Mk.push(m);
   });
+  var _l2Bounds=new mapboxgl.LngLatBounds();
+  (place.activities||[]).forEach(function(a){if(a.lat&&a.lng)_l2Bounds.extend([a.lng,a.lat]);});
+  if(!_l2Bounds.isEmpty())map_o.fitBounds(_l2Bounds,{padding:100,maxZoom:13,duration:700});
   DATA.places.forEach(function(nearby){
     if(nearby.id===place.id)return;
     if(haversine(place.lat,place.lng,nearby.lat,nearby.lng)>20)return;
@@ -1983,9 +1986,6 @@ function showL2(place){
       .addTo(map_o);
     l2Mk.push(nm);
   });
-  var _l2Bounds=new mapboxgl.LngLatBounds();
-  (place.activities||[]).forEach(function(a){if(a.lat&&a.lng)_l2Bounds.extend([a.lng,a.lat]);});
-  if(!_l2Bounds.isEmpty())map_o.fitBounds(_l2Bounds,{padding:100,maxZoom:13,duration:700});
 }
 
 function clearL2(){l2Mk.forEach(function(m){m.remove();});l2Mk.length=0;closeActMapPopup();}
