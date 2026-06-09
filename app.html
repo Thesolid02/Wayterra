@@ -2354,16 +2354,15 @@ function refreshL1(){
 
 /* ═══ LEVEL TRANSITIONS ═══ */
 function handleL1Click(place){
-  activePId=place.id;level=2;currentPlace=place;
-  closeFilterPopup();closeBubble();
-  hideModeToggle();
-  dimL1(place.id);
-  showL2(place);
+  currentPlace=place;
+  activePId=place.id;
+  level=2;
   map_o.flyTo({center:[place.lng,place.lat],zoom:13,duration:600});
   document.getElementById('lv2-bar').style.display='flex';
   document.getElementById('lv2-label').textContent=place.premium&&!unlocked?t('premium_name'):place.name;
   setTimeout(function(){
-    if(window.innerWidth<768){showBottomCard(place);}else{openDetail();}
+    if(window.innerWidth<768){showBottomCard(place);}else{openDetail(place);}
+    showL2(place);
   },500);
 }
 function exitL2(){
@@ -2485,7 +2484,6 @@ function positionBubble(p){
 }
 function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
 function showBottomCard(p){
-  console.log('showBubble/showBottomCard chiamata per:',p.name);
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
   var imgWrap=document.getElementById('bc-img-wrap');
@@ -3028,8 +3026,6 @@ function updateRegionPageLang(){
 
 function bootApp(d){
   DATA=d;
-  console.log('cityActivities:', DATA.cityActivities ? DATA.cityActivities.length : 'non esiste');
-  console.log('activities totali:', DATA.places.reduce(function(acc,p){return acc+(p.activities||[]).length;},0));
   lang=localStorage.getItem(K.LANG)||'it';
   unlocked=checkUnlock();
   loadFavs();
