@@ -2354,7 +2354,6 @@ function refreshL1(){
 
 /* ═══ LEVEL TRANSITIONS ═══ */
 function handleL1Click(place){
-  console.log('handleL1Click:',place.name,'premium:',place.premium,'secret:',place.secret);
   activePId=place.id;level=2;currentPlace=place;
   closeFilterPopup();closeBubble();
   hideModeToggle();
@@ -2486,6 +2485,7 @@ function positionBubble(p){
 }
 function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
 function showBottomCard(p){
+  console.log('showBubble/showBottomCard chiamata per:',p.name);
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
   var imgWrap=document.getElementById('bc-img-wrap');
@@ -2586,7 +2586,6 @@ function openDetail(){
   if(!currentPlace||!hasDetail(currentPlace))return;
   if(currentPlace.premium&&!unlocked){showPW();return;}
   var p=currentPlace;
-  console.log('openDetail place:',p.name,'secret:',p.secret,'secretEn:',p.secretEn);
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
 
