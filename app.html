@@ -1492,7 +1492,6 @@ function openActPopup(actId, placeId, triggerEl){
       +((a.maps||a.bookingUrl)?'<div style="display:flex;gap:8px;">'+(a.maps?'<button class="act-popup-maps-btn" style="flex:1;" onclick="window.open(\''+a.maps+'\',\'_blank\')">'+t('maps')+'</button>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
     if(actDesc) renderExpandableText(actDesc,'act-popup-desc-el',200);
     document.getElementById('act-popup').classList.add('show');
-    hideModeToggle();
   }
 }
 function closeInlineBubble(){
@@ -1518,7 +1517,7 @@ function toggleActGroup(typeId){
 }
 function closeActPopup(){
   document.getElementById('act-popup').classList.remove('show');
-  showModeToggle();
+  if(level===1)showModeToggle();
 }
 
 function openBooking(url){if(url.startsWith('tel:')){window.location.href=url;}else{window.open(url,'_blank');}}
@@ -2014,7 +2013,7 @@ function showActBubble(a, latlng){
 }
 function closeActMapPopup(){
   document.getElementById('act-map-popup').classList.remove('show');
-  showModeToggle();
+  if(level===1)showModeToggle();
 }
 
 
@@ -2303,6 +2302,7 @@ function refreshL1(){
 function handleL1Click(place){
   activePId=place.id;level=2;currentPlace=place;
   closeFilterPopup();closeBubble();
+  hideModeToggle();
   dimL1(place.id);
   showL2(place);
   map_o.flyTo({center:[place.lng,place.lat],zoom:13,duration:600});
@@ -2321,6 +2321,7 @@ function exitL2(){
   }
   closeBubble();clearL2();restoreL1();
   document.getElementById('lv2-bar').style.display='none';
+  showModeToggle();
   map_o.flyTo({center:[12.8,41.8],zoom:8,duration:700});
 }
 
@@ -2474,13 +2475,11 @@ function showBottomCard(p){
     openDetail();
   };
   card.classList.add('show');
-  hideModeToggle();
 }
 function closeBottomCard(){
   var vibeF=document.getElementById('bc-vibe-fumetto');
   if(vibeF)vibeF.innerHTML='';
   document.getElementById('bottom-card').classList.remove('show');
-  showModeToggle();
 }
 function showActIconTooltip(el, names){
   var existing=document.getElementById('act-icon-tooltip');
@@ -2525,7 +2524,6 @@ function showActBubbleBottomCard(a, placeId){
     openActPopup(a.id,placeId,null);
   };
   card.classList.add('show');
-  hideModeToggle();
 }
 
 /* ═══ DETAIL PAGE ═══ */
@@ -2665,12 +2663,10 @@ function openDetail(){
     setTimeout(function(){map_o.resize();},320);
   }
   document.getElementById('detail-page').classList.add('show');
-  hideModeToggle();
 }
 function closeDetail(){
   document.getElementById('detail-page').classList.remove('show');
   closeInlineBubble();
-  showModeToggle();
   if(window.innerWidth>=768){
     document.getElementById('map').classList.remove('panel-open');
     setTimeout(function(){map_o.resize();},320);
