@@ -2357,6 +2357,7 @@ function handleL1Click(place){
   currentPlace=place;
   activePId=place.id;
   level=2;
+  hideModeToggle();
   map_o.flyTo({center:[place.lng,place.lat],zoom:13,duration:600});
   document.getElementById('lv2-bar').style.display='flex';
   document.getElementById('lv2-label').textContent=place.premium&&!unlocked?t('premium_name'):place.name;
