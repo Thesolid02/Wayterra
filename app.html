@@ -2354,6 +2354,7 @@ function refreshL1(){
 
 /* ═══ LEVEL TRANSITIONS ═══ */
 function handleL1Click(place){
+  console.log('handleL1Click:',place.name,'premium:',place.premium,'secret:',place.secret);
   activePId=place.id;level=2;currentPlace=place;
   closeFilterPopup();closeBubble();
   hideModeToggle();
