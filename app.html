@@ -292,6 +292,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-secret p{font-size:.82rem;color:var(--g700);line-height:1.65;font-style:italic;}
 .dp-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;border-top:0.5px solid #e5e7eb;padding-top:14px;margin-top:14px;}
 .dp-section-lbl{font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:6px;margin-top:12px;}
+#detail-page .dp-pills{border-top:none;padding-top:0;margin-top:0;}
 .dp-vibe{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
 .dp-vibe-chip{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;background:#f3f4f6;border:1.5px solid #e5e7eb;font-size:.78rem;font-weight:600;color:var(--g700);}
 .dp-pill{font-size:.71rem;font-weight:500;padding:5px 11px;border-radius:100px;border:1px solid var(--g200);background:var(--w);color:var(--g700);}
@@ -871,8 +872,10 @@ lottie.loadAnimation({
       <div class="dp-secret-lbl">🤫 <span data-t="secret_lbl">Il segreto locale</span></div>
       <p id="dp-secret"></p>
     </div>
+    <div id="dp-sep-vibe" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div>
     <div id="dp-vibe-lbl" class="dp-section-lbl" style="display:none;"></div>
     <div id="dp-vibe" class="dp-vibe"></div>
+    <div id="dp-sep-pills" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div>
     <div id="dp-pills-lbl" class="dp-section-lbl" style="display:none;"></div>
     <div class="dp-pills" id="dp-pills"></div>
     <div id="dp-gallery-wrap"></div>
@@ -2610,10 +2613,14 @@ function openDetail(){
   if(dpVibeEl){dpVibeEl.innerHTML=_hasVibe?p.vibe.map(function(v){return'<div class="dp-vibe-chip">'+(_dpVibeMap[v]||'✨')+' '+(_dpVibeNames[v]||v)+'</div>';}).join(''):'';}
   var dpVibeLbl=document.getElementById('dp-vibe-lbl');
   if(dpVibeLbl){dpVibeLbl.style.display=_hasVibe?'':'none';dpVibeLbl.textContent=t('vibe');}
+  var dpSepVibe=document.getElementById('dp-sep-vibe');
+  if(dpSepVibe)dpSepVibe.style.display=_hasVibe?'':'none';
   var pills=(lang==='en'&&p.pillsEn&&p.pillsEn.length>0)?p.pillsEn:(p.pills||[]);
   document.getElementById('dp-pills').innerHTML=pills.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('');
   var dpPillsLbl=document.getElementById('dp-pills-lbl');
   if(dpPillsLbl){dpPillsLbl.style.display=pills.length?'':'none';dpPillsLbl.textContent=t('useful_info');}
+  var dpSepPills=document.getElementById('dp-sep-pills');
+  if(dpSepPills)dpSepPills.style.display=pills.length?'':'none';
 
   // gallery
   var gallWrap=document.getElementById('dp-gallery-wrap');
