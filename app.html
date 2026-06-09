@@ -2585,6 +2585,7 @@ function openDetail(){
   if(!currentPlace||!hasDetail(currentPlace))return;
   if(currentPlace.premium&&!unlocked){showPW();return;}
   var p=currentPlace;
+  console.log('openDetail place:',p.name,'secret:',p.secret,'secretEn:',p.secretEn);
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
 
