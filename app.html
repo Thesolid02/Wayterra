@@ -514,8 +514,9 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #search-clear{background:none;border:none;cursor:pointer;color:var(--g400);font-size:.8rem;
   padding:2px;line-height:1;flex-shrink:0;display:none;}
 #search-clear.show{display:block;}
-#search-results{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+#search-results{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   padding-bottom:calc(env(safe-area-inset-bottom,0px)+8px);}
+#search-head{flex-shrink:0;}
 .sr-section{font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   color:var(--g400);padding:10px 16px 4px;}
 .sr-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .1s;}
@@ -1172,10 +1173,10 @@ function translateSpec(text){
 
 /* ═══ STATE ═══ */
 var map_o,userMk;
-var activeFilter='all',activeSubtype=null,level=1,activePId=null;
+var activeFilter='all',activeSubtype=null,activeExpType=null,level=1,activePId=null;
 var activeHiddenFilter='all';
 var activeVibes=[];
-var pendingFilter='all',pendingSubtype=null,pendingHiddenFilter='all',pendingVibes=[];
+var pendingFilter='all',pendingSubtype=null,pendingExpType=null,pendingHiddenFilter='all',pendingVibes=[];
 var l1Mk={},l2Mk=[];
 var favs=new Set();
 var favActs=new Set();
@@ -2063,9 +2064,9 @@ function buildFilterCats(){
       var subs=(DATA.expSubtypes||[]).filter(function(s){return s.experienceTypeId===c.id;});
       var cname=(lang==='en'&&c.nameEn?c.nameEn:c.name);
       if(subs.length>0){
-        var parentSel=pendingFilter==c.id||subs.some(function(s){return s.id===pendingSubtype;});
+        var parentSel=pendingExpType==c.id||subs.some(function(s){return s.id===pendingSubtype;});
         h+='<div>'
-          +'<button class="fp-acc-header'+(parentSel?' selected':'')+'" onclick="toggleAcc(\'acc-'+c.id+'\')">'
+          +'<button class="fp-acc-header'+(parentSel?' selected':'')+'" onclick="selExpType(\''+c.id+'\')">'
           +'<div class="fp-cat-dot" style="background:'+c.color+';flex-shrink:0;"></div>'
           +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+cname+'</div>'
           +'<i class="ti ti-chevron-down fp-acc-chevron" id="chev-'+c.id+'"></i>'
@@ -2080,7 +2081,7 @@ function buildFilterCats(){
           }).join('')
           +'</div></div>';
       } else {
-        h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selCat(\''+c.id+'\')">'
+        h+='<button class="fp-cat-btn'+(pendingExpType==c.id?' selected':'')+'" onclick="selExpType(\''+c.id+'\')">'
           +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
           +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+cname+'</div>'
           +'</button>';
@@ -2102,8 +2103,8 @@ function buildFilterCats(){
     if(pendingSubtype!==null){
       var sub=DATA.expSubtypes.find(function(s){return s.id===pendingSubtype;});
       if(sub)openId='acc-'+sub.experienceTypeId;
-    } else if(pendingFilter!=='all'){
-      openId='acc-'+pendingFilter;
+    } else if(pendingExpType!==null){
+      openId='acc-'+pendingExpType;
     }
     if(openId){
       var body=document.getElementById(openId);
@@ -2127,12 +2128,13 @@ function toggleAcc(id){
 }
 function selSubtype(id){
   pendingSubtype=id;
+  pendingExpType=null;
   pendingFilter='all';
   buildFilterCats();
 }
 function updateFilterDot(){
   var dot=document.getElementById('filter-dot');
-  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||mapMode!=='outside'||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
+  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||activeExpType!==null||mapMode!=='outside'||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
 }
 function buildHiddenFilter(){
   var hf=pendingHiddenFilter;
@@ -2164,7 +2166,7 @@ function selHiddenFilter(lv){
   buildHiddenFilter();
 }
 function openFilterPopup(){
-  pendingFilter=activeFilter; pendingSubtype=activeSubtype;
+  pendingFilter=activeFilter; pendingSubtype=activeSubtype; pendingExpType=activeExpType;
   pendingHiddenFilter=activeHiddenFilter; pendingVibes=activeVibes.slice();
   var fpFuori=document.getElementById('fp-btn-fuori');
   var fpRoma=document.getElementById('fp-btn-roma');
@@ -2185,15 +2187,15 @@ function closeFilterPopup(){
   filterOpen=false;
 }
 function applyFilterPopup(){
-  activeFilter=pendingFilter; activeSubtype=pendingSubtype;
+  activeFilter=pendingFilter; activeSubtype=pendingSubtype; activeExpType=pendingExpType;
   activeHiddenFilter=pendingHiddenFilter; activeVibes=pendingVibes.slice();
   closeFilterPopup();
   updateFilterDot();
   refreshL1();
 }
 function clearAllFilters(){
-  pendingFilter='all'; pendingSubtype=null; pendingHiddenFilter='all'; pendingVibes=[];
-  activeFilter='all'; activeSubtype=null; activeHiddenFilter='all'; activeVibes=[];
+  pendingFilter='all'; pendingSubtype=null; pendingExpType=null; pendingHiddenFilter='all'; pendingVibes=[];
+  activeFilter='all'; activeSubtype=null; activeExpType=null; activeHiddenFilter='all'; activeVibes=[];
   buildFilterCats();
   buildHiddenFilter();
   refreshVibeButtons();
@@ -2204,12 +2206,20 @@ function clearAllFilters(){
 function selCat(id){
   pendingFilter=id;
   pendingSubtype=null;
+  pendingExpType=null;
+  buildFilterCats();
+}
+function selExpType(id){
+  pendingExpType=id;
+  pendingSubtype=null;
+  pendingFilter='all';
+  toggleAcc('acc-'+id);
   buildFilterCats();
 }
 function setMapModePopup(mode){
   mapMode=mode;
-  activeFilter='all'; activeSubtype=null; activeHiddenFilter='all'; activeVibes=[];
-  pendingFilter='all'; pendingSubtype=null; pendingHiddenFilter='all'; pendingVibes=[];
+  activeFilter='all'; activeSubtype=null; activeExpType=null; activeHiddenFilter='all'; activeVibes=[];
+  pendingFilter='all'; pendingSubtype=null; pendingExpType=null; pendingHiddenFilter='all'; pendingVibes=[];
   var fpFuori=document.getElementById('fp-btn-fuori');
   var fpRoma=document.getElementById('fp-btn-roma');
   if(fpFuori){
@@ -2270,26 +2280,18 @@ function refreshVibeButtons(){
     btn.classList.toggle('selected',pendingVibes.indexOf(btn.dataset.vibe)>=0);
   });
 }
+function cityActMatchFn(a){
+  if(activeSubtype!==null)return a.experienceSubtypeId===activeSubtype;
+  if(activeExpType!==null)return a.experienceTypeId===activeExpType;
+  return true;
+}
 function refreshL1(){
   if(mapMode==='city'){
     DATA.places.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
     clearCityActivityMarkers();
     (DATA.cityActivities||[]).forEach(function(a){
-      var catShow=activeSubtype!==null?a.experienceSubtypeId===activeSubtype
-               :activeFilter==='all'||a.experienceTypeId===parseInt(activeFilter);
-      if(catShow&&hiddenMatchFn(a.hiddenScore)&&vibeMatchFn(a))addCityActivityMarker(a);
+      if(cityActMatchFn(a)&&hiddenMatchFn(a.hiddenScore)&&vibeMatchFn(a))addCityActivityMarker(a);
     });
-    if(activeSubtype!==null||activeFilter!=='all'||activeHiddenFilter!=='all'||activeVibes.length>0){
-      var vis=(DATA.cityActivities||[]).filter(function(a){
-        var catShow=activeSubtype!==null?a.experienceSubtypeId===activeSubtype:activeFilter==='all'||a.experienceTypeId===parseInt(activeFilter);
-        return catShow&&hiddenMatchFn(a.hiddenScore)&&vibeMatchFn(a)&&a.lat&&a.lng;
-      });
-      if(vis.length){
-        var lngs=vis.map(function(a){return a.lng;});
-        var lats=vis.map(function(a){return a.lat;});
-        map_o.fitBounds([[Math.min.apply(null,lngs),Math.min.apply(null,lats)],[Math.max.apply(null,lngs),Math.max.apply(null,lats)]],{padding:60,maxZoom:14,duration:700});
-      }
-    }
     return;
   }
   clearCityActivityMarkers();
@@ -2298,14 +2300,6 @@ function refreshL1(){
     var show=(p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
     if(show)m.addTo(map_o);else m.remove();
   });
-  if(activeFilter!=='all'||activeHiddenFilter!=='all'||activeVibes.length>0){
-    var vis=DATA.places.filter(function(p){return (p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);});
-    if(vis.length){
-      var lngs=vis.map(function(p){return p.lng;});
-      var lats=vis.map(function(p){return p.lat;});
-      map_o.fitBounds([[Math.min.apply(null,lngs),Math.min.apply(null,lats)],[Math.max.apply(null,lngs),Math.max.apply(null,lats)]],{padding:60,maxZoom:13,duration:700});
-    } else map_o.flyTo({center:[12.5,41.9],zoom:9,duration:600});
-  }
 }
 
 /* ═══ LEVEL TRANSITIONS ═══ */
