@@ -1968,9 +1968,6 @@ function showL2(place){
       .addTo(map_o);
     l2Mk.push(m);
   });
-  var _l2Bounds=new mapboxgl.LngLatBounds();
-  (place.activities||[]).forEach(function(a){if(a.lat&&a.lng)_l2Bounds.extend([a.lng,a.lat]);});
-  if(!_l2Bounds.isEmpty())map_o.fitBounds(_l2Bounds,{padding:80,maxZoom:14,duration:700});
   DATA.places.forEach(function(nearby){
     if(nearby.id===place.id)return;
     if(haversine(place.lat,place.lng,nearby.lat,nearby.lng)>20)return;
@@ -1986,6 +1983,9 @@ function showL2(place){
       .addTo(map_o);
     l2Mk.push(nm);
   });
+  var _l2Bounds=new mapboxgl.LngLatBounds();
+  (place.activities||[]).forEach(function(a){if(a.lat&&a.lng)_l2Bounds.extend([a.lng,a.lat]);});
+  if(!_l2Bounds.isEmpty())map_o.fitBounds(_l2Bounds,{padding:100,maxZoom:13,duration:700});
 }
 
 function clearL2(){l2Mk.forEach(function(m){m.remove();});l2Mk.length=0;closeActMapPopup();}
