@@ -2499,6 +2499,15 @@ function showActBubbleBottomCard(a, placeId){
   document.getElementById('bc-region').textContent=p?p.name:'';
   document.getElementById('bc-acts').innerHTML='';
   document.getElementById('bc-gems').innerHTML='';
+  var _vMapA={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};
+  var _vibA=(a.vibe||[])[0];
+  var _fumettoA=document.getElementById('bc-vibe-fumetto');
+  if(_fumettoA){_fumettoA.innerHTML=_vibA
+    ?'<div class="vibe-fumetto-ball">'+(_vMapA[_vibA]||'✨')+'</div>'
+     +'<div class="vibe-fumetto-dot" style="width:10px;height:10px;"></div>'
+     +'<div class="vibe-fumetto-dot" style="width:7px;height:7px;"></div>'
+     +'<div class="vibe-fumetto-dot" style="width:5px;height:5px;"></div>'
+    :'';}
   var card=document.getElementById('bottom-card');
   card.onclick=function(e){
     currentPlace=p;
