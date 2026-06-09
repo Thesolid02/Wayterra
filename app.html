@@ -911,7 +911,7 @@ lottie.loadAnimation({
     <div class="amp-type" id="amp-type-d"></div>
     <img class="amp-img" id="amp-img-d" src="" alt="" style="display:none;">
     <div id="amp-score-d" style="display:none;"></div>
-    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div id="amp-sep-vibe-d" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-vibe-lbl-d" class="dp-section-lbl" style="display:none;"></div><div id="amp-vibe-d" class="dp-vibe"></div><div id="amp-sep-pills-d" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-pills-lbl-d" class="dp-section-lbl" style="display:none;"></div><div id="amp-pills-d"></div><div id="amp-specs-lbl-d" class="dp-section-lbl" style="display:none;"></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps-d" style="flex:1;"></button><button class="amp-maps" id="amp-book-d" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
+    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div id="amp-sep-vibe-d" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-vibe-lbl-d" class="dp-section-lbl" style="display:none;"></div><div id="amp-vibe-d" class="dp-vibe"></div><div id="amp-sep-pills-d" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-pills-lbl-d" class="dp-section-lbl" style="display:none;"></div><div id="amp-pills-d"></div><div id="amp-sep-specs-d" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-specs-lbl-d" class="dp-section-lbl" style="display:none;"></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps-d" style="flex:1;"></button><button class="amp-maps" id="amp-book-d" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
   </div>
 </div>
 
@@ -1968,6 +1968,9 @@ function showL2(place){
       .addTo(map_o);
     l2Mk.push(m);
   });
+  var _l2Bounds=new mapboxgl.LngLatBounds();
+  (place.activities||[]).forEach(function(a){if(a.lat&&a.lng)_l2Bounds.extend([a.lng,a.lat]);});
+  if(!_l2Bounds.isEmpty())map_o.fitBounds(_l2Bounds,{padding:80,maxZoom:14,duration:700});
   DATA.places.forEach(function(nearby){
     if(nearby.id===place.id)return;
     if(haversine(place.lat,place.lng,nearby.lat,nearby.lng)>20)return;
@@ -2041,6 +2044,22 @@ function showActBubble(a, latlng){
       bookBtn.onclick=function(){openBooking(a.bookingUrl);};
       bookBtn.style.display='';
     } else bookBtn.style.display='none';
+  }
+  if(!isMobile){
+    var _abGallery=(a.gallery||[]).filter(function(s){return s&&s.length>10;});
+    var _abGallEl=document.getElementById('amp-gallery-d');
+    if(_abGallEl){_abGallEl.innerHTML=_abGallery.length
+      ?'<div class="dp-gallery-lbl" style="margin-top:10px;">📷 '+(lang==='en'?'Gallery':'Galleria')+'</div>'
+        +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:1fr;margin-bottom:10px;">'
+        +_abGallery.map(function(src,i){
+          var isVid=/\.(mp4|mov|webm)$/i.test(src);
+          if(isVid){return'<div style="width:100%;aspect-ratio:1;overflow:hidden;border-radius:var(--r);cursor:pointer;position:relative;" onclick="openLightboxFromCityAct('+i+')">'
+            +'<video src="'+src+'#t=0.001" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;" preload="metadata" muted playsinline></video>'
+            +'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;"><div style="width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;"><i class="ti ti-player-play" style="font-size:14px;color:white;"></i></div></div>'
+            +'</div>';}
+          return'<img src="'+src+'" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--r);cursor:pointer;display:block;" onclick="openLightboxFromCityAct('+i+')" alt="">';
+        }).join('')+'</div>'
+      :'';}
   }
   document.getElementById('act-map-popup').classList.add('show');
   hideModeToggle();
