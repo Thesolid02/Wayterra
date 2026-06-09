@@ -68,8 +68,13 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #filter-popup{position:fixed;bottom:0;left:0;right:0;z-index:501;background:var(--w);
   border-radius:var(--rxl) var(--rxl) 0 0;
   max-height:80dvh;overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
-  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);
+  padding-bottom:0;
   transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);}
+.fp-footer{position:sticky;bottom:0;z-index:2;background:var(--w);padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;flex-direction:column;gap:6px;border-top:0.5px solid var(--g100);}
+.fp-apply-btn{width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:10px;padding:13px;font-family:var(--f);font-size:.88rem;font-weight:700;cursor:pointer;transition:opacity .12s;}
+.fp-apply-btn:active{opacity:.82;}
+.fp-clear-btn{width:100%;background:transparent;color:var(--g600);border:1.5px solid #e5e7eb;border-radius:10px;padding:12px;font-family:var(--f);font-size:.88rem;font-weight:600;cursor:pointer;transition:background .12s;}
+.fp-clear-btn:active{background:var(--g100);}
 #filter-popup.show{transform:translateY(0);transition:transform .3s cubic-bezier(.33,1,.68,1);}
 .fp-handle{width:32px;height:3px;border-radius:2px;background:var(--g300);margin:12px auto 20px;}
 .fp-header{display:none;}
@@ -738,6 +743,10 @@ lottie.loadAnimation({
     <button class="fp-vibe-btn" data-vibe="avventura" onclick="toggleVibe('avventura')"><span>🏕</span><span data-t="vibe_adventure">Avventura</span></button>
     <button class="fp-vibe-btn" data-vibe="relax" onclick="toggleVibe('relax')"><span>😌</span><span data-t="vibe_relax">Relax</span></button>
   </div>
+  <div class="fp-footer">
+    <button class="fp-apply-btn" onclick="applyFilterPopup()" data-t="apply_filter">Applica filtro</button>
+    <button class="fp-clear-btn" onclick="clearAllFilters()" data-t="clear_all">Cancella tutto</button>
+  </div>
 </div>
 
 <!-- ONBOARDING POPUP -->
@@ -957,6 +966,8 @@ var T={
     vibe_cinematic:'Cinematografico',
     vibe_adventure:'Avventura',
     vibe_relax:'Relax',
+    apply_filter:'Applica filtro',
+    clear_all:'Cancella tutto',
     discover:'Scopri il luogo →',
     unlock:'🔒 Sblocca con Premium',
     maps:'Apri in Google Maps →',
@@ -1011,6 +1022,8 @@ var T={
     vibe_cinematic:'Cinematic',
     vibe_adventure:'Adventure',
     vibe_relax:'Relax',
+    apply_filter:'Apply filter',
+    clear_all:'Clear all',
     discover:'Discover this place →',
     unlock:'🔒 Unlock with Premium',
     maps:'Open in Google Maps →',
@@ -1162,6 +1175,7 @@ var map_o,userMk;
 var activeFilter='all',activeSubtype=null,level=1,activePId=null;
 var activeHiddenFilter='all';
 var activeVibes=[];
+var pendingFilter='all',pendingSubtype=null,pendingHiddenFilter='all',pendingVibes=[];
 var l1Mk={},l2Mk=[];
 var favs=new Set();
 var favActs=new Set();
@@ -2038,7 +2052,7 @@ document.addEventListener('visibilitychange',function(){
 function buildFilterCats(){
   var el=document.getElementById('fp-cats');
   if(!el)return;
-  var allSel=activeFilter==='all'&&activeSubtype===null;
+  var allSel=pendingFilter==='all'&&pendingSubtype===null;
   var h='<button class="fp-cat-btn'+(allSel?' selected':'')+'" onclick="selCat(\'all\')">'
     +'<div class="fp-cat-dot" style="background:var(--g400);"></div>'
     +'<div class="fp-cat-name">🗺 '+t('all_places')+'</div>'
@@ -2049,7 +2063,7 @@ function buildFilterCats(){
       var subs=(DATA.expSubtypes||[]).filter(function(s){return s.experienceTypeId===c.id;});
       var cname=(lang==='en'&&c.nameEn?c.nameEn:c.name);
       if(subs.length>0){
-        var parentSel=activeFilter==c.id||subs.some(function(s){return s.id===activeSubtype;});
+        var parentSel=pendingFilter==c.id||subs.some(function(s){return s.id===pendingSubtype;});
         h+='<div>'
           +'<button class="fp-acc-header'+(parentSel?' selected':'')+'" onclick="toggleAcc(\'acc-'+c.id+'\')">'
           +'<div class="fp-cat-dot" style="background:'+c.color+';flex-shrink:0;"></div>'
@@ -2059,14 +2073,14 @@ function buildFilterCats(){
           +'<div class="fp-acc-body" id="acc-'+c.id+'">'
           +subs.map(function(s){
             var sname=lang==='en'&&s.nameEn?s.nameEn:s.name;
-            var sSel=activeSubtype===s.id;
+            var sSel=pendingSubtype===s.id;
             return'<button class="fp-subtype-pill'+(sSel?' selected':'')+'" '
               +(sSel?'style="border-color:'+c.color+';color:'+c.color+';background:'+c.color+'22;"':'')+' '
               +'onclick="selSubtype('+s.id+')">'+sname+'</button>';
           }).join('')
           +'</div></div>';
       } else {
-        h+='<button class="fp-cat-btn'+(activeFilter==c.id?' selected':'')+'" onclick="selCat(\''+c.id+'\')">'
+        h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selCat(\''+c.id+'\')">'
           +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
           +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+cname+'</div>'
           +'</button>';
@@ -2075,7 +2089,7 @@ function buildFilterCats(){
   } else {
     var typeList=DATA.placeTypes.length?DATA.placeTypes:DATA.cats;
     typeList.forEach(function(c){
-      h+='<button class="fp-cat-btn'+(activeFilter==c.id?' selected':'')+'" onclick="selCat(\''+c.id+'\')">'
+      h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selCat(\''+c.id+'\')">'
         +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
         +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+(lang==='en'&&c.nameEn?c.nameEn:c.name)+'</div>'
         +'</button>';
@@ -2085,11 +2099,11 @@ function buildFilterCats(){
   // auto-apri accordion dell'elemento attivo
   if(mapMode==='city'){
     var openId=null;
-    if(activeSubtype!==null){
-      var sub=DATA.expSubtypes.find(function(s){return s.id===activeSubtype;});
+    if(pendingSubtype!==null){
+      var sub=DATA.expSubtypes.find(function(s){return s.id===pendingSubtype;});
       if(sub)openId='acc-'+sub.experienceTypeId;
-    } else if(activeFilter!=='all'){
-      openId='acc-'+activeFilter;
+    } else if(pendingFilter!=='all'){
+      openId='acc-'+pendingFilter;
     }
     if(openId){
       var body=document.getElementById(openId);
@@ -2112,18 +2126,16 @@ function toggleAcc(id){
   if(body){body.classList.toggle('open');if(chev)chev.classList.toggle('open');}
 }
 function selSubtype(id){
-  activeSubtype=id;
-  activeFilter='all';
-  closeFilterPopup();
-  updateFilterDot();
-  refreshL1();
+  pendingSubtype=id;
+  pendingFilter='all';
+  buildFilterCats();
 }
 function updateFilterDot(){
   var dot=document.getElementById('filter-dot');
   if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||mapMode!=='outside'||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
 }
 function buildHiddenFilter(){
-  var hf=activeHiddenFilter;
+  var hf=pendingHiddenFilter;
   var d1=document.getElementById('fp-d1');
   var d2=document.getElementById('fp-d2');
   var d3=document.getElementById('fp-d3');
@@ -2148,13 +2160,12 @@ function buildHiddenFilter(){
   if(rst)rst.style.display=hf!=='all'?'block':'none';
 }
 function selHiddenFilter(lv){
-  activeHiddenFilter=lv;
+  pendingHiddenFilter=lv;
   buildHiddenFilter();
-  if(lv!=='all')closeFilterPopup();
-  updateFilterDot();
-  refreshL1();
 }
 function openFilterPopup(){
+  pendingFilter=activeFilter; pendingSubtype=activeSubtype;
+  pendingHiddenFilter=activeHiddenFilter; pendingVibes=activeVibes.slice();
   var fpFuori=document.getElementById('fp-btn-fuori');
   var fpRoma=document.getElementById('fp-btn-roma');
   if(fpFuori){
@@ -2173,19 +2184,32 @@ function closeFilterPopup(){
   document.getElementById('filter-popup').classList.remove('show');
   filterOpen=false;
 }
-function selCat(id){
-  activeFilter=id;
-  activeSubtype=null;
+function applyFilterPopup(){
+  activeFilter=pendingFilter; activeSubtype=pendingSubtype;
+  activeHiddenFilter=pendingHiddenFilter; activeVibes=pendingVibes.slice();
   closeFilterPopup();
   updateFilterDot();
   refreshL1();
 }
+function clearAllFilters(){
+  pendingFilter='all'; pendingSubtype=null; pendingHiddenFilter='all'; pendingVibes=[];
+  activeFilter='all'; activeSubtype=null; activeHiddenFilter='all'; activeVibes=[];
+  buildFilterCats();
+  buildHiddenFilter();
+  refreshVibeButtons();
+  closeFilterPopup();
+  updateFilterDot();
+  refreshL1();
+}
+function selCat(id){
+  pendingFilter=id;
+  pendingSubtype=null;
+  buildFilterCats();
+}
 function setMapModePopup(mode){
   mapMode=mode;
-  activeFilter='all';
-  activeSubtype=null;
-  activeHiddenFilter='all';
-  activeVibes=[];
+  activeFilter='all'; activeSubtype=null; activeHiddenFilter='all'; activeVibes=[];
+  pendingFilter='all'; pendingSubtype=null; pendingHiddenFilter='all'; pendingVibes=[];
   var fpFuori=document.getElementById('fp-btn-fuori');
   var fpRoma=document.getElementById('fp-btn-roma');
   if(fpFuori){
@@ -2237,17 +2261,13 @@ function vibeMatchFn(item){
   return activeVibes.some(function(av){return v.indexOf(av)>=0;});
 }
 function toggleVibe(v){
-  var idx=activeVibes.indexOf(v);
-  if(idx>=0)activeVibes.splice(idx,1);else activeVibes.push(v);
-  document.querySelectorAll('.fp-vibe-btn').forEach(function(btn){
-    btn.classList.toggle('selected',activeVibes.indexOf(btn.dataset.vibe)>=0);
-  });
-  updateFilterDot();
-  refreshL1();
+  var idx=pendingVibes.indexOf(v);
+  if(idx>=0)pendingVibes.splice(idx,1);else pendingVibes.push(v);
+  refreshVibeButtons();
 }
 function refreshVibeButtons(){
   document.querySelectorAll('.fp-vibe-btn').forEach(function(btn){
-    btn.classList.toggle('selected',activeVibes.indexOf(btn.dataset.vibe)>=0);
+    btn.classList.toggle('selected',pendingVibes.indexOf(btn.dataset.vibe)>=0);
   });
 }
 function refreshL1(){
