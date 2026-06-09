@@ -112,8 +112,16 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .fp-cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 .fp-cat-name{font-size:.88rem;font-weight:600;color:var(--g900);}
 .fp-divider{border:none;border-top:1px solid var(--g100);margin:4px 0 8px;}
-.fp-vibe-item{display:flex;align-items:center;gap:12px;padding:9px 20px;opacity:.38;}
-.fp-vibe-name{font-size:.88rem;color:var(--g500);}
+.fp-vibe-row{display:flex;flex-wrap:wrap;gap:8px;padding:4px 16px 12px;}
+.fp-vibe-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:100px;border:1.5px solid var(--g200);background:var(--g50);font-family:var(--f);font-size:.82rem;font-weight:600;color:var(--g700);cursor:pointer;transition:all .15s;}
+.fp-vibe-btn.selected{background:var(--g900);border-color:var(--g900);color:#fff;}
+/* vibe bubble on bottom card */
+.vibe-bubble-row{position:absolute;top:-44px;left:0;right:0;display:flex;gap:6px;justify-content:center;pointer-events:none;z-index:1;}
+.vibe-bbl{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,.18);animation:vbfloat 2.8s ease-in-out infinite;}
+.vibe-bbl:nth-child(2){animation-delay:.4s;}
+.vibe-bbl:nth-child(3){animation-delay:.8s;}
+.vibe-bbl:nth-child(4){animation-delay:1.2s;}
+@keyframes vbfloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 /* accordion sottocategorie */
 .fp-acc-header{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);border:none;background:none;width:100%;text-align:left;font-family:var(--f);cursor:pointer;transition:background .12s;}
 .fp-acc-header:active,.fp-acc-header.selected{background:var(--g100);}
@@ -280,6 +288,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-secret-lbl{font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#b45309;margin-bottom:3px;}
 .dp-secret p{font-size:.82rem;color:var(--g700);line-height:1.65;font-style:italic;}
 .dp-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;border-top:0.5px solid #e5e7eb;padding-top:14px;margin-top:14px;}
+.dp-vibe{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.dp-vibe-chip{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;background:#f3f4f6;border:1.5px solid #e5e7eb;font-size:.78rem;font-weight:600;color:var(--g700);}
 .dp-pill{font-size:.71rem;font-weight:500;padding:5px 11px;border-radius:100px;border:1px solid var(--g200);background:var(--w);color:var(--g700);}
 .dp-gallery{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
 .dp-gallery img{width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;border:0.5px solid var(--g200);}
@@ -437,7 +447,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 @media(hover:hover){.pin-hover-wrap:hover .pin-tooltip{display:block;}}
 .pin-hover-wrap:hover{z-index:9999 !important;}
 .pin-hover-wrap:hover .pin-tooltip{z-index:9999 !important;}
-#bottom-card{position:fixed;bottom:0;left:0;right:0;background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;border-top:0.5px solid var(--g200);padding:10px 14px 20px;z-index:300;display:none;box-shadow:0 -4px 20px rgba(0,0,0,.1);}
+#bottom-card{position:fixed;bottom:0;left:0;right:0;background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;border-top:0.5px solid var(--g200);padding:10px 14px 20px;z-index:300;display:none;box-shadow:0 -4px 20px rgba(0,0,0,.1);overflow:visible;}
 #bottom-card.show{display:block;}
 .bc-handle{width:28px;height:3px;border-radius:2px;background:var(--g300);margin:0 auto 10px;}
 .bc-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;}
@@ -723,11 +733,13 @@ lottie.loadAnimation({
   <div class="fp-hidden-sel-lbl" id="fp-hidden-sel-lbl"></div>
   <div style="text-align:center;padding-bottom:12px;"><a class="fp-reset-link" id="fp-hidden-reset" onclick="selHiddenFilter('all')" style="display:none;font-size:.75rem;color:var(--g400);text-decoration:underline;cursor:pointer;">Reset filtro</a></div>
   <hr class="fp-divider">
-  <div class="fp-section-lbl">Vibe <span class="fp-badge" data-t="soon">Presto</span></div>
-  <div class="fp-vibe-item"><span style="font-size:1rem;flex-shrink:0;">💑</span><span class="fp-vibe-name" data-t="vibe_romantic">Romantico</span></div>
-  <div class="fp-vibe-item"><span style="font-size:1rem;flex-shrink:0;">🎬</span><span class="fp-vibe-name" data-t="vibe_cinematic">Cinematografico</span></div>
-  <div class="fp-vibe-item"><span style="font-size:1rem;flex-shrink:0;">🏕</span><span class="fp-vibe-name" data-t="vibe_adventure">Avventura</span></div>
-  <div class="fp-vibe-item"><span style="font-size:1rem;flex-shrink:0;">😌</span><span class="fp-vibe-name" data-t="vibe_relax">Relax</span></div>
+  <div class="fp-section-lbl" data-t="vibe">Vibe</div>
+  <div class="fp-vibe-row">
+    <button class="fp-vibe-btn" data-vibe="romantico" onclick="toggleVibe('romantico')"><span>💑</span><span data-t="vibe_romantic">Romantico</span></button>
+    <button class="fp-vibe-btn" data-vibe="cinematografico" onclick="toggleVibe('cinematografico')"><span>🎬</span><span data-t="vibe_cinematic">Cinematografico</span></button>
+    <button class="fp-vibe-btn" data-vibe="avventura" onclick="toggleVibe('avventura')"><span>🏕</span><span data-t="vibe_adventure">Avventura</span></button>
+    <button class="fp-vibe-btn" data-vibe="relax" onclick="toggleVibe('relax')"><span>😌</span><span data-t="vibe_relax">Relax</span></button>
+  </div>
 </div>
 
 <!-- ONBOARDING POPUP -->
@@ -850,6 +862,7 @@ lottie.loadAnimation({
       <div class="dp-secret-lbl">🤫 <span data-t="secret_lbl">Il segreto locale</span></div>
       <p id="dp-secret"></p>
     </div>
+    <div id="dp-vibe" class="dp-vibe"></div>
     <div class="dp-pills" id="dp-pills"></div>
     <div id="dp-gallery-wrap"></div>
     <div class="dp-acts-lbl" id="dp-acts-lbl" style="display:none"></div>
@@ -877,14 +890,14 @@ lottie.loadAnimation({
     <div class="amp-header"><div class="amp-title" id="amp-title"></div><button class="amp-close" onclick="closeActMapPopup()">✕</button></div>
     <div class="amp-type" id="amp-type"></div>
     <img class="amp-img" id="amp-img" src="" alt="" style="display:none;">
-    <div class="amp-body"><div class="amp-desc" id="amp-desc"></div><div class="amp-secret" id="amp-secret" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-m"></span></div><p id="amp-secret-txt"></p></div><div class="amp-specs" id="amp-specs"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps" style="flex:1;"></button><button class="amp-maps" id="amp-book" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
+    <div class="amp-body"><div class="amp-desc" id="amp-desc"></div><div class="amp-secret" id="amp-secret" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-m"></span></div><p id="amp-secret-txt"></p></div><div id="amp-vibe" class="dp-vibe" style="margin:10px 0 4px;"></div><div class="amp-specs" id="amp-specs"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps" style="flex:1;"></button><button class="amp-maps" id="amp-book" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
   </div>
   <div class="amp-center" id="amp-center" style="display:none;">
     <div class="amp-header"><div class="amp-title" id="amp-title-d"></div><div style="display:flex;gap:6px;align-items:center;"><button class="amp-close" id="amp-bkm-d" style="display:none;"><i class="ti ti-bookmark"></i></button><button class="amp-close" onclick="closeActMapPopup()">✕</button></div></div>
     <div class="amp-type" id="amp-type-d"></div>
     <img class="amp-img" id="amp-img-d" src="" alt="" style="display:none;">
     <div id="amp-score-d" style="display:none;"></div>
-    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div id="amp-pills-d"></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps-d" style="flex:1;"></button><button class="amp-maps" id="amp-book-d" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
+    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div id="amp-vibe-d" class="dp-vibe" style="margin:10px 0 4px;"></div><div id="amp-pills-d"></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps-d" style="flex:1;"></button><button class="amp-maps" id="amp-book-d" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
   </div>
 </div>
 
@@ -1150,6 +1163,7 @@ function translateSpec(text){
 var map_o,userMk;
 var activeFilter='all',activeSubtype=null,level=1,activePId=null;
 var activeHiddenFilter='all';
+var activeVibes=[];
 var l1Mk={},l2Mk=[];
 var favs=new Set();
 var favActs=new Set();
@@ -1730,6 +1744,9 @@ function showCityActivityBottomCard(a){
   document.getElementById('bc-acts').innerHTML='';
   var sc=scoreColor(a.hiddenScore);
   document.getElementById('bc-gems').innerHTML=sc?'<div style="display:flex;align-items:center;gap:4px;margin-top:3px;">'+sc.gems+'<span style="font-size:.72rem;color:'+sc.color+';">'+sc.label+'</span></div>':'';
+  var _vibeMapCA={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};
+  var vibeRowCA=document.getElementById('bc-vibe-row');
+  if(vibeRowCA){vibeRowCA.innerHTML=(a.vibe||[]).map(function(v){return'<div class="vibe-bbl">'+(_vibeMapCA[v]||'✨')+'</div>';}).join('');}
   var card=document.getElementById('bottom-card');
   card.onclick=function(){closeBottomCard();openCityActivityDetail(a);};
   card.classList.add('show');
@@ -1755,6 +1772,7 @@ function openCityActivityDetail(a){
       +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
       +(actDesc?'<div class="act-popup-desc" id="act-popup-desc-el"></div>':'')
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+formatText(actSecret)+'</p></div>':'')
+      +((a.vibe&&a.vibe.length)?'<div class="dp-vibe" style="margin:10px 0 4px;">'+(a.vibe.map(function(v){var _vm={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};var _vn={romantico:t('vibe_romantic'),cinematografico:t('vibe_cinematic'),avventura:t('vibe_adventure'),relax:t('vibe_relax')};return'<div class="dp-vibe-chip">'+(_vm[v]||'✨')+' '+(_vn[v]||v)+'</div>';}).join(''))+'</div>':'')
       +(_pillsM.length?'<div class="dp-pills">'+_pillsM.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('')+'</div>':'')
       +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
       +(a.gallery&&a.gallery.length?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:8px;">📷 '+(lang==='en'?'Gallery':'Galleria')+'</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:1fr;margin-bottom:12px;">'
@@ -1793,6 +1811,8 @@ function openCityActivityDetail(a){
       document.getElementById('amp-secret-txt-d').innerHTML='<p>'+formatText(actSecret)+'</p>';
       secElD.style.display='';
     } else secElD.style.display='none';
+    var _ampVibeD=document.getElementById('amp-vibe-d');
+    if(_ampVibeD){_ampVibeD.innerHTML=(a.vibe&&a.vibe.length)?a.vibe.map(function(v){var _vm={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};var _vn={romantico:t('vibe_romantic'),cinematografico:t('vibe_cinematic'),avventura:t('vibe_adventure'),relax:t('vibe_relax')};return'<div class="dp-vibe-chip">'+(_vm[v]||'✨')+' '+(_vn[v]||v)+'</div>';}).join(''):'';}
     var _pillsD=(lang==='en'&&a.pillsEn&&a.pillsEn.length)?a.pillsEn:(a.pills||[]);
     var pillsElD=document.getElementById('amp-pills-d');
     if(pillsElD)pillsElD.innerHTML=_pillsD.length?'<div class="dp-pills">'+_pillsD.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('')+'</div>':'';
@@ -1952,6 +1972,9 @@ function showActBubble(a, latlng){
   var secEl=document.getElementById(secretId);
   if(secretText){document.getElementById(secretLblId).textContent=t('secret_lbl');document.getElementById(secretTxtId).innerHTML='<p>'+formatText(secretText)+'</p>';secEl.style.display='';}
   else secEl.style.display='none';
+  var vibeActId=isMobile?'amp-vibe':'amp-vibe-d';
+  var vibeActEl=document.getElementById(vibeActId);
+  if(vibeActEl){vibeActEl.innerHTML=(a.vibe&&a.vibe.length)?a.vibe.map(function(v){var _vm={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};var _vn={romantico:t('vibe_romantic'),cinematografico:t('vibe_cinematic'),avventura:t('vibe_adventure'),relax:t('vibe_relax')};return'<div class="dp-vibe-chip">'+(_vm[v]||'✨')+' '+(_vn[v]||v)+'</div>';}).join(''):'';}
   var specs=(a.specs||[]).map(function(s){return '<span class="amp-spec">'+translateSpec(s.k)+': '+translateSpec(s.v)+'</span>';}).join('');
   document.getElementById(specsId).innerHTML=specs;
   var mapsBtn=document.getElementById(mapsId);
@@ -2092,7 +2115,7 @@ function selSubtype(id){
 }
 function updateFilterDot(){
   var dot=document.getElementById('filter-dot');
-  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||mapMode!=='outside'||activeHiddenFilter!=='all'?' active':'');
+  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||mapMode!=='outside'||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
 }
 function buildHiddenFilter(){
   var hf=activeHiddenFilter;
@@ -2135,6 +2158,7 @@ function openFilterPopup(){
   }
   buildFilterCats();
   buildHiddenFilter();
+  refreshVibeButtons();
   document.getElementById('filter-overlay').classList.add('show');
   document.getElementById('filter-popup').classList.add('show');
   filterOpen=true;
@@ -2156,6 +2180,7 @@ function setMapModePopup(mode){
   activeFilter='all';
   activeSubtype=null;
   activeHiddenFilter='all';
+  activeVibes=[];
   var fpFuori=document.getElementById('fp-btn-fuori');
   var fpRoma=document.getElementById('fp-btn-roma');
   if(fpFuori){
@@ -2201,6 +2226,25 @@ function hiddenMatchFn(score){
   if(hf==='low')return s>0&&s<40;
   return true;
 }
+function vibeMatchFn(item){
+  if(!activeVibes.length)return true;
+  var v=item.vibe||[];
+  return activeVibes.some(function(av){return v.indexOf(av)>=0;});
+}
+function toggleVibe(v){
+  var idx=activeVibes.indexOf(v);
+  if(idx>=0)activeVibes.splice(idx,1);else activeVibes.push(v);
+  document.querySelectorAll('.fp-vibe-btn').forEach(function(btn){
+    btn.classList.toggle('selected',activeVibes.indexOf(btn.dataset.vibe)>=0);
+  });
+  updateFilterDot();
+  refreshL1();
+}
+function refreshVibeButtons(){
+  document.querySelectorAll('.fp-vibe-btn').forEach(function(btn){
+    btn.classList.toggle('selected',activeVibes.indexOf(btn.dataset.vibe)>=0);
+  });
+}
 function refreshL1(){
   if(mapMode==='city'){
     DATA.places.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
@@ -2208,12 +2252,12 @@ function refreshL1(){
     (DATA.cityActivities||[]).forEach(function(a){
       var catShow=activeSubtype!==null?a.experienceSubtypeId===activeSubtype
                :activeFilter==='all'||a.experienceTypeId===parseInt(activeFilter);
-      if(catShow&&hiddenMatchFn(a.hiddenScore))addCityActivityMarker(a);
+      if(catShow&&hiddenMatchFn(a.hiddenScore)&&vibeMatchFn(a))addCityActivityMarker(a);
     });
-    if(activeSubtype!==null||activeFilter!=='all'||activeHiddenFilter!=='all'){
+    if(activeSubtype!==null||activeFilter!=='all'||activeHiddenFilter!=='all'||activeVibes.length>0){
       var vis=(DATA.cityActivities||[]).filter(function(a){
         var catShow=activeSubtype!==null?a.experienceSubtypeId===activeSubtype:activeFilter==='all'||a.experienceTypeId===parseInt(activeFilter);
-        return catShow&&hiddenMatchFn(a.hiddenScore)&&a.lat&&a.lng;
+        return catShow&&hiddenMatchFn(a.hiddenScore)&&vibeMatchFn(a)&&a.lat&&a.lng;
       });
       if(vis.length){
         var lngs=vis.map(function(a){return a.lng;});
@@ -2226,11 +2270,11 @@ function refreshL1(){
   clearCityActivityMarkers();
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    var show=(p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore);
+    var show=(p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
     if(show)m.addTo(map_o);else m.remove();
   });
-  if(activeFilter!=='all'||activeHiddenFilter!=='all'){
-    var vis=DATA.places.filter(function(p){return (p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore);});
+  if(activeFilter!=='all'||activeHiddenFilter!=='all'||activeVibes.length>0){
+    var vis=DATA.places.filter(function(p){return (p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);});
     if(vis.length){
       var lngs=vis.map(function(p){return p.lng;});
       var lats=vis.map(function(p){return p.lat;});
@@ -2395,6 +2439,9 @@ function showBottomCard(p){
   }).join('');
   document.getElementById('bc-acts').innerHTML=actsHtml;
   document.getElementById('bc-gems').innerHTML=sc?'<div style="display:flex;align-items:center;gap:4px;">'+sc.gems+'<span style="font-size:.72rem;color:'+sc.color+';">'+sc.label+'</span></div>':'';
+  var vibeMap={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};
+  var vibeRow=document.getElementById('bc-vibe-row');
+  if(vibeRow){vibeRow.innerHTML=(p.vibe||[]).map(function(v){return'<div class="vibe-bbl">'+( vibeMap[v]||'✨')+'</div>';}).join('');}
   var card=document.getElementById('bottom-card');
   card.onclick=function(e){
     if(e.target.closest('.bc-act-ico')||e.target.closest('.bc-gems-ico'))return;
@@ -2407,6 +2454,8 @@ function showBottomCard(p){
   hideModeToggle();
 }
 function closeBottomCard(){
+  var vibeRow=document.getElementById('bc-vibe-row');
+  if(vibeRow)vibeRow.innerHTML='';
   document.getElementById('bottom-card').classList.remove('show');
   showModeToggle();
 }
@@ -2505,6 +2554,10 @@ function openDetail(){
   tEl.style.borderColor=c.color;
   renderExpandableText((lang==='en'&&p.descEn?p.descEn:p.desc)||'','dp-desc',280);
   document.getElementById('dp-secret').innerHTML='<p>'+formatText((lang==='en'&&p.secretEn?p.secretEn:p.secret)||'')+'</p>';
+  var _dpVibeMap={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};
+  var _dpVibeNames={romantico:t('vibe_romantic'),cinematografico:t('vibe_cinematic'),avventura:t('vibe_adventure'),relax:t('vibe_relax')};
+  var dpVibeEl=document.getElementById('dp-vibe');
+  if(dpVibeEl){dpVibeEl.innerHTML=(p.vibe&&p.vibe.length)?p.vibe.map(function(v){return'<div class="dp-vibe-chip">'+(_dpVibeMap[v]||'✨')+' '+(_dpVibeNames[v]||v)+'</div>';}).join(''):'';}
   var pills=(lang==='en'&&p.pillsEn&&p.pillsEn.length>0)?p.pillsEn:(p.pills||[]);
   document.getElementById('dp-pills').innerHTML=pills.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('');
 
@@ -2922,7 +2975,7 @@ window.addEventListener('DOMContentLoaded',function(){
   },8000);
 
   Promise.all([
-    fetch(SB_URL+'/rest/v1/places?select=id,cat,place_types_id,mode,city,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,pills_en,gradient,maps_url,cover_photo,gallery,hidden_score,premium&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
+    fetch(SB_URL+'/rest/v1/places?select=id,cat,place_types_id,mode,city,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,pills_en,gradient,maps_url,cover_photo,gallery,hidden_score,premium,vibe&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
     fetch(SB_URL+'/rest/v1/categories?select=*&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activity_types?select=*&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activities?select=*&order=place_id,sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
@@ -2957,7 +3010,8 @@ window.addEventListener('DOMContentLoaded',function(){
                experienceTypeId:a.experience_type_id||null,
                experienceSubtypeId:a.experience_subtype_id||null,
                gallery:a.gallery||[],
-               pills:a.pills||[],pillsEn:a.pills_en||[]};
+               pills:a.pills||[],pillsEn:a.pills_en||[],
+               vibe:a.vibe||[]};
       });
       return{
         id:row.id,cat:row.cat,placeTypeId:row.place_types_id||null,
@@ -2970,6 +3024,7 @@ window.addEventListener('DOMContentLoaded',function(){
         pills:row.pills||[],pillsEn:Array.isArray(row.pills_en)?row.pills_en:[],gradient:row.gradient||'linear-gradient(135deg,#888,#555)',
         maps:row.maps_url||'',coverPhoto:row.cover_photo||'',gallery:row.gallery||[],
         hiddenScore:row.hidden_score||0,premium:row.premium||false,
+        vibe:row.vibe||[],
         activities:acts
       };
     });
@@ -2985,7 +3040,8 @@ window.addEventListener('DOMContentLoaded',function(){
              experienceSubtypeId:a.experience_subtype_id||null,
              gallery:a.gallery||[],
              hiddenScore:a.hidden_score||0,
-             pills:a.pills||[],pillsEn:a.pills_en||[]};
+             pills:a.pills||[],pillsEn:a.pills_en||[],
+             vibe:a.vibe||[]};
     });
 
     // salva cache locale
@@ -3009,6 +3065,7 @@ window.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 <div id="bottom-card">
+  <div id="bc-vibe-row" class="vibe-bubble-row"></div>
   <div class="bc-handle"></div>
   <div class="bc-row">
     <div id="bc-img-wrap"></div>

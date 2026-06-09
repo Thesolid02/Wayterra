@@ -385,6 +385,13 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div class="fg"><label>Pill 4 IT</label><input type="text" id="p-p4" placeholder="Solo a piedi"></div>
       <div class="fg"><label>Pill 4 EN</label><input type="text" id="p-p4en" placeholder="On foot only"></div>
     </div>
+    <div class="sdiv">🎭 Vibe</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:6px 10px;"><input type="checkbox" id="p-vibe-romantico" value="romantico"> 💑 Romantico</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:6px 10px;"><input type="checkbox" id="p-vibe-cinematografico" value="cinematografico"> 🎬 Cinematografico</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:6px 10px;"><input type="checkbox" id="p-vibe-avventura" value="avventura"> 🏕 Avventura</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:6px 10px;"><input type="checkbox" id="p-vibe-relax" value="relax"> 😌 Relax</label>
+    </div>
     <div class="sdiv">Colore sfondo (senza foto)</div>
     <div class="g3">
       <div class="fg"><label>Colore 1</label><input type="text" id="p-c1" placeholder="#8c6250" oninput="updGrad()"></div>
@@ -618,6 +625,13 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div class="fg"><label>Pill 4 IT</label><input type="text" id="ca-p4" placeholder="Es. Ingresso gratuito"></div>
       <div class="fg"><label>Pill 4 EN</label><input type="text" id="ca-p4en" placeholder="Ex. Free entrance"></div>
     </div>
+    <div class="sdiv" style="margin-top:6px;">🎭 Vibe</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:6px 10px;"><input type="checkbox" id="ca-vibe-romantico" value="romantico"> 💑 Romantico</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:6px 10px;"><input type="checkbox" id="ca-vibe-cinematografico" value="cinematografico"> 🎬 Cinematografico</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:6px 10px;"><input type="checkbox" id="ca-vibe-avventura" value="avventura"> 🏕 Avventura</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:6px 10px;"><input type="checkbox" id="ca-vibe-relax" value="relax"> 😌 Relax</label>
+    </div>
     <div class="sdiv" style="margin-top:6px;">Google Maps URL</div>
     <div class="fg"><input type="url" id="ca-maps" placeholder="https://maps.google.com/?q=…"><span class="fh">Vuoto = generato automaticamente dal nome</span></div>
     <div class="sdiv" style="margin-top:6px;">URL prenotazione / Telefono</div>
@@ -780,7 +794,8 @@ function actRowToAct(a){
     bookingUrl: a.booking_url||'',
     hiddenScore: a.hidden_score||0,
     pills: a.pills||[],
-    pillsEn: a.pills_en||[]
+    pillsEn: a.pills_en||[],
+    vibe: a.vibe||[]
   };
 }
 
@@ -810,7 +825,8 @@ function placeToRow(p){
     gallery: p.gallery||[],
     hidden_score: p.hiddenScore||0,
     premium: p.premium||false,
-    verified: p.verified||false
+    verified: p.verified||false,
+    vibe: p.vibe||[]
   };
 }
 
@@ -837,7 +853,8 @@ function actToRow(a, placeId){
     booking_url: a.bookingUrl||'',
     hidden_score: a.hiddenScore||0,
     pills: a.pills||[],
-    pills_en: a.pillsEn||[]
+    pills_en: a.pillsEn||[],
+    vibe: a.vibe||[]
   };
   // includi id solo se è un record esistente (non generato localmente)
   if(a.id) row.id=a.id;
@@ -1335,6 +1352,7 @@ function clearPForm(){
   setVerified(false);
   document.getElementById('ggrid').innerHTML='';
   document.getElementById('arows').innerHTML='';
+  ['romantico','cinematografico','avventura','relax'].forEach(function(v){var el=document.getElementById('p-vibe-'+v);if(el)el.checked=false;});
   updGrad();
   setPlaceMode('outside');
 }
@@ -1373,6 +1391,7 @@ function fillPForm(p){
   if(p.coverPhoto){document.getElementById('cimg').src=p.coverPhoto;document.getElementById('cprev').style.display='block';}
   else document.getElementById('cprev').style.display='none';
   renderGGrid();
+  ['romantico','cinematografico','avventura','relax'].forEach(function(v){var el=document.getElementById('p-vibe-'+v);if(el)el.checked=(p.vibe||[]).indexOf(v)>=0;});
   document.getElementById('arows').innerHTML='';
   (p.activities||[]).forEach(function(a){addActRow(a);});
 }
@@ -1506,6 +1525,12 @@ function addActRow(a){
     +'</div>'
     +'<div class="fg"><label>Google Maps URL</label><input type="url" class="ar-maps" placeholder="https://maps.google.com/?q=…"></div>'
     +'<div class="fg"><label>URL prenotazione / Telefono</label><input type="text" class="ar-booking" placeholder="https://... oppure tel:+39..."></div>'
+    +'<div class="fg"><label>🎭 Vibe</label><div style="display:flex;flex-wrap:wrap;gap:8px;">'
+    +'<label style="display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:5px 8px;"><input type="checkbox" class="ar-vibe" value="romantico"> 💑 Romantico</label>'
+    +'<label style="display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:5px 8px;"><input type="checkbox" class="ar-vibe" value="cinematografico"> 🎬 Cinematografico</label>'
+    +'<label style="display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:5px 8px;"><input type="checkbox" class="ar-vibe" value="avventura"> 🏕 Avventura</label>'
+    +'<label style="display:flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;cursor:pointer;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:5px 8px;"><input type="checkbox" class="ar-vibe" value="relax"> 😌 Relax</label>'
+    +'</div></div>'
     +'<input type="hidden" class="ar-id" value="'+rid+'">'
     +'<input type="hidden" class="ar-cover" value="">'
     +'<input type="hidden" class="ar-gallery" value="[]">';
@@ -1529,6 +1554,7 @@ function addActRow(a){
     div.querySelector('.ar-city').value=a.city||'';
     div.querySelector('.ar-premium').checked=a.premium||false;
     div.querySelector('.ar-gallery').value=JSON.stringify(a.gallery||[]);
+    (a.vibe||[]).forEach(function(v){var cb=div.querySelector('.ar-vibe[value="'+v+'"]');if(cb)cb.checked=true;});
     renderActGGrid(rid);
     if(a.coverPhoto){
       document.getElementById('aimg-'+rid).src=a.coverPhoto;
@@ -1691,7 +1717,8 @@ function savePlace(){
       maps:(row.querySelector('.ar-maps')&&row.querySelector('.ar-maps').value||'').trim()||'https://maps.google.com/?q='+encodeURIComponent(n),
       bookingUrl:(row.querySelector('.ar-booking')&&row.querySelector('.ar-booking').value||'').trim(),
       coverPhoto:(row.querySelector('.ar-cover')&&row.querySelector('.ar-cover').value||''),
-      gallery:JSON.parse(row.querySelector('.ar-gallery')&&row.querySelector('.ar-gallery').value||'[]')
+      gallery:JSON.parse(row.querySelector('.ar-gallery')&&row.querySelector('.ar-gallery').value||'[]'),
+      vibe:Array.from(row.querySelectorAll('.ar-vibe:checked')).map(function(cb){return cb.value;})
     });
   });
 
@@ -1712,6 +1739,7 @@ function savePlace(){
     taglineEn:taglineEn,
     descEn:descEn,
     pills:pills, pillsEn:pillsEn, activities:activities,
+    vibe:['romantico','cinematografico','avventura','relax'].filter(function(v){var el=document.getElementById('p-vibe-'+v);return el&&el.checked;}),
     gradient:'linear-gradient(145deg,'+c1+','+c2+','+c3+')',
     maps:document.getElementById('p-maps').value.trim()||'https://maps.google.com/?q='+encodeURIComponent(name),
     coverPhoto:coverData, gallery:galleryData.slice()
@@ -2395,6 +2423,7 @@ function fillCityActForm(a){
   renderCityActGGrid();
   document.getElementById('spec-rows-ca-main').innerHTML='';
   (a.specs||[]).forEach(function(s){addSpecRow('ca-main',s.k,s.v);});
+  ['romantico','cinematografico','avventura','relax'].forEach(function(v){var el=document.getElementById('ca-vibe-'+v);if(el)el.checked=(a.vibe||[]).indexOf(v)>=0;});
 }
 
 // ═══ CITY ACTIVITY (place_id=null) ═══
@@ -2440,6 +2469,7 @@ function clearCityActForm(){
   document.getElementById('spec-rows-ca-main').innerHTML='';
   document.getElementById('ca-exp-subtype').innerHTML='<option value="">— nessuno —</option>';
   document.getElementById('ca-free').checked=true;
+  ['romantico','cinematografico','avventura','relax'].forEach(function(v){var el=document.getElementById('ca-vibe-'+v);if(el)el.checked=false;});
 }
 
 function populateCityActExpTypeSelect(){
@@ -2495,7 +2525,8 @@ function saveCityAct(){
     bookingUrl:document.getElementById('ca-booking').value.trim(),
     hiddenScore:parseInt(document.getElementById('ca-score').value)||0,
     pills:['ca-p1','ca-p2','ca-p3','ca-p4'].map(function(id){return document.getElementById(id).value.trim();}).filter(Boolean),
-    pillsEn:['ca-p1en','ca-p2en','ca-p3en','ca-p4en'].map(function(id){return document.getElementById(id).value.trim();}).filter(Boolean)
+    pillsEn:['ca-p1en','ca-p2en','ca-p3en','ca-p4en'].map(function(id){return document.getElementById(id).value.trim();}).filter(Boolean),
+    vibe:['romantico','cinematografico','avventura','relax'].filter(function(v){var el=document.getElementById('ca-vibe-'+v);return el&&el.checked;})
   };
   var wasEditId=editCityActId;
   closeCityAct();
