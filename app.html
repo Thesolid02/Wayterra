@@ -911,7 +911,7 @@ lottie.loadAnimation({
     <div class="amp-type" id="amp-type-d"></div>
     <img class="amp-img" id="amp-img-d" src="" alt="" style="display:none;">
     <div id="amp-score-d" style="display:none;"></div>
-    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div id="amp-sep-vibe-d" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-vibe-lbl-d" class="dp-section-lbl" style="display:none;"></div><div id="amp-vibe-d" class="dp-vibe"></div><div id="amp-pills-d"></div><div id="amp-specs-lbl-d" class="dp-section-lbl" style="display:none;"></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps-d" style="flex:1;"></button><button class="amp-maps" id="amp-book-d" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
+    <div class="amp-body"><div class="amp-desc" id="amp-desc-d"></div><div class="amp-secret" id="amp-secret-d" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-d"></span></div><p id="amp-secret-txt-d"></p></div><div id="amp-sep-vibe-d" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-vibe-lbl-d" class="dp-section-lbl" style="display:none;"></div><div id="amp-vibe-d" class="dp-vibe"></div><div id="amp-sep-pills-d" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-pills-lbl-d" class="dp-section-lbl" style="display:none;"></div><div id="amp-pills-d"></div><div id="amp-specs-lbl-d" class="dp-section-lbl" style="display:none;"></div><div class="amp-specs" id="amp-specs-d"></div><div id="amp-gallery-d"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps-d" style="flex:1;"></button><button class="amp-maps" id="amp-book-d" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
   </div>
 </div>
 
@@ -1801,8 +1801,8 @@ function openCityActivityDetail(a){
       +(a.coverPhoto?'<img class="act-popup-img" src="'+a.coverPhoto+'" alt="">':'')
       +(actDesc?'<div class="act-popup-desc" id="act-popup-desc-el"></div>':'')
       +(actSecret?'<div class="act-popup-secret"><div class="act-popup-secret-lbl">🤫 '+t('secret_lbl')+'</div><p>'+formatText(actSecret)+'</p></div>':'')
-      +((a.vibe&&a.vibe.length)?'<div class="dp-vibe" style="margin:10px 0 4px;">'+(a.vibe.map(function(v){var _vm={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};var _vn={romantico:t('vibe_romantic'),cinematografico:t('vibe_cinematic'),avventura:t('vibe_adventure'),relax:t('vibe_relax')};return'<div class="dp-vibe-chip">'+(_vm[v]||'✨')+' '+(_vn[v]||v)+'</div>';}).join(''))+'</div>':'')
-      +(_pillsM.length?'<div class="dp-pills">'+_pillsM.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('')+'</div>':'')
+      +((a.vibe&&a.vibe.length)?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:6px;">'+t('vibe')+'</div><div class="dp-vibe">'+(a.vibe.map(function(v){var _vm={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};var _vn={romantico:t('vibe_romantic'),cinematografico:t('vibe_cinematic'),avventura:t('vibe_adventure'),relax:t('vibe_relax')};return'<div class="dp-vibe-chip">'+(_vm[v]||'✨')+' '+(_vn[v]||v)+'</div>';}).join(''))+'</div>':'')
+      +(_pillsM.length?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:6px;">'+t('useful_info')+'</div><div class="dp-pills">'+_pillsM.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('')+'</div>':'')
       +(a.specs&&a.specs.length?'<div class="act-popup-specs">'+a.specs.map(function(s){return'<div class="act-popup-spec"><span class="act-popup-spec-k">'+translateSpec(s.k)+'</span><span class="act-popup-spec-v">'+translateSpec(s.v)+'</span></div>';}).join('')+'</div>':'')
       +(a.gallery&&a.gallery.length?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:8px;">📷 '+(lang==='en'?'Gallery':'Galleria')+'</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:1fr;margin-bottom:12px;">'
         +a.gallery.map(function(url,i){
@@ -1850,6 +1850,10 @@ function openCityActivityDetail(a){
     var _pillsD=(lang==='en'&&a.pillsEn&&a.pillsEn.length)?a.pillsEn:(a.pills||[]);
     var pillsElD=document.getElementById('amp-pills-d');
     if(pillsElD)pillsElD.innerHTML=_pillsD.length?'<div class="dp-pills">'+_pillsD.map(function(x){return'<span class="dp-pill">'+x+'</span>';}).join('')+'</div>':'';
+    var _ampSepPillsD=document.getElementById('amp-sep-pills-d');
+    if(_ampSepPillsD)_ampSepPillsD.style.display=_pillsD.length?'':'none';
+    var _ampPillsLblD=document.getElementById('amp-pills-lbl-d');
+    if(_ampPillsLblD){_ampPillsLblD.style.display=_pillsD.length?'':'none';_ampPillsLblD.textContent=t('useful_info');}
     document.getElementById('amp-specs-d').innerHTML=(a.specs||[]).map(function(s){return'<span class="amp-spec">'+translateSpec(s.k)+': '+translateSpec(s.v)+'</span>';}).join('');
     var _ampSpecsLblD=document.getElementById('amp-specs-lbl-d');
     if(_ampSpecsLblD){_ampSpecsLblD.style.display=(a.specs&&a.specs.length)?'':'none';_ampSpecsLblD.textContent=t('specs_lbl');}
