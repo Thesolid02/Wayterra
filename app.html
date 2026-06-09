@@ -1240,7 +1240,7 @@ function checkUnlock(){
   if(new URLSearchParams(location.search).get('unlocked')==='1'){localStorage.setItem(K.U,'1');return true;}
   return localStorage.getItem(K.U)==='1';
 }
-function hasDetail(p){return !!(p.desc&&p.desc.trim()&&p.secret&&p.secret.trim());}
+function hasDetail(p){return !!(p.desc&&p.desc.trim());}
 function scoreColor(s){
   if(!s||s===0)return null;
   var active='<span style="font-size:1rem;">💎</span>';
