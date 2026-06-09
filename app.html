@@ -2589,7 +2589,8 @@ function openDetail(){
   var sc=scoreColor(p.hiddenScore);
 
   document.getElementById('dp-tagline').style.display='';
-  document.getElementById('dp-secret-box').style.display='';
+  var _dpSecret=(lang==='en'&&p.secretEn?p.secretEn:p.secret)||'';
+  document.getElementById('dp-secret-box').style.display=_dpSecret?'':'none';
   document.getElementById('dp-save').style.display='';
   document.getElementById('dp-name').textContent=p.name;
   document.getElementById('dp-region').textContent=p.region||'';
@@ -2637,7 +2638,7 @@ function openDetail(){
   tEl.textContent=(lang==='en'&&p.taglineEn?p.taglineEn:p.tagline)||'';
   tEl.style.borderColor=c.color;
   renderExpandableText((lang==='en'&&p.descEn?p.descEn:p.desc)||'','dp-desc',280);
-  document.getElementById('dp-secret').innerHTML='<p>'+formatText((lang==='en'&&p.secretEn?p.secretEn:p.secret)||'')+'</p>';
+  document.getElementById('dp-secret').innerHTML=_dpSecret?'<p>'+formatText(_dpSecret)+'</p>':'';
   var _dpVibeMap={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};
   var _dpVibeNames={romantico:t('vibe_romantic'),cinematografico:t('vibe_cinematic'),avventura:t('vibe_adventure'),relax:t('vibe_relax')};
   var dpVibeEl=document.getElementById('dp-vibe');
