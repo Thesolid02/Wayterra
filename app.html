@@ -904,7 +904,7 @@ lottie.loadAnimation({
     <div class="amp-header"><div class="amp-title" id="amp-title"></div><button class="amp-close" onclick="closeActMapPopup()">✕</button></div>
     <div class="amp-type" id="amp-type"></div>
     <img class="amp-img" id="amp-img" src="" alt="" style="display:none;">
-    <div class="amp-body"><div class="amp-desc" id="amp-desc"></div><div class="amp-secret" id="amp-secret" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-m"></span></div><p id="amp-secret-txt"></p></div><div id="amp-sep-vibe" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-vibe-lbl" class="dp-section-lbl" style="display:none;"></div><div id="amp-vibe" class="dp-vibe"></div><div id="amp-specs-lbl" class="dp-section-lbl" style="display:none;"></div><div class="amp-specs" id="amp-specs"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps" style="flex:1;"></button><button class="amp-maps" id="amp-book" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
+    <div class="amp-body"><div class="amp-desc" id="amp-desc"></div><div class="amp-secret" id="amp-secret" style="display:none;"><div class="amp-secret-lbl">🤫 <span id="amp-secret-lbl-m"></span></div><p id="amp-secret-txt"></p></div><div id="amp-sep-vibe" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-vibe-lbl" class="dp-section-lbl" style="display:none;"></div><div id="amp-vibe" class="dp-vibe"></div><div id="amp-sep-specs" style="border-top:0.5px solid #e5e7eb;margin:12px 0;display:none;"></div><div id="amp-specs-lbl" class="dp-section-lbl" style="display:none;"></div><div class="amp-specs" id="amp-specs"></div><div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;"><button class="amp-maps" id="amp-maps" style="flex:1;"></button><button class="amp-maps" id="amp-book" style="flex:1;background:#dc6b2f;display:none;"></button></div></div>
   </div>
   <div class="amp-center" id="amp-center" style="display:none;">
     <div class="amp-header"><div class="amp-title" id="amp-title-d"></div><div style="display:flex;gap:6px;align-items:center;"><button class="amp-close" id="amp-bkm-d" style="display:none;"><i class="ti ti-bookmark"></i></button><button class="amp-close" onclick="closeActMapPopup()">✕</button></div></div>
@@ -2016,6 +2016,7 @@ function showActBubble(a, latlng){
   var vibeLblId=isMobile?'amp-vibe-lbl':'amp-vibe-lbl-d';
   var vibeSepId=isMobile?'amp-sep-vibe':'amp-sep-vibe-d';
   var specsLblId=isMobile?'amp-specs-lbl':'amp-specs-lbl-d';
+  var specsSepId=isMobile?'amp-sep-specs':'amp-sep-specs-d';
   var vibeActEl=document.getElementById(vibeActId);
   var _hasVibeAct=(a.vibe&&a.vibe.length);
   if(vibeActEl){vibeActEl.innerHTML=_hasVibeAct?a.vibe.map(function(v){var _vm={romantico:'💑',cinematografico:'🎬',avventura:'🏕',relax:'😌'};var _vn={romantico:t('vibe_romantic'),cinematografico:t('vibe_cinematic'),avventura:t('vibe_adventure'),relax:t('vibe_relax')};return'<div class="dp-vibe-chip">'+(_vm[v]||'✨')+' '+(_vn[v]||v)+'</div>';}).join(''):'';}
@@ -2027,6 +2028,8 @@ function showActBubble(a, latlng){
   document.getElementById(specsId).innerHTML=specs;
   var specsLblEl=document.getElementById(specsLblId);
   if(specsLblEl){specsLblEl.style.display=(a.specs&&a.specs.length)?'':'none';specsLblEl.textContent=t('specs_lbl');}
+  var specsSepEl=document.getElementById(specsSepId);
+  if(specsSepEl)specsSepEl.style.display=(a.specs&&a.specs.length)?'':'none';
   var mapsBtn=document.getElementById(mapsId);
   mapsBtn.textContent=t('maps');
   mapsBtn.onclick=function(){window.open(a.maps||('https://maps.google.com/?q='+encodeURIComponent(a.name)),'_blank');};
