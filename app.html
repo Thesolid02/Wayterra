@@ -199,7 +199,9 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   padding-top:calc(env(safe-area-inset-top,0px) + 12px);border-bottom:1px solid var(--g100);flex-shrink:0;}
 .itp-back{width:34px;height:34px;border-radius:50%;background:var(--g50);border:0.5px solid var(--g200);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;}
 .itp-title{font-size:1rem;font-weight:700;color:var(--g900);flex:1;}
-.itp-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px calc(env(safe-area-inset-bottom,0px)+72px);}
+.itp-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;}
+.itp-inner{padding:14px 16px calc(env(safe-area-inset-bottom,0px)+72px);}
+@media(min-width:768px){.itp-inner{max-width:600px;margin:0 auto;padding:14px 24px calc(env(safe-area-inset-bottom,0px)+72px);}}
 .itp-card{background:var(--w);border:0.5px solid var(--g200);border-radius:var(--rxl);overflow:hidden;margin-bottom:12px;cursor:pointer;box-shadow:var(--sh-sm);}
 .itp-card-img{width:100%;height:140px;object-fit:cover;display:block;background:var(--g100);}
 .itp-card-img-ph{width:100%;height:140px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
@@ -207,6 +209,20 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itp-card-title{font-size:.95rem;font-weight:700;color:var(--g900);margin-bottom:4px;}
 .itp-card-dur{font-size:.75rem;color:var(--g400);margin-bottom:6px;}
 .itp-stop-badge{font-size:.67rem;padding:2px 8px;border-radius:100px;background:var(--g100);color:var(--g500);border:0.5px solid var(--g200);}
+/* ── ITINERARIO DETAIL ── */
+#itinerario-detail{position:fixed;inset:0;z-index:510;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
+#itinerario-detail.show{display:flex;}
+.itd-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.itd-cover{width:100%;height:220px;object-fit:cover;display:block;background:var(--g100);}
+.itd-cover-ph{width:100%;height:220px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:3.5rem;}
+.itd-body{padding:20px 16px calc(env(safe-area-inset-bottom,0px)+24px);}
+.itd-title{font-size:1.2rem;font-weight:700;color:var(--g900);margin-bottom:6px;}
+.itd-dur{font-size:.78rem;color:var(--g400);margin-bottom:14px;}
+.itd-desc{font-size:.92rem;color:var(--g700);line-height:1.6;margin-bottom:22px;}
+.itd-stops-title{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--g500);margin-bottom:10px;}
+.itd-stop-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--g100);}
+.itd-stop-num{width:24px;height:24px;border-radius:50%;background:#dc6b2f;color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.itd-stop-name{font-size:.88rem;color:var(--g900);}
 .mode-sq-btn{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;box-sizing:border-box;transition:opacity .15s,border-color .15s;position:relative;padding:0;background:none;}
 #mode-btn-city.msq-active{border-color:#dc6b2f;opacity:1;}
 #mode-btn-city.msq-inactive{border-color:rgba(220,107,47,.4);opacity:.7;}
@@ -944,6 +960,22 @@ lottie.loadAnimation({
     <div class="itp-title">Itinerari</div>
   </div>
   <div class="itp-scroll" id="itp-scroll"></div>
+</div>
+
+<!-- ITINERARIO DETAIL PAGE -->
+<div id="itinerario-detail">
+  <div class="itp-header">
+    <button class="itp-back" onclick="closeItinerarioDetail()">←</button>
+    <div class="itp-title" id="itd-title"></div>
+  </div>
+  <div class="itd-scroll">
+    <div id="itd-cover-wrap"></div>
+    <div class="itd-body">
+      <div id="itd-dur" class="itd-dur"></div>
+      <div id="itd-desc" class="itd-desc"></div>
+      <div id="itd-stops"></div>
+    </div>
+  </div>
 </div>
 
 <!-- FAVORITES PAGE -->
@@ -3125,7 +3157,7 @@ function renderExpCards(){
     var img=e.coverPhoto
       ?'<img class="exp-card-img" src="'+e.coverPhoto+'" alt="">'
       :'<div class="exp-card-img-ph">🗺</div>';
-    return '<div class="exp-card" onclick="openItinerarioDetail('+e.id+')">'
+    return '<div class="exp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="exp-card-body"><div class="exp-card-title">'+title+'</div>'
       +(dur?'<div class="exp-card-dur">'+dur+'</div>':'')
       +'</div></div>';
@@ -3146,10 +3178,10 @@ function renderItinerariPage(){
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
   if(!DATA.experiences.length){
-    scroll.innerHTML='<div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div>';
+    scroll.innerHTML='<div class="itp-inner"><div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div></div>';
     return;
   }
-  scroll.innerHTML=DATA.experiences.map(function(e){
+  var cards=DATA.experiences.map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
     var img=e.coverPhoto
@@ -3157,19 +3189,52 @@ function renderItinerariPage(){
       :'<div class="itp-card-img-ph">🗺</div>';
     var stops=e.stops&&e.stops.length
       ?'<span class="itp-stop-badge">'+e.stops.length+' tappe</span>':'';
-    return '<div class="itp-card" onclick="openItinerarioDetail('+e.id+')">'
+    return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
       +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
       +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
       +'</div></div>';
   }).join('');
+  scroll.innerHTML='<div class="itp-inner">'+cards+'</div>';
 }
-function openItinerarioDetail(id){
+function openItinerario(id){
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
-  toast(title);
+  var desc=(lang==='en'&&e.descEn)?e.descEn:e.descIt;
+  var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+  document.getElementById('itd-title').textContent=title;
+  document.getElementById('itd-dur').textContent=dur||'';
+  document.getElementById('itd-desc').textContent=desc||'';
+  var coverWrap=document.getElementById('itd-cover-wrap');
+  coverWrap.innerHTML=e.coverPhoto
+    ?'<img class="itd-cover" src="'+e.coverPhoto+'" alt="">'
+    :'<div class="itd-cover-ph">🗺</div>';
+  var stopsEl=document.getElementById('itd-stops');
+  if(e.stops&&e.stops.length){
+    var html='<div class="itd-stops-title">Tappe</div>';
+    html+=e.stops.map(function(s,i){
+      var name='';
+      if(s.type==='place'){
+        var p=DATA.places.find(function(x){return x.id==s.id;});
+        name=p?((lang==='en'&&p.nameEn)?p.nameEn:p.name):'';
+      } else if(s.type==='activity'){
+        var a=DATA.atypes&&DATA.atypes.find(function(x){return x.id==s.id;});
+        name=a?((lang==='en'&&a.nameEn)?a.nameEn:a.name):'';
+      }
+      if(!name)name='Tappa '+(i+1);
+      return '<div class="itd-stop-row"><div class="itd-stop-num">'+(i+1)+'</div><div class="itd-stop-name">'+name+'</div></div>';
+    }).join('');
+    stopsEl.innerHTML=html;
+  } else {
+    stopsEl.innerHTML='';
+  }
+  document.getElementById('itinerario-detail').classList.add('show');
 }
+function closeItinerarioDetail(){
+  document.getElementById('itinerario-detail').classList.remove('show');
+}
+function openItinerarioDetail(id){openItinerario(id);}
 
 function bootApp(d){
   DATA=d;
