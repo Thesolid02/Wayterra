@@ -206,6 +206,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
   <button class="tab" onclick="switchTab('cityacts',this)">🏙 Attività Roma</button>
   <button class="tab" onclick="switchTab('placetypes',this)">Tipologie luogo</button>
   <button class="tab" onclick="switchTab('experience',this)">Experience</button>
+  <button class="tab" onclick="switchTab('esperienze',this)">Esperienze</button>
 </div>
 
 <div class="pane on" id="pane-places">
@@ -279,6 +280,22 @@ textarea.ft{resize:vertical;line-height:1.65;}
 </div>
 </div>
 
+<div class="pane" id="pane-esperienze">
+<div class="page">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+    <div><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Esperienze</div><div style="font-size:.82rem;color:var(--g400);">Itinerari curati con tappe collegate a luoghi e attività.</div></div>
+    <button class="btn bp" onclick="openAddEsperienza()">+ Nuova esperienza</button>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th style="width:44px;">Foto</th><th>Titolo</th><th style="width:100px;">Durata</th><th style="width:80px;">Tappe</th><th style="width:80px;">Featured</th><th style="width:72px;"></th></tr></thead>
+      <tbody id="esp-tbody"></tbody>
+    </table>
+    <div class="empty" id="empty-esp" style="display:none"><div style="font-size:2.2rem;margin-bottom:8px;">🗺</div><p>Nessuna esperienza. Aggiungine una!</p></div>
+  </div>
+</div>
+</div>
+
 <div class="pane" id="pane-experience">
 <div class="page">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
@@ -286,6 +303,60 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <button class="btn bp" onclick="openAddExpType()">+ Nuova experience</button>
   </div>
   <div class="clist" id="et-list"></div>
+</div>
+</div>
+
+<!-- MODAL ESPERIENZA -->
+<div class="ov" id="m-esp">
+<div class="modal">
+  <div class="mh"><div class="mh-t" id="m-esp-title">Nuova esperienza</div><button class="mx" onclick="closeEsperienza()">✕</button></div>
+  <div class="mc">
+    <div class="sdiv">Titolo</div>
+    <div class="g2">
+      <div class="fg"><label>Titolo IT *</label><input type="text" id="esp-title-it" placeholder="Es. Un giorno nel Lazio nascosto"></div>
+      <div class="fg"><label>Titolo EN</label><input type="text" id="esp-title-en" placeholder="Es. A day in hidden Lazio"></div>
+    </div>
+    <div class="sdiv">Descrizione</div>
+    <div class="fg"><label>Descrizione IT</label><textarea class="ft" id="esp-desc-it" rows="3" placeholder="Descrizione dell'esperienza…"></textarea></div>
+    <div class="fg"><label>Descrizione EN</label><textarea class="ft" id="esp-desc-en" rows="3" placeholder="Experience description in English…"></textarea></div>
+    <div class="sdiv">Durata</div>
+    <div class="g2">
+      <div class="fg"><label>Durata IT</label><input type="text" id="esp-dur-it" placeholder="Es. 1 giorno"></div>
+      <div class="fg"><label>Durata EN</label><input type="text" id="esp-dur-en" placeholder="Es. 1 day"></div>
+    </div>
+    <div class="sdiv">Foto copertina</div>
+    <div class="fg">
+      <label class="pa" style="display:block;">
+        <input type="file" id="esp-cover-inp" accept="image/*" onchange="handleEspCover(this)" style="display:none;">
+        <div style="font-size:1.3rem;margin-bottom:4px;">📸</div>
+        <div style="font-size:.8rem;font-weight:600;color:var(--g700);">Carica copertina</div>
+        <div style="font-size:.7rem;color:var(--g400);margin-top:2px;">Compressa automaticamente</div>
+      </label>
+      <div id="esp-cover-prev" class="cv-prev" style="display:none">
+        <img id="esp-cover-img" src="" alt="">
+        <button class="btn bd sm" style="margin-top:5px;width:100%;" onclick="removeEspCover()">Rimuovi</button>
+      </div>
+    </div>
+    <div class="sdiv">Opzioni</div>
+    <div class="g2">
+      <div class="fg">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.83rem;font-weight:500;margin-top:6px;">
+          <input type="checkbox" id="esp-featured"> Featured — mostra nelle card suggerite sulla mappa
+        </label>
+      </div>
+      <div class="fg"><label>Sort order</label><input type="number" id="esp-sort" value="0" min="0"></div>
+    </div>
+    <div class="sdiv">
+      Tappe
+      <button class="btn bs sm" onclick="addEspStopRow(null)">+ Aggiungi tappa</button>
+    </div>
+    <div style="font-size:.78rem;color:var(--g400);margin-bottom:10px;">Seleziona tipo (Luogo / Attività) poi scegli l'elemento. Usa ↑ ↓ per riordinare.</div>
+    <div id="esp-stops"></div>
+  </div>
+  <div class="mf">
+    <button class="btn bs" onclick="closeEsperienza()">Annulla</button>
+    <button class="btn bp" onclick="saveEsperienza()">Salva esperienza</button>
+  </div>
 </div>
 </div>
 
@@ -704,9 +775,10 @@ var DEF_PLACES = [
 ];
 
 // ═══ STATE ═══
-var places=[], cats=[], atypes=[], placeTypes=[], expTypes=[], expSubtypes=[], cityActs=[];
+var places=[], cats=[], atypes=[], placeTypes=[], expTypes=[], expSubtypes=[], cityActs=[], esperienze=[];
 var editPId=null, editCId=null, editAId=null, editCityActId=null;
-var editPTId=null, editETId=null, editESTId=null;
+var editPTId=null, editETId=null, editESTId=null, editEspId=null;
+var espCoverData='';
 var delId=null, delType=null, delParent=null;
 var expId=null;
 var placesPage=1, cityActsPage=1, PAGE_SIZE=10;
@@ -890,16 +962,18 @@ function load(){
     sbFetch('activities?select=*&order=place_id,sort_order').then(function(r){return r.json();}),
     sbFetch('place_types?select=*&order=id').then(function(r){return r.json();}),
     sbFetch('experience_types?select=*&order=id').then(function(r){return r.json();}),
-    sbFetch('experience_subtypes?select=*&order=id').then(function(r){return r.json();})
+    sbFetch('experience_subtypes?select=*&order=id').then(function(r){return r.json();}),
+    sbFetch('esperienze?select=*&order=sort_order').then(function(r){return r.json();}).catch(function(){return [];})
   ])
   .then(function(results){
     var catRows=results[0], atypeRows=results[1], placeRows=results[2], actRows=results[3];
-    var ptRows=results[4], etRows=results[5], estRows=results[6];
+    var ptRows=results[4], etRows=results[5], estRows=results[6], espRows=results[7];
     cats        = catRows.map(rowToCat);
     atypes      = atypeRows.map(rowToAtype);
     placeTypes  = ptRows.map(rowToPlaceType);
     expTypes    = etRows.map(rowToExpType);
     expSubtypes = estRows.map(rowToExpSubtype);
+    esperienze  = (espRows||[]).map(rowToEsperienza);
     places = placeRows.map(function(row){return rowToPlace(row, actRows);});
     cityActs = actRows.filter(function(a){return a.place_id===null||a.place_id===undefined;}).map(actRowToAct);
     if(!cats.length)   cats   = JSON.parse(JSON.stringify(DEF_CATS));
@@ -1149,6 +1223,7 @@ function switchTab(t,btn){
   if(t==='actypes') renderAtypes();
   if(t==='placetypes') renderPlaceTypes();
   if(t==='experience') renderExpTypes();
+  if(t==='esperienze') renderEsperienze();
 }
 
 // ═══ HELPERS ═══
@@ -2594,6 +2669,255 @@ function renderCityActGGrid(){
     return '<div class="pi">'+(i===0?'<div style="position:absolute;bottom:3px;left:3px;font-size:.5rem;font-weight:700;padding:2px 5px;border-radius:3px;background:rgba(37,99,235,.85);color:#fff;">COVER</div>':'')
       +preview+'<button class="pirm" onclick="removeCityActGPhoto('+i+')">✕</button></div>';
   }).join('');
+}
+
+// ═══ ESPERIENZE ═══
+function rowToEsperienza(row){
+  return {
+    id: row.id,
+    titleIt: row.title_it||'',
+    titleEn: row.title_en||'',
+    descIt: row.description_it||'',
+    descEn: row.description_en||'',
+    durationIt: row.duration_it||'',
+    durationEn: row.duration_en||'',
+    coverPhoto: row.cover_photo||'',
+    featured: row.featured||false,
+    sortOrder: row.sort_order||0,
+    stops: row.stops||[]
+  };
+}
+
+function renderEsperienze(){
+  var tbody=document.getElementById('esp-tbody');
+  var empty=document.getElementById('empty-esp');
+  if(!esperienze.length){
+    tbody.innerHTML='';
+    if(empty)empty.style.display='';
+    return;
+  }
+  if(empty)empty.style.display='none';
+  tbody.innerHTML=esperienze.map(function(e){
+    var img=e.coverPhoto
+      ?'<img class="thimg" src="'+e.coverPhoto+'" alt="">'
+      :'<div class="the">🗺</div>';
+    return '<tr>'
+      +'<td>'+img+'</td>'
+      +'<td><div class="tb">'+e.titleIt+'</div>'+(e.titleEn?'<div class="tm">EN: '+e.titleEn+'</div>':'')+'</td>'
+      +'<td><div class="tm">'+(e.durationIt||'—')+'</div></td>'
+      +'<td><div class="tm">'+(e.stops.length)+' tappe</div></td>'
+      +'<td>'+(e.featured?'<span class="chip" style="background:#fef9c3;color:#854d0e;">⭐ Sì</span>':'<span class="abadge">No</span>')+'</td>'
+      +'<td><div class="tac">'
+      +'<button class="btn bs sm ico" onclick="openEditEsperienza('+e.id+')">✏️</button>'
+      +'<button class="btn bd sm ico" onclick="deleteEsperienza('+e.id+')">🗑</button>'
+      +'</div></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function openAddEsperienza(){
+  editEspId=null;
+  espCoverData='';
+  document.getElementById('m-esp-title').textContent='Nuova esperienza';
+  document.getElementById('esp-title-it').value='';
+  document.getElementById('esp-title-en').value='';
+  document.getElementById('esp-desc-it').value='';
+  document.getElementById('esp-desc-en').value='';
+  document.getElementById('esp-dur-it').value='';
+  document.getElementById('esp-dur-en').value='';
+  document.getElementById('esp-featured').checked=false;
+  document.getElementById('esp-sort').value='0';
+  document.getElementById('esp-cover-prev').style.display='none';
+  document.getElementById('esp-cover-img').src='';
+  document.getElementById('esp-stops').innerHTML='';
+  document.getElementById('m-esp').classList.add('on');
+}
+
+function openEditEsperienza(id){
+  var e=esperienze.find(function(x){return x.id==id;});
+  if(!e)return;
+  editEspId=e.id;
+  espCoverData=e.coverPhoto||'';
+  document.getElementById('m-esp-title').textContent='Modifica esperienza';
+  document.getElementById('esp-title-it').value=e.titleIt||'';
+  document.getElementById('esp-title-en').value=e.titleEn||'';
+  document.getElementById('esp-desc-it').value=e.descIt||'';
+  document.getElementById('esp-desc-en').value=e.descEn||'';
+  document.getElementById('esp-dur-it').value=e.durationIt||'';
+  document.getElementById('esp-dur-en').value=e.durationEn||'';
+  document.getElementById('esp-featured').checked=!!e.featured;
+  document.getElementById('esp-sort').value=e.sortOrder||0;
+  if(espCoverData){
+    document.getElementById('esp-cover-img').src=espCoverData;
+    document.getElementById('esp-cover-prev').style.display='';
+  } else {
+    document.getElementById('esp-cover-prev').style.display='none';
+  }
+  document.getElementById('esp-stops').innerHTML='';
+  (e.stops||[]).forEach(function(s){addEspStopRow(s);});
+  document.getElementById('m-esp').classList.add('on');
+}
+
+function closeEsperienza(){
+  document.getElementById('m-esp').classList.remove('on');
+  editEspId=null;
+  espCoverData='';
+}
+
+function handleEspCover(inp){
+  var f=inp.files[0];if(!f)return;
+  uploadToStorage(f,function(url){
+    espCoverData=url;
+    document.getElementById('esp-cover-img').src=url;
+    document.getElementById('esp-cover-prev').style.display='';
+    inp.value='';
+  });
+}
+
+function removeEspCover(){
+  espCoverData='';
+  document.getElementById('esp-cover-img').src='';
+  document.getElementById('esp-cover-prev').style.display='none';
+}
+
+function addEspStopRow(stop){
+  var container=document.getElementById('esp-stops');
+  var idx=container.children.length;
+  var type=(stop&&stop.type)||'place';
+  var stopId=(stop&&stop.id)||'';
+  var div=document.createElement('div');
+  div.className='arow-wrap';
+  div.id='esp-stop-'+idx;
+  div.setAttribute('data-idx',idx);
+  div.innerHTML='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+    +'<span style="font-size:.75rem;font-weight:700;color:var(--g400);min-width:18px;">'+(idx+1)+'</span>'
+    +'<select class="fs2 esp-stop-type" onchange="onEspStopTypeChange(this,'+idx+')" style="min-width:120px;">'
+    +'<option value="place"'+(type==='place'?' selected':'')+'">Luogo</option>'
+    +'<option value="activity"'+(type==='activity'?' selected':'')+'">Attività</option>'
+    +'</select>'
+    +'<select class="fs2 esp-stop-id" style="flex:1;min-width:160px;" id="esp-stop-id-'+idx+'"></select>'
+    +'<div style="display:flex;gap:4px;margin-left:auto;">'
+    +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',-1)" title="Su">↑</button>'
+    +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',1)" title="Giù">↓</button>'
+    +'<button class="btn bd sm ico" onclick="removeEspStop('+idx+')">✕</button>'
+    +'</div></div>';
+  container.appendChild(div);
+  populateEspStopSelect(idx, type, stopId);
+}
+
+function populateEspStopSelect(idx, type, selectedId){
+  var sel=document.getElementById('esp-stop-id-'+idx);
+  if(!sel)return;
+  sel.innerHTML='<option value="">— seleziona —</option>';
+  var list=type==='place'?places:cityActs.concat(
+    [].concat.apply([],places.map(function(p){return p.activities||[];}))
+  );
+  list.forEach(function(item){
+    var o=document.createElement('option');
+    o.value=item.id;
+    o.textContent=item.name||(item.titleIt||'');
+    if(String(item.id)===String(selectedId))o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+function onEspStopTypeChange(sel, idx){
+  populateEspStopSelect(idx, sel.value, '');
+}
+
+function removeEspStop(idx){
+  var el=document.getElementById('esp-stop-'+idx);
+  if(el)el.remove();
+  renumberEspStops();
+}
+
+function moveEspStop(idx, dir){
+  var container=document.getElementById('esp-stops');
+  var rows=Array.from(container.children);
+  var pos=rows.findIndex(function(r){return r.id==='esp-stop-'+idx;});
+  var newPos=pos+dir;
+  if(newPos<0||newPos>=rows.length)return;
+  if(dir===-1) container.insertBefore(rows[pos],rows[newPos]);
+  else container.insertBefore(rows[newPos],rows[pos]);
+  renumberEspStops();
+}
+
+function renumberEspStops(){
+  var container=document.getElementById('esp-stops');
+  Array.from(container.children).forEach(function(row, i){
+    var numEl=row.querySelector('span[style*="min-width:18px"]');
+    if(numEl)numEl.textContent=(i+1);
+    row.id='esp-stop-'+i;
+    row.setAttribute('data-idx',i);
+    var typeSel=row.querySelector('.esp-stop-type');
+    if(typeSel){typeSel.setAttribute('onchange','onEspStopTypeChange(this,'+i+')');}
+    var idSel=row.querySelector('.esp-stop-id');
+    if(idSel)idSel.id='esp-stop-id-'+i;
+    var btns=row.querySelectorAll('button');
+    if(btns[0])btns[0].setAttribute('onclick','moveEspStop('+i+',-1)');
+    if(btns[1])btns[1].setAttribute('onclick','moveEspStop('+i+',1)');
+    if(btns[2])btns[2].setAttribute('onclick','removeEspStop('+i+')');
+  });
+}
+
+function collectEspStops(){
+  var container=document.getElementById('esp-stops');
+  var stops=[];
+  Array.from(container.children).forEach(function(row){
+    var typeSel=row.querySelector('.esp-stop-type');
+    var idSel=row.querySelector('.esp-stop-id');
+    if(!typeSel||!idSel||!idSel.value)return;
+    stops.push({type:typeSel.value, id:parseInt(idSel.value)||idSel.value});
+  });
+  return stops;
+}
+
+function saveEsperienza(){
+  var titleIt=document.getElementById('esp-title-it').value.trim();
+  if(!titleIt){toast('Titolo IT obbligatorio','err');return;}
+  var body={
+    title_it: titleIt,
+    title_en: document.getElementById('esp-title-en').value.trim()||titleIt,
+    description_it: document.getElementById('esp-desc-it').value.trim(),
+    description_en: document.getElementById('esp-desc-en').value.trim(),
+    duration_it: document.getElementById('esp-dur-it').value.trim(),
+    duration_en: document.getElementById('esp-dur-en').value.trim(),
+    cover_photo: espCoverData||'',
+    featured: document.getElementById('esp-featured').checked,
+    sort_order: parseInt(document.getElementById('esp-sort').value)||0,
+    stops: collectEspStops()
+  };
+  if(editEspId) body.id=editEspId;
+  var wasId=editEspId;
+  closeEsperienza();
+  sbFetch('esperienze',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'},
+    body:JSON.stringify(body)
+  }).then(function(r){return r.json();})
+  .then(function(rows){
+    var saved=rowToEsperienza(rows&&rows[0]?rows[0]:body);
+    if(wasId){
+      var i=esperienze.findIndex(function(x){return x.id==wasId;});
+      if(i>=0)esperienze[i]=saved; else esperienze.push(saved);
+    } else {
+      esperienze.push(saved);
+    }
+    renderEsperienze();
+    toast(wasId?'Esperienza aggiornata ✓':'Esperienza aggiunta ✓','ok');
+  }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
+}
+
+function deleteEsperienza(id){
+  if(!confirm('Eliminare questa esperienza?'))return;
+  sbFetch('esperienze?id=eq.'+id,{
+    method:'DELETE',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+  }).then(function(){
+    esperienze=esperienze.filter(function(x){return x.id!=id;});
+    renderEsperienze();
+    toast('Esperienza eliminata ✓','ok');
+  }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
 }
 
 // ═══ BOOT ═══
