@@ -161,7 +161,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 @media(max-width:767px){
   #mode-toggle{bottom:160px;}
   #fab{bottom:calc(env(safe-area-inset-bottom,0px) + 22px + 56px);}
-  #bottom-card{bottom:calc(56px + env(safe-area-inset-bottom,0px));}
+  #bottom-card{bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important;}
   #fav-btn{display:none;}
 }
 /* ── BOTTOM NAV (mobile only) ── */
@@ -213,10 +213,11 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #itinerario-detail{position:fixed;inset:0;z-index:510;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #itinerario-detail.show{display:flex;}
 .itd-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.itd-cover{width:100%;height:220px;object-fit:cover;display:block;background:var(--g100);}
-.itd-cover-ph{width:100%;height:220px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:3.5rem;}
-.itd-body{padding:16px 16px calc(env(safe-area-inset-bottom,0px)+24px);}
-@media(min-width:768px){.itd-body{max-width:600px;margin:0 auto;padding:16px 24px calc(env(safe-area-inset-bottom,0px)+24px);}}
+.itd-inner{padding:16px 16px calc(env(safe-area-inset-bottom,0px)+24px);}
+@media(min-width:768px){.itd-inner{max-width:680px;margin:0 auto;padding:16px 24px calc(env(safe-area-inset-bottom,0px)+24px);}}
+.itd-cover{width:100%;height:220px;object-fit:cover;display:block;background:var(--g100);border-radius:12px;margin-bottom:14px;}
+.itd-cover-ph{width:100%;height:220px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:3.5rem;border-radius:12px;margin-bottom:14px;}
+.itd-body{padding:0;}
 .itd-title{font-size:1.2rem;font-weight:700;color:var(--g900);margin-bottom:6px;}
 .itd-dur{font-size:.78rem;color:var(--g400);margin-bottom:14px;}
 .itd-desc{font-size:.92rem;color:var(--g700);line-height:1.6;margin-bottom:22px;}
@@ -970,11 +971,13 @@ lottie.loadAnimation({
     <div class="itp-title" id="itd-title"></div>
   </div>
   <div class="itd-scroll">
-    <div id="itd-cover-wrap"></div>
-    <div class="itd-body">
-      <div id="itd-dur" class="itd-dur"></div>
-      <div id="itd-desc" class="itd-desc"></div>
-      <div id="itd-stops"></div>
+    <div class="itd-inner">
+      <div id="itd-cover-wrap"></div>
+      <div class="itd-body">
+        <div id="itd-dur" class="itd-dur"></div>
+        <div id="itd-desc" class="itd-desc"></div>
+        <div id="itd-stops"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -3374,9 +3377,9 @@ window.addEventListener('DOMContentLoaded',function(){
 </script>
 <!-- EXP ROW — featured itineraries strip above bottom nav -->
 <div id="exp-row">
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px;margin-bottom:6px;">
-    <span style="font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--g500);">Itinerari per te</span>
-    <span style="font-size:.72rem;font-weight:600;color:#dc6b2f;cursor:pointer;" onclick="openItinerariPage()">Tutti →</span>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px 6px;">
+    <span style="font-size:9px;font-weight:600;color:#374151;">Itinerari per te</span>
+    <span style="font-size:8px;color:#dc6b2f;cursor:pointer;" onclick="openItinerariPage()">Tutti →</span>
   </div>
   <div id="exp-row-scroll"></div>
 </div>
