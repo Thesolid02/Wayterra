@@ -1138,8 +1138,7 @@ var T={
 };
 
 /* ═══ DATA ═══ */
-var DATA={places:[],cats:[],atypes:[],placeTypes:[],expTypes:[],expSubtypes:[],cityActivities:[]};
-var esperienze=[];
+var DATA={places:[],cats:[],atypes:[],placeTypes:[],expTypes:[],expSubtypes:[],cityActivities:[],experiences:[]};
 var DEF_CATS=[
   {id:'borgo',icon:'🏘',name:'Borghi',nameEn:'Villages',color:'#dc6b2f'},
   {id:'nature',icon:'🌿',name:'Parchi e natura',nameEn:'Parks & nature',color:'#16a34a'},
@@ -3100,23 +3099,22 @@ function goToMap(){
 
 // ── ITINERARI ──
 function loadEsperienze(){
-  var h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
-  fetch(SB_URL+'/rest/v1/esperienze?select=*&order=sort_order',{headers:h})
+  sbFetch('experiences?select=*&order=sort_order',{method:'GET'})
     .then(function(r){return r.ok?r.json():[];})
     .then(function(rows){
-      esperienze=(rows||[]).map(function(r){
-        return{id:r.id,titleIt:r.title_it||'',titleEn:r.title_en||'',
-               descIt:r.description_it||'',descEn:r.description_en||'',
-               durationIt:r.duration_it||'',durationEn:r.duration_en||'',
+      DATA.experiences=(rows||[]).map(function(r){
+        return{id:r.id,titleIt:r.title||'',titleEn:r.title_en||'',
+               descIt:r.description||'',descEn:r.description_en||'',
+               durationIt:r.duration||'',durationEn:r.duration_en||'',
                coverPhoto:r.cover_photo||'',featured:r.featured||false,
                sortOrder:r.sort_order||0,stops:r.stops||[]};
       });
-      renderExpRow();
+      renderExpCards();
     })
-    .catch(function(){esperienze=[];});
+    .catch(function(){DATA.experiences=[];});
 }
-function renderExpRow(){
-  var featured=esperienze.filter(function(e){return e.featured;});
+function renderExpCards(){
+  var featured=DATA.experiences.filter(function(e){return e.featured;});
   var row=document.getElementById('exp-row');
   var scroll=document.getElementById('exp-row-scroll');
   if(!row||!scroll)return;
@@ -3134,6 +3132,7 @@ function renderExpRow(){
   }).join('');
   row.classList.add('show');
 }
+function renderExpRow(){renderExpCards();}
 function openItinerariPage(){
   renderItinerariPage();
   document.getElementById('itinerari-page').classList.add('show');
@@ -3146,11 +3145,11 @@ function closeItinerariPage(){
 function renderItinerariPage(){
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
-  if(!esperienze.length){
+  if(!DATA.experiences.length){
     scroll.innerHTML='<div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div>';
     return;
   }
-  scroll.innerHTML=esperienze.map(function(e){
+  scroll.innerHTML=DATA.experiences.map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
     var img=e.coverPhoto
@@ -3166,7 +3165,7 @@ function renderItinerariPage(){
   }).join('');
 }
 function openItinerarioDetail(id){
-  var e=esperienze.find(function(x){return x.id==id;});
+  var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
   toast(title);
