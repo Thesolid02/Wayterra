@@ -158,6 +158,55 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #fab:active{transform:scale(.9);}
 /* MODE TOGGLE */
 #mode-toggle{position:fixed;bottom:100px;right:12px;display:flex;flex-direction:column;gap:5px;z-index:400;}
+@media(max-width:767px){
+  #mode-toggle{bottom:160px;}
+  #fab{bottom:calc(env(safe-area-inset-bottom,0px) + 22px + 56px);}
+  #bottom-card{bottom:56px;}
+  #fav-btn{display:none;}
+}
+/* ── BOTTOM NAV (mobile only) ── */
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:310;
+  background:rgba(255,255,255,.97);border-top:0.5px solid rgba(0,0,0,.08);
+  padding:8px 0 env(safe-area-inset-bottom,10px);
+  display:flex;justify-content:space-around;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+@media(min-width:768px){#bottom-nav{display:none;}#itinerari-btn-d{display:flex !important;}}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;
+  padding:0 20px;background:none;border:none;font-family:var(--f);}
+.bn-item i{font-size:1.25rem;color:#9ca3af;transition:color .15s;}
+.bn-item span{font-size:.6rem;font-weight:600;color:#9ca3af;letter-spacing:.02em;transition:color .15s;}
+.bn-item.active i,.bn-item.active span{color:#dc6b2f;}
+/* ── EXP ROW ── */
+#exp-row{position:fixed;left:0;right:0;z-index:290;
+  bottom:56px;padding:0 0 8px;display:none;
+  background:linear-gradient(to top,rgba(255,255,255,1) 70%,rgba(255,255,255,0));}
+#exp-row.show{display:block;}
+.exp-row-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px;}
+.exp-row-title{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--g500);}
+.exp-row-all{font-size:.72rem;font-weight:600;color:#dc6b2f;background:none;border:none;cursor:pointer;font-family:var(--f);padding:0;}
+#exp-row-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 14px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+#exp-row-scroll::-webkit-scrollbar{display:none;}
+.exp-card{flex-shrink:0;width:140px;border-radius:var(--rl);overflow:hidden;background:var(--w);border:0.5px solid var(--g200);box-shadow:var(--sh-sm);cursor:pointer;}
+.exp-card-img{width:100%;height:76px;object-fit:cover;display:block;background:var(--g100);}
+.exp-card-img-ph{width:100%;height:76px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.exp-card-body{padding:7px 9px;}
+.exp-card-title{font-size:.75rem;font-weight:700;color:var(--g900);line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.exp-card-dur{font-size:.65rem;color:var(--g400);margin-top:3px;}
+/* ── ITINERARI PAGE ── */
+#itinerari-page{position:fixed;inset:0;z-index:500;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
+#itinerari-page.show{display:flex;}
+.itp-header{display:flex;align-items:center;gap:10px;padding:12px 16px;
+  padding-top:calc(env(safe-area-inset-top,0px) + 12px);border-bottom:1px solid var(--g100);flex-shrink:0;}
+.itp-back{width:34px;height:34px;border-radius:50%;background:var(--g50);border:0.5px solid var(--g200);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;}
+.itp-title{font-size:1rem;font-weight:700;color:var(--g900);flex:1;}
+.itp-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px calc(env(safe-area-inset-bottom,0px)+72px);}
+.itp-card{background:var(--w);border:0.5px solid var(--g200);border-radius:var(--rxl);overflow:hidden;margin-bottom:12px;cursor:pointer;box-shadow:var(--sh-sm);}
+.itp-card-img{width:100%;height:140px;object-fit:cover;display:block;background:var(--g100);}
+.itp-card-img-ph{width:100%;height:140px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+.itp-card-body{padding:12px 14px;}
+.itp-card-title{font-size:.95rem;font-weight:700;color:var(--g900);margin-bottom:4px;}
+.itp-card-dur{font-size:.75rem;color:var(--g400);margin-bottom:6px;}
+.itp-stop-badge{font-size:.67rem;padding:2px 8px;border-radius:100px;background:var(--g100);color:var(--g500);border:0.5px solid var(--g200);}
 .mode-sq-btn{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;box-sizing:border-box;transition:opacity .15s,border-color .15s;position:relative;padding:0;background:none;}
 #mode-btn-city.msq-active{border-color:#dc6b2f;opacity:1;}
 #mode-btn-city.msq-inactive{border-color:rgba(220,107,47,.4);opacity:.7;}
@@ -703,6 +752,7 @@ lottie.loadAnimation({
         <i class="ti ti-adjustments-horizontal"></i>
         <div class="filter-dot" id="filter-dot"></div>
       </button>
+      <button class="search-btn" id="itinerari-btn-d" onclick="openItinerariPage()" style="display:none;" title="Itinerari"><i class="ti ti-route"></i></button>
       <button class="fav-btn" id="fav-btn" onclick="openFavPage()"><i class="ti ti-bookmark"></i></button>
     </div>
   </div>
@@ -885,6 +935,15 @@ lottie.loadAnimation({
   <div class="dp-cta">
     <button class="dp-maps-btn" id="dp-maps-btn"></button>
   </div>
+</div>
+
+<!-- ITINERARI PAGE -->
+<div id="itinerari-page">
+  <div class="itp-header">
+    <button class="itp-back" onclick="closeItinerariPage()">←</button>
+    <div class="itp-title">Itinerari</div>
+  </div>
+  <div class="itp-scroll" id="itp-scroll"></div>
 </div>
 
 <!-- FAVORITES PAGE -->
@@ -1080,6 +1139,7 @@ var T={
 
 /* ═══ DATA ═══ */
 var DATA={places:[],cats:[],atypes:[],placeTypes:[],expTypes:[],expSubtypes:[],cityActivities:[]};
+var esperienze=[];
 var DEF_CATS=[
   {id:'borgo',icon:'🏘',name:'Borghi',nameEn:'Villages',color:'#dc6b2f'},
   {id:'nature',icon:'🌿',name:'Parchi e natura',nameEn:'Parks & nature',color:'#16a34a'},
@@ -2761,6 +2821,7 @@ function updFavBtn(){
   }
 }
 function openFavPage(){
+  setBottomNav('salvati');
   var title=document.getElementById('fav-title');
   title.textContent=t('favorites');
   var scroll=document.getElementById('fav-scroll');
@@ -2825,7 +2886,7 @@ function openFavPage(){
   }
   document.getElementById('fav-page').classList.add('show');
 }
-function closeFavPage(){document.getElementById('fav-page').classList.remove('show');}
+function closeFavPage(){document.getElementById('fav-page').classList.remove('show');setBottomNav('mappa');}
 function removeFav(id){favs.delete(id);saveFavs();updFavBtn();openFavPage();}
 function removeFavAct(id){favActs.delete(id);saveFavActs();updFavBtn();openFavPage();}
 function openCityActById(id){var a=(DATA.cityActivities||[]).find(function(x){return x.id===id;});if(a){closeFavPage();openCityActivityDetail(a);}}
@@ -3025,6 +3086,92 @@ function updateRegionPageLang(){
   }
 }
 
+// ── BOTTOM NAV ──
+function setBottomNav(name){
+  document.querySelectorAll('.bn-item').forEach(function(el){
+    el.classList.toggle('active',el.getAttribute('data-nav')===name);
+  });
+}
+function goToMap(){
+  document.getElementById('itinerari-page').classList.remove('show');
+  var fp=document.getElementById('fav-page');if(fp)fp.classList.remove('show');
+  setBottomNav('mappa');
+}
+
+// ── ITINERARI ──
+function loadEsperienze(){
+  var h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+  fetch(SB_URL+'/rest/v1/esperienze?select=*&order=sort_order',{headers:h})
+    .then(function(r){return r.ok?r.json():[];})
+    .then(function(rows){
+      esperienze=(rows||[]).map(function(r){
+        return{id:r.id,titleIt:r.title_it||'',titleEn:r.title_en||'',
+               descIt:r.description_it||'',descEn:r.description_en||'',
+               durationIt:r.duration_it||'',durationEn:r.duration_en||'',
+               coverPhoto:r.cover_photo||'',featured:r.featured||false,
+               sortOrder:r.sort_order||0,stops:r.stops||[]};
+      });
+      renderExpRow();
+    })
+    .catch(function(){esperienze=[];});
+}
+function renderExpRow(){
+  var featured=esperienze.filter(function(e){return e.featured;});
+  var row=document.getElementById('exp-row');
+  var scroll=document.getElementById('exp-row-scroll');
+  if(!row||!scroll)return;
+  if(!featured.length){row.classList.remove('show');return;}
+  scroll.innerHTML=featured.map(function(e){
+    var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+    var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+    var img=e.coverPhoto
+      ?'<img class="exp-card-img" src="'+e.coverPhoto+'" alt="">'
+      :'<div class="exp-card-img-ph">🗺</div>';
+    return '<div class="exp-card" onclick="openItinerarioDetail('+e.id+')">'
+      +img+'<div class="exp-card-body"><div class="exp-card-title">'+title+'</div>'
+      +(dur?'<div class="exp-card-dur">'+dur+'</div>':'')
+      +'</div></div>';
+  }).join('');
+  row.classList.add('show');
+}
+function openItinerariPage(){
+  renderItinerariPage();
+  document.getElementById('itinerari-page').classList.add('show');
+  setBottomNav('itinerari');
+}
+function closeItinerariPage(){
+  document.getElementById('itinerari-page').classList.remove('show');
+  setBottomNav('mappa');
+}
+function renderItinerariPage(){
+  var scroll=document.getElementById('itp-scroll');
+  if(!scroll)return;
+  if(!esperienze.length){
+    scroll.innerHTML='<div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div>';
+    return;
+  }
+  scroll.innerHTML=esperienze.map(function(e){
+    var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+    var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+    var img=e.coverPhoto
+      ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
+      :'<div class="itp-card-img-ph">🗺</div>';
+    var stops=e.stops&&e.stops.length
+      ?'<span class="itp-stop-badge">'+e.stops.length+' tappe</span>':'';
+    return '<div class="itp-card" onclick="openItinerarioDetail('+e.id+')">'
+      +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
+      +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
+      +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+      +'</div></div>';
+  }).join('');
+}
+function openItinerarioDetail(id){
+  var e=esperienze.find(function(x){return x.id==id;});
+  if(!e)return;
+  var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+  toast(title);
+}
+
 function bootApp(d){
   DATA=d;
   lang=localStorage.getItem(K.LANG)||'it';
@@ -3043,6 +3190,7 @@ function bootApp(d){
   updateRegionPageLang();
   var savedRegion=localStorage.getItem('WT_REGION');
   if(savedRegion)updateRegionPill(savedRegion);
+  loadEsperienze();
   setTimeout(function(){
     document.getElementById('splash').classList.add('hide');
     if(!localStorage.getItem('WT_REGION')){
@@ -3154,6 +3302,15 @@ window.addEventListener('DOMContentLoaded',function(){
   });
 });
 </script>
+<!-- EXP ROW — featured itineraries strip above bottom nav -->
+<div id="exp-row">
+  <div class="exp-row-header">
+    <span class="exp-row-title">Itinerari per te</span>
+    <button class="exp-row-all" onclick="openItinerariPage()">Tutti →</button>
+  </div>
+  <div id="exp-row-scroll"></div>
+</div>
+
 <div id="bottom-card">
   <div id="bc-vibe-fumetto"></div>
   <div class="bc-handle"></div>
@@ -3167,6 +3324,21 @@ window.addEventListener('DOMContentLoaded',function(){
       <div class="bc-gems" id="bc-gems"></div>
     </div>
   </div>
+</div>
+<!-- BOTTOM NAV (mobile only) -->
+<div id="bottom-nav">
+  <button class="bn-item active" data-nav="mappa" onclick="goToMap()">
+    <i class="ti ti-map-2"></i>
+    <span>Mappa</span>
+  </button>
+  <button class="bn-item" data-nav="itinerari" onclick="openItinerariPage()">
+    <i class="ti ti-route"></i>
+    <span>Itinerari</span>
+  </button>
+  <button class="bn-item" data-nav="salvati" onclick="openFavPage()">
+    <i class="ti ti-bookmark"></i>
+    <span>Salvati</span>
+  </button>
 </div>
 </body>
 </html>
