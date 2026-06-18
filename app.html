@@ -161,7 +161,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 @media(max-width:767px){
   #mode-toggle{bottom:160px;}
   #fab{bottom:calc(env(safe-area-inset-bottom,0px) + 22px + 56px);}
-  #bottom-card{bottom:56px;}
+  #bottom-card{bottom:calc(56px + env(safe-area-inset-bottom,0px));}
   #fav-btn{display:none;}
 }
 /* ── BOTTOM NAV (mobile only) ── */
@@ -215,7 +215,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itd-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .itd-cover{width:100%;height:220px;object-fit:cover;display:block;background:var(--g100);}
 .itd-cover-ph{width:100%;height:220px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:3.5rem;}
-.itd-body{padding:20px 16px calc(env(safe-area-inset-bottom,0px)+24px);}
+.itd-body{padding:16px 16px calc(env(safe-area-inset-bottom,0px)+24px);}
+@media(min-width:768px){.itd-body{max-width:600px;margin:0 auto;padding:16px 24px calc(env(safe-area-inset-bottom,0px)+24px);}}
 .itd-title{font-size:1.2rem;font-weight:700;color:var(--g900);margin-bottom:6px;}
 .itd-dur{font-size:.78rem;color:var(--g400);margin-bottom:14px;}
 .itd-desc{font-size:.92rem;color:var(--g700);line-height:1.6;margin-bottom:22px;}
@@ -2039,6 +2040,7 @@ function l1NearbyHtml(p){
 }
 function showL2(place){
   clearL2();
+  document.getElementById('exp-row').style.display='none';
   if(place.premium&&!unlocked)return;
   (place.activities||[]).forEach(function(a,i){
     if(!a.lat||!a.lng)return;
@@ -2391,6 +2393,8 @@ function setMapMode(mode){
   currentPlace=null;
   activePId=null;
   setMapModePopup(mode);
+  var _er=document.getElementById('exp-row');
+  if(_er)_er.style.display=(mode==='city')?'none':(_er.classList.contains('show')?'block':'none');
 }
 function catMatchFn(p){
   if(activeFilter==='all')return true;
@@ -2467,6 +2471,8 @@ function exitL2(){
   closeBubble();clearL2();restoreL1();
   document.getElementById('lv2-bar').style.display='none';
   showModeToggle();
+  var _er=document.getElementById('exp-row');
+  if(_er&&_er.classList.contains('show'))_er.style.display='block';
   map_o.flyTo({center:[12.8,41.8],zoom:8,duration:700});
 }
 
@@ -3368,9 +3374,9 @@ window.addEventListener('DOMContentLoaded',function(){
 </script>
 <!-- EXP ROW — featured itineraries strip above bottom nav -->
 <div id="exp-row">
-  <div class="exp-row-header">
-    <span class="exp-row-title">Itinerari per te</span>
-    <button class="exp-row-all" onclick="openItinerariPage()">Tutti →</button>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px;margin-bottom:6px;">
+    <span style="font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--g500);">Itinerari per te</span>
+    <span style="font-size:.72rem;font-weight:600;color:#dc6b2f;cursor:pointer;" onclick="openItinerariPage()">Tutti →</span>
   </div>
   <div id="exp-row-scroll"></div>
 </div>
