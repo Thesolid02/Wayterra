@@ -963,7 +963,7 @@ function load(){
     sbFetch('place_types?select=*&order=id').then(function(r){return r.json();}),
     sbFetch('experience_types?select=*&order=id').then(function(r){return r.json();}),
     sbFetch('experience_subtypes?select=*&order=id').then(function(r){return r.json();}),
-    sbFetch('esperienze?select=*&order=sort_order').then(function(r){return r.json();}).catch(function(){return [];})
+    sbFetch('experiences?select=*&order=sort_order').then(function(r){return r.json();}).catch(function(){return [];})
   ])
   .then(function(results){
     var catRows=results[0], atypeRows=results[1], placeRows=results[2], actRows=results[3];
@@ -2890,7 +2890,7 @@ function saveEsperienza(){
   if(editEspId) body.id=editEspId;
   var wasId=editEspId;
   closeEsperienza();
-  sbFetch('esperienze',{
+  sbFetch('experiences',{
     method:'POST',
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'},
     body:JSON.stringify(body)
@@ -2910,7 +2910,7 @@ function saveEsperienza(){
 
 function deleteEsperienza(id){
   if(!confirm('Eliminare questa esperienza?'))return;
-  sbFetch('esperienze?id=eq.'+id,{
+  sbFetch('experiences?id=eq.'+id,{
     method:'DELETE',
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
   }).then(function(){
