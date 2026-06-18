@@ -283,15 +283,15 @@ textarea.ft{resize:vertical;line-height:1.65;}
 <div class="pane" id="pane-esperienze">
 <div class="page">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
-    <div><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Esperienze</div><div style="font-size:.82rem;color:var(--g400);">Itinerari curati con tappe collegate a luoghi e attività.</div></div>
-    <button class="btn bp" onclick="openAddEsperienza()">+ Nuova esperienza</button>
+    <div><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Itinerari</div><div style="font-size:.82rem;color:var(--g400);">Itinerari curati con tappe collegate a luoghi e attività.</div></div>
+    <button class="btn bp" onclick="openAddEsperienza()">+ Nuovo itinerario</button>
   </div>
   <div class="tw">
     <table>
       <thead><tr><th style="width:44px;">Foto</th><th>Titolo</th><th style="width:100px;">Durata</th><th style="width:80px;">Tappe</th><th style="width:80px;">Featured</th><th style="width:72px;"></th></tr></thead>
       <tbody id="esp-tbody"></tbody>
     </table>
-    <div class="empty" id="empty-esp" style="display:none"><div style="font-size:2.2rem;margin-bottom:8px;">🗺</div><p>Nessuna esperienza. Aggiungine una!</p></div>
+    <div class="empty" id="empty-esp" style="display:none"><div style="font-size:2.2rem;margin-bottom:8px;">🗺</div><p>Nessun itinerario. Aggiungine uno!</p></div>
   </div>
 </div>
 </div>
@@ -299,8 +299,8 @@ textarea.ft{resize:vertical;line-height:1.65;}
 <div class="pane" id="pane-experience">
 <div class="page">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
-    <div><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Experience</div><div style="font-size:.82rem;color:var(--g400);">Tipologie di esperienza e relative sottotipologie.</div></div>
-    <button class="btn bp" onclick="openAddExpType()">+ Nuova experience</button>
+    <div><div style="font-size:1rem;font-weight:700;margin-bottom:3px;">Categorie attività</div><div style="font-size:.82rem;color:var(--g400);">Tipologie di esperienza e relative sottotipologie.</div></div>
+    <button class="btn bp" onclick="openAddExpType()">+ Nuova categoria attività</button>
   </div>
   <div class="clist" id="et-list"></div>
 </div>
@@ -309,7 +309,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
 <!-- MODAL ESPERIENZA -->
 <div class="ov" id="m-esp">
 <div class="modal">
-  <div class="mh"><div class="mh-t" id="m-esp-title">Nuova esperienza</div><button class="mx" onclick="closeEsperienza()">✕</button></div>
+  <div class="mh"><div class="mh-t" id="m-esp-title">Nuovo itinerario</div><button class="mx" onclick="closeEsperienza()">✕</button></div>
   <div class="mc">
     <div class="sdiv">Titolo</div>
     <div class="g2">
@@ -536,7 +536,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
 <!-- MODAL EXPERIENCE TYPE -->
 <div class="ov" id="m-et">
 <div class="modal" style="max-width:440px;">
-  <div class="mh"><div class="mh-t" id="m-et-title">Nuova experience</div><button class="mx" onclick="closeExpType()">✕</button></div>
+  <div class="mh"><div class="mh-t" id="m-et-title">Nuova categoria attività</div><button class="mx" onclick="closeExpType()">✕</button></div>
   <div class="mc">
     <div class="fg"><label>Icona</label><input type="hidden" id="et-icon"><button type="button" class="icon-pick-btn" id="et-icon-btn" onclick="openIconPicker(function(ic){document.getElementById('et-icon').value=ic;updateETIconBtn();},document.getElementById('et-icon').value,document.getElementById('et-color').value)"><span id="et-icon-display">Seleziona icona →</span></button></div>
     <div class="fg"><label>Nome *</label><input type="text" id="et-name" placeholder="Es. Avventura"></div>
@@ -2094,7 +2094,7 @@ function renderExpTypes(){
         +'</div>'
         +'</div>';
     }).join('')
-    :'<div class="empty">Nessuna experience. Aggiungine una.</div>';
+    :'<div class="empty">Nessuna categoria attività. Aggiungine una.</div>';
 }
 function renderExpSubtypesList(etId){
   var subs=expSubtypes.filter(function(s){return s.experienceTypeId===etId;});
@@ -2122,7 +2122,7 @@ function toggleEtAcc(etId){
 }
 function openAddExpType(){
   editETId=null;
-  document.getElementById('m-et-title').textContent='Nuova experience';
+  document.getElementById('m-et-title').textContent='Nuova categoria attività';
   document.getElementById('et-icon').value='';
   document.getElementById('et-icon-display').textContent='Seleziona icona →';
   document.getElementById('et-name').value='';
@@ -2136,7 +2136,7 @@ function openEditExpType(id){
   var et=expTypes.find(function(t){return t.id==id;});
   if(!et)return;
   editETId=et.id;
-  document.getElementById('m-et-title').textContent='Modifica experience';
+  document.getElementById('m-et-title').textContent='Modifica categoria attività';
   document.getElementById('et-icon').value=et.icon||'';
   updateETIconBtn();
   document.getElementById('et-name').value=et.name||'';
@@ -2168,7 +2168,7 @@ function saveExpType(){
     if(wasId){var i=expTypes.findIndex(function(t){return t.id==wasId;});if(i>=0)expTypes[i]=saved;else expTypes.push(saved);}
     else expTypes.push(saved);
     renderExpTypes();
-    toast(wasId?'Experience aggiornata ✓':'Experience aggiunta ✓','ok');
+    toast(wasId?'Categoria attività aggiornata ✓':'Categoria attività aggiunta ✓','ok');
   }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
 }
 function openAddExpSubtype(etId){
@@ -2718,7 +2718,7 @@ function renderEsperienze(){
 function openAddEsperienza(){
   editEspId=null;
   espCoverData='';
-  document.getElementById('m-esp-title').textContent='Nuova esperienza';
+  document.getElementById('m-esp-title').textContent='Nuovo itinerario';
   document.getElementById('esp-title-it').value='';
   document.getElementById('esp-title-en').value='';
   document.getElementById('esp-desc-it').value='';
@@ -2738,7 +2738,7 @@ function openEditEsperienza(id){
   if(!e)return;
   editEspId=e.id;
   espCoverData=e.coverPhoto||'';
-  document.getElementById('m-esp-title').textContent='Modifica esperienza';
+  document.getElementById('m-esp-title').textContent='Modifica itinerario';
   document.getElementById('esp-title-it').value=e.titleIt||'';
   document.getElementById('esp-title-en').value=e.titleEn||'';
   document.getElementById('esp-desc-it').value=e.descIt||'';
@@ -2904,7 +2904,7 @@ function saveEsperienza(){
       esperienze.push(saved);
     }
     renderEsperienze();
-    toast(wasId?'Esperienza aggiornata ✓':'Esperienza aggiunta ✓','ok');
+    toast(wasId?'Itinerario aggiornato ✓':'Itinerario aggiunto ✓','ok');
   }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
 }
 
@@ -2916,7 +2916,7 @@ function deleteEsperienza(id){
   }).then(function(){
     esperienze=esperienze.filter(function(x){return x.id!=id;});
     renderEsperienze();
-    toast('Esperienza eliminata ✓','ok');
+    toast('Itinerario eliminato ✓','ok');
   }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
 }
 
