@@ -2675,11 +2675,11 @@ function renderCityActGGrid(){
 function rowToEsperienza(row){
   return {
     id: row.id,
-    titleIt: row.title_it||'',
+    titleIt: row.title||'',
     titleEn: row.title_en||'',
-    descIt: row.description_it||'',
+    descIt: row.description||'',
     descEn: row.description_en||'',
-    durationIt: row.duration_it||'',
+    durationIt: row.duration||'',
     durationEn: row.duration_en||'',
     coverPhoto: row.cover_photo||'',
     featured: row.featured||false,
@@ -2876,11 +2876,11 @@ function saveEsperienza(){
   var titleIt=document.getElementById('esp-title-it').value.trim();
   if(!titleIt){toast('Titolo IT obbligatorio','err');return;}
   var body={
-    title_it: titleIt,
+    title: titleIt,
     title_en: document.getElementById('esp-title-en').value.trim()||titleIt,
-    description_it: document.getElementById('esp-desc-it').value.trim(),
+    description: document.getElementById('esp-desc-it').value.trim(),
     description_en: document.getElementById('esp-desc-en').value.trim(),
-    duration_it: document.getElementById('esp-dur-it').value.trim(),
+    duration: document.getElementById('esp-dur-it').value.trim(),
     duration_en: document.getElementById('esp-dur-en').value.trim(),
     cover_photo: espCoverData||'',
     featured: document.getElementById('esp-featured').checked,
