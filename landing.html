@@ -337,7 +337,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <section class="preview-sec">
   <div class="si preview-inner">
     <div class="preview-text">
-      <div class="badge" data-t="prev-badge">How it works</div>
+      <div class="badge" data-t="prev-badge" style="display:inline-flex;align-items:center;">How it works<span style="font-size:14px;color:#dc6b2f;cursor:pointer;margin-left:6px;" onclick="toggleHowPopup()" title="Perché Wayterra?">ⓘ</span></div>
       <div class="s-title" data-t="prev-title">Explore <span class="highlight-marker">hidden places</span> like a true local.</div>
       <p class="s-sub" style="color:rgba(255,255,255,.5);" data-t="prev-sub">Save hours of searching on blogs, Instagram and TikTok. No algorithm. Only authentic hidden places, recommended by those who truly know the area.</p>
       <div class="preview-steps">
@@ -427,47 +427,6 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
         </div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- LA DIFFERENZA -->
-<section style="padding:60px 20px;max-width:600px;margin:0 auto;">
-  <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#dc6b2f;text-align:center;margin-bottom:8px;">La differenza</p>
-  <h2 style="font-size:24px;font-weight:500;text-align:center;margin-bottom:8px;line-height:1.4;">Non le solite guide.<br>Non i soliti posti.</h2>
-  <p style="font-size:14px;color:#6b7280;text-align:center;margin-bottom:28px;line-height:1.7;">Basta perdere ore su Instagram, blog, TikTok e AI cercando posti autentici. Li abbiamo già trovati per te.</p>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-
-    <!-- colonna NO -->
-    <div style="background:#f9fafb;border:0.5px solid #e5e7eb;border-radius:12px;padding:16px;">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
-        <span style="font-size:16px;">🚫</span>
-        <span style="font-size:13px;font-weight:500;color:#6b7280;">Quello che eviti</span>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;gap:6px;"><span style="color:#d1d5db;font-size:12px;">✗</span><span style="font-size:12px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Code e turisti ovunque</span></div>
-        <div style="display:flex;gap:6px;"><span style="color:#d1d5db;font-size:12px;">✗</span><span style="font-size:12px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Ore di ricerca su Instagram e blog</span></div>
-        <div style="display:flex;gap:6px;"><span style="color:#d1d5db;font-size:12px;">✗</span><span style="font-size:12px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Posti già su TripAdvisor</span></div>
-        <div style="display:flex;gap:6px;"><span style="color:#d1d5db;font-size:12px;">✗</span><span style="font-size:12px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Chiedere all'AI sperando sia giusto</span></div>
-        <div style="display:flex;gap:6px;"><span style="color:#d1d5db;font-size:12px;">✗</span><span style="font-size:12px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Itinerari da agenzia viaggi</span></div>
-      </div>
-    </div>
-
-    <!-- colonna SÌ -->
-    <div style="background:#fef9f7;border:0.5px solid #f5c5a0;border-radius:12px;padding:16px;">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
-        <span style="font-size:16px;">✨</span>
-        <span style="font-size:13px;font-weight:500;color:#b84a1a;">Quello che scopri</span>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;gap:6px;"><span style="color:#dc6b2f;font-size:12px;">✓</span><span style="font-size:12px;color:#7c3a1a;line-height:1.5;">Borghi dove sei l'unico forestiero</span></div>
-        <div style="display:flex;gap:6px;"><span style="color:#dc6b2f;font-size:12px;">✓</span><span style="font-size:12px;color:#7c3a1a;line-height:1.5;">Trattorie senza insegna</span></div>
-        <div style="display:flex;gap:6px;"><span style="color:#dc6b2f;font-size:12px;">✓</span><span style="font-size:12px;color:#7c3a1a;line-height:1.5;">Angoli segreti di Roma</span></div>
-        <div style="display:flex;gap:6px;"><span style="color:#dc6b2f;font-size:12px;">✓</span><span style="font-size:12px;color:#7c3a1a;line-height:1.5;">Sentieri che non trovi su Maps</span></div>
-        <div style="display:flex;gap:6px;"><span style="color:#dc6b2f;font-size:12px;">✓</span><span style="font-size:12px;color:#7c3a1a;line-height:1.5;">Segreti che solo i locals sanno</span></div>
-      </div>
-    </div>
-
   </div>
 </section>
 
@@ -797,6 +756,10 @@ function setLandingLang(l){
 function handlePurchase(){
   window.open('https://wayterra.gumroad.com/l/wayterra?redirect=https://wayterra.it/thanks.html','_blank');
 }
+function toggleHowPopup(){
+  var p=document.getElementById('how-popup');
+  p.style.display=p.style.display==='flex'?'none':'flex';
+}
 function toggleFaq(el){
   var item=el.closest('.faq-item');
   var open=item.classList.contains('open');
@@ -811,5 +774,42 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
   });
 });
 </script>
+
+<!-- HOW POPUP -->
+<div id="how-popup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)toggleHowPopup()">
+  <div style="background:#fff;border-radius:12px;padding:20px;max-width:340px;width:100%;position:relative;max-height:90vh;overflow-y:auto;">
+    <button onclick="toggleHowPopup()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:18px;cursor:pointer;color:#6b7280;line-height:1;">✕</button>
+    <h2 style="font-size:17px;font-weight:600;line-height:1.4;margin:0 0 8px;padding-right:24px;">Non le solite guide.<br>Non i soliti posti.</h2>
+    <p style="font-size:13px;color:#6b7280;line-height:1.6;margin:0 0 20px;">Basta perdere ore su Instagram, blog, TikTok e AI cercando posti autentici. Li abbiamo già trovati per te.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:#f9fafb;border:0.5px solid #e5e7eb;border-radius:10px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+          <span style="font-size:15px;">🚫</span>
+          <span style="font-size:12px;font-weight:500;color:#6b7280;">Quello che eviti</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;gap:5px;"><span style="color:#d1d5db;font-size:11px;">✗</span><span style="font-size:11px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Code e turisti ovunque</span></div>
+          <div style="display:flex;gap:5px;"><span style="color:#d1d5db;font-size:11px;">✗</span><span style="font-size:11px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Ore su Instagram e blog</span></div>
+          <div style="display:flex;gap:5px;"><span style="color:#d1d5db;font-size:11px;">✗</span><span style="font-size:11px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Posti già su TripAdvisor</span></div>
+          <div style="display:flex;gap:5px;"><span style="color:#d1d5db;font-size:11px;">✗</span><span style="font-size:11px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Chiedere all'AI</span></div>
+          <div style="display:flex;gap:5px;"><span style="color:#d1d5db;font-size:11px;">✗</span><span style="font-size:11px;color:#9ca3af;text-decoration:line-through;line-height:1.5;">Itinerari da agenzia</span></div>
+        </div>
+      </div>
+      <div style="background:#fef9f7;border:0.5px solid #f5c5a0;border-radius:10px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+          <span style="font-size:15px;">✨</span>
+          <span style="font-size:12px;font-weight:500;color:#b84a1a;">Quello che scopri</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;gap:5px;"><span style="color:#dc6b2f;font-size:11px;">✓</span><span style="font-size:11px;color:#7c3a1a;line-height:1.5;">Borghi senza turisti</span></div>
+          <div style="display:flex;gap:5px;"><span style="color:#dc6b2f;font-size:11px;">✓</span><span style="font-size:11px;color:#7c3a1a;line-height:1.5;">Trattorie senza insegna</span></div>
+          <div style="display:flex;gap:5px;"><span style="color:#dc6b2f;font-size:11px;">✓</span><span style="font-size:11px;color:#7c3a1a;line-height:1.5;">Angoli segreti di Roma</span></div>
+          <div style="display:flex;gap:5px;"><span style="color:#dc6b2f;font-size:11px;">✓</span><span style="font-size:11px;color:#7c3a1a;line-height:1.5;">Sentieri fuori da Maps</span></div>
+          <div style="display:flex;gap:5px;"><span style="color:#dc6b2f;font-size:11px;">✓</span><span style="font-size:11px;color:#7c3a1a;line-height:1.5;">Segreti solo dei locals</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
