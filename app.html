@@ -177,21 +177,33 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .bn-item span{font-size:.6rem;font-weight:600;color:#9ca3af;letter-spacing:.02em;transition:color .15s;}
 .bn-item.active i,.bn-item.active span{color:#dc6b2f;}
 /* ── EXP ROW ── */
-#exp-row{position:fixed;left:0;right:0;z-index:290;
-  bottom:56px;padding:0 0 8px;display:none;
-  background:linear-gradient(to top,rgba(255,255,255,1) 70%,rgba(255,255,255,0));}
+#exp-row{position:fixed;z-index:290;bottom:56px;padding:0 0 6px;display:none;background:transparent;}
 #exp-row.show{display:block;}
-.exp-row-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px;}
+@media(max-width:767px){#exp-row{left:0;right:120px;}}
+@media(min-width:768px){#exp-row{left:50%;transform:translateX(-50%);width:500px;}}
+.exp-row-header{display:flex;align-items:center;padding:6px 8px 4px;}
 .exp-row-title{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--g500);}
-.exp-row-all{font-size:.72rem;font-weight:600;color:#dc6b2f;background:none;border:none;cursor:pointer;font-family:var(--f);padding:0;}
-#exp-row-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 14px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-#exp-row-scroll::-webkit-scrollbar{display:none;}
-.exp-card{flex-shrink:0;width:140px;border-radius:var(--rl);overflow:hidden;background:var(--w);border:0.5px solid var(--g200);box-shadow:var(--sh-sm);cursor:pointer;}
-.exp-card-img{width:100%;height:76px;object-fit:cover;display:block;background:var(--g100);}
-.exp-card-img-ph{width:100%;height:76px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
-.exp-card-body{padding:7px 9px;}
-.exp-card-title{font-size:.75rem;font-weight:700;color:var(--g900);line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-.exp-card-dur{font-size:.65rem;color:var(--g400);margin-top:3px;}
+.exp-row-carousel{display:flex;align-items:center;gap:4px;padding:0 4px;}
+.exp-row-viewport{flex:1;overflow:hidden;}
+#exp-row-scroll{display:flex;gap:10px;will-change:transform;transition:transform .25s ease;}
+.exp-arr{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.92);border:0.5px solid var(--g200);box-shadow:0 1px 4px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;color:var(--g700);flex-shrink:0;padding:0;line-height:1;}
+.exp-card{flex-shrink:0;border-radius:var(--rl);overflow:hidden;background:var(--w);border:0.5px solid var(--g200);box-shadow:var(--sh-sm);cursor:pointer;}
+@media(max-width:767px){
+  .exp-card{width:100%;height:80px;display:flex;}
+  .exp-card-img{width:80px;height:80px;object-fit:cover;display:block;background:var(--g100);flex-shrink:0;}
+  .exp-card-img-ph{width:80px;height:80px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+  .exp-card-body{padding:8px 10px;flex:1;min-width:0;}
+  .exp-card-title{font-size:.78rem;font-weight:700;color:var(--g900);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+  .exp-card-dur{font-size:.67rem;color:var(--g400);margin-top:4px;}
+}
+@media(min-width:768px){
+  .exp-card{width:150px;height:85px;}
+  .exp-card-img{width:100%;height:52px;object-fit:cover;display:block;background:var(--g100);}
+  .exp-card-img-ph{width:100%;height:52px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+  .exp-card-body{padding:6px 8px;}
+  .exp-card-title{font-size:.72rem;font-weight:700;color:var(--g900);line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+  .exp-card-dur{font-size:.62rem;color:var(--g400);margin-top:2px;}
+}
 /* ── ITINERARI PAGE ── */
 #itinerari-page{position:fixed;inset:0;z-index:500;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #itinerari-page.show{display:flex;}
@@ -213,11 +225,10 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #itinerario-detail{position:fixed;inset:0;z-index:510;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #itinerario-detail.show{display:flex;}
 .itd-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.itd-cover{height:220px;object-fit:cover;display:block;background:var(--g100);border-radius:12px;margin:16px 16px 14px;width:calc(100% - 32px);}
-.itd-cover-ph{height:220px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:3.5rem;border-radius:12px;margin:16px 16px 14px;width:calc(100% - 32px);}
-.itd-inner{padding:0 16px calc(env(safe-area-inset-bottom,0px)+24px);}
-@media(min-width:768px){.itd-inner{max-width:680px;margin:0 auto;padding:0 24px calc(env(safe-area-inset-bottom,0px)+24px);}
-  .itd-cover,.itd-cover-ph{margin:16px auto 14px;width:calc(min(680px,100%) - 48px);}}
+.itd-cover{width:100%;height:220px;object-fit:cover;display:block;background:var(--g100);border-radius:12px;margin-bottom:14px;}
+.itd-cover-ph{width:100%;height:220px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:3.5rem;border-radius:12px;margin-bottom:14px;}
+.itd-inner{padding:16px 16px calc(env(safe-area-inset-bottom,0px)+24px);}
+@media(min-width:768px){.itd-inner{max-width:680px;margin:0 auto;padding:16px 24px calc(env(safe-area-inset-bottom,0px)+24px);}}
 .itd-body{padding:0;}
 .itd-title{font-size:1.2rem;font-weight:700;color:var(--g900);margin-bottom:6px;}
 .itd-dur{font-size:.78rem;color:var(--g400);margin-bottom:14px;}
@@ -972,8 +983,8 @@ lottie.loadAnimation({
     <div class="itp-title" id="itd-title"></div>
   </div>
   <div class="itd-scroll">
-    <div id="itd-cover-wrap"></div>
     <div class="itd-inner">
+      <div id="itd-cover-wrap"></div>
       <div class="itd-body">
         <div id="itd-dur" class="itd-dur"></div>
         <div id="itd-desc" class="itd-desc"></div>
@@ -3155,12 +3166,15 @@ function loadEsperienze(){
     })
     .catch(function(){DATA.experiences=[];});
 }
+var expCardIndex=0;
 function renderExpCards(){
   var featured=DATA.experiences.filter(function(e){return e.featured;});
   var row=document.getElementById('exp-row');
   var scroll=document.getElementById('exp-row-scroll');
   if(!row||!scroll)return;
   if(!featured.length){row.classList.remove('show');return;}
+  expCardIndex=0;
+  scroll.style.transform='translateX(0)';
   scroll.innerHTML=featured.map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
@@ -3173,8 +3187,33 @@ function renderExpCards(){
       +'</div></div>';
   }).join('');
   row.classList.add('show');
+  setTimeout(updateExpCarousel,50);
 }
 function renderExpRow(){renderExpCards();}
+function prevExpCard(){
+  expCardIndex=Math.max(0,expCardIndex-1);
+  updateExpCarousel();
+}
+function nextExpCard(){
+  var featured=DATA.experiences.filter(function(e){return e.featured;});
+  var vis=window.innerWidth>=768?3:1;
+  expCardIndex=Math.min(Math.max(0,featured.length-vis),expCardIndex+1);
+  updateExpCarousel();
+}
+function updateExpCarousel(){
+  var scroll=document.getElementById('exp-row-scroll');
+  var vp=document.querySelector('.exp-row-viewport');
+  if(!scroll||!vp)return;
+  var step=window.innerWidth>=768?160:(vp.offsetWidth+10);
+  scroll.style.transform='translateX('+(-expCardIndex*step)+'px)';
+  var featured=DATA.experiences.filter(function(e){return e.featured;});
+  var vis=window.innerWidth>=768?3:1;
+  var max=Math.max(0,featured.length-vis);
+  var p=document.getElementById('exp-prev');
+  var n=document.getElementById('exp-next');
+  if(p)p.style.opacity=expCardIndex<=0?'.3':'1';
+  if(n)n.style.opacity=expCardIndex>=max?'.3':'1';
+}
 function openItinerariPage(){
   renderItinerariPage();
   document.getElementById('itinerari-page').classList.add('show');
@@ -3380,9 +3419,14 @@ window.addEventListener('DOMContentLoaded',function(){
 <div id="exp-row">
   <div class="exp-row-header">
     <span class="exp-row-title" data-t="itineraries_for_you">Itinerari per te</span>
-    <button class="exp-row-all" onclick="openItinerariPage()" data-t="all_itineraries">Tutti →</button>
   </div>
-  <div id="exp-row-scroll"></div>
+  <div class="exp-row-carousel">
+    <button class="exp-arr" id="exp-prev" onclick="prevExpCard()">‹</button>
+    <div class="exp-row-viewport">
+      <div id="exp-row-scroll"></div>
+    </div>
+    <button class="exp-arr" id="exp-next" onclick="nextExpCard()">›</button>
+  </div>
 </div>
 
 <div id="bottom-card">
