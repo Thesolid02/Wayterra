@@ -3264,7 +3264,7 @@ function renderItdPill(){
     return;
   }
   document.getElementById('itd-pill-count').textContent=featured.length;
-  document.getElementById('itd-pill-list').innerHTML=featured.map(function(e){
+  document.getElementById('itd-pill-list').innerHTML=featured.slice(0,3).map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
     var stops=e.stops&&e.stops.length?e.stops.length+' tappe':'';
