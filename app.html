@@ -212,9 +212,13 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #itd-pill-wrap{display:none;}
 @media(min-width:768px){
   #itd-pill-wrap{display:block;position:fixed;bottom:100px;right:88px;z-index:400;}
-  #itd-pill-btn{display:flex;align-items:center;gap:6px;background:var(--w);border:0.5px solid var(--g200);border-radius:100px;padding:7px 14px;box-shadow:var(--sh-sm);font-family:var(--f);font-size:.78rem;font-weight:600;color:var(--g900);cursor:pointer;white-space:nowrap;}
-  #itd-pill-btn:hover{background:var(--g50);}
-  .itd-pill-badge{background:#dc6b2f;color:#fff;border-radius:100px;font-size:.6rem;font-weight:700;padding:1px 6px;margin-left:2px;}
+  #itd-pill-btn{position:relative;display:flex;align-items:center;gap:6px;background:#dc6b2f;border:none;border-radius:100px;padding:7px 14px;box-shadow:0 2px 8px rgba(220,107,47,.35);font-family:var(--f);font-size:.78rem;font-weight:600;color:#fff;cursor:pointer;white-space:nowrap;}
+  #itd-pill-btn:hover{background:#c85e28;}
+  .itd-pill-badge{background:rgba(255,255,255,.25);color:#fff;border-radius:100px;font-size:.6rem;font-weight:700;padding:1px 6px;margin-left:2px;}
+  @keyframes itd-pill-pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.3);opacity:.7;}}
+  .itd-pill-dot{width:9px;height:9px;border-radius:50%;background:#1a1a1a;border:1.5px solid #fff;position:absolute;top:-3px;right:-3px;animation:itd-pill-pulse 1.6s ease-in-out infinite;flex-shrink:0;}
+  #itd-pill-hint{display:none;position:absolute;bottom:calc(100% + 10px);right:0;background:var(--g900);color:#fff;font-size:.72rem;font-weight:500;padding:5px 10px;border-radius:8px;white-space:nowrap;pointer-events:none;}
+  #itd-pill-hint::after{content:'';position:absolute;top:100%;right:14px;border:5px solid transparent;border-top-color:#111827;}
   #itd-pill-popup{display:none;position:absolute;bottom:calc(100% + 8px);right:0;width:300px;background:var(--w);border:0.5px solid var(--g200);border-radius:var(--rxl);box-shadow:var(--sh-lg);overflow:hidden;}
   #itd-pill-wrap.open #itd-pill-popup{display:block;}
   .itd-pill-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:0.5px solid var(--g100);}
@@ -3266,11 +3270,20 @@ function renderItdPill(){
       +'</div></div>';
   }).join('');
   wrap.style.display='';
+  var _hint=document.getElementById('itd-pill-hint');
+  if(_hint)_hint.style.display=_itdPillClicked?'none':'';
 }
+var _itdPillClicked=false;
 function toggleItdPill(){
   var wrap=document.getElementById('itd-pill-wrap');
-  if(wrap.classList.contains('open'))closeItdPill();
-  else{wrap.classList.add('open');document.getElementById('itd-pill-overlay').classList.add('show');}
+  if(wrap.classList.contains('open')){closeItdPill();}
+  else{
+    _itdPillClicked=true;
+    var _hint=document.getElementById('itd-pill-hint');
+    if(_hint)_hint.style.display='none';
+    wrap.classList.add('open');
+    document.getElementById('itd-pill-overlay').classList.add('show');
+  }
 }
 function closeItdPill(){
   document.getElementById('itd-pill-wrap').classList.remove('open');
@@ -3640,7 +3653,9 @@ window.addEventListener('DOMContentLoaded',function(){
 <!-- ITINERARI PILL — desktop only -->
 <div id="itd-pill-overlay" onclick="closeItdPill()"></div>
 <div id="itd-pill-wrap" style="display:none;">
+  <div id="itd-pill-hint">Scopri i percorsi pronti ✨</div>
   <button id="itd-pill-btn" onclick="toggleItdPill()">
+    <span class="itd-pill-dot"></span>
     <i class="ti ti-route"></i>
     <span>Itinerari</span>
     <span id="itd-pill-count" class="itd-pill-badge"></span>
