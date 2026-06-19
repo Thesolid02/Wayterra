@@ -3277,7 +3277,7 @@ function openItinerario(id){
   var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
   document.getElementById('itd-title').textContent=title;
   document.getElementById('itd-dur').textContent=dur||'';
-  document.getElementById('itd-desc').textContent=desc||'';
+  renderExpandableText(desc||'','itd-desc',280);
   var coverWrap=document.getElementById('itd-cover-wrap');
   coverWrap.innerHTML=e.coverPhoto
     ?'<img class="itd-cover" src="'+e.coverPhoto+'" alt="">'
