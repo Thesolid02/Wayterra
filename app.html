@@ -181,7 +181,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #exp-row{position:fixed;z-index:290;bottom:56px;padding:0 0 6px;display:none;background:transparent;}
 #exp-row.show{display:block;}
 @media(max-width:767px){#exp-row{left:0;right:120px;}}
-@media(min-width:768px){#exp-row{left:50%;transform:translateX(-50%);width:690px;background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:16px;padding:12px;box-shadow:0 4px 20px rgba(0,0,0,.08);}}
+@media(min-width:768px){#exp-row{display:none!important;}}
 .exp-row-header{display:flex;align-items:center;padding:6px 8px 4px;}
 .exp-row-title{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--g500);}
 .exp-row-carousel{display:flex;align-items:center;gap:4px;padding:0 4px;}
@@ -205,6 +205,31 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   .exp-card-body{padding:6px 8px;}
   .exp-card-title{font-size:.78rem;font-weight:700;color:var(--g900);line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
   .exp-card-dur{font-size:.66rem;color:var(--g400);margin-top:2px;}
+}
+/* ── ITINERARI PILL (desktop) ── */
+#itd-pill-overlay{display:none;position:fixed;inset:0;z-index:399;}
+#itd-pill-overlay.show{display:block;}
+#itd-pill-wrap{display:none;}
+@media(min-width:768px){
+  #itd-pill-wrap{display:block;position:fixed;bottom:100px;right:88px;z-index:400;}
+  #itd-pill-btn{display:flex;align-items:center;gap:6px;background:var(--w);border:0.5px solid var(--g200);border-radius:100px;padding:7px 14px;box-shadow:var(--sh-sm);font-family:var(--f);font-size:.78rem;font-weight:600;color:var(--g900);cursor:pointer;white-space:nowrap;}
+  #itd-pill-btn:hover{background:var(--g50);}
+  .itd-pill-badge{background:#dc6b2f;color:#fff;border-radius:100px;font-size:.6rem;font-weight:700;padding:1px 6px;margin-left:2px;}
+  #itd-pill-popup{display:none;position:absolute;bottom:calc(100% + 8px);right:0;width:300px;background:var(--w);border:0.5px solid var(--g200);border-radius:var(--rxl);box-shadow:var(--sh-lg);overflow:hidden;}
+  #itd-pill-wrap.open #itd-pill-popup{display:block;}
+  .itd-pill-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:0.5px solid var(--g100);}
+  .itd-pill-title{font-size:.78rem;font-weight:700;color:var(--g900);}
+  .itd-pill-close{width:22px;height:22px;border-radius:50%;background:var(--g100);border:none;cursor:pointer;font-size:.7rem;color:var(--g500);display:flex;align-items:center;justify-content:center;}
+  .itd-pill-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:0.5px solid var(--g100);transition:background .12s;}
+  .itd-pill-item:last-child{border-bottom:none;}
+  .itd-pill-item:hover{background:var(--g50);}
+  .itd-pill-img{width:56px;height:56px;border-radius:var(--r);object-fit:cover;flex-shrink:0;background:var(--g100);}
+  .itd-pill-img-ph{width:56px;height:56px;border-radius:var(--r);background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+  .itd-pill-body{flex:1;min-width:0;}
+  .itd-pill-name{font-size:.82rem;font-weight:600;color:var(--g900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .itd-pill-meta{font-size:.7rem;color:var(--g400);margin-top:2px;}
+  .itd-pill-footer{padding:12px 16px;font-size:.78rem;font-weight:600;color:#dc6b2f;cursor:pointer;border-top:0.5px solid var(--g100);text-align:center;}
+  .itd-pill-footer:hover{background:var(--g50);}
 }
 /* ── ITINERARI PAGE ── */
 #itinerari-page{position:fixed;inset:0;z-index:500;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
@@ -2068,6 +2093,7 @@ function l1NearbyHtml(p){
 function showL2(place){
   clearL2();
   document.getElementById('exp-row').style.display='none';
+  renderItdPill();
   if(place.premium&&!unlocked)return;
   (place.activities||[]).forEach(function(a,i){
     if(!a.lat||!a.lng)return;
@@ -2423,6 +2449,7 @@ function setMapMode(mode){
   setMapModePopup(mode);
   var _er=document.getElementById('exp-row');
   if(_er)_er.style.display=(mode==='city')?'none':(_er.classList.contains('show')?'block':'none');
+  renderItdPill();
 }
 function catMatchFn(p){
   if(activeFilter==='all')return true;
@@ -2501,6 +2528,7 @@ function exitL2(){
   showModeToggle();
   var _er=document.getElementById('exp-row');
   if(_er&&_er.classList.contains('show'))_er.style.display='block';
+  renderItdPill();
   map_o.flyTo({center:[12.8,41.8],zoom:8,duration:700});
 }
 
@@ -3211,8 +3239,43 @@ function renderExpCards(){
   }).join('');
   row.classList.add('show');
   setTimeout(updateExpCarousel,50);
+  renderItdPill();
 }
 function renderExpRow(){renderExpCards();}
+function renderItdPill(){
+  var featured=DATA.experiences.filter(function(e){return e.featured;});
+  var wrap=document.getElementById('itd-pill-wrap');
+  if(!wrap)return;
+  // nascosto su mobile, in L2, in city-mode, o senza itinerari featured
+  if(window.innerWidth<768||level===2||mapMode==='city'||!featured.length){
+    wrap.style.display='none';
+    return;
+  }
+  document.getElementById('itd-pill-count').textContent=featured.length;
+  document.getElementById('itd-pill-list').innerHTML=featured.map(function(e){
+    var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+    var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+    var stops=e.stops&&e.stops.length?e.stops.length+' tappe':'';
+    var meta=[dur,stops].filter(Boolean).join(' · ');
+    var img=e.coverPhoto
+      ?'<img class="itd-pill-img" src="'+e.coverPhoto+'" alt="">'
+      :'<div class="itd-pill-img-ph">🗺</div>';
+    return '<div class="itd-pill-item" onclick="openItinerario('+e.id+');closeItdPill();">'
+      +img+'<div class="itd-pill-body"><div class="itd-pill-name">'+title+'</div>'
+      +(meta?'<div class="itd-pill-meta">'+meta+'</div>':'')
+      +'</div></div>';
+  }).join('');
+  wrap.style.display='';
+}
+function toggleItdPill(){
+  var wrap=document.getElementById('itd-pill-wrap');
+  if(wrap.classList.contains('open'))closeItdPill();
+  else{wrap.classList.add('open');document.getElementById('itd-pill-overlay').classList.add('show');}
+}
+function closeItdPill(){
+  document.getElementById('itd-pill-wrap').classList.remove('open');
+  document.getElementById('itd-pill-overlay').classList.remove('show');
+}
 function prevExpCard(){
   expCardIndex=Math.max(0,expCardIndex-1);
   updateExpCarousel();
@@ -3560,7 +3623,7 @@ window.addEventListener('DOMContentLoaded',function(){
   });
 });
 </script>
-<!-- EXP ROW — featured itineraries strip above bottom nav -->
+<!-- EXP ROW — featured itineraries carousel (mobile only) -->
 <div id="exp-row">
   <div class="exp-row-header">
     <span class="exp-row-title" data-t="itineraries_for_you">Itinerari per te</span>
@@ -3571,6 +3634,24 @@ window.addEventListener('DOMContentLoaded',function(){
       <div id="exp-row-scroll"></div>
     </div>
     <button class="exp-arr" id="exp-next" onclick="nextExpCard()">›</button>
+  </div>
+</div>
+
+<!-- ITINERARI PILL — desktop only -->
+<div id="itd-pill-overlay" onclick="closeItdPill()"></div>
+<div id="itd-pill-wrap" style="display:none;">
+  <button id="itd-pill-btn" onclick="toggleItdPill()">
+    <i class="ti ti-route"></i>
+    <span>Itinerari</span>
+    <span id="itd-pill-count" class="itd-pill-badge"></span>
+  </button>
+  <div id="itd-pill-popup">
+    <div class="itd-pill-header">
+      <span class="itd-pill-title">Itinerari per te</span>
+      <button class="itd-pill-close" onclick="closeItdPill()">✕</button>
+    </div>
+    <div id="itd-pill-list"></div>
+    <div class="itd-pill-footer" onclick="openItinerariPage();closeItdPill();">Vedi tutti gli itinerari →</div>
   </div>
 </div>
 
