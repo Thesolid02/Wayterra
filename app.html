@@ -2461,7 +2461,7 @@ function setMapMode(mode){
   activePId=null;
   setMapModePopup(mode);
   var _er=document.getElementById('exp-row');
-  if(_er)_er.style.display=(mode==='city')?'none':(_er.classList.contains('show')?'block':'none');
+  if(_er)_er.style.display=(mode==='city')?'none':(_er.classList.contains('show')?'':'none');
   renderItdPill();
 }
 function catMatchFn(p){
@@ -2540,7 +2540,7 @@ function exitL2(){
   document.getElementById('lv2-bar').style.display='none';
   showModeToggle();
   var _er=document.getElementById('exp-row');
-  if(_er&&_er.classList.contains('show'))_er.style.display='block';
+  if(_er&&_er.classList.contains('show'))_er.style.display='';
   renderItdPill();
   map_o.flyTo({center:[12.8,41.8],zoom:8,duration:700});
 }
