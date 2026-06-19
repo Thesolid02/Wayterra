@@ -245,6 +245,9 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itd-stop-meta{font-size:.72rem;color:var(--g400);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .itd-stop-score{display:inline-flex;align-items:center;gap:2px;font-size:.65rem;font-weight:500;padding:1px 5px;border-radius:4px;margin-top:3px;}
 .itd-stop-arrow{font-size:.78rem;color:var(--g400);flex-shrink:0;}
+#itd-map-wrap{margin-top:16px;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;}
+#itd-map-wrap img{width:100%;display:block;}
+#itd-map-wrap::after{content:'Apri in Maps ↗';position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:.68rem;padding:3px 8px;border-radius:6px;pointer-events:none;}
 .mode-sq-btn{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;box-sizing:border-box;transition:opacity .15s,border-color .15s;position:relative;padding:0;background:none;}
 #mode-btn-city.msq-active{border-color:#dc6b2f;opacity:1;}
 #mode-btn-city.msq-inactive{border-color:rgba(220,107,47,.4);opacity:.7;}
@@ -996,6 +999,9 @@ lottie.loadAnimation({
       <div id="itd-dur" class="itd-dur"></div>
       <div id="itd-desc" class="itd-desc"></div>
       <div id="itd-stops"></div>
+      <div id="itd-map-wrap" style="display:none;">
+        <img id="itd-map-img" src="" alt="Mappa percorso">
+      </div>
     </div>
   </div>
 </div>
@@ -3333,12 +3339,72 @@ function openItinerario(id){
   } else {
     stopsEl.innerHTML='';
   }
+  // raccoglie coordinate di ogni tappa per la mappa statica
+  _itdMapCoords=[];
+  (e.stops||[]).forEach(function(s){
+    var lat=null,lng=null;
+    if(s.type==='place'){
+      var _p=DATA.places.find(function(x){return x.id==s.id;});
+      if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;}
+    } else if(s.type==='activity'){
+      var _fa=null,_fp=null;
+      for(var _pi=0;_pi<DATA.places.length;_pi++){
+        var _aa=DATA.places[_pi].activities||[];
+        for(var _ai=0;_ai<_aa.length;_ai++){if(_aa[_ai].id==s.id){_fa=_aa[_ai];_fp=DATA.places[_pi];break;}}
+        if(_fa)break;
+      }
+      if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
+      if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);}
+    }
+    if(lat&&lng)_itdMapCoords.push([+lng,+lat]);
+    else console.log('[itd-map] no coords for stop',s.id,s.type);
+  });
+  var _mapWrap=document.getElementById('itd-map-wrap');
+  if(_itdMapCoords.length>=2){
+    document.getElementById('itd-map-img').src=buildItdMapUrl(_itdMapCoords);
+    _mapWrap.onclick=function(){openItinerarioGMaps(_itdMapCoords);};
+    _mapWrap.style.display='';
+  } else {
+    _mapWrap.style.display='none';
+  }
   document.getElementById('itinerario-detail').classList.add('show');
 }
 function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').classList.remove('show');
 }
 function openItinerarioDetail(id){openItinerario(id);}
+
+var _itdMapCoords=[];
+function buildItdMapUrl(coords){
+  var TOKEN='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
+  // pin markers: literal in URL path — no encodeURIComponent on the full overlay string
+  var pins=coords.map(function(c,i){
+    return 'pin-s-'+(i+1)+'+dc6b2f('+c[0].toFixed(4)+','+c[1].toFixed(4)+')';
+  }).join(',');
+  // path: GeoJSON LineString — only the JSON content inside parens is URL-encoded
+  var lineGeoJSON=JSON.stringify({type:'LineString',coordinates:coords.map(function(c){return[+c[0].toFixed(4),+c[1].toFixed(4)];})});
+  var pathOverlay='path-3+dc6b2f-0.8('+encodeURIComponent(lineGeoJSON)+')';
+  // bounding box [minLng,minLat,maxLng,maxLat]
+  var lngs=coords.map(function(c){return c[0];});
+  var lats=coords.map(function(c){return c[1];});
+  var bbox='['
+    +Math.min.apply(null,lngs).toFixed(4)+','
+    +Math.min.apply(null,lats).toFixed(4)+','
+    +Math.max.apply(null,lngs).toFixed(4)+','
+    +Math.max.apply(null,lats).toFixed(4)+']';
+  var w=window.innerWidth>=768?700:500;
+  return 'https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/'
+    +pins+','+pathOverlay
+    +'/'+bbox+'/'+w+'x260@2x?padding=60&access_token='+TOKEN;
+}
+function openItinerarioGMaps(coords){
+  var origin=coords[0][1]+','+coords[0][0];
+  var dest=coords[coords.length-1][1]+','+coords[coords.length-1][0];
+  var wps=coords.slice(1,-1).map(function(c){return c[1]+','+c[0];}).join('|');
+  var url='https://www.google.com/maps/dir/?api=1&origin='+origin+'&destination='+dest
+    +(wps?'&waypoints='+encodeURIComponent(wps):'')+'&travelmode=driving';
+  window.open(url,'_blank');
+}
 
 var _detailFromItinerario=false;
 function openStopFromItinerario(type,id,placeId){
