@@ -3277,6 +3277,18 @@ function openItinerario(id){
     stopsEl.innerHTML='';
   }
   document.getElementById('itinerario-detail').classList.add('show');
+  setTimeout(function(){
+    var el=document.querySelector('.itd-scroll');
+    if(el){
+      var cs=window.getComputedStyle(el);
+      console.log('itd-scroll computed padding:',cs.padding,'width:',cs.width,'box-sizing:',cs.boxSizing);
+    }
+    var body=document.querySelector('.itd-body');
+    if(body){
+      var cs2=window.getComputedStyle(body);
+      console.log('itd-body computed padding:',cs2.padding,'width:',cs2.width);
+    }
+  },300);
 }
 function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').classList.remove('show');
