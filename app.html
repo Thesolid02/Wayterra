@@ -2181,6 +2181,7 @@ function showActBubble(a, latlng){
 }
 function closeActMapPopup(){
   document.getElementById('act-map-popup').classList.remove('show');
+  document.getElementById('act-map-popup').style.zIndex='';
   if(level===1)showModeToggle();
 }
 
@@ -3350,7 +3351,15 @@ function openStopFromItinerario(type,id,placeId){
     document.getElementById('act-map-popup').style.zIndex='530';
     openDetail();
   } else if(type==='activity'){
-    openActPopup(id,placeId,null);
+    if(window.innerWidth>=768){
+      document.getElementById('act-map-popup').style.zIndex='520';
+    }
+    if(placeId){
+      openActPopup(id,placeId,null);
+    } else {
+      var ca=(DATA.cityActivities||[]).find(function(x){return x.id==id;});
+      if(ca)openCityActivityDetail(ca);
+    }
   }
 }
 
