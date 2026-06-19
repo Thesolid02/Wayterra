@@ -2850,7 +2850,12 @@ function closeDetail(){
   document.getElementById('detail-page').classList.remove('show');
   if(_detailFromItinerario){
     document.getElementById('detail-page').style.zIndex='';
+    document.getElementById('act-map-popup').style.zIndex='';
     _detailFromItinerario=false;
+    if(window.innerWidth>=768){
+      document.getElementById('map').classList.remove('panel-open');
+      setTimeout(function(){map_o.resize();},320);
+    }
   } else {
     closeInlineBubble();
     if(window.innerWidth>=768){
@@ -3295,11 +3300,17 @@ function openItinerario(id){
           }
           if(foundAct)break;
         }
+        if(!foundAct){
+          var ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});
+          if(ca){foundAct=ca;foundPlace=null;}
+        }
         if(foundAct){
           name=foundAct.name||'';
-          meta=foundPlace?((lang==='en'&&foundPlace.nameEn)?foundPlace.nameEn:foundPlace.name):'';
+          meta=foundPlace
+            ?((lang==='en'&&foundPlace.nameEn)?foundPlace.nameEn:foundPlace.name)
+            :(foundAct.region||'');
           sc=scoreColor(foundAct.hiddenScore);
-          onclick=' onclick="openStopFromItinerario(\'activity\','+foundAct.id+','+( foundPlace?foundPlace.id:0)+')"';
+          onclick=' onclick="openStopFromItinerario(\'activity\','+foundAct.id+','+(foundPlace?foundPlace.id:0)+')"';
           thumb=foundAct.coverPhoto
             ?'<img class="itd-stop-thumb" src="'+foundAct.coverPhoto+'" alt="">'
             :'<div class="itd-stop-thumb-ph" style="background:var(--g100);">🏃</div>';
@@ -3336,6 +3347,7 @@ function openStopFromItinerario(type,id,placeId){
     currentPlace=p;
     _detailFromItinerario=true;
     document.getElementById('detail-page').style.zIndex='520';
+    document.getElementById('act-map-popup').style.zIndex='530';
     openDetail();
   } else if(type==='activity'){
     openActPopup(id,placeId,null);
@@ -3417,6 +3429,7 @@ window.addEventListener('DOMContentLoaded',function(){
                bookingUrl:a.booking_url||'',
                experienceTypeId:a.experience_type_id||null,
                experienceSubtypeId:a.experience_subtype_id||null,
+               hiddenScore:a.hidden_score||0,
                gallery:a.gallery||[],
                pills:a.pills||[],pillsEn:a.pills_en||[],
                vibe:a.vibe||[]};
