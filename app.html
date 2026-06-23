@@ -244,6 +244,14 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   #itd-pill-hint{right:0;}
   #itd-pill-hint::after{content:'';position:absolute;top:100%;right:14px;border:5px solid transparent;border-top-color:#111827;}
 }
+/* ── ITINERARI COMING SOON ── */
+#itd-pill-btn.itd-cs{opacity:.65;cursor:not-allowed;}
+#itd-pill-btn.itd-cs:hover{background:#dc6b2f;}
+.itd-cs-badge{background:rgba(255,255,255,.2);color:#fff;border-radius:100px;font-size:.58rem;font-weight:700;padding:1px 6px;margin-left:2px;letter-spacing:.05em;}
+#itinerari-btn-d.itd-cs{color:var(--g400)!important;opacity:.55;cursor:not-allowed;pointer-events:none;}
+.bn-item.itd-cs{cursor:not-allowed;position:relative;}
+.bn-item.itd-cs i,.bn-item.itd-cs span{color:#9ca3af!important;}
+.bn-soon-badge{position:absolute;top:3px;right:8px;background:#374151;color:#fff;font-size:.45rem;font-weight:700;padding:1px 3px;border-radius:3px;letter-spacing:.06em;line-height:1.5;pointer-events:none;}
 /* ── ITINERARI PAGE ── */
 #itinerari-page{position:fixed;inset:0;z-index:500;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #itinerari-page.show{display:flex;}
@@ -1111,6 +1119,9 @@ lottie.loadAnimation({
 </div>
 
 <script>
+/* ═══ FEATURE FLAGS ═══ */
+var ITINERARI_LIVE=false; // set to true when itinerary content is ready for launch
+
 /* ═══ STORAGE KEYS ═══ */
 var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1',CA:'WT_CITY_ACTIVITIES_v1'};
 var BUY_URL='https://mattiagold.gumroad.com/l/wayterra';
@@ -1173,7 +1184,8 @@ var T={
     rp_sub:'Dove vuoi esplorare oggi?',
     rp_explore:'Scopri →',
     rp_soon:'Prossimamente',
-    rp_soon_toast:'Prossimamente!'
+    rp_soon_toast:'Prossimamente!',
+    itd_soon_toast:'Presto disponibile! Stiamo preparando i primi itinerari 🗺️'
   },
   en:{
     search_placeholder:'Where do you want to go?',
@@ -1231,7 +1243,8 @@ var T={
     rp_sub:'Where do you want to explore?',
     rp_explore:'Explore →',
     rp_soon:'Coming soon',
-    rp_soon_toast:'Coming soon!'
+    rp_soon_toast:'Coming soon!',
+    itd_soon_toast:'Coming soon! We\'re preparing our first itineraries 🗺️'
   }
 };
 
@@ -3236,6 +3249,7 @@ function renderExpCards(){
   var row=document.getElementById('exp-row');
   var scroll=document.getElementById('exp-row-scroll');
   if(!row||!scroll)return;
+  if(!ITINERARI_LIVE){row.classList.remove('show');renderItdPill();return;}
   if(!featured.length){row.classList.remove('show');return;}
   expCardIndex=0;
   scroll.style.transform='translateX(0)';
@@ -3256,9 +3270,26 @@ function renderExpCards(){
 }
 function renderExpRow(){renderExpCards();}
 function renderItdPill(){
-  var featured=DATA.experiences.filter(function(e){return e.featured;});
   var wrap=document.getElementById('itd-pill-wrap');
   if(!wrap)return;
+  if(!ITINERARI_LIVE){
+    if(level===2||mapMode==='city'){wrap.style.display='none';return;}
+    wrap.style.display='';
+    var btn=document.getElementById('itd-pill-btn');
+    btn.classList.add('itd-cs');
+    document.getElementById('itd-pill-count').style.display='none';
+    if(!document.getElementById('itd-cs-badge')){
+      var csb=document.createElement('span');
+      csb.id='itd-cs-badge';csb.className='itd-cs-badge';csb.textContent='SOON';
+      btn.appendChild(csb);
+    }
+    var dot=btn.querySelector('.itd-pill-dot');
+    if(dot)dot.style.display='none';
+    var hint=document.getElementById('itd-pill-hint');
+    if(hint)hint.style.display='none';
+    return;
+  }
+  var featured=DATA.experiences.filter(function(e){return e.featured;});
   if(level===2||mapMode==='city'||!featured.length){
     wrap.style.display='none';
     return;
@@ -3283,6 +3314,7 @@ function renderItdPill(){
 }
 var _itdPillClicked=false;
 function toggleItdPill(){
+  if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
   var wrap=document.getElementById('itd-pill-wrap');
   if(wrap.classList.contains('open')){closeItdPill();}
   else{
@@ -3322,6 +3354,7 @@ function updateExpCarousel(){
   if(n)n.style.opacity=expCardIndex>=max?'.3':'1';
 }
 function openItinerariPage(){
+  if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
   renderItinerariPage();
   document.getElementById('itinerari-page').classList.add('show');
   setBottomNav('itinerari');
@@ -3354,6 +3387,7 @@ function renderItinerariPage(){
   scroll.innerHTML=cards;
 }
 function openItinerario(id){
+  if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
@@ -3513,6 +3547,21 @@ function openStopFromItinerario(type,id,placeId){
   }
 }
 
+function applyItinerariState(){
+  if(ITINERARI_LIVE)return;
+  var btnD=document.getElementById('itinerari-btn-d');
+  if(btnD){
+    btnD.classList.add('itd-cs');
+    btnD.title=lang==='en'?'Itineraries — Coming soon':'Itinerari — Prossimamente';
+  }
+  var bnItd=document.querySelector('.bn-item[data-nav="itinerari"]');
+  if(bnItd){
+    bnItd.classList.add('itd-cs');
+    var badge=document.createElement('span');
+    badge.className='bn-soon-badge';badge.textContent='SOON';
+    bnItd.appendChild(badge);
+  }
+}
 function bootApp(d){
   DATA=d;
   lang=localStorage.getItem(K.LANG)||'it';
@@ -3525,6 +3574,7 @@ function bootApp(d){
   buildPWCats();
   applyTranslations();
   setLang(lang);
+  applyItinerariState();
   document.getElementById('pw-cn').textContent=DATA.places.length;
   document.getElementById('topbar').style.display='flex';
   document.getElementById('fab').style.display='flex';
