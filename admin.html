@@ -158,7 +158,23 @@ textarea.ft{resize:vertical;line-height:1.65;}
 .icon-btn-sel{border-color:var(--blue)!important;background:var(--blue-l)!important;}
 .icon-pick-btn{width:100%;text-align:left;display:flex;align-items:center;gap:8px;font-size:.83rem;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);background:var(--w);cursor:pointer;font-family:var(--f);color:var(--g700);}
 .icon-pick-btn:hover{border-color:var(--blue);}
+/* ── ANALYTICS ── */
+.an-period-btn{padding:6px 14px;border:1px solid var(--g200);background:var(--w);border-radius:var(--r);font-family:var(--f);font-size:.8rem;font-weight:600;color:var(--g500);cursor:pointer;transition:all .14s;}
+.an-period-btn.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.an-card{background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);padding:20px;margin-bottom:20px;}
+.an-card-title{font-size:.83rem;font-weight:700;color:var(--g900);margin-bottom:16px;}
+.an-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--g100);}
+.an-row:last-child{border-bottom:none;}
+.an-rank{width:20px;text-align:center;font-size:.73rem;font-weight:700;color:var(--g400);flex-shrink:0;}
+.an-thumb{width:36px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0;background:var(--g100);}
+.an-thumb-ph{width:36px;height:36px;border-radius:6px;background:var(--g100);flex-shrink:0;}
+.an-name{flex:1;font-size:.82rem;font-weight:600;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.an-sub{font-size:.7rem;color:var(--g400);margin-top:1px;}
+.an-count{font-size:.78rem;font-weight:700;color:var(--blue);white-space:nowrap;flex-shrink:0;}
+.an-empty{padding:32px;text-align:center;color:var(--g400);font-size:.83rem;}
+.an-loading{padding:32px;text-align:center;color:var(--g400);font-size:.83rem;}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -207,6 +223,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
   <button class="tab" onclick="switchTab('placetypes',this)">Tipologie luogo</button>
   <button class="tab" onclick="switchTab('experience',this)">Categorie attività</button>
   <button class="tab" onclick="switchTab('esperienze',this)">Itinerari</button>
+  <button class="tab" onclick="switchTab('analytics',this)">📊 Analytics</button>
 </div>
 
 <div class="pane on" id="pane-places">
@@ -303,6 +320,30 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <button class="btn bp" onclick="openAddExpType()">+ Nuova categoria attività</button>
   </div>
   <div class="clist" id="et-list"></div>
+</div>
+</div>
+
+<div class="pane" id="pane-analytics">
+<div class="page">
+  <div style="display:flex;gap:8px;margin-bottom:24px;">
+    <button class="an-period-btn" onclick="setAnPeriod(7,this)">7 giorni</button>
+    <button class="an-period-btn on" onclick="setAnPeriod(30,this)">30 giorni</button>
+    <button class="an-period-btn" onclick="setAnPeriod(90,this)">90 giorni</button>
+  </div>
+  <div class="an-card">
+    <div class="an-card-title">Andamento nel tempo</div>
+    <canvas id="an-chart" height="100"></canvas>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Luoghi più visti (top 10)</div>
+      <div id="an-places"><div class="an-loading">Caricamento…</div></div>
+    </div>
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Attività più visitate (top 10)</div>
+      <div id="an-activities"><div class="an-loading">Caricamento…</div></div>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -1224,6 +1265,7 @@ function switchTab(t,btn){
   if(t==='placetypes') renderPlaceTypes();
   if(t==='experience') renderExpTypes();
   if(t==='esperienze') renderEsperienze();
+  if(t==='analytics') renderAnalytics();
 }
 
 // ═══ HELPERS ═══
@@ -2996,6 +3038,136 @@ function checkUnlockStatus(){
   var btn=document.getElementById('unlock-btn');
   if(btn)btn.style.display=isUnlocked?'inline-flex':'none';
   syncUnlockBtnMobile();
+}
+
+// ── ANALYTICS ──
+var anPeriod=30;
+var anChartInst=null;
+
+function setAnPeriod(days,btn){
+  document.querySelectorAll('.an-period-btn').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  anPeriod=days;
+  renderAnalytics();
+}
+
+function renderAnalytics(){
+  var since=new Date(Date.now()-anPeriod*86400000).toISOString();
+  document.getElementById('an-places').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-activities').innerHTML='<div class="an-loading">Caricamento…</div>';
+  fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.asc',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  })
+  .then(function(r){return r.json();})
+  .then(function(events){
+    renderAnChart(events);
+    renderAnPlaces(events);
+    renderAnActivities(events);
+  })
+  .catch(function(e){
+    console.error('analytics fetch error',e);
+    document.getElementById('an-places').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    document.getElementById('an-activities').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+  });
+}
+
+function renderAnChart(events){
+  var byDay={};
+  events.forEach(function(ev){
+    var d=ev.created_at.slice(0,10);
+    if(!byDay[d])byDay[d]={place_view:0,activity_view:0};
+    if(byDay[d][ev.event_type]!==undefined)byDay[d][ev.event_type]++;
+  });
+  var labels=[],pvData=[],avData=[];
+  for(var i=anPeriod-1;i>=0;i--){
+    var d=new Date(Date.now()-i*86400000).toISOString().slice(0,10);
+    labels.push(d.slice(5));
+    pvData.push((byDay[d]||{}).place_view||0);
+    avData.push((byDay[d]||{}).activity_view||0);
+  }
+  var ctx=document.getElementById('an-chart').getContext('2d');
+  if(anChartInst){anChartInst.destroy();anChartInst=null;}
+  anChartInst=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:labels,
+      datasets:[
+        {label:'Luoghi visti',data:pvData,backgroundColor:'#dc6b2f',borderRadius:3,borderSkipped:false},
+        {label:'Attività viste',data:avData,backgroundColor:'#2563eb',borderRadius:3,borderSkipped:false}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{position:'top',labels:{font:{family:'Geist,system-ui,sans-serif',size:12},boxWidth:12,padding:16}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:11},maxRotation:45}},
+        y:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}},grid:{color:'#f3f4f6'}}
+      }
+    }
+  });
+}
+
+function renderAnPlaces(events){
+  var pvEvents=events.filter(function(e){return e.event_type==='place_view'&&e.place_id;});
+  var counts={};
+  pvEvents.forEach(function(e){counts[e.place_id]=(counts[e.place_id]||0)+1;});
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){
+    document.getElementById('an-places').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
+    return;
+  }
+  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+sorted.join(',')+')',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  })
+  .then(function(r){return r.json();})
+  .then(function(places){
+    var html=sorted.map(function(id,i){
+      var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+p.name+'</span>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    document.getElementById('an-places').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-places').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
+function renderAnActivities(events){
+  var avEvents=events.filter(function(e){return e.event_type==='activity_view'&&e.activity_id;});
+  var counts={};
+  var isCityMap={};
+  avEvents.forEach(function(e){
+    counts[e.activity_id]=(counts[e.activity_id]||0)+1;
+    isCityMap[e.activity_id]=e.is_city_activity;
+  });
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){
+    document.getElementById('an-activities').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
+    return;
+  }
+  fetch(SB_URL+'/rest/v1/activities?select=id,name,place_id&id=in.('+sorted.join(',')+')',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  })
+  .then(function(r){return r.json();})
+  .then(function(acts){
+    var html=sorted.map(function(id,i){
+      var a=acts.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      var tag=isCityMap[id]?'Attività Roma':'Luogo';
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +'<div style="flex:1;min-width:0;">'
+        +'<div class="an-name">'+a.name+'</div>'
+        +'<div class="an-sub">'+tag+'</div>'
+        +'</div>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    document.getElementById('an-activities').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-activities').innerHTML='<div class="an-empty">Errore caricamento</div>';});
 }
 
 // boot asincrono — load gestisce render internamente
