@@ -173,6 +173,20 @@ textarea.ft{resize:vertical;line-height:1.65;}
 .an-count{font-size:.78rem;font-weight:700;color:var(--blue);white-space:nowrap;flex-shrink:0;}
 .an-empty{padding:32px;text-align:center;color:var(--g400);font-size:.83rem;}
 .an-loading{padding:32px;text-align:center;color:var(--g400);font-size:.83rem;}
+.an-rt-grid{display:grid;grid-template-columns:220px 1fr;gap:16px;margin-bottom:20px;}
+.an-umami-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);padding:20px;cursor:pointer;text-decoration:none;color:inherit;transition:border-color .14s,box-shadow .14s;height:100%;}
+.an-umami-btn:hover{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.07);}
+.an-umami-icon{font-size:1.6rem;line-height:1;}
+.an-umami-label{font-size:.78rem;font-weight:700;color:var(--g900);text-align:center;}
+.an-umami-sub{font-size:.68rem;color:var(--g400);text-align:center;}
+.an-live-feed{max-height:220px;overflow-y:auto;}
+.an-live-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--g100);}
+.an-live-row:last-child{border-bottom:none;}
+.an-live-icon{font-size:.95rem;flex-shrink:0;width:20px;text-align:center;}
+.an-live-name{flex:1;font-size:.81rem;font-weight:600;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.an-live-time{font-size:.71rem;color:var(--g400);white-space:nowrap;flex-shrink:0;}
+.an-divider{border:none;border-top:1px solid var(--g200);margin:4px 0 20px;}
+@media(max-width:680px){.an-rt-grid{grid-template-columns:1fr;}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -325,7 +339,23 @@ textarea.ft{resize:vertical;line-height:1.65;}
 
 <div class="pane" id="pane-analytics">
 <div class="page">
-  <div style="display:flex;gap:8px;margin-bottom:24px;">
+  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin-bottom:10px;">Tempo reale</div>
+  <div class="an-rt-grid">
+    <a class="an-umami-btn" href="https://cloud.umami.is" target="_blank" rel="noopener">
+      <span class="an-umami-icon">📡</span>
+      <span class="an-umami-label">Visitatori attivi</span>
+      <span class="an-umami-sub">Apri dashboard Umami ↗</span>
+    </a>
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Ultimi eventi</span>
+        <span id="an-live-pulse" style="font-size:.68rem;color:var(--g400);">aggiornamento ogni 12s</span>
+      </div>
+      <div class="an-live-feed" id="an-live-feed"><div class="an-loading">Caricamento…</div></div>
+    </div>
+  </div>
+  <hr class="an-divider">
+  <div style="display:flex;gap:8px;margin-bottom:20px;">
     <button class="an-period-btn" onclick="setAnPeriod(7,this)">7 giorni</button>
     <button class="an-period-btn on" onclick="setAnPeriod(30,this)">30 giorni</button>
     <button class="an-period-btn" onclick="setAnPeriod(90,this)">90 giorni</button>
@@ -1259,13 +1289,14 @@ function switchTab(t,btn){
   document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('on');});
   btn.classList.add('on');
   document.getElementById('pane-'+t).classList.add('on');
+  clearInterval(anLiveInterval);anLiveInterval=null;
   if(t==='cityacts') renderCityActs();
   if(t==='cats') renderCats();
   if(t==='actypes') renderAtypes();
   if(t==='placetypes') renderPlaceTypes();
   if(t==='experience') renderExpTypes();
   if(t==='esperienze') renderEsperienze();
-  if(t==='analytics') renderAnalytics();
+  if(t==='analytics'){renderAnalytics();startAnLive();}
 }
 
 // ═══ HELPERS ═══
@@ -3043,6 +3074,73 @@ function checkUnlockStatus(){
 // ── ANALYTICS ──
 var anPeriod=30;
 var anChartInst=null;
+var anLiveInterval=null;
+
+function timeAgo(isoStr){
+  var sec=Math.floor((Date.now()-new Date(isoStr).getTime())/1000);
+  if(sec<5)return'Ora';
+  if(sec<60)return sec+' secondi fa';
+  var min=Math.floor(sec/60);
+  if(min<60)return min+(min===1?' minuto fa':' minuti fa');
+  var h=Math.floor(min/60);
+  if(h<24)return h+(h===1?' ora fa':' ore fa');
+  return Math.floor(h/24)+' giorni fa';
+}
+
+function startAnLive(){
+  fetchAnLive();
+  anLiveInterval=setInterval(fetchAnLive,12000);
+}
+
+function fetchAnLive(){
+  fetch(SB_URL+'/rest/v1/analytics_events?select=*&order=created_at.desc&limit=20',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  })
+  .then(function(r){return r.json();})
+  .then(function(events){
+    if(!Array.isArray(events)||!events.length){
+      document.getElementById('an-live-feed').innerHTML='<div class="an-empty">Nessun evento recente</div>';
+      return;
+    }
+    var placeIds=[],actIds=[];
+    events.forEach(function(e){
+      if(e.event_type==='place_view'&&e.place_id)placeIds.push(e.place_id);
+      if(e.event_type==='activity_view'&&e.activity_id)actIds.push(e.activity_id);
+    });
+    var uniqP=[...new Set(placeIds)];
+    var uniqA=[...new Set(actIds)];
+    var pFetch=uniqP.length
+      ?fetch(SB_URL+'/rest/v1/places?select=id,name&id=in.('+uniqP.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}).then(function(r){return r.json();})
+      :Promise.resolve([]);
+    var aFetch=uniqA.length
+      ?fetch(SB_URL+'/rest/v1/activities?select=id,name&id=in.('+uniqA.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}).then(function(r){return r.json();})
+      :Promise.resolve([]);
+    Promise.all([pFetch,aFetch]).then(function(res){
+      var places=res[0]||[],acts=res[1]||[];
+      var html=events.map(function(e){
+        var icon,name;
+        if(e.event_type==='place_view'){
+          icon='📍';
+          var p=places.find(function(x){return String(x.id)===String(e.place_id);});
+          name=p?p.name:'Luogo #'+e.place_id;
+        }else{
+          icon='🎯';
+          var a=acts.find(function(x){return String(x.id)===String(e.activity_id);});
+          name=a?a.name:'Attività #'+e.activity_id;
+        }
+        return'<div class="an-live-row">'
+          +'<span class="an-live-icon">'+icon+'</span>'
+          +'<span class="an-live-name">'+name+'</span>'
+          +'<span class="an-live-time">'+timeAgo(e.created_at)+'</span>'
+          +'</div>';
+      }).join('');
+      document.getElementById('an-live-feed').innerHTML=html;
+    });
+  })
+  .catch(function(){
+    document.getElementById('an-live-feed').innerHTML='<div class="an-empty">Errore caricamento</div>';
+  });
+}
 
 function setAnPeriod(days,btn){
   document.querySelectorAll('.an-period-btn').forEach(function(b){b.classList.remove('on');});
