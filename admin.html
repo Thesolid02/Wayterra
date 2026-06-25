@@ -187,6 +187,8 @@ textarea.ft{resize:vertical;line-height:1.65;}
 .an-live-name{flex:1;font-size:.81rem;font-weight:600;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .an-live-time{font-size:.71rem;color:var(--g400);white-space:nowrap;flex-shrink:0;}
 .an-divider{border:none;border-top:1px solid var(--g200);margin:4px 0 20px;}
+.an-see-all{width:100%;padding:10px 0;text-align:center;font-size:.78rem;font-weight:600;color:var(--blue);cursor:pointer;border:none;background:none;font-family:var(--f);border-top:1px solid var(--g100);margin-top:4px;display:block;}
+.an-see-all:hover{color:var(--blue-d);}
 .an-top-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}.an-top-grid>*{min-width:0;}
 @media(max-width:680px){.an-rt-grid{grid-template-columns:1fr;}.an-top-grid{grid-template-columns:1fr;}}
 </style>
@@ -3077,6 +3079,8 @@ function checkUnlockStatus(){
 var anPeriod=30;
 var anChartInst=null;
 var anLiveInterval=null;
+var anPlacesData=null;
+var anActivitiesData=null;
 
 function timeAgo(isoStr){
   var sec=Math.floor((Date.now()-new Date(isoStr).getTime())/1000);
@@ -3221,7 +3225,9 @@ function renderAnPlaces(events){
   })
   .then(function(r){return r.json();})
   .then(function(places){
-    var html=sorted.map(function(id,i){
+    anPlacesData={sorted:sorted,counts:counts,items:places};
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
       var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
       return '<div class="an-row">'
         +'<span class="an-rank">'+(i+1)+'</span>'
@@ -3230,6 +3236,7 @@ function renderAnPlaces(events){
         +'<span class="an-count">'+counts[id]+'</span>'
         +'</div>';
     }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'places\')">Vedi tutti ('+sorted.length+')</button>';}
     document.getElementById('an-places').innerHTML=html;
   })
   .catch(function(){document.getElementById('an-places').innerHTML='<div class="an-empty">Errore caricamento</div>';});
@@ -3253,7 +3260,9 @@ function renderAnActivities(events){
   })
   .then(function(r){return r.json();})
   .then(function(acts){
-    var html=sorted.map(function(id,i){
+    anActivitiesData={sorted:sorted,counts:counts,isCityMap:isCityMap,items:acts};
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
       var a=acts.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
       var tag=isCityMap[id]?'Attività Roma':'Luogo';
       return '<div class="an-row">'
@@ -3265,14 +3274,57 @@ function renderAnActivities(events){
         +'<span class="an-count">'+counts[id]+'</span>'
         +'</div>';
     }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'activities\')">Vedi tutti ('+sorted.length+')</button>';}
     document.getElementById('an-activities').innerHTML=html;
   })
   .catch(function(){document.getElementById('an-activities').innerHTML='<div class="an-empty">Errore caricamento</div>';});
 }
 
+function openAnAll(type){
+  var title='',html='';
+  if(type==='places'&&anPlacesData){
+    title='Luoghi più visti (top '+anPlacesData.sorted.length+')';
+    html=anPlacesData.sorted.map(function(id,i){
+      var p=anPlacesData.items.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+p.name+'</span>'
+        +'<span class="an-count">'+anPlacesData.counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+  } else if(type==='activities'&&anActivitiesData){
+    title='Attività più visitate (top '+anActivitiesData.sorted.length+')';
+    html=anActivitiesData.sorted.map(function(id,i){
+      var a=anActivitiesData.items.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      var tag=anActivitiesData.isCityMap[id]?'Attività Roma':'Luogo';
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +'<div style="flex:1;min-width:0;">'
+        +'<div class="an-name">'+a.name+'</div>'
+        +'<div class="an-sub">'+tag+'</div>'
+        +'</div>'
+        +'<span class="an-count">'+anActivitiesData.counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+  }
+  document.getElementById('m-an-all-title').textContent=title;
+  document.getElementById('m-an-all-body').innerHTML=html;
+  document.getElementById('m-an-all').classList.add('on');
+}
+function closeAnAll(){document.getElementById('m-an-all').classList.remove('on');}
+
 // boot asincrono — load gestisce render internamente
 load();
 checkUnlockStatus();
 </script>
+
+<div class="ov" id="m-an-all">
+<div class="modal" style="max-width:440px;">
+  <div class="mh"><div class="mh-t" id="m-an-all-title"></div><button class="mx" onclick="closeAnAll()">✕</button></div>
+  <div class="mc" id="m-an-all-body"></div>
+</div>
+</div>
+
 </body>
 </html>
