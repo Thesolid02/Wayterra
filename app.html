@@ -571,10 +571,12 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .pw-demo{display:block;text-align:center;margin-top:10px;background:none;border:none;font-family:var(--f);font-size:.7rem;color:var(--g300);text-decoration:underline;cursor:pointer;}
 
 /* ── SPLASH ── */
-#splash{position:fixed;inset:0;z-index:700;background:var(--w);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:opacity .45s .2s;}
+#splash{position:fixed;inset:0;z-index:700;background:var(--w);display:flex;flex-direction:column;align-items:center;transition:opacity .45s .2s;}
 #splash.hide{opacity:0;pointer-events:none;}
-.sp-n{font-size:1.5rem;font-weight:800;color:var(--g900);letter-spacing:-.03em;position:absolute;bottom:36px;bottom:calc(env(safe-area-inset-bottom,0px)+36px);left:0;right:0;text-align:center;background:red;border:3px solid yellow;}
-.sp-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:bl 1.2s ease infinite;position:absolute;bottom:20px;bottom:calc(env(safe-area-inset-bottom,0px)+20px);left:50%;transform:translateX(-50%);}
+#splash-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
+#splash-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding-bottom:36px;padding-bottom:calc(env(safe-area-inset-bottom,0px)+36px);}
+.sp-n{font-size:1.5rem;font-weight:800;color:var(--g900);letter-spacing:-.03em;}
+.sp-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:bl 1.2s ease infinite;}
 #sp-sub{font-size:.78rem;font-weight:500;color:var(--g400);text-align:center;margin-top:8px;transition:opacity .4s;min-height:1.1em;}
 @keyframes bl{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.25;transform:scale(.6);}}
 
@@ -729,10 +731,14 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 <body>
 
 <div id="splash">
-  <div id="lottie-loader" style="width:120px;height:120px;margin:0 auto;"></div>
-  <div id="sp-sub"></div>
-  <div class="sp-n">Wayterra</div>
-  <div class="sp-dot"></div>
+  <div id="splash-center">
+    <div id="lottie-loader" style="width:120px;height:120px;"></div>
+    <div id="sp-sub"></div>
+  </div>
+  <div id="splash-brand">
+    <div class="sp-n">Wayterra</div>
+    <div class="sp-dot"></div>
+  </div>
 </div>
 <script>
 lottie.loadAnimation({
