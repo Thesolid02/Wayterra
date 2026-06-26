@@ -576,9 +576,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #splash-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
 #splash-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding-bottom:36px;padding-bottom:calc(env(safe-area-inset-bottom,0px)+36px);}
 .sp-n{font-size:1.5rem;font-weight:800;color:var(--g900);letter-spacing:-.03em;}
-.sp-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:bl 1.2s ease infinite;}
+.sp-s{font-size:.65rem;font-weight:500;color:var(--g400);letter-spacing:.16em;text-transform:uppercase;}
 #sp-sub{font-size:.78rem;font-weight:500;color:var(--g400);text-align:center;margin-top:8px;transition:opacity .4s;min-height:1.1em;}
-@keyframes bl{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.25;transform:scale(.6);}}
 
 #toast{position:fixed;z-index:800;top:calc(env(safe-area-inset-top,0px)+62px);left:50%;
   transform:translateX(-50%) translateY(-12px);background:var(--g900);color:#fff;
@@ -737,7 +736,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   </div>
   <div id="splash-brand">
     <div class="sp-n">Wayterra</div>
-    <div class="sp-dot"></div>
+    <div class="sp-s">DISCOVER HIDDEN PLACES</div>
   </div>
 </div>
 <script>
@@ -1373,7 +1372,7 @@ var currentLightboxIdx=0,currentLightboxGallery=[];
 var lang='it';
 var unlocked=false;
 var mapMode='outside';
-var splashPhrases={it:['Preparo lo zaino...','Scovo i sentieri nascosti...','Sveglio le gemme del Lazio...','Calibro la bussola...'],en:['Packing the backpack...','Scouting hidden trails...','Waking up Lazio\'s hidden gems...','Calibrating the compass...']};
+var splashPhrases={it:['🎒 Preparo lo zaino...','🗺️ Scovo i sentieri nascosti...','✨ Sveglio le gemme del Lazio...','🧭 Calibro la bussola...'],en:['🎒 Packing the backpack...','🗺️ Scouting hidden trails...','✨ Waking up Lazio\'s hidden gems...','🧭 Calibrating the compass...']};
 var _splashIdx=0;
 var _splashIv=null;
 
@@ -3624,7 +3623,7 @@ function bootApp(d){
     } else {
       showOnboarding();
     }
-  },1400);
+  },3000);
 }
 
 function startSplashRotation(){
