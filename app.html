@@ -1063,7 +1063,7 @@ lottie.loadAnimation({
 <div id="fav-page">
   <div class="fav-header">
     <button class="fav-back" onclick="closeFavPage()">←</button>
-    <div class="fav-title" id="fav-title">I miei preferiti</div>
+    <div class="fav-title" id="fav-title">Il mio diario di viaggio</div>
     <div class="fav-count" id="fav-count"></div>
   </div>
   <div class="fav-scroll" id="fav-scroll"></div>
@@ -1159,7 +1159,8 @@ var T={
     saved:'Salvato',
     secret_lbl:'Il segreto locale',
     activities:'Cosa fare qui',
-    favorites:'I miei preferiti',
+    favorites:'Il mio diario di viaggio',
+    nav_saved:'Diario',
     no_favorites:'Nessun preferito',
     no_favorites_desc:'Tocca il segnalibro su un luogo per salvarlo qui.',
     see_map:'Vedi sulla mappa',
@@ -1218,7 +1219,8 @@ var T={
     saved:'Saved',
     secret_lbl:'The local secret',
     activities:'Things to do here',
-    favorites:'My favorites',
+    favorites:'My travel journal',
+    nav_saved:'Journal',
     no_favorites:'No favorites yet',
     no_favorites_desc:'Tap the bookmark on a place to save it here.',
     see_map:'See on map',
@@ -3808,7 +3810,7 @@ window.addEventListener('DOMContentLoaded',function(){
   </button>
   <button class="bn-item" data-nav="salvati" onclick="openFavPage()">
     <i class="ti ti-bookmark"></i>
-    <span>Salvati</span>
+    <span data-t="nav_saved">Diario</span>
   </button>
 </div>
 </body>
