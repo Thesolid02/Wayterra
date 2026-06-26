@@ -573,9 +573,9 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 /* ── SPLASH ── */
 #splash{position:fixed;inset:0;z-index:700;background:var(--w);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:opacity .45s .2s;}
 #splash.hide{opacity:0;pointer-events:none;}
-.sp-n{font-size:1.5rem;font-weight:800;color:var(--g900);letter-spacing:-.03em;margin-top:4px;}
-.sp-s{font-size:.65rem;font-weight:500;color:var(--g400);letter-spacing:.16em;text-transform:uppercase;}
-.sp-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:bl 1.2s ease infinite;margin-top:4px;}
+.sp-n{font-size:1.5rem;font-weight:800;color:var(--g900);letter-spacing:-.03em;position:absolute;bottom:calc(env(safe-area-inset-bottom,0px)+36px);left:0;right:0;text-align:center;}
+.sp-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:bl 1.2s ease infinite;position:absolute;bottom:calc(env(safe-area-inset-bottom,0px)+20px);left:50%;transform:translateX(-50%);}
+#sp-sub{font-size:.78rem;font-weight:500;color:var(--g400);text-align:center;margin-top:8px;transition:opacity .4s;min-height:1.1em;}
 @keyframes bl{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.25;transform:scale(.6);}}
 
 #toast{position:fixed;z-index:800;top:calc(env(safe-area-inset-top,0px)+62px);left:50%;
@@ -730,8 +730,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 
 <div id="splash">
   <div id="lottie-loader" style="width:120px;height:120px;margin:0 auto;"></div>
+  <div id="sp-sub"></div>
   <div class="sp-n">Wayterra</div>
-  <div class="sp-s">Discover hidden places</div>
   <div class="sp-dot"></div>
 </div>
 <script>
@@ -1367,6 +1367,9 @@ var currentLightboxIdx=0,currentLightboxGallery=[];
 var lang='it';
 var unlocked=false;
 var mapMode='outside';
+var splashPhrases={it:['Preparo lo zaino...','Scovo i sentieri nascosti...','Sveglio le gemme del Lazio...','Calibro la bussola...'],en:['Packing the backpack...','Scouting hidden trails...','Waking up Lazio\'s hidden gems...','Calibrating the compass...']};
+var _splashIdx=0;
+var _splashIv=null;
 
 function t(key){return T[lang][key]||T['it'][key]||key;}
 
@@ -3608,6 +3611,7 @@ function bootApp(d){
   if(savedRegion)updateRegionPill(savedRegion);
   loadEsperienze();
   setTimeout(function(){
+    stopSplashRotation();
     document.getElementById('splash').classList.add('hide');
     if(!localStorage.getItem('WT_REGION')){
       showRegionPage();
@@ -3617,7 +3621,25 @@ function bootApp(d){
   },1400);
 }
 
+function startSplashRotation(){
+  var el=document.getElementById('sp-sub');
+  if(!el)return;
+  var l=localStorage.getItem(K.LANG)||'it';
+  el.textContent=splashPhrases[l][_splashIdx];
+  _splashIv=setInterval(function(){
+    var l2=lang||localStorage.getItem(K.LANG)||'it';
+    el.style.opacity='0';
+    setTimeout(function(){
+      _splashIdx=(_splashIdx+1)%4;
+      el.textContent=splashPhrases[l2][_splashIdx];
+      el.style.opacity='1';
+    },400);
+  },2200);
+}
+function stopSplashRotation(){clearInterval(_splashIv);_splashIv=null;}
+
 window.addEventListener('DOMContentLoaded',function(){
+  startSplashRotation();
   var h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
   var APP_VERSION='2026-05-16-v1'; // aggiorna questo per forzare reload su tutti i dispositivi
 
