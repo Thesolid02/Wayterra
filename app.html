@@ -1028,7 +1028,7 @@ lottie.loadAnimation({
     <div class="dp-acts-grid" id="dp-acts-grid"></div>
   </div>
   <div class="dp-cta">
-    <button class="dp-maps-btn" id="dp-maps-btn"></button>
+    <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
   </div>
 </div>
 
@@ -1683,7 +1683,7 @@ function openActPopup(actId, placeId, triggerEl){
             +'</div>';}
           return'<img src="'+url+'" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--r);cursor:pointer;display:block;" onclick="openLightboxFromAct('+i+')" alt="">';
         }).join('')+'</div>':'')
-      +((a.maps||a.bookingUrl)?'<div style="display:flex;gap:8px;">'+(a.maps?'<button class="act-popup-maps-btn" style="flex:1;" onclick="window.location.href=\''+a.maps+'\'">'+t('maps')+'</button>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
+      +((a.maps||a.bookingUrl)?'<div style="display:flex;gap:8px;">'+(a.maps?'<a class="act-popup-maps-btn" href="'+a.maps+'" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;text-decoration:none;">'+t('maps')+'</a>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
     if(actDesc) renderExpandableText(actDesc,'act-popup-desc-el',200);
     document.getElementById('act-popup').classList.add('show');
   }
@@ -1999,7 +1999,7 @@ function openCityActivityDetail(a){
             +'</div>';}
           return'<img src="'+url+'" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--r);cursor:pointer;display:block;" onclick="openLightboxFromCityAct('+i+')" alt="">';
         }).join('')+'</div>':'')
-      +((a.maps||a.bookingUrl)?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;">'+(a.maps?'<button class="act-popup-maps-btn" style="flex:1;" onclick="window.location.href=\''+a.maps+'\'">'+t('maps')+'</button>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
+      +((a.maps||a.bookingUrl)?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;">'+(a.maps?'<a class="act-popup-maps-btn" href="'+a.maps+'" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;text-decoration:none;">'+t('maps')+'</a>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
     if(actDesc)renderExpandableText(actDesc,'act-popup-desc-el',200);
     document.getElementById('act-popup').classList.add('show');
     hideModeToggle();
@@ -2925,7 +2925,7 @@ function openDetail(){
   } else {actsLbl.style.display='none';actsGrid.innerHTML='';}
 
   document.getElementById('dp-maps-btn').textContent=t('maps');
-  document.getElementById('dp-maps-btn').onclick=function(){if(window.innerWidth<768){window.location.href=p.maps;}else{window.open(p.maps,'_blank');}};
+  document.getElementById('dp-maps-btn').href=p.maps;
   setupDpSave(p.id);
   // desktop: restringi mappa e chiudi bubble
   if(window.innerWidth>=768){
