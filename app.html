@@ -3588,7 +3588,7 @@ function openItinerarioGMaps(coords){
   var wps=coords.slice(1,-1).map(function(c){return c[1]+','+c[0];}).join('|');
   var url='https://www.google.com/maps/dir/?api=1&origin='+origin+'&destination='+dest
     +(wps?'&waypoints='+encodeURIComponent(wps):'')+'&travelmode=driving';
-  window.open(url,'_blank');
+  if(window.innerWidth<768){window.location.href=url;}else{window.open(url,'_blank');}
 }
 
 var _detailFromItinerario=false;
