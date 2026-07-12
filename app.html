@@ -3457,6 +3457,24 @@ function openItinerario(id){
           thumb=p.coverPhoto
             ?'<img class="itd-stop-thumb" src="'+p.coverPhoto+'" alt="">'
             :'<div class="itd-stop-thumb-ph" style="background:var(--g100);">📍</div>';
+        } else {
+          var _fba=null,_fbp=null;
+          for(var _fbi=0;_fbi<DATA.places.length;_fbi++){
+            var _fbacts=DATA.places[_fbi].activities||[];
+            for(var _fbai=0;_fbai<_fbacts.length;_fbai++){
+              if(_fbacts[_fbai].id==s.id){_fba=_fbacts[_fbai];_fbp=DATA.places[_fbi];break;}
+            }
+            if(_fba)break;
+          }
+          if(_fba){
+            name=_fba.name||'';
+            meta=_fbp?(_fbp.name||''):(_fba.region||'');
+            sc=scoreColor(_fba.hiddenScore);
+            onclick=' onclick="openStopFromItinerario(\'activity\','+_fba.id+','+(_fbp?_fbp.id:0)+')"';
+            thumb=_fba.coverPhoto
+              ?'<img class="itd-stop-thumb" src="'+_fba.coverPhoto+'" alt="">'
+              :'<div class="itd-stop-thumb-ph" style="background:var(--g100);">📍</div>';
+          }
         }
       } else if(s.type==='activity'){
         var foundAct=null,foundPlace=null;
@@ -3507,6 +3525,15 @@ function openItinerario(id){
     if(s.type==='place'){
       var _p=DATA.places.find(function(x){return x.id==s.id;});
       if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;}
+      else{
+        for(var _fpi=0;_fpi<DATA.places.length;_fpi++){
+          var _faa=DATA.places[_fpi].activities||[];
+          for(var _fai=0;_fai<_faa.length;_fai++){
+            if(_faa[_fai].id==s.id&&_faa[_fai].lat&&_faa[_fai].lng){lat=_faa[_fai].lat;lng=_faa[_fai].lng;break;}
+          }
+          if(lat&&lng)break;
+        }
+      }
     } else if(s.type==='activity'){
       var _fa=null,_fp=null;
       for(var _pi=0;_pi<DATA.places.length;_pi++){
