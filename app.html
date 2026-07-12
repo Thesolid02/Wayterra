@@ -1131,7 +1131,7 @@ lottie.loadAnimation({
 var ITINERARI_LIVE=true; // set to true when itinerary content is ready for launch
 
 /* ═══ STORAGE KEYS ═══ */
-var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1',CA:'WT_CITY_ACTIVITIES_v1'};
+var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1',CA:'WT_CITY_ACTIVITIES_v1',EXP:'WT_EXPERIENCES_v1'};
 var BUY_URL='https://mattiagold.gumroad.com/l/wayterra';
 
 /* ═══ TRANSLATIONS ═══ */
@@ -1391,7 +1391,7 @@ function loadData(){
     if(typeof p.hiddenScore==='undefined')p.hiddenScore=0;
     return p;
   });
-  var rpt=localStorage.getItem(K.PT),ret=localStorage.getItem(K.ET),res=localStorage.getItem(K.ES),rca=localStorage.getItem(K.CA);
+  var rpt=localStorage.getItem(K.PT),ret=localStorage.getItem(K.ET),res=localStorage.getItem(K.ES),rca=localStorage.getItem(K.CA),rexp=localStorage.getItem(K.EXP);
   return{
     places:ps,
     cats:rc?JSON.parse(rc):JSON.parse(JSON.stringify(DEF_CATS)),
@@ -1399,7 +1399,8 @@ function loadData(){
     placeTypes:rpt?JSON.parse(rpt):[],
     expTypes:ret?JSON.parse(ret):[],
     expSubtypes:res?JSON.parse(res):[],
-    cityActivities:rca?JSON.parse(rca):[]
+    cityActivities:rca?JSON.parse(rca):[],
+    experiences:rexp?JSON.parse(rexp):[]
   };
 }
 function initDefaults(){
@@ -2276,6 +2277,7 @@ function reloadData(){
   refreshL1();buildDD();buildPWCats();
   document.getElementById('pw-cn').textContent=DATA.places.length;
   toast('🔄 '+(lang==='en'?'Map updated':'Mappa aggiornata'));
+  loadEsperienze();
 }
 window.addEventListener('storage',function(e){if([K.P,K.C,K.A].includes(e.key))reloadData();});
 // Ricarica dati quando l'utente torna sull'app dopo aver usato l'admin
@@ -3276,6 +3278,7 @@ function loadEsperienze(){
                coverPhoto:r.cover_photo||'',featured:r.featured||false,
                sortOrder:r.sort_order||0,stops:r.stops||[]};
       });
+      localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
     })
     .catch(function(){DATA.experiences=[];});
