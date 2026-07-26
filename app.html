@@ -1412,7 +1412,7 @@ function loadFavs(){if(!favs)favs=new Set();var f=localStorage.getItem(K.FAV);if
 function saveFavs(){localStorage.setItem(K.FAV,JSON.stringify(Array.from(favs)));}
 function loadFavActs(){if(!favActs)favActs=new Set();var f=localStorage.getItem('WT_FAV_ACTS');if(f){JSON.parse(f).forEach(function(id){favActs.add(id);});}}
 function saveFavActs(){localStorage.setItem('WT_FAV_ACTS',JSON.stringify(Array.from(favActs)));}
-function toggleFavAct(id){if(favActs.has(id))favActs.delete(id);else{favActs.add(id);toast(t('saved'));}saveFavActs();updFavBtn();if(document.getElementById('fav-page')&&document.getElementById('fav-page').classList.contains('show')){openFavPage();}
+function toggleFavAct(id){if(favActs.has(id)){favActs.delete(id);}else{favActs.add(id);toast(t('saved'));var a=(DATA.cityActivities||[]).find(function(x){return x.id===id;});if(a){if(window.umami)umami.track('bookmark_activity',{id:a.id,name:a.name});trackEvent({event_type:'bookmark_activity',activity_id:a.id,is_city_activity:true});}}saveFavActs();updFavBtn();if(document.getElementById('fav-page')&&document.getElementById('fav-page').classList.contains('show')){openFavPage();}
 _updateCityActBkm(id);}
 function _updateCityActBkm(id){
   var bkm=document.getElementById('act-popup-bkm');
@@ -2966,8 +2966,15 @@ function setupDpSave(id){
 
 /* ═══ FAVORITES ═══ */
 function toggleFav(id){
-  if(favs.has(id))favs.delete(id);
-  else{favs.add(id);toast(t('saved'));}
+  if(favs.has(id)){favs.delete(id);}
+  else{
+    favs.add(id);toast(t('saved'));
+    var p=(DATA.places||[]).find(function(x){return x.id===id;});
+    if(p){
+      if(window.umami)umami.track('bookmark_place',{id:p.id,name:p.name});
+      trackEvent({event_type:'bookmark_place',place_id:p.id});
+    }
+  }
   saveFavs();updFavBtn();
 }
 function updFavBtn(){
