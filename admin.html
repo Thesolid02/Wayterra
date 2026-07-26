@@ -378,6 +378,17 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div id="an-activities"><div class="an-loading">Caricamento…</div></div>
     </div>
   </div>
+  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Più salvati</div>
+  <div class="an-top-grid">
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Luoghi più salvati (top 10)</div>
+      <div id="an-bm-places"><div class="an-loading">Caricamento…</div></div>
+    </div>
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Attività più salvate (top 10)</div>
+      <div id="an-bm-activities"><div class="an-loading">Caricamento…</div></div>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -3081,6 +3092,8 @@ var anChartInst=null;
 var anLiveInterval=null;
 var anPlacesData=null;
 var anActivitiesData=null;
+var anBmPlacesData=null;
+var anBmActivitiesData=null;
 
 function timeAgo(isoStr){
   var sec=Math.floor((Date.now()-new Date(isoStr).getTime())/1000);
@@ -3159,6 +3172,8 @@ function renderAnalytics(){
   var since=new Date(Date.now()-anPeriod*86400000).toISOString();
   document.getElementById('an-places').innerHTML='<div class="an-loading">Caricamento…</div>';
   document.getElementById('an-activities').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-bm-places').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-bm-activities').innerHTML='<div class="an-loading">Caricamento…</div>';
   fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.asc',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
@@ -3167,11 +3182,15 @@ function renderAnalytics(){
     renderAnChart(events);
     renderAnPlaces(events);
     renderAnActivities(events);
+    renderAnBmPlaces(events);
+    renderAnBmActivities(events);
   })
   .catch(function(e){
     console.error('analytics fetch error',e);
     document.getElementById('an-places').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
     document.getElementById('an-activities').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    document.getElementById('an-bm-places').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
   });
 }
 
@@ -3280,6 +3299,75 @@ function renderAnActivities(events){
   .catch(function(){document.getElementById('an-activities').innerHTML='<div class="an-empty">Errore caricamento</div>';});
 }
 
+function renderAnBmPlaces(events){
+  var bmEvents=events.filter(function(e){return e.event_type==='bookmark_place'&&e.place_id;});
+  var counts={};
+  bmEvents.forEach(function(e){counts[e.place_id]=(counts[e.place_id]||0)+1;});
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){
+    document.getElementById('an-bm-places').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
+    return;
+  }
+  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+sorted.join(',')+')',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  })
+  .then(function(r){return r.json();})
+  .then(function(places){
+    anBmPlacesData={sorted:sorted,counts:counts,items:places};
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
+      var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+p.name+'</span>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'bookmark_places\')">Vedi tutti ('+sorted.length+')</button>';}
+    document.getElementById('an-bm-places').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-bm-places').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
+function renderAnBmActivities(events){
+  var bmEvents=events.filter(function(e){return e.event_type==='bookmark_activity'&&e.activity_id;});
+  var counts={};
+  var isCityMap={};
+  bmEvents.forEach(function(e){
+    counts[e.activity_id]=(counts[e.activity_id]||0)+1;
+    isCityMap[e.activity_id]=e.is_city_activity;
+  });
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){
+    document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
+    return;
+  }
+  fetch(SB_URL+'/rest/v1/activities?select=id,name,place_id&id=in.('+sorted.join(',')+')',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  })
+  .then(function(r){return r.json();})
+  .then(function(acts){
+    anBmActivitiesData={sorted:sorted,counts:counts,isCityMap:isCityMap,items:acts};
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
+      var a=acts.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      var tag=isCityMap[id]?'Attività Roma':'Luogo';
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +'<div style="flex:1;min-width:0;">'
+        +'<div class="an-name">'+a.name+'</div>'
+        +'<div class="an-sub">'+tag+'</div>'
+        +'</div>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'bookmark_activities\')">Vedi tutti ('+sorted.length+')</button>';}
+    document.getElementById('an-bm-activities').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
 function openAnAll(type){
   var title='',html='';
   if(type==='places'&&anPlacesData){
@@ -3305,6 +3393,31 @@ function openAnAll(type){
         +'<div class="an-sub">'+tag+'</div>'
         +'</div>'
         +'<span class="an-count">'+anActivitiesData.counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+  } else if(type==='bookmark_places'&&anBmPlacesData){
+    title='Luoghi più salvati (top '+anBmPlacesData.sorted.length+')';
+    html=anBmPlacesData.sorted.map(function(id,i){
+      var p=anBmPlacesData.items.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+p.name+'</span>'
+        +'<span class="an-count">'+anBmPlacesData.counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+  } else if(type==='bookmark_activities'&&anBmActivitiesData){
+    title='Attività più salvate (top '+anBmActivitiesData.sorted.length+')';
+    html=anBmActivitiesData.sorted.map(function(id,i){
+      var a=anBmActivitiesData.items.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      var tag=anBmActivitiesData.isCityMap[id]?'Attività Roma':'Luogo';
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +'<div style="flex:1;min-width:0;">'
+        +'<div class="an-name">'+a.name+'</div>'
+        +'<div class="an-sub">'+tag+'</div>'
+        +'</div>'
+        +'<span class="an-count">'+anBmActivitiesData.counts[id]+'</span>'
         +'</div>';
     }).join('');
   }
