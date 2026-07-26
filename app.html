@@ -2970,9 +2970,11 @@ function toggleFav(id){
   else{
     favs.add(id);toast(t('saved'));
     var p=(DATA.places||[]).find(function(x){return x.id===id;});
+    console.log('[DEBUG bookmark_place] id=',id,'p found=',!!p,p);
     if(p){
       if(window.umami)umami.track('bookmark_place',{id:p.id,name:p.name});
-      trackEvent({event_type:'bookmark_place',place_id:p.id});
+      console.log('[DEBUG bookmark_place] calling trackEvent, SB_URL=',SB_URL,'payload=',{event_type:'bookmark_place',place_id:p.id});
+      fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({event_type:'bookmark_place',place_id:p.id})}).then(function(r){return r.text().then(function(txt){console.log('[DEBUG bookmark_place] Supabase status=',r.status,'body=',txt);});}).catch(function(e){console.error('[DEBUG bookmark_place] fetch error',e);});
     }
   }
   saveFavs();updFavBtn();
