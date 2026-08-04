@@ -783,7 +783,8 @@ lottie.loadAnimation({
       </div>
     </div>
     <div class="rp-card rp-card-main rp-card-travels" onclick="openTravelsPage()">
-      <div class="rp-card-bg" style="background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#3b82f6 100%);"></div>
+      <!-- TODO: sostituire con URL reale da Supabase Storage (es. .../wayterra-images/travels.jpg) -->
+      <div class="rp-card-bg" style="background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#3b82f6 100%);background-image:url('');background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov" style="background:linear-gradient(to top,rgba(0,0,0,.45) 0%,transparent 60%);"></div>
       <div class="rp-travels-globe"><i class="ti ti-world"></i></div>
       <div class="rp-card-body">
@@ -3766,11 +3767,7 @@ function bootApp(d){
   setTimeout(function(){
     stopSplashRotation();
     document.getElementById('splash').classList.add('hide');
-    if(!localStorage.getItem('WT_REGION')){
-      showRegionPage();
-    } else {
-      showOnboarding();
-    }
+    showRegionPage();
   },3000);
 }
 
