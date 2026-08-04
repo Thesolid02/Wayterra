@@ -2883,6 +2883,7 @@ function addEspStopRow(stop){
   div.className='arow-wrap';
   div.id='esp-stop-'+idx;
   div.setAttribute('data-idx',idx);
+  var isOpt=stop&&stop.optional?true:false;
   div.innerHTML='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
     +'<span style="font-size:.75rem;font-weight:700;color:var(--g400);min-width:18px;">'+(idx+1)+'</span>'
     +'<select class="fs2 esp-stop-type" onchange="onEspStopTypeChange(this,'+idx+')" style="min-width:120px;">'
@@ -2890,6 +2891,8 @@ function addEspStopRow(stop){
     +'<option value="activity"'+(type==='activity'?' selected':'')+'">Attività</option>'
     +'</select>'
     +'<select class="fs2 esp-stop-id" style="flex:1;min-width:160px;" id="esp-stop-id-'+idx+'"></select>'
+    +'<label style="display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--g500);white-space:nowrap;cursor:pointer;">'
+    +'<input type="checkbox" class="esp-stop-optional"'+(isOpt?' checked':'')+'> Opz.</label>'
     +'<div style="display:flex;gap:4px;margin-left:auto;">'
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',-1)" title="Su">↑</button>'
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',1)" title="Giù">↓</button>'
@@ -2961,7 +2964,8 @@ function collectEspStops(){
     var typeSel=row.querySelector('.esp-stop-type');
     var idSel=row.querySelector('.esp-stop-id');
     if(!typeSel||!idSel||!idSel.value)return;
-    stops.push({type:typeSel.value, id:parseInt(idSel.value)||idSel.value});
+    var optCb=row.querySelector('.esp-stop-optional');
+    stops.push({type:typeSel.value, id:parseInt(idSel.value)||idSel.value, optional:optCb?optCb.checked:false});
   });
   return stops;
 }

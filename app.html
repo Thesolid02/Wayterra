@@ -291,6 +291,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itd-stop-meta{font-size:.72rem;color:var(--g400);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .itd-stop-score{display:inline-flex;align-items:center;gap:2px;font-size:.65rem;font-weight:500;padding:1px 5px;border-radius:4px;margin-top:3px;}
 .itd-stop-arrow{font-size:.78rem;color:var(--g400);flex-shrink:0;}
+.itd-stop-opt-badge{display:inline-block;font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:#fff3ed;border:1px solid #dc6b2f;color:#dc6b2f;padding:1px 6px;border-radius:100px;margin-left:6px;vertical-align:middle;}
 #itd-map-wrap{margin-top:16px;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;}
 #itd-map-wrap img{width:100%;display:block;}
 #itd-map-wrap::after{content:'Apri in Maps ↗';position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:.68rem;padding:3px 8px;border-radius:6px;pointer-events:none;}
@@ -3562,10 +3563,11 @@ function openItinerario(id){
             +'</div>';
         }
       }else{scoreHtml=sc?'<span class="itd-stop-score" style="background:'+sc.bg+';color:'+sc.color+';border:0.5px solid '+sc.border+';">'+sc.gems+'</span>':'';}
+      var isOpt=e.isTravel&&!!s.optional;
       return '<div class="itd-stop-card"'+onclick+'>'
-        +'<div class="itd-stop-num">'+(i+1)+'</div>'
+        +'<div class="itd-stop-num" style="background:'+(isOpt?'#888':'#dc6b2f')+';">'+(i+1)+'</div>'
         +thumb
-        +'<div class="itd-stop-body"><div class="itd-stop-name">'+name+'</div>'
+        +'<div class="itd-stop-body"><div class="itd-stop-name">'+name+(isOpt?'<span class="itd-stop-opt-badge">opzionale</span>':'')+'</div>'
         +(meta?'<div class="itd-stop-meta">'+meta+'</div>':'')
         +scoreHtml
         +'</div>'
@@ -3602,7 +3604,7 @@ function openItinerario(id){
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
       if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);}
     }
-    if(lat&&lng)_itdMapCoords.push([+lng,+lat]);
+    if(lat&&lng)_itdMapCoords.push([+lng,+lat,!!s.optional]);
     else console.log('[itd-map] no coords for stop',s.id,s.type);
   });
   var _mapWrap=document.getElementById('itd-map-wrap');
@@ -3675,7 +3677,8 @@ function buildItdMapUrl(coords){
   var TOKEN='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
   // pin markers: literal in URL path — no encodeURIComponent on the full overlay string
   var pins=coords.map(function(c,i){
-    return 'pin-s-'+(i+1)+'+dc6b2f('+c[0].toFixed(4)+','+c[1].toFixed(4)+')';
+    var col=c[2]?'888888':'dc6b2f';
+    return 'pin-s-'+(i+1)+'+'+col+'('+c[0].toFixed(4)+','+c[1].toFixed(4)+')';
   }).join(',');
   // path: GeoJSON LineString — only the JSON content inside parens is URL-encoded
   var lineGeoJSON=JSON.stringify({type:'LineString',coordinates:coords.map(function(c){return[+c[0].toFixed(4),+c[1].toFixed(4)];})});
