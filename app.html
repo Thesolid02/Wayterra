@@ -3551,7 +3551,7 @@ function openItinerario(id){
       if(!name)name='Tappa '+(i+1);
       var scoreHtml='';
       if(e.isTravel&&s.type==='place'&&p){
-        var _TCAT={'1':'ti-tools-kitchen-2','2':'ti-route','3':'ti-camera','4':'ti-bed','5':'ti-star','9':'ti-parking'};
+        var _TCAT={'1':'ti-tools-kitchen-2','2':'ti-route','3':'ti-camera','4':'ti-bed','5':'ti-star','9':'ti-parking','11':'ti-plane-departure'};
         var _tids=(p.activities||[]).map(function(a){return a.experienceTypeId;}).filter(Boolean);
         var _uids=_tids.filter(function(v,i,arr){return arr.indexOf(v)===i;});
         if(_uids.length){
