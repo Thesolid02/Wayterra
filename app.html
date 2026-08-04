@@ -3280,6 +3280,7 @@ function selectRegion(regionId){
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
   hideRegionPage(function(){
+    document.getElementById('splash').style.display='';
     document.getElementById('splash').classList.remove('hide');
     stopSplashRotation();
     startSplashRotation();
@@ -3775,6 +3776,7 @@ function bootApp(d){
   loadEsperienze();
   stopSplashRotation();
   document.getElementById('splash').classList.add('hide');
+  document.getElementById('splash').style.display='none';
   showRegionPage();
 }
 
@@ -3797,7 +3799,7 @@ function startSplashRotation(){
 function stopSplashRotation(){clearInterval(_splashIv);_splashIv=null;}
 
 window.addEventListener('DOMContentLoaded',function(){
-  document.getElementById('splash').classList.add('hide');
+  document.getElementById('splash').style.display='none';
   var h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
   var APP_VERSION='2026-05-16-v1'; // aggiorna questo per forzare reload su tutti i dispositivi
 
