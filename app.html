@@ -292,6 +292,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itd-stop-score{display:inline-flex;align-items:center;gap:2px;font-size:.65rem;font-weight:500;padding:1px 5px;border-radius:4px;margin-top:3px;}
 .itd-stop-arrow{font-size:.78rem;color:var(--g400);flex-shrink:0;}
 .itd-stop-opt-badge{display:inline-block;font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:#fff3ed;border:1px solid #dc6b2f;color:#dc6b2f;padding:1px 6px;border-radius:100px;margin-left:6px;vertical-align:middle;}
+.itd-day-header{display:flex;align-items:center;gap:8px;padding:14px 0 4px;margin-top:2px;}
+.itd-day-label{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g500);}
 #itd-map-wrap{margin-top:16px;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;}
 #itd-map-wrap img{width:100%;display:block;}
 #itd-map-wrap::after{content:'Apri in Maps ↗';position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:.68rem;padding:3px 8px;border-radius:6px;pointer-events:none;}
@@ -3515,12 +3517,13 @@ function openItinerario(id){
     :'<div class="itd-cover-ph">🗺</div>';
   var stopsEl=document.getElementById('itd-stops');
   if(e.stops&&e.stops.length){
-    var html='<div class="itd-stops-title">Tappe</div>';
-    html+=e.stops.map(function(s,i){
-      var name='',meta='',thumb='',sc=null,onclick='';
+    // helper: risolve name/thumb/meta/sc/onclick per una tappa
+    function resolveStop(s){
+      var name='',meta='',thumb='',sc=null,onclick='',placeRef=null;
       if(s.type==='place'){
         var p=DATA.places.find(function(x){return x.id==s.id;});
         if(p){
+          placeRef=p;
           name=(lang==='en'&&p.nameEn)?p.nameEn:p.name;
           meta=p.region||'';
           sc=scoreColor(p.hiddenScore);
@@ -3572,29 +3575,60 @@ function openItinerario(id){
             :'<div class="itd-stop-thumb-ph" style="background:var(--g100);">🏃</div>';
         }
       }
-      if(!name)name='Tappa '+(i+1);
+      return {name:name,meta:meta,thumb:thumb,sc:sc,onclick:onclick,placeRef:placeRef};
+    }
+    // helper: HTML di una singola tappa con numerazione globale
+    function renderStopCard(s,globalIdx,r){
+      var name=r.name||('Tappa '+(globalIdx+1));
+      var p=r.placeRef;
       var scoreHtml='';
       if(e.isTravel&&s.type==='place'&&p){
         var _TCAT={'1':'ti-tools-kitchen-2','2':'ti-route','3':'ti-camera','4':'ti-bed','5':'ti-star','9':'ti-parking','11':'ti-plane-departure'};
         var _tids=(p.activities||[]).map(function(a){return a.experienceTypeId;}).filter(Boolean);
-        var _uids=_tids.filter(function(v,i,arr){return arr.indexOf(v)===i;});
+        var _uids=_tids.filter(function(v,ii,arr){return arr.indexOf(v)===ii;});
         if(_uids.length){
           scoreHtml='<div style="display:flex;gap:4px;margin-top:4px;">'
             +_uids.map(function(tid){return '<i class="ti '+(_TCAT[String(tid)]||'ti-map-pin')+'" style="font-size:.82rem;color:var(--g400);"></i>';}).join('')
             +'</div>';
         }
-      }else{scoreHtml=sc?'<span class="itd-stop-score" style="background:'+sc.bg+';color:'+sc.color+';border:0.5px solid '+sc.border+';">'+sc.gems+'</span>':'';}
+      }else{scoreHtml=r.sc?'<span class="itd-stop-score" style="background:'+r.sc.bg+';color:'+r.sc.color+';border:0.5px solid '+r.sc.border+';">'+r.sc.gems+'</span>':'';}
       var isOpt=e.isTravel&&!!s.optional;
-      return '<div class="itd-stop-card"'+onclick+'>'
-        +'<div class="itd-stop-num" style="background:'+(isOpt?'#888':'#dc6b2f')+';">'+(i+1)+'</div>'
-        +thumb
+      var durHtml=s.duration?'<div style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--g400);margin-top:1px;"><i class="ti ti-clock" style="font-size:.72rem;"></i><span>'+s.duration+'</span></div>':'';
+      return '<div class="itd-stop-card"'+r.onclick+'>'
+        +'<div class="itd-stop-num" style="background:'+(isOpt?'#888':'#dc6b2f')+';">'+(globalIdx+1)+'</div>'
+        +r.thumb
         +'<div class="itd-stop-body"><div class="itd-stop-name">'+name+(isOpt?'<span class="itd-stop-opt-badge">opzionale</span>':'')+'</div>'
-        +(meta?'<div class="itd-stop-meta">'+meta+'</div>':'')
+        +durHtml
+        +(r.meta?'<div class="itd-stop-meta">'+r.meta+'</div>':'')
         +scoreHtml
         +'</div>'
-        +(onclick?'<span class="itd-stop-arrow">→</span>':'')
+        +(r.onclick?'<span class="itd-stop-arrow">→</span>':'')
         +'</div>';
-    }).join('');
+    }
+    var html='<div class="itd-stops-title">Tappe</div>';
+    var hasDays=e.stops.some(function(s){return !!s.day;});
+    if(!hasDays){
+      // rendering originale — retrocompatibilità itinerari senza day
+      html+=e.stops.map(function(s,i){return renderStopCard(s,i,resolveStop(s));}).join('');
+    } else {
+      // raggruppa per giorno; stops senza day (day=0) in cima senza intestazione
+      var dayGroups=[],dayMap={};
+      e.stops.forEach(function(s){
+        var d=s.day||0;
+        if(!dayMap[d]){dayMap[d]=[];dayGroups.push(d);}
+        dayMap[d].push(s);
+      });
+      var globalIdx=0;
+      dayGroups.forEach(function(d){
+        if(d>0){
+          html+='<div class="itd-day-header"><div class="itd-stop-num">'+d+'</div><span class="itd-day-label">Giorno '+d+'</span></div>';
+        }
+        dayMap[d].forEach(function(s){
+          html+=renderStopCard(s,globalIdx,resolveStop(s));
+          globalIdx++;
+        });
+      });
+    }
     stopsEl.innerHTML=html;
   } else {
     stopsEl.innerHTML='';

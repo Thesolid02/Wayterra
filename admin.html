@@ -2884,6 +2884,8 @@ function addEspStopRow(stop){
   div.id='esp-stop-'+idx;
   div.setAttribute('data-idx',idx);
   var isOpt=stop&&stop.optional?true:false;
+  var stopDay=(stop&&stop.day)||'';
+  var stopDur=(stop&&stop.duration)||'';
   div.innerHTML='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
     +'<span style="font-size:.75rem;font-weight:700;color:var(--g400);min-width:18px;">'+(idx+1)+'</span>'
     +'<select class="fs2 esp-stop-type" onchange="onEspStopTypeChange(this,'+idx+')" style="min-width:120px;">'
@@ -2893,6 +2895,8 @@ function addEspStopRow(stop){
     +'<select class="fs2 esp-stop-id" style="flex:1;min-width:160px;" id="esp-stop-id-'+idx+'"></select>'
     +'<label style="display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--g500);white-space:nowrap;cursor:pointer;">'
     +'<input type="checkbox" class="esp-stop-optional"'+(isOpt?' checked':'')+'> Opz.</label>'
+    +'<input type="number" class="fs2 esp-stop-day" min="1" max="30" placeholder="Gg" title="Giorno" style="width:52px;" value="'+stopDay+'">'
+    +'<input type="text" class="fs2 esp-stop-dur" placeholder="es. 2h" title="Durata" style="width:72px;" value="'+stopDur+'">'
     +'<div style="display:flex;gap:4px;margin-left:auto;">'
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',-1)" title="Su">↑</button>'
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',1)" title="Giù">↓</button>'
@@ -2965,7 +2969,15 @@ function collectEspStops(){
     var idSel=row.querySelector('.esp-stop-id');
     if(!typeSel||!idSel||!idSel.value)return;
     var optCb=row.querySelector('.esp-stop-optional');
-    stops.push({type:typeSel.value, id:parseInt(idSel.value)||idSel.value, optional:optCb?optCb.checked:false});
+    var dayInp=row.querySelector('.esp-stop-day');
+    var durInp=row.querySelector('.esp-stop-dur');
+    stops.push({
+      type:typeSel.value,
+      id:parseInt(idSel.value)||idSel.value,
+      optional:optCb?optCb.checked:false,
+      day:(dayInp&&dayInp.value)?parseInt(dayInp.value)||null:null,
+      duration:(durInp&&durInp.value.trim())?durInp.value.trim():null
+    });
   });
   return stops;
 }
