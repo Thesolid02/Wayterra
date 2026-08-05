@@ -3655,7 +3655,11 @@ function openItineraryMapView(id){
   if(!e)return;
   _itineraryViewId=id;
   _itineraryViewFromTravel=_travelContext;
-  if(_travelContext){closeTravelsPage();}else{closeItinerariPage();}
+  if(_travelContext){
+    closeTravelsPage();
+    var _rp=document.getElementById('region-page');
+    if(_rp)_rp.classList.add('gone');
+  }else{closeItinerariPage();}
   closeBubble();closeBottomCard();clearL2();
   // raccoglie place_id e coordinate di ogni tappa
   var stopPlaceIds=[];
@@ -4055,7 +4059,7 @@ window.addEventListener('DOMContentLoaded',function(){
   </div>
 </div>
 
-<button id="itd-map-back" onclick="closeItineraryMapView()" style="display:none;position:fixed;top:calc(env(safe-area-inset-top,0px)+62px);left:12px;z-index:320;background:#fff;border:none;border-radius:100px;box-shadow:0 1px 6px rgba(0,0,0,.22);padding:7px 14px;font-family:var(--f);font-size:.82rem;font-weight:700;color:var(--g900);cursor:pointer;">← Indietro</button>
+<button id="itd-map-back" onclick="closeItineraryMapView()" style="display:none;position:fixed;top:calc(env(safe-area-inset-top,0px)+74px);left:12px;z-index:320;background:#fff;border:none;border-radius:100px;box-shadow:0 1px 6px rgba(0,0,0,.22);padding:7px 14px;font-family:var(--f);font-size:.82rem;font-weight:700;color:var(--g900);cursor:pointer;">← Indietro</button>
 <div id="bottom-card">
   <div id="bc-vibe-fumetto"></div>
   <div class="bc-handle"></div>
