@@ -3621,7 +3621,7 @@ function openItinerario(id){
       var globalIdx=0;
       dayGroups.forEach(function(d){
         if(d>0){
-          html+='<div class="itd-day-header"><div class="itd-stop-num">'+d+'</div><span class="itd-day-label">Giorno '+d+'</span></div>';
+          html+='<div class="itd-day-header"><span class="itd-day-label">Giorno '+d+'</span></div>';
         }
         dayMap[d].forEach(function(s){
           html+=renderStopCard(s,globalIdx,resolveStop(s));
