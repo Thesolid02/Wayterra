@@ -3348,7 +3348,7 @@ function loadEsperienze(){
 }
 var expCardIndex=0;
 function renderExpCards(){
-  var featured=DATA.experiences.filter(function(e){return e.featured;});
+  var featured=DATA.experiences.filter(function(e){return e.featured&&!e.isTravel;});
   var row=document.getElementById('exp-row');
   var scroll=document.getElementById('exp-row-scroll');
   if(!row||!scroll)return;
@@ -3392,7 +3392,7 @@ function renderItdPill(){
     if(hint)hint.style.display='none';
     return;
   }
-  var featured=DATA.experiences.filter(function(e){return e.featured;});
+  var featured=DATA.experiences.filter(function(e){return e.featured&&!e.isTravel;});
   if(level===2||mapMode==='city'||!featured.length){
     wrap.style.display='none';
     return;
@@ -3437,7 +3437,7 @@ function prevExpCard(){
   updateExpCarousel();
 }
 function nextExpCard(){
-  var featured=DATA.experiences.filter(function(e){return e.featured;});
+  var featured=DATA.experiences.filter(function(e){return e.featured&&!e.isTravel;});
   var vis=window.innerWidth>=768?3:1;
   expCardIndex=Math.min(Math.max(0,featured.length-vis),expCardIndex+1);
   updateExpCarousel();
@@ -3448,7 +3448,7 @@ function updateExpCarousel(){
   if(!scroll||!vp)return;
   var step=window.innerWidth>=768?200:(vp.offsetWidth+10);
   scroll.style.transform='translateX('+(-expCardIndex*step)+'px)';
-  var featured=DATA.experiences.filter(function(e){return e.featured;});
+  var featured=DATA.experiences.filter(function(e){return e.featured&&!e.isTravel;});
   var vis=window.innerWidth>=768?3:1;
   var max=Math.max(0,featured.length-vis);
   var p=document.getElementById('exp-prev');
@@ -3469,11 +3469,12 @@ function closeItinerariPage(){
 function renderItinerariPage(){
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
-  if(!DATA.experiences.length){
+  var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
+  if(!lazioExp.length){
     scroll.innerHTML='<div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div>';
     return;
   }
-  var cards=DATA.experiences.map(function(e){
+  var cards=lazioExp.map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
     var img=e.coverPhoto
