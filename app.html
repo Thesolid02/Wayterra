@@ -1853,6 +1853,7 @@ function initMap(){
   window.addEventListener('resize',function(){map_o.resize();});
   map_o.on('click',function(){closeBubble();if(_itineraryViewId!==null)return;closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();});
   map_o.on('zoom',function(){
+    if(_itineraryViewId!==null)return;
     if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(z<11){
@@ -1860,6 +1861,7 @@ function initMap(){
     }
   });
   map_o.on('zoomend',function(){
+    if(_itineraryViewId!==null)return;
     if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(window.innerWidth<768){
@@ -3645,7 +3647,7 @@ function closeItinerarioDetail(){
 function openItinerarioDetail(id){openItinerario(id);}
 
 var _travelContext=false;
-var _itineraryViewId=null,_itineraryViewFromTravel=false;
+var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[];
 
 function openItineraryMapView(id){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
@@ -3664,32 +3666,42 @@ function openItineraryMapView(id){
       var _p=DATA.places.find(function(x){return x.id==s.id;});
       if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;pid=_p.id;}
       else{
-        outer:for(var _fpi=0;_fpi<DATA.places.length;_fpi++){
+        outerA:for(var _fpi=0;_fpi<DATA.places.length;_fpi++){
           var _faa=DATA.places[_fpi].activities||[];
           for(var _fai=0;_fai<_faa.length;_fai++){
             if(_faa[_fai].id==s.id&&_faa[_fai].lat&&_faa[_fai].lng){
-              lat=_faa[_fai].lat;lng=_faa[_fai].lng;pid=DATA.places[_fpi].id;break outer;
+              lat=_faa[_fai].lat;lng=_faa[_fai].lng;pid=DATA.places[_fpi].id;break outerA;
             }
           }
         }
       }
     } else if(s.type==='activity'){
+      // cerca l'activity in DATA.places[i].activities per trovare il place padre
       var _fa=null,_fp=null;
-      outer2:for(var _pi=0;_pi<DATA.places.length;_pi++){
+      outerB:for(var _pi=0;_pi<DATA.places.length;_pi++){
         var _aa=DATA.places[_pi].activities||[];
         for(var _ai=0;_ai<_aa.length;_ai++){
-          if(_aa[_ai].id==s.id){_fa=_aa[_ai];_fp=DATA.places[_pi];break outer2;}
+          if(_aa[_ai].id==s.id){_fa=_aa[_ai];_fp=DATA.places[_pi];break outerB;}
         }
       }
+      // fallback: city activity (nessun place padre → nessun marker, ma coordinate per la linea)
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
       if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);if(_fp)pid=_fp.id;}
     }
     if(lat&&lng)coords.push([+lng,+lat]);
     if(pid&&stopPlaceIds.indexOf(pid)<0)stopPlaceIds.push(pid);
   });
+  // per i place_id che non hanno ancora un marker L1, aggiungili temporaneamente
+  _itinTempMarkers=[];
+  stopPlaceIds.forEach(function(pid){
+    if(!l1Mk[pid]){
+      var _tp=DATA.places.find(function(x){return x.id==pid;});
+      if(_tp&&_tp.lat&&_tp.lng){addL1(_tp);_itinTempMarkers.push(pid);}
+    }
+  });
   // nascondi tutti i marker L1
   Object.keys(l1Mk).forEach(function(k){try{l1Mk[k].remove();}catch(er){}});
-  // mostra solo i marker delle tappe
+  // mostra solo i marker delle tappe (indipendentemente dalla modalità mappa corrente)
   stopPlaceIds.forEach(function(pid){var m=l1Mk[pid];if(m)m.addTo(map_o);});
   // aggiungi linea percorso GeoJSON
   if(coords.length>=2){
@@ -3706,6 +3718,8 @@ function openItineraryMapView(id){
   } else if(coords.length===1){
     map_o.flyTo({center:coords[0],zoom:13,duration:700});
   }
+  // nascondi pillola itinerari
+  var _pw=document.getElementById('itd-pill-wrap');if(_pw)_pw.style.display='none';
   // popola bottom card
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
   var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
@@ -3731,7 +3745,14 @@ function closeItineraryMapView(){
   _itineraryViewId=null;
   if(map_o.getLayer('itinerary-route-line'))map_o.removeLayer('itinerary-route-line');
   if(map_o.getSource('itinerary-route'))map_o.removeSource('itinerary-route');
+  // rimuovi marker temporanei aggiunti per questa vista
+  _itinTempMarkers.forEach(function(pid){
+    var m=l1Mk[pid];if(m){try{m.remove();}catch(er){}}
+    delete l1Mk[pid];
+  });
+  _itinTempMarkers=[];
   restoreL1();
+  renderItdPill();
   document.getElementById('itd-map-back').style.display='none';
   closeBottomCard();
   if(_itineraryViewFromTravel){openTravelsPage();}else{openItinerariPage();}
@@ -4034,7 +4055,7 @@ window.addEventListener('DOMContentLoaded',function(){
   </div>
 </div>
 
-<button id="itd-map-back" onclick="closeItineraryMapView()" style="display:none;position:fixed;top:calc(env(safe-area-inset-top,0px)+10px);left:12px;z-index:320;background:#fff;border:none;border-radius:100px;box-shadow:0 1px 6px rgba(0,0,0,.22);padding:7px 14px;font-family:var(--f);font-size:.82rem;font-weight:700;color:var(--g900);cursor:pointer;">← Indietro</button>
+<button id="itd-map-back" onclick="closeItineraryMapView()" style="display:none;position:fixed;top:calc(env(safe-area-inset-top,0px)+62px);left:12px;z-index:320;background:#fff;border:none;border-radius:100px;box-shadow:0 1px 6px rgba(0,0,0,.22);padding:7px 14px;font-family:var(--f);font-size:.82rem;font-weight:700;color:var(--g900);cursor:pointer;">← Indietro</button>
 <div id="bottom-card">
   <div id="bc-vibe-fumetto"></div>
   <div class="bc-handle"></div>
