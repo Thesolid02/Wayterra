@@ -1851,9 +1851,8 @@ function initMap(){
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
-  map_o.on('click',function(){closeBubble();if(_itineraryViewId!==null)return;closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();});
+  map_o.on('click',function(){closeBubble();closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();});
   map_o.on('zoom',function(){
-    if(_itineraryViewId!==null)return;
     if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(z<11){
@@ -1861,7 +1860,6 @@ function initMap(){
     }
   });
   map_o.on('zoomend',function(){
-    if(_itineraryViewId!==null)return;
     if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(window.innerWidth<768){
@@ -3287,7 +3285,6 @@ function hideRegionPage(cb){
   setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
 }
 function selectRegion(regionId){
-  if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
   var sp=document.getElementById('splash');
@@ -3374,7 +3371,7 @@ function renderExpCards(){
     var img=e.coverPhoto
       ?'<img class="exp-card-img" src="'+e.coverPhoto+'" alt="">'
       :'<div class="exp-card-img-ph">🗺</div>';
-    return '<div class="exp-card" onclick="openItineraryMapView('+e.id+')">'
+    return '<div class="exp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="exp-card-body"><div class="exp-card-title">'+title+'</div>'
       +(dur?'<div class="exp-card-dur">'+dur+'</div>':'')
       +'</div></div>';
@@ -3418,7 +3415,7 @@ function renderItdPill(){
     var img=e.coverPhoto
       ?'<img class="itd-pill-img" src="'+e.coverPhoto+'" alt="">'
       :'<div class="itd-pill-img-ph">🗺</div>';
-    return '<div class="itd-pill-item" onclick="openItineraryMapView('+e.id+');closeItdPill();">'
+    return '<div class="itd-pill-item" onclick="openItinerario('+e.id+');closeItdPill();">'
       +img+'<div class="itd-pill-body"><div class="itd-pill-name">'+title+'</div>'
       +(meta?'<div class="itd-pill-meta">'+meta+'</div>':'')
       +'</div></div>';
@@ -3494,7 +3491,7 @@ function renderItinerariPage(){
       :'<div class="itp-card-img-ph">🗺</div>';
     var stops=e.stops&&e.stops.length
       ?'<span class="itp-stop-badge">'+e.stops.length+' tappe</span>':'';
-    return '<div class="itp-card" onclick="openItineraryMapView('+e.id+')">'
+    return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
       +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
       +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
@@ -3649,8 +3646,11 @@ function closeItinerarioDetail(){
 function openItinerarioDetail(id){openItinerario(id);}
 
 var _travelContext=false;
+/* DISABILITATO - da riattivare in futuro
 var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[];
+*/
 
+/* DISABILITATO - da riattivare in futuro
 function openItineraryMapView(id){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
   var e=DATA.experiences.find(function(x){return x.id==id;});
@@ -3768,6 +3768,7 @@ function closeItineraryMapView(){
   updateRegionPill(localStorage.getItem('WT_REGION')||'lazio');
   if(_itineraryViewFromTravel){openTravelsPage();}else{openItinerariPage();}
 }
+*/
 function openTravelsPage(){
   renderTravelsPage();
   _travelContext=true;
@@ -3789,7 +3790,7 @@ function renderTravelsPage(){
       :'<div class="itp-card-img-ph">🌍</div>';
     var stopsCount=e.stops&&e.stops.length?e.stops.length:0;
     var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
-    return '<div class="itp-card" onclick="openItineraryMapView('+e.id+')">'
+    return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
       +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
       +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
@@ -4087,7 +4088,7 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-map-2"></i>
     <span>Mappa</span>
   </button>
-  <button class="bn-item" data-nav="itinerari" onclick="(_travelContext||(_itineraryViewId!==null&&_itineraryViewFromTravel))?openTravelsPage():openItinerariPage()">
+  <button class="bn-item" data-nav="itinerari" onclick="_travelContext?openTravelsPage():openItinerariPage()">
     <i class="ti ti-route"></i>
     <span>Itinerari</span>
   </button>
