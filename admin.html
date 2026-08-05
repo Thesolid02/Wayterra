@@ -435,6 +435,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
       </div>
       <div class="fg"><label>Sort order</label><input type="number" id="esp-sort" value="0" min="0"></div>
     </div>
+    <div class="fg"><label>Link My Maps (opzionale)</label><input type="text" id="esp-my-maps" placeholder="https://mymaps.google.com/..."></div>
     <div class="sdiv">
       Tappe
       <button class="btn bs sm" onclick="addEspStopRow(null)">+ Aggiungi tappa</button>
@@ -2776,7 +2777,8 @@ function rowToEsperienza(row){
     featured: row.featured||false,
     isTravel: row.is_travel||false,
     sortOrder: row.sort_order||0,
-    stops: row.stops||[]
+    stops: row.stops||[],
+    myMaps: row.my_maps_url||''
   };
 }
 
@@ -2822,6 +2824,7 @@ function openAddEsperienza(){
   document.getElementById('esp-sort').value='0';
   document.getElementById('esp-cover-prev').style.display='none';
   document.getElementById('esp-cover-img').src='';
+  document.getElementById('esp-my-maps').value='';
   document.getElementById('esp-stops').innerHTML='';
   document.getElementById('m-esp').classList.add('on');
 }
@@ -2847,6 +2850,7 @@ function openEditEsperienza(id){
   } else {
     document.getElementById('esp-cover-prev').style.display='none';
   }
+  document.getElementById('esp-my-maps').value=e.myMaps||'';
   document.getElementById('esp-stops').innerHTML='';
   (e.stops||[]).forEach(function(s){addEspStopRow(s);});
   document.getElementById('m-esp').classList.add('on');
@@ -2996,7 +3000,8 @@ function saveEsperienza(){
     featured: document.getElementById('esp-featured').checked,
     is_travel: document.getElementById('esp-travel').checked,
     sort_order: parseInt(document.getElementById('esp-sort').value)||0,
-    stops: collectEspStops()
+    stops: collectEspStops(),
+    my_maps_url: document.getElementById('esp-my-maps').value.trim()||null
   };
   if(editEspId) body.id=editEspId;
   var wasId=editEspId;

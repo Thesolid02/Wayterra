@@ -296,7 +296,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itd-day-label{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g500);}
 #itd-map-wrap{margin-top:16px;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;}
 #itd-map-wrap img{width:100%;display:block;}
-#itd-map-wrap::after{content:'Apri in Maps ↗';position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:.68rem;padding:3px 8px;border-radius:6px;pointer-events:none;}
+#itd-map-btns{display:none;gap:8px;margin-top:10px;}
 .mode-sq-btn{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;box-sizing:border-box;transition:opacity .15s,border-color .15s;position:relative;padding:0;background:none;}
 #mode-btn-city.msq-active{border-color:#dc6b2f;opacity:1;}
 #mode-btn-city.msq-inactive{border-color:rgba(220,107,47,.4);opacity:.7;}
@@ -1092,6 +1092,7 @@ lottie.loadAnimation({
       <div id="itd-map-wrap" style="display:none;">
         <img id="itd-map-img" src="" alt="Mappa percorso">
       </div>
+      <div id="itd-map-btns"></div>
     </div>
   </div>
 </div>
@@ -3348,7 +3349,8 @@ function loadEsperienze(){
                durationIt:r.duration||'',durationEn:r.duration_en||'',
                coverPhoto:r.cover_photo||'',featured:r.featured||false,
                isTravel:r.is_travel||false,
-               sortOrder:r.sort_order||0,stops:r.stops||[]};
+               sortOrder:r.sort_order||0,stops:r.stops||[],
+               myMaps:r.my_maps_url||''};
       });
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
@@ -3662,13 +3664,26 @@ function openItinerario(id){
     else console.log('[itd-map] no coords for stop',s.id,s.type);
   });
   var _mapWrap=document.getElementById('itd-map-wrap');
+  var _btnsEl=document.getElementById('itd-map-btns');
   if(_itdMapCoords.length>=2){
     document.getElementById('itd-map-img').src=buildItdMapUrl(_itdMapCoords);
-    _mapWrap.onclick=function(){openItinerarioGMaps(_itdMapCoords);};
+    _mapWrap.onclick=null;
+    _mapWrap.style.cursor='default';
     _mapWrap.style.display='';
   } else {
     _mapWrap.style.display='none';
   }
+  var _btnStyle='flex:1;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
+  var _btnsHtml='';
+  if(_itdMapCoords.length>=2){
+    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:#dc6b2f;color:#fff;">Apri percorso</button>';
+  }
+  if(e.myMaps){
+    var _mm=e.myMaps;
+    _btnsHtml+='<button onclick="openMyMaps(\''+_mm.replace(/'/g,"\\'")+'\')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">Tutti i posti</button>';
+  }
+  _btnsEl.innerHTML=_btnsHtml;
+  _btnsEl.style.display=_btnsHtml?'flex':'none';
   document.getElementById('itinerario-detail').style.zIndex=_travelContext?'620':'510';
   document.getElementById('itinerario-detail').classList.add('show');
 }
@@ -3889,6 +3904,9 @@ function buildItdMapUrl(coords){
   return 'https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/'
     +pins+','+pathOverlay
     +'/'+bbox+'/'+w+'x260@2x?padding=60&access_token='+TOKEN;
+}
+function openMyMaps(url){
+  if(window.innerWidth<768){window.location.href=url;}else{window.open(url,'_blank');}
 }
 function openItinerarioGMaps(coords){
   var origin=coords[0][1]+','+coords[0][0];
