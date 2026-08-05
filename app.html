@@ -3287,6 +3287,7 @@ function hideRegionPage(cb){
   setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
 }
 function selectRegion(regionId){
+  if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
   var sp=document.getElementById('splash');
@@ -3745,7 +3746,10 @@ function openItineraryMapView(id){
   var card=document.getElementById('bottom-card');
   card.onclick=null;
   card.classList.add('show');
-  document.getElementById('itd-map-back').style.display='';
+  var _itdBtn=document.getElementById('itd-map-back');
+  var _tb=document.getElementById('topbar');
+  if(_tb)_itdBtn.style.top=(_tb.getBoundingClientRect().bottom+10)+'px';
+  _itdBtn.style.display='';
 }
 function closeItineraryMapView(){
   _itineraryViewId=null;
@@ -4062,7 +4066,7 @@ window.addEventListener('DOMContentLoaded',function(){
   </div>
 </div>
 
-<button id="itd-map-back" onclick="closeItineraryMapView()" style="display:none;position:fixed;top:calc(env(safe-area-inset-top,0px)+74px);left:12px;z-index:320;background:#fff;border:none;border-radius:100px;box-shadow:0 1px 6px rgba(0,0,0,.22);padding:7px 14px;font-family:var(--f);font-size:.82rem;font-weight:700;color:var(--g900);cursor:pointer;">← Indietro</button>
+<button id="itd-map-back" onclick="closeItineraryMapView()" style="display:none;position:fixed;top:80px;left:12px;z-index:320;background:#fff;border:none;border-radius:100px;box-shadow:0 1px 6px rgba(0,0,0,.22);padding:7px 14px;font-family:var(--f);font-size:.82rem;font-weight:700;color:var(--g900);cursor:pointer;">← Indietro</button>
 <div id="bottom-card">
   <div id="bc-vibe-fumetto"></div>
   <div class="bc-handle"></div>
@@ -4083,7 +4087,7 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-map-2"></i>
     <span>Mappa</span>
   </button>
-  <button class="bn-item" data-nav="itinerari" onclick="_travelContext?openTravelsPage():openItinerariPage()">
+  <button class="bn-item" data-nav="itinerari" onclick="(_travelContext||(_itineraryViewId!==null&&_itineraryViewFromTravel))?openTravelsPage():openItinerariPage()">
     <i class="ti ti-route"></i>
     <span>Itinerari</span>
   </button>
