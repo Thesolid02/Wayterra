@@ -3298,6 +3298,7 @@ function selectRegion(regionId){
   setTimeout(function(){
     stopSplashRotation();
     sp.classList.add('hide');
+    if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:window.innerWidth<768?7:8,duration:600});
     showOnboarding();
   },3000);
 }
@@ -3659,6 +3660,7 @@ function openItineraryMapView(id){
     closeTravelsPage();
     var _rp=document.getElementById('region-page');
     if(_rp)_rp.classList.add('gone');
+    updateRegionPill(e.region||'mondo');
   }else{closeItinerariPage();}
   closeBubble();closeBottomCard();clearL2();
   // raccoglie place_id e coordinate di ogni tappa
@@ -3759,6 +3761,7 @@ function closeItineraryMapView(){
   renderItdPill();
   document.getElementById('itd-map-back').style.display='none';
   closeBottomCard();
+  updateRegionPill(localStorage.getItem('WT_REGION')||'lazio');
   if(_itineraryViewFromTravel){openTravelsPage();}else{openItinerariPage();}
 }
 function openTravelsPage(){
@@ -4080,7 +4083,7 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-map-2"></i>
     <span>Mappa</span>
   </button>
-  <button class="bn-item" data-nav="itinerari" onclick="openItinerariPage()">
+  <button class="bn-item" data-nav="itinerari" onclick="_travelContext?openTravelsPage():openItinerariPage()">
     <i class="ti ti-route"></i>
     <span>Itinerari</span>
   </button>
