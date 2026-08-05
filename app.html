@@ -3832,18 +3832,25 @@ function renderTravelsPage(){
   var soonLabel=lang==='en'?'Coming soon':'In arrivo';
   var soonBadge=lang==='en'?'Coming soon':'Prossimamente';
   var fakes=[
-    {title:'1 settimana tra le Highlands',region:'Scozia'},
-    {title:'1 weekend a Praga',region:'Repubblica Ceca'},
-    {title:lang==='en'?'New itinerary':'Nuovo itinerario',region:lang==='en'?'Coming soon...':'In preparazione...'}
+    {title:'1 settimana tra le Highlands',region:'Scozia',img:'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/highlands.jpg'},
+    {title:'6 giorni nella Romantische Straße',region:'Germania',img:'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/romantic.jpg'},
+    {title:lang==='en'?'New itinerary':'Nuovo itinerario',region:lang==='en'?'Coming soon...':'In preparazione...',img:null}
   ];
   var fakeHtml=fakes.map(function(f){
+    var imgDiv=f.img
+      ?'<div class="itp-card-img-ph" style="background-image:url(\''+f.img+'\');background-size:cover;background-position:center;position:relative;">'
+        +'<div style="position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;">'
+        +'<i class="ti ti-lock" style="font-size:1.6rem;color:rgba(255,255,255,.8);"></i></div></div>'
+      :'<div class="itp-card-img-ph itp-locked-ph"><i class="ti ti-lock" style="font-size:1.6rem;color:var(--g300);"></i></div>';
+    var titleStyle=f.img?'color:#fff;':'color:var(--g500);';
+    var durStyle=f.img?'color:rgba(255,255,255,.75);':'';
     return '<div class="itp-card itp-card-locked">'
-      +'<div class="itp-card-img-ph itp-locked-ph"><i class="ti ti-lock" style="font-size:1.6rem;color:var(--g300);"></i></div>'
+      +imgDiv
       +'<div class="itp-card-body"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">'
-      +'<div class="itp-card-title" style="color:var(--g500);">'+f.title+'</div>'
+      +'<div class="itp-card-title" style="'+titleStyle+'">'+f.title+'</div>'
       +'<span class="itp-soon-badge">'+soonBadge+'</span>'
       +'</div>'
-      +'<div class="itp-card-dur">'+f.region+'</div>'
+      +'<div class="itp-card-dur" style="'+durStyle+'">'+f.region+'</div>'
       +'</div></div>';
   }).join('');
   scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
