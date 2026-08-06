@@ -1053,6 +1053,9 @@ lottie.loadAnimation({
     <div id="dp-gallery-wrap"></div>
     <div class="dp-acts-lbl" id="dp-acts-lbl" style="display:none"></div>
     <div class="dp-acts-grid" id="dp-acts-grid"></div>
+    <div id="dp-act-map-wrap" style="display:none;margin-top:16px;border-radius:12px;overflow:hidden;cursor:pointer;">
+      <img id="dp-act-map-img" src="" alt="Mappa attività" style="width:100%;display:block;">
+    </div>
   </div>
   <div class="dp-cta">
     <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
@@ -1853,8 +1856,9 @@ function initMap(){
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
-  map_o.on('click',function(){closeBubble();closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();});
+  map_o.on('click',function(){if(_itineraryViewId!==null)return;closeBubble();closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();});
   map_o.on('zoom',function(){
+    if(_itineraryViewId!==null)return;
     if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(z<11){
@@ -1862,6 +1866,7 @@ function initMap(){
     }
   });
   map_o.on('zoomend',function(){
+    if(_itineraryViewId!==null)return;
     if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(window.innerWidth<768){
@@ -2975,6 +2980,24 @@ function openDetail(){
     }).join('');
   } else {actsLbl.style.display='none';actsGrid.innerHTML='';}
 
+  var _dpActMapWrap=document.getElementById('dp-act-map-wrap');
+  var _actsWithCoords=(p.activities||[]).filter(function(a){return a.lat&&a.lng;});
+  if(_actsWithCoords.length>=2){
+    var _MB_TOKEN='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
+    var _PCOLOR={'1':'16a34a','4':'2563eb'};
+    var _dpPins=_actsWithCoords.map(function(a,i){
+      var col=_PCOLOR[String(a.experienceTypeId)]||'dc6b2f';
+      return 'pin-s-'+(i+1)+'+'+col+'('+parseFloat(a.lng).toFixed(4)+','+parseFloat(a.lat).toFixed(4)+')';
+    }).join(',');
+    var _dpW=window.innerWidth<768?600:680;
+    document.getElementById('dp-act-map-img').src=
+      'https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/'+_dpPins+'/auto/'+_dpW+'x180?padding=40&access_token='+_MB_TOKEN;
+    _dpActMapWrap.onclick=function(){closeDetail();showL2(p);};
+    _dpActMapWrap.style.display='';
+  } else {
+    _dpActMapWrap.style.display='none';
+  }
+
   document.getElementById('dp-maps-btn').textContent=t('maps');
   document.getElementById('dp-maps-btn').href=p.maps;
   setupDpSave(p.id);
@@ -3287,6 +3310,7 @@ function hideRegionPage(cb){
   setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
 }
 function selectRegion(regionId){
+  if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
   var sp=document.getElementById('splash');
@@ -3674,7 +3698,8 @@ function openItinerario(id){
     _mapWrap.style.display='none';
   }
   var _btnStyle='flex:1;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
-  var _btnsHtml='';
+  var _eid2=e.id;
+  var _btnsHtml='<button onclick="openItineraryMapView('+_eid2+',true)" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">Mappa tappe</button>';
   if(_itdMapCoords.length>=2){
     _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:#dc6b2f;color:#fff;">Apri percorso</button>';
   }
@@ -3683,7 +3708,7 @@ function openItinerario(id){
     _btnsHtml+='<button onclick="openMyMaps(\''+_mm.replace(/'/g,"\\'")+'\')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">Tutti i posti</button>';
   }
   _btnsEl.innerHTML=_btnsHtml;
-  _btnsEl.style.display=_btnsHtml?'flex':'none';
+  _btnsEl.style.display='flex';
   document.getElementById('itinerario-detail').style.zIndex=_travelContext?'620':'510';
   document.getElementById('itinerario-detail').classList.add('show');
 }
@@ -3694,25 +3719,24 @@ function closeItinerarioDetail(){
 function openItinerarioDetail(id){openItinerario(id);}
 
 var _travelContext=false;
-/* DISABILITATO - da riattivare in futuro
-var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[];
-*/
+var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[],_itineraryViewFromDetail=false;
 
-/* DISABILITATO - da riattivare in futuro
-function openItineraryMapView(id){
+function openItineraryMapView(id,fromDetail){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
   _itineraryViewId=id;
   _itineraryViewFromTravel=_travelContext;
-  if(_travelContext){
+  _itineraryViewFromDetail=!!fromDetail;
+  if(fromDetail){
+    closeItinerarioDetail();
+  } else if(_travelContext){
     closeTravelsPage();
     var _rp=document.getElementById('region-page');
     if(_rp)_rp.classList.add('gone');
     updateRegionPill(e.region||'mondo');
-  }else{closeItinerariPage();}
+  } else {closeItinerariPage();}
   closeBubble();closeBottomCard();clearL2();
-  // raccoglie place_id e coordinate di ogni tappa
   var stopPlaceIds=[];
   var coords=[];
   (e.stops||[]).forEach(function(s){
@@ -3731,7 +3755,6 @@ function openItineraryMapView(id){
         }
       }
     } else if(s.type==='activity'){
-      // cerca l'activity in DATA.places[i].activities per trovare il place padre
       var _fa=null,_fp=null;
       outerB:for(var _pi=0;_pi<DATA.places.length;_pi++){
         var _aa=DATA.places[_pi].activities||[];
@@ -3739,14 +3762,12 @@ function openItineraryMapView(id){
           if(_aa[_ai].id==s.id){_fa=_aa[_ai];_fp=DATA.places[_pi];break outerB;}
         }
       }
-      // fallback: city activity (nessun place padre → nessun marker, ma coordinate per la linea)
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
       if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);if(_fp)pid=_fp.id;}
     }
     if(lat&&lng)coords.push([+lng,+lat]);
     if(pid&&stopPlaceIds.indexOf(pid)<0)stopPlaceIds.push(pid);
   });
-  // per i place_id che non hanno ancora un marker L1, aggiungili temporaneamente
   _itinTempMarkers=[];
   stopPlaceIds.forEach(function(pid){
     if(!l1Mk[pid]){
@@ -3754,18 +3775,14 @@ function openItineraryMapView(id){
       if(_tp&&_tp.lat&&_tp.lng){addL1(_tp);_itinTempMarkers.push(pid);}
     }
   });
-  // nascondi tutti i marker L1
   Object.keys(l1Mk).forEach(function(k){try{l1Mk[k].remove();}catch(er){}});
-  // mostra solo i marker delle tappe (indipendentemente dalla modalità mappa corrente)
   stopPlaceIds.forEach(function(pid){var m=l1Mk[pid];if(m)m.addTo(map_o);});
-  // aggiungi linea percorso GeoJSON
   if(coords.length>=2){
     if(map_o.getLayer('itinerary-route-line'))map_o.removeLayer('itinerary-route-line');
     if(map_o.getSource('itinerary-route'))map_o.removeSource('itinerary-route');
     map_o.addSource('itinerary-route',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:coords}}});
     map_o.addLayer({id:'itinerary-route-line',type:'line',source:'itinerary-route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#dc6b2f','line-width':2,'line-dasharray':[4,3]}});
   }
-  // centra mappa sul bounding box
   if(coords.length>=2){
     var _b=new mapboxgl.LngLatBounds();
     coords.forEach(function(c){_b.extend(c);});
@@ -3773,37 +3790,37 @@ function openItineraryMapView(id){
   } else if(coords.length===1){
     map_o.flyTo({center:coords[0],zoom:13,duration:700});
   }
-  // nascondi pillola itinerari
   var _pw=document.getElementById('itd-pill-wrap');if(_pw)_pw.style.display='none';
-  // popola bottom card
-  var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
-  var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
-  var sc=(e.stops||[]).length;
-  var meta=(sc?sc+(lang==='en'?' stops':' tappe'):'')+(dur?' · '+dur:'');
-  var imgWrap=document.getElementById('bc-img-wrap');
-  if(e.coverPhoto){imgWrap.innerHTML='<img class="bc-img" src="'+e.coverPhoto+'" alt="">';}
-  else{imgWrap.innerHTML='<div class="bc-img-placeholder" style="background:#dc6b2f;color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;">🗺</div>';}
-  document.getElementById('bc-cat').textContent=e.isTravel?(lang==='en'?'Travel':'Viaggio'):(lang==='en'?'Itinerary':'Itinerario');
-  document.getElementById('bc-cat').style.color='#dc6b2f';
-  document.getElementById('bc-name').textContent=title;
-  document.getElementById('bc-region').textContent=meta;
-  document.getElementById('bc-acts').innerHTML='';
-  var _eid=id;
-  document.getElementById('bc-gems').innerHTML='<button onclick="openItinerario('+_eid+')" style="margin-top:4px;background:#dc6b2f;color:#fff;border:none;border-radius:100px;padding:6px 14px;font-family:var(--f);font-size:.78rem;font-weight:700;cursor:pointer;">'+(lang==='en'?'See detail →':'Vedi dettaglio →')+'</button>';
-  var vibeF=document.getElementById('bc-vibe-fumetto');if(vibeF)vibeF.innerHTML='';
-  var card=document.getElementById('bottom-card');
-  card.onclick=null;
-  card.classList.add('show');
+  if(!fromDetail){
+    var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+    var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+    var sc=(e.stops||[]).length;
+    var meta=(sc?sc+(lang==='en'?' stops':' tappe'):'')+(dur?' · '+dur:'');
+    var imgWrap=document.getElementById('bc-img-wrap');
+    if(e.coverPhoto){imgWrap.innerHTML='<img class="bc-img" src="'+e.coverPhoto+'" alt="">';}
+    else{imgWrap.innerHTML='<div class="bc-img-placeholder" style="background:#dc6b2f;color:#fff;font-size:1.6rem;display:flex;align-items:center;justify-content:center;">🗺</div>';}
+    document.getElementById('bc-cat').textContent=e.isTravel?(lang==='en'?'Travel':'Viaggio'):(lang==='en'?'Itinerary':'Itinerario');
+    document.getElementById('bc-cat').style.color='#dc6b2f';
+    document.getElementById('bc-name').textContent=title;
+    document.getElementById('bc-region').textContent=meta;
+    document.getElementById('bc-acts').innerHTML='';
+    var _eid=id;
+    document.getElementById('bc-gems').innerHTML='<button onclick="openItinerario('+_eid+')" style="margin-top:4px;background:#dc6b2f;color:#fff;border:none;border-radius:100px;padding:6px 14px;font-family:var(--f);font-size:.78rem;font-weight:700;cursor:pointer;">'+(lang==='en'?'See detail →':'Vedi dettaglio →')+'</button>';
+    var vibeF=document.getElementById('bc-vibe-fumetto');if(vibeF)vibeF.innerHTML='';
+    var card=document.getElementById('bottom-card');
+    card.onclick=null;
+    card.classList.add('show');
+  }
   var _itdBtn=document.getElementById('itd-map-back');
   var _tb=document.getElementById('topbar');
   if(_tb)_itdBtn.style.top=(_tb.getBoundingClientRect().bottom+10)+'px';
   _itdBtn.style.display='';
 }
 function closeItineraryMapView(){
+  var _savedId=_itineraryViewId;
   _itineraryViewId=null;
   if(map_o.getLayer('itinerary-route-line'))map_o.removeLayer('itinerary-route-line');
   if(map_o.getSource('itinerary-route'))map_o.removeSource('itinerary-route');
-  // rimuovi marker temporanei aggiunti per questa vista
   _itinTempMarkers.forEach(function(pid){
     var m=l1Mk[pid];if(m){try{m.remove();}catch(er){}}
     delete l1Mk[pid];
@@ -3814,9 +3831,10 @@ function closeItineraryMapView(){
   document.getElementById('itd-map-back').style.display='none';
   closeBottomCard();
   updateRegionPill(localStorage.getItem('WT_REGION')||'lazio');
-  if(_itineraryViewFromTravel){openTravelsPage();}else{openItinerariPage();}
+  if(_itineraryViewFromDetail){_itineraryViewFromDetail=false;openItinerario(_savedId);}
+  else if(_itineraryViewFromTravel){openTravelsPage();}
+  else{openItinerariPage();}
 }
-*/
 function openTravelsPage(){
   renderTravelsPage();
   _travelContext=true;
@@ -4156,7 +4174,7 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-map-2"></i>
     <span>Mappa</span>
   </button>
-  <button class="bn-item" data-nav="itinerari" onclick="_travelContext?openTravelsPage():openItinerariPage()">
+  <button class="bn-item" data-nav="itinerari" onclick="_travelContext?openTravelsPage():(_itineraryViewId!==null?closeItineraryMapView():openItinerariPage())">
     <i class="ti ti-route"></i>
     <span>Itinerari</span>
   </button>
