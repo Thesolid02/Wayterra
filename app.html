@@ -444,7 +444,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-gallery-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:8px;border-top:0.5px solid #e5e7eb;padding-top:14px;margin-top:14px;}
 .dp-acts-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:10px;border-top:0.5px solid #e5e7eb;padding-top:14px;margin-top:14px;}
 /* activity detail popup */
-#act-popup{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center;}
+#act-popup{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center;}
 #act-popup.show{display:flex;}
 .act-popup-sheet{background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;padding:20px 18px calc(env(safe-area-inset-bottom,0px)+20px);animation:slideup .22s ease;box-shadow:0 -8px 40px rgba(0,0,0,.18);}
 @keyframes slideup{from{transform:translateY(100%);}to{transform:translateY(0);}}
@@ -1053,9 +1053,10 @@ lottie.loadAnimation({
     <div id="dp-gallery-wrap"></div>
     <div class="dp-acts-lbl" id="dp-acts-lbl" style="display:none"></div>
     <div class="dp-acts-grid" id="dp-acts-grid"></div>
-    <div id="dp-act-map-wrap" style="display:none;margin-top:16px;border-radius:12px;overflow:hidden;cursor:pointer;">
+    <div id="dp-act-map-wrap" style="display:none;margin-top:16px;border-radius:12px;overflow:hidden;">
       <img id="dp-act-map-img" src="" alt="Mappa attività" style="width:100%;display:block;">
     </div>
+    <button id="dp-act-map-btn" onclick="openPlaceActsPopup(currentPlace)" style="display:none;margin-top:8px;width:100%;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);">Esplora sulla mappa</button>
   </div>
   <div class="dp-cta">
     <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
@@ -2981,6 +2982,7 @@ function openDetail(){
   } else {actsLbl.style.display='none';actsGrid.innerHTML='';}
 
   var _dpActMapWrap=document.getElementById('dp-act-map-wrap');
+  var _dpActMapBtn=document.getElementById('dp-act-map-btn');
   var _actsWithCoords=(p.activities||[]).filter(function(a){return a.lat&&a.lng;});
   if(_actsWithCoords.length>=2){
     var _MB_TOKEN='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
@@ -2992,10 +2994,11 @@ function openDetail(){
     var _dpW=window.innerWidth<768?600:680;
     document.getElementById('dp-act-map-img').src=
       'https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/'+_dpPins+'/auto/'+_dpW+'x180?padding=40&access_token='+_MB_TOKEN;
-    _dpActMapWrap.onclick=function(){closeDetail();showL2(p);};
     _dpActMapWrap.style.display='';
+    _dpActMapBtn.style.display='';
   } else {
     _dpActMapWrap.style.display='none';
+    _dpActMapBtn.style.display='none';
   }
 
   document.getElementById('dp-maps-btn').textContent=t('maps');
@@ -3699,7 +3702,7 @@ function openItinerario(id){
   }
   var _btnStyle='flex:1;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
   var _eid2=e.id;
-  var _btnsHtml='<button onclick="openItineraryMapView('+_eid2+',true)" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">Mappa tappe</button>';
+  var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">Mappa tappe</button>';
   if(_itdMapCoords.length>=2){
     _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:#dc6b2f;color:#fff;">Apri percorso</button>';
   }
@@ -3834,6 +3837,96 @@ function closeItineraryMapView(){
   if(_itineraryViewFromDetail){_itineraryViewFromDetail=false;openItinerario(_savedId);}
   else if(_itineraryViewFromTravel){openTravelsPage();}
   else{openItinerariPage();}
+}
+var _mapPopupInstance=null,_mapPopupMks=[],_mapPopupLoaded=false;
+function _cleanMapPopup(){
+  _mapPopupMks.forEach(function(m){try{m.remove();}catch(er){}});
+  _mapPopupMks=[];
+  if(_mapPopupInstance){
+    if(_mapPopupInstance.getLayer('mp-route-line'))_mapPopupInstance.removeLayer('mp-route-line');
+    if(_mapPopupInstance.getSource('mp-route'))_mapPopupInstance.removeSource('mp-route');
+  }
+}
+function openMapPopup(title,footerHtml,setupFn){
+  document.getElementById('map-popup-title').textContent=title;
+  document.getElementById('map-popup-footer').innerHTML=footerHtml||'';
+  document.getElementById('map-popup').style.display='flex';
+  if(!_mapPopupInstance){
+    _mapPopupInstance=new mapboxgl.Map({
+      container:'map-popup-map',
+      style:'mapbox://styles/thesolid/cmpgyxqlp001v01se3u753n0n',
+      accessToken:'pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA',
+      attributionControl:false,
+      center:[12.8,41.8],zoom:7
+    });
+    _mapPopupInstance.once('load',function(){
+      _mapPopupLoaded=true;
+      setupFn(_mapPopupInstance);
+    });
+  } else if(_mapPopupLoaded){
+    _cleanMapPopup();
+    _mapPopupInstance.resize();
+    setupFn(_mapPopupInstance);
+  } else {
+    _mapPopupInstance.once('load',function(){
+      _mapPopupLoaded=true;
+      _cleanMapPopup();
+      setupFn(_mapPopupInstance);
+    });
+  }
+}
+function closeMapPopup(){
+  document.getElementById('map-popup').style.display='none';
+}
+function openItinMapPopup(id){
+  var e=DATA.experiences.find(function(x){return x.id==id;});
+  if(!e)return;
+  var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+  var _btnSt='padding:9px 16px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
+  var footerHtml=_itdMapCoords.length>=2
+    ?'<button onclick="closeMapPopup();openItinerarioGMaps(_itdMapCoords)" style="'+_btnSt+'background:#dc6b2f;color:#fff;">Apri percorso</button>'
+    :'';
+  openMapPopup(title,footerHtml,function(mp){
+    var coords=_itdMapCoords;
+    if(coords.length>=2){
+      mp.addSource('mp-route',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:coords.map(function(c){return[c[0],c[1]];})}}});
+      mp.addLayer({id:'mp-route-line',type:'line',source:'mp-route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#dc6b2f','line-width':2,'line-dasharray':[4,3]}});
+    }
+    coords.forEach(function(c){
+      var col=c[2]?'#888':'#dc6b2f';
+      var el=document.createElement('div');
+      el.style.cssText='width:14px;height:14px;border-radius:50%;background:'+col+';border:2.5px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);';
+      _mapPopupMks.push(new mapboxgl.Marker({element:el,anchor:'center'}).setLngLat([c[0],c[1]]).addTo(mp));
+    });
+    if(coords.length>=2){
+      var b=new mapboxgl.LngLatBounds();
+      coords.forEach(function(c){b.extend([c[0],c[1]]);});
+      mp.fitBounds(b,{padding:60,maxZoom:14,duration:700});
+    } else if(coords.length===1){
+      mp.flyTo({center:[coords[0][0],coords[0][1]],zoom:13,duration:700});
+    }
+  });
+}
+function openPlaceActsPopup(p){
+  if(!p)return;
+  openMapPopup(p.name,'',function(mp){
+    var PCOLOR={'1':'#16a34a','4':'#2563eb'};
+    var actsWithCoords=(p.activities||[]).filter(function(a){return a.lat&&a.lng;});
+    var b=new mapboxgl.LngLatBounds();
+    actsWithCoords.forEach(function(a){
+      var col=PCOLOR[String(a.experienceTypeId)]||'#dc6b2f';
+      var el=document.createElement('div');
+      el.style.cssText='width:14px;height:14px;border-radius:50%;background:'+col+';border:2.5px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);cursor:pointer;';
+      el.addEventListener('click',function(ev){
+        ev.stopPropagation();
+        if(window.innerWidth>=768){closeMapPopup();showActBubble(a,[a.lat,a.lng]);}
+        else{openActPopup(a.id,p.id,null);}
+      });
+      _mapPopupMks.push(new mapboxgl.Marker({element:el,anchor:'center'}).setLngLat([a.lng,a.lat]).addTo(mp));
+      b.extend([a.lng,a.lat]);
+    });
+    if(!b.isEmpty())mp.fitBounds(b,{padding:60,maxZoom:14,duration:700});
+  });
 }
 function openTravelsPage(){
   renderTravelsPage();
@@ -4182,6 +4275,16 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-bookmark"></i>
     <span data-t="nav_saved">Diario</span>
   </button>
+</div>
+<div id="map-popup" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
+  <div id="map-popup-inner" style="width:90%;max-width:480px;height:70vh;background:var(--w);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;">
+    <div id="map-popup-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid var(--g100);">
+      <span id="map-popup-title" style="font-size:.85rem;font-weight:500;"></span>
+      <button onclick="closeMapPopup()" style="background:none;border:none;cursor:pointer;padding:4px;"><i class="ti ti-x" style="font-size:18px;color:var(--g400);"></i></button>
+    </div>
+    <div id="map-popup-map" style="flex:1;"></div>
+    <div id="map-popup-footer" style="padding:8px 12px;display:flex;gap:8px;border-top:0.5px solid var(--g100);"></div>
+  </div>
 </div>
 </body>
 </html>
