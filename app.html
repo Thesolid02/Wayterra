@@ -3216,11 +3216,17 @@ function submitAccessRequest(){
     toast('Errore durante l\'invio. Riprova.','err');
   });
 }
+function updateLazioBtn(){
+  var btn=document.getElementById('rp-lazio-btn');
+  if(!btn)return;
+  btn.textContent=unlocked?'Esplora →':'Richiedi accesso →';
+}
 function redeemCode(){
   var code=document.getElementById('arm-code-input').value.trim().toUpperCase();
   if(!code)return;
   if(code!=='WAYLAZIO'){toast('Codice non valido','err');return;}
   devUnlock();
+  updateLazioBtn();
   closeAccessRequestModal();
   selectRegion('lazio');
 }
@@ -4170,6 +4176,7 @@ function bootApp(d){
   DATA=d;
   lang=localStorage.getItem(K.LANG)||'it';
   unlocked=checkUnlock();
+  updateLazioBtn();
   loadFavs();
   loadFavActs();
   updFavBtn();
