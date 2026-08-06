@@ -3216,8 +3216,9 @@ function submitAccessRequest(){
   });
 }
 function redeemCode(){
-  var code=document.getElementById('arm-code-input').value.trim();
+  var code=document.getElementById('arm-code-input').value.trim().toUpperCase();
   if(!code)return;
+  if(code!=='WAYLAZIO'){toast('Codice non valido','err');return;}
   devUnlock();
   closeAccessRequestModal();
 }
