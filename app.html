@@ -3202,10 +3202,16 @@ function submitAccessRequest(){
   if(!email||!/^[^@]+@[^@]+\.[^@]+$/.test(email)){document.getElementById('arm-email').focus();return;}
   var btn=document.getElementById('arm-submit-btn');
   btn.disabled=true;btn.textContent='Invio in corso…';
-  sbFetch('access_requests',{method:'POST',body:JSON.stringify({name:name,email:email})}).then(function(){
-    document.getElementById('arm-form-wrap').style.display='none';
-    document.getElementById('arm-confirm').style.display='block';
-  }).catch(function(){
+  sbFetch('access_requests',{method:'POST',body:JSON.stringify({name:name,email:email})}).then(function(res){
+    console.log('[access_requests] status:', res.status);
+    return res.text().then(function(body){
+      console.log('[access_requests] body:', body);
+      if(!res.ok){throw new Error('HTTP '+res.status+': '+body);}
+      document.getElementById('arm-form-wrap').style.display='none';
+      document.getElementById('arm-confirm').style.display='block';
+    });
+  }).catch(function(err){
+    console.error('[access_requests] error:', err);
     btn.disabled=false;btn.textContent='Invia richiesta';
     toast('Errore durante l\'invio. Riprova.','err');
   });
