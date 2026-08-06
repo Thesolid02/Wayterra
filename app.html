@@ -445,6 +445,27 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-acts-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:10px;border-top:0.5px solid #e5e7eb;padding-top:14px;margin-top:14px;}
 /* activity detail popup */
 #act-popup{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center;}
+#access-request-modal{display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;}
+#access-request-modal.show{display:flex;}
+.arm-panel{background:var(--w);border-radius:16px;width:100%;max-width:400px;padding:24px 20px;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.arm-title{font-size:1.1rem;font-weight:800;color:var(--g900);margin-bottom:4px;letter-spacing:-.01em;}
+.arm-sub{font-size:.82rem;color:var(--g500);margin-bottom:20px;line-height:1.5;}
+.arm-label{font-size:.75rem;font-weight:600;color:var(--g700);margin-bottom:5px;display:block;}
+.arm-input{width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid var(--g200);border-radius:var(--r);font-family:var(--f);font-size:.88rem;color:var(--g900);outline:none;margin-bottom:12px;}
+.arm-input:focus{border-color:#dc6b2f;}
+.arm-btn{width:100%;padding:12px;background:#dc6b2f;color:#fff;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.9rem;font-weight:700;cursor:pointer;margin-top:4px;}
+.arm-btn:disabled{opacity:.6;cursor:default;}
+.arm-toggle{display:block;text-align:center;margin-top:14px;font-size:.78rem;color:var(--g400);cursor:pointer;background:none;border:none;font-family:var(--f);text-decoration:underline;}
+.arm-code-wrap{display:none;margin-top:12px;border-top:0.5px solid var(--g100);padding-top:12px;}
+.arm-code-row{display:flex;gap:8px;}
+.arm-code-input{flex:1;padding:10px 12px;border:1.5px solid var(--g200);border-radius:var(--r);font-family:var(--f);font-size:.88rem;color:var(--g900);outline:none;}
+.arm-code-input:focus{border-color:#dc6b2f;}
+.arm-code-btn{padding:10px 16px;background:var(--g900);color:#fff;border:none;border-radius:var(--r);font-family:var(--f);font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+.arm-confirm{display:none;text-align:center;padding:16px 0 4px;}
+.arm-confirm-ico{font-size:2rem;margin-bottom:8px;}
+.arm-confirm-msg{font-size:.9rem;font-weight:700;color:var(--g900);margin-bottom:4px;}
+.arm-confirm-sub{font-size:.8rem;color:var(--g500);}
+.arm-close-btn{position:absolute;top:12px;right:14px;background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--g400);line-height:1;}
 #act-popup.show{display:flex;}
 .act-popup-sheet{background:var(--w);border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;padding:20px 18px calc(env(safe-area-inset-bottom,0px)+20px);animation:slideup .22s ease;box-shadow:0 -8px 40px rgba(0,0,0,.18);}
 @keyframes slideup{from{transform:translateY(100%);}to{transform:translateY(0);}}
@@ -778,13 +799,13 @@ lottie.loadAnimation({
   </div>
   <div class="rp-grid" style="padding-left:16px!important;padding-right:16px!important;">
     <div class="rp-sec-label" data-t="rp_sec_italia">Esplora l'Italia</div>
-    <div class="rp-card rp-card-main" onclick="selectRegion('lazio')">
+    <div class="rp-card rp-card-main" onclick="openAccessRequestModal()">
       <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio.jpg');background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
         <div class="rp-card-name">Lazio</div>
         <div class="rp-card-sub" id="rp-lazio-sub"></div>
-        <button class="rp-card-btn" id="rp-lazio-btn" data-t="rp_explore">Scopri →</button>
+        <button class="rp-card-btn" id="rp-lazio-btn">Richiedi accesso →</button>
       </div>
     </div>
     <div class="rp-card rp-card-locked" onclick="showRegionToast()">
@@ -3154,6 +3175,47 @@ function buildPWCats(){
     return'<span class="pw-cat" style="color:'+c.color+';">'+renderIcon(c.icon)+' '+catName(c)+'</span>';
   }).join('');
 }
+function openAccessRequestModal(){
+  var m=document.getElementById('access-request-modal');
+  document.getElementById('arm-name').value='';
+  document.getElementById('arm-email').value='';
+  document.getElementById('arm-code-input').value='';
+  document.getElementById('arm-code-wrap').style.display='none';
+  document.getElementById('arm-form-wrap').style.display='';
+  document.getElementById('arm-confirm').style.display='none';
+  document.getElementById('arm-submit-btn').disabled=false;
+  document.getElementById('arm-submit-btn').textContent='Invia richiesta';
+  m.classList.add('show');
+}
+function closeAccessRequestModal(){
+  document.getElementById('access-request-modal').classList.remove('show');
+}
+function toggleCodeField(){
+  var w=document.getElementById('arm-code-wrap');
+  w.style.display=w.style.display==='none'||w.style.display===''?'block':'none';
+  if(w.style.display==='block')document.getElementById('arm-code-input').focus();
+}
+function submitAccessRequest(){
+  var name=document.getElementById('arm-name').value.trim();
+  var email=document.getElementById('arm-email').value.trim();
+  if(!name){document.getElementById('arm-name').focus();return;}
+  if(!email||!/^[^@]+@[^@]+\.[^@]+$/.test(email)){document.getElementById('arm-email').focus();return;}
+  var btn=document.getElementById('arm-submit-btn');
+  btn.disabled=true;btn.textContent='Invio in corso…';
+  sbFetch('access_requests',{method:'POST',body:JSON.stringify({name:name,email:email})}).then(function(){
+    document.getElementById('arm-form-wrap').style.display='none';
+    document.getElementById('arm-confirm').style.display='block';
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='Invia richiesta';
+    toast('Errore durante l\'invio. Riprova.','err');
+  });
+}
+function redeemCode(){
+  var code=document.getElementById('arm-code-input').value.trim();
+  if(!code)return;
+  devUnlock();
+  closeAccessRequestModal();
+}
 function showPW(){
   document.getElementById('pw').style.display='flex';
   // mostra pulsante demo solo su localhost
@@ -4305,6 +4367,32 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-bookmark"></i>
     <span data-t="nav_saved">Diario</span>
   </button>
+</div>
+<div id="access-request-modal" onclick="if(event.target===this)closeAccessRequestModal()">
+  <div class="arm-panel" style="position:relative;">
+    <button class="arm-close-btn" onclick="closeAccessRequestModal()">✕</button>
+    <div id="arm-form-wrap">
+      <div class="arm-title">Richiedi accesso al Lazio</div>
+      <div class="arm-sub">Ti contatteremo con il link di accesso</div>
+      <label class="arm-label">Nome</label>
+      <input class="arm-input" id="arm-name" type="text" placeholder="Il tuo nome" autocomplete="given-name">
+      <label class="arm-label">Email</label>
+      <input class="arm-input" id="arm-email" type="email" placeholder="La tua email" autocomplete="email">
+      <button class="arm-btn" id="arm-submit-btn" onclick="submitAccessRequest()">Invia richiesta</button>
+      <button class="arm-toggle" onclick="toggleCodeField()">Hai già un codice? Inseriscilo qui</button>
+      <div class="arm-code-wrap" id="arm-code-wrap">
+        <div class="arm-code-row">
+          <input class="arm-code-input" id="arm-code-input" type="text" placeholder="Inserisci il codice">
+          <button class="arm-code-btn" onclick="redeemCode()">Sblocca</button>
+        </div>
+      </div>
+    </div>
+    <div class="arm-confirm" id="arm-confirm">
+      <div class="arm-confirm-ico">✅</div>
+      <div class="arm-confirm-msg">Richiesta inviata!</div>
+      <div class="arm-confirm-sub">Ti contatteremo presto.</div>
+    </div>
+  </div>
 </div>
 <div id="map-popup" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;">
   <div id="map-popup-inner" style="width:90%;max-width:480px;height:70vh;background:var(--w);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;">
