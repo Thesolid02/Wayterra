@@ -3706,10 +3706,7 @@ function openItinerario(id){
   if(_itdMapCoords.length>=2){
     _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:#dc6b2f;color:#fff;">Apri percorso</button>';
   }
-  if(e.myMaps){
-    var _mm=e.myMaps;
-    _btnsHtml+='<button onclick="openMyMaps(\''+_mm.replace(/'/g,"\\'")+'\')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">Tutti i posti</button>';
-  }
+
   _btnsEl.innerHTML=_btnsHtml;
   _btnsEl.style.display='flex';
   document.getElementById('itinerario-detail').style.zIndex=_travelContext?'620':'510';
