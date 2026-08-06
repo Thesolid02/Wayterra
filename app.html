@@ -3952,7 +3952,7 @@ function openPlaceActsPopup(p){
       el.addEventListener('click',function(ev){
         ev.stopPropagation();
         if(window.innerWidth>=768){document.getElementById('act-map-popup').style.zIndex='750';showActBubble(a,[a.lat,a.lng]);}
-        else{openActPopup(a.id,p.id,null);}
+        else{openActPopup(a.id,p.id,null);document.getElementById('act-popup').style.zIndex='750';}
       });
       _mapPopupMks.push(new mapboxgl.Marker({element:el,anchor:'center'}).setLngLat([a.lng,a.lat]).addTo(mp));
       b.extend([a.lng,a.lat]);
