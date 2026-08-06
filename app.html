@@ -3939,13 +3939,14 @@ function openItinMapPopup(id){
 function openPlaceActsPopup(p){
   if(!p)return;
   openMapPopup(p.name,'',function(mp){
-    var PCOLOR={'1':'#16a34a','4':'#2563eb'};
+    var _PMETA={'1':{col:'#16a34a',ic:'ti-tools-kitchen-2'},'2':{col:'#dc6b2f',ic:'ti-route'},'3':{col:'#dc6b2f',ic:'ti-camera'},'4':{col:'#2563eb',ic:'ti-bed'},'5':{col:'#dc6b2f',ic:'ti-star'},'9':{col:'#888',ic:'ti-parking'},'11':{col:'#888',ic:'ti-plane-departure'}};
     var actsWithCoords=(p.activities||[]).filter(function(a){return a.lat&&a.lng;});
     var b=new mapboxgl.LngLatBounds();
     actsWithCoords.forEach(function(a){
-      var col=PCOLOR[String(a.experienceTypeId)]||'#dc6b2f';
+      var _pm=_PMETA[String(a.experienceTypeId)]||{col:'#dc6b2f',ic:'ti-map-pin'};
       var el=document.createElement('div');
-      el.style.cssText='width:14px;height:14px;border-radius:50%;background:'+col+';border:2.5px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);cursor:pointer;';
+      el.style.cssText='width:28px;height:28px;border-radius:50%;background:'+_pm.col+';display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);cursor:pointer;';
+      el.innerHTML='<i class="ti '+_pm.ic+'" style="font-size:13px;color:white;"></i>';
       el.addEventListener('click',function(ev){
         ev.stopPropagation();
         if(window.innerWidth>=768){document.getElementById('act-map-popup').style.zIndex='750';showActBubble(a,[a.lat,a.lng]);}
