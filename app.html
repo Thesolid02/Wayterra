@@ -3176,6 +3176,7 @@ function buildPWCats(){
   }).join('');
 }
 function openAccessRequestModal(){
+  if(unlocked){selectRegion('lazio');return;}
   var m=document.getElementById('access-request-modal');
   document.getElementById('arm-name').value='';
   document.getElementById('arm-email').value='';
@@ -3221,6 +3222,7 @@ function redeemCode(){
   if(code!=='WAYLAZIO'){toast('Codice non valido','err');return;}
   devUnlock();
   closeAccessRequestModal();
+  selectRegion('lazio');
 }
 function showPW(){
   document.getElementById('pw').style.display='flex';
