@@ -3737,7 +3737,7 @@ function openItinerario(id){
         +(r.onclick?'<span class="itd-stop-arrow">→</span>':'')
         +'</div>';
     }
-    var html='<div class="itd-stops-title">Tappe</div>';
+    var html='';
     var hasDays=e.stops.some(function(s){return !!s.day;});
     var totalStops=e.stops.length;
     if(!hasDays){
