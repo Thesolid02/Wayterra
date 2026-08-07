@@ -3767,7 +3767,7 @@ function openItinerario(id){
         });
         if(d>0){
           var tappeLabel=dayStops.length===1?'1 tappa':dayStops.length+' tappe';
-          html+='<div class="itd-day-card"><div class="itd-day-card-header-wrap"><div class="itd-day-card-header">Giorno '+d+' · '+tappeLabel+'</div></div><div class="itd-day-card-body">'+bodyHtml+'</div></div>';
+          html+='<div class="itd-day-card"><div class="itd-day-card-header-wrap"><div class="itd-day-card-header" style="display:flex;justify-content:space-between;align-items:center;"><span>Giorno '+d+'</span><span style="font-weight:400;opacity:0.7;">('+tappeLabel+')</span></div></div><div class="itd-day-card-body">'+bodyHtml+'</div></div>';
         }else{
           html+=bodyHtml;
         }
