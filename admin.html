@@ -443,6 +443,44 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div class="fg"><label>Sort order</label><input type="number" id="esp-sort" value="0" min="0"></div>
     </div>
     <div class="fg"><label>Link My Maps (opzionale)</label><input type="text" id="esp-my-maps" placeholder="https://mymaps.google.com/..."></div>
+    <div class="sdiv">Info utili</div>
+    <div class="g2">
+      <div class="fg">
+        <label>Mezzo di trasporto</label>
+        <select class="fs2" id="esp-transport">
+          <option value="">— non specificato —</option>
+          <option value="Auto">Auto</option>
+          <option value="Treno">Treno</option>
+          <option value="Aereo">Aereo</option>
+          <option value="Bus">Bus</option>
+          <option value="Misto">Misto</option>
+          <option value="A piedi">A piedi</option>
+        </select>
+      </div>
+      <div class="fg"><label>Budget</label><input type="text" id="esp-budget" placeholder="es. €150-200 a persona"></div>
+    </div>
+    <div class="fg"><label>Abbigliamento</label><input type="text" id="esp-clothing" placeholder="es. scarpe comode + giacca a vento"></div>
+    <div class="g2">
+      <div class="fg">
+        <label>Periodo consigliato</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="esp-season" value="Primavera"> Primavera</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="esp-season" value="Estate"> Estate</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="esp-season" value="Autunno"> Autunno</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="esp-season" value="Inverno"> Inverno</label>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Tipologia viaggio</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="esp-triptype" value="City"> City</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="esp-triptype" value="On the road"> On the road</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="esp-triptype" value="Natura"> Natura</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="esp-triptype" value="Cultura"> Cultura</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer;"><input type="checkbox" class="esp-triptype" value="Trekking"> Trekking</label>
+        </div>
+      </div>
+    </div>
     <div class="sdiv">
       Tappe
       <button class="btn bs sm" onclick="addEspStopRow(null)">+ Aggiungi tappa</button>
@@ -2785,7 +2823,12 @@ function rowToEsperienza(row){
     isTravel: row.is_travel||false,
     sortOrder: row.sort_order||0,
     stops: row.stops||[],
-    myMaps: row.my_maps_url||''
+    myMaps: row.my_maps_url||'',
+    transport: row.transport||'',
+    clothing: row.clothing||'',
+    seasons: row.seasons||[],
+    tripTypes: row.trip_types||[],
+    budget: row.budget||''
   };
 }
 
@@ -2832,6 +2875,11 @@ function openAddEsperienza(){
   document.getElementById('esp-cover-prev').style.display='none';
   document.getElementById('esp-cover-img').src='';
   document.getElementById('esp-my-maps').value='';
+  document.getElementById('esp-transport').value='';
+  document.getElementById('esp-clothing').value='';
+  document.getElementById('esp-budget').value='';
+  document.querySelectorAll('.esp-season').forEach(function(cb){cb.checked=false;});
+  document.querySelectorAll('.esp-triptype').forEach(function(cb){cb.checked=false;});
   document.getElementById('esp-stops').innerHTML='';
   document.getElementById('m-esp').classList.add('on');
 }
@@ -2858,6 +2906,11 @@ function openEditEsperienza(id){
     document.getElementById('esp-cover-prev').style.display='none';
   }
   document.getElementById('esp-my-maps').value=e.myMaps||'';
+  document.getElementById('esp-transport').value=e.transport||'';
+  document.getElementById('esp-clothing').value=e.clothing||'';
+  document.getElementById('esp-budget').value=e.budget||'';
+  document.querySelectorAll('.esp-season').forEach(function(cb){cb.checked=(e.seasons||[]).indexOf(cb.value)>=0;});
+  document.querySelectorAll('.esp-triptype').forEach(function(cb){cb.checked=(e.tripTypes||[]).indexOf(cb.value)>=0;});
   document.getElementById('esp-stops').innerHTML='';
   (e.stops||[]).forEach(function(s){addEspStopRow(s);});
   document.getElementById('m-esp').classList.add('on');
@@ -2908,6 +2961,7 @@ function addEspStopRow(stop){
     +'<input type="checkbox" class="esp-stop-optional"'+(isOpt?' checked':'')+'> Opz.</label>'
     +'<input type="number" class="fs2 esp-stop-day" min="1" max="30" placeholder="Gg" title="Giorno" style="width:52px;" value="'+stopDay+'">'
     +'<input type="text" class="fs2 esp-stop-dur" placeholder="es. 2h" title="Durata" style="width:72px;" value="'+stopDur+'">'
+    +'<input type="text" class="fs2 esp-stop-travel" placeholder="es. 15 min in macchina" title="Spostamento verso prossima tappa" style="width:160px;" value="'+((stop&&stop.travel_time)||'')+'">'
     +'<div style="display:flex;gap:4px;margin-left:auto;">'
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',-1)" title="Su">↑</button>'
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',1)" title="Giù">↓</button>'
@@ -2982,12 +3036,14 @@ function collectEspStops(){
     var optCb=row.querySelector('.esp-stop-optional');
     var dayInp=row.querySelector('.esp-stop-day');
     var durInp=row.querySelector('.esp-stop-dur');
+    var travelInp=row.querySelector('.esp-stop-travel');
     stops.push({
       type:typeSel.value,
       id:parseInt(idSel.value)||idSel.value,
       optional:optCb?optCb.checked:false,
       day:(dayInp&&dayInp.value)?parseInt(dayInp.value)||null:null,
-      duration:(durInp&&durInp.value.trim())?durInp.value.trim():null
+      duration:(durInp&&durInp.value.trim())?durInp.value.trim():null,
+      travel_time:(travelInp&&travelInp.value.trim())?travelInp.value.trim():null
     });
   });
   return stops;
@@ -3008,7 +3064,12 @@ function saveEsperienza(){
     is_travel: document.getElementById('esp-travel').checked,
     sort_order: parseInt(document.getElementById('esp-sort').value)||0,
     stops: collectEspStops(),
-    my_maps_url: document.getElementById('esp-my-maps').value.trim()||null
+    my_maps_url: document.getElementById('esp-my-maps').value.trim()||null,
+    transport: document.getElementById('esp-transport').value||null,
+    clothing: document.getElementById('esp-clothing').value.trim()||null,
+    seasons: Array.from(document.querySelectorAll('.esp-season:checked')).map(function(cb){return cb.value;}),
+    trip_types: Array.from(document.querySelectorAll('.esp-triptype:checked')).map(function(cb){return cb.value;}),
+    budget: document.getElementById('esp-budget').value.trim()||null
   };
   if(editEspId) body.id=editEspId;
   var wasId=editEspId;
