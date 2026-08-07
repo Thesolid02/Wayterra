@@ -3183,10 +3183,25 @@ function fetchAnLive(){
           icon='📍';
           var p=places.find(function(x){return String(x.id)===String(e.place_id);});
           name=p?p.name:'Luogo #'+e.place_id;
-        }else{
+        }else if(e.event_type==='activity_view'){
           icon='🎯';
           var a=acts.find(function(x){return String(x.id)===String(e.activity_id);});
           name=a?a.name:'Attività #'+e.activity_id;
+        }else if(e.event_type==='itinerary_view'){
+          icon='🗺️';
+          name='Itinerario #'+e.experience_id;
+        }else if(e.event_type==='itinerary_stop_view'){
+          icon='📍';
+          name='Tappa #'+e.place_id;
+        }else if(e.event_type==='itinerary_map_open'){
+          icon='🗺️';
+          name='Mappa aperta';
+        }else if(e.event_type==='itinerary_gmaps_open'){
+          icon='🧭';
+          name='Percorso aperto';
+        }else{
+          icon='🎯';
+          name=e.event_type;
         }
         return'<div class="an-live-row">'
           +'<span class="an-live-icon">'+icon+'</span>'
@@ -3355,7 +3370,7 @@ function renderAnItineraries(events){
     document.getElementById('an-itineraries').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
     return;
   }
-  fetch(SB_URL+'/rest/v1/experiences?select=id,title_it,cover_photo&id=in.('+sorted.join(',')+')',{
+  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+sorted.join(',')+')',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
   .then(function(r){return r.json();})
@@ -3363,11 +3378,11 @@ function renderAnItineraries(events){
     anItinerariesData={sorted:sorted,counts:counts,items:exps};
     var preview=sorted.slice(0,5);
     var html=preview.map(function(id,i){
-      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title_it:'ID '+id};
+      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
       return '<div class="an-row">'
         +'<span class="an-rank">'+(i+1)+'</span>'
         +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+(ex.title_it||'ID '+id)+'</span>'
+        +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
         +'<span class="an-count">'+counts[id]+'</span>'
         +'</div>';
     }).join('');
@@ -3518,11 +3533,11 @@ function openAnAll(type){
   } else if(type==='itineraries'&&anItinerariesData){
     title='Itinerari più visti (top '+anItinerariesData.sorted.length+')';
     html=anItinerariesData.sorted.map(function(id,i){
-      var ex=anItinerariesData.items.find(function(x){return String(x.id)===String(id);})||{title_it:'ID '+id};
+      var ex=anItinerariesData.items.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
       return '<div class="an-row">'
         +'<span class="an-rank">'+(i+1)+'</span>'
         +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+(ex.title_it||'ID '+id)+'</span>'
+        +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
         +'<span class="an-count">'+anItinerariesData.counts[id]+'</span>'
         +'</div>';
     }).join('');
