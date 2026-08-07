@@ -4140,8 +4140,6 @@ function openItinerarioGMaps(coords){
 
 var _detailFromItinerario=false;
 function openStopFromItinerario(type,id,placeId){
-  if(window.umami)umami.track('itinerary_stop_view',{place_id:type==='place'?id:placeId});
-  trackEvent({event_type:'itinerary_stop_view',place_id:type==='place'?id:placeId});
   if(type==='place'){
     var p=DATA.places.find(function(x){return x.id==id;});
     if(!p||!hasDetail(p))return;

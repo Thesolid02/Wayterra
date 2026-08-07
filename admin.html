@@ -395,10 +395,6 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div class="an-card-title">Itinerari più visti (top 10)</div>
       <div id="an-itineraries"><div class="an-loading">Caricamento…</div></div>
     </div>
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Tappe più visitate (top 10)</div>
-      <div id="an-stops"><div class="an-loading">Caricamento…</div></div>
-    </div>
   </div>
 </div>
 </div>
@@ -3134,7 +3130,6 @@ var anActivitiesData=null;
 var anBmPlacesData=null;
 var anBmActivitiesData=null;
 var anItinerariesData=null;
-var anStopsData=null;
 
 function timeAgo(isoStr){
   var sec=Math.floor((Date.now()-new Date(isoStr).getTime())/1000);
@@ -3190,9 +3185,6 @@ function fetchAnLive(){
         }else if(e.event_type==='itinerary_view'){
           icon='🗺️';
           name='Itinerario #'+e.experience_id;
-        }else if(e.event_type==='itinerary_stop_view'){
-          icon='📍';
-          name='Tappa #'+e.place_id;
         }else if(e.event_type==='itinerary_map_open'){
           icon='🗺️';
           name='Mappa aperta';
@@ -3231,7 +3223,6 @@ function renderAnalytics(){
   document.getElementById('an-bm-places').innerHTML='<div class="an-loading">Caricamento…</div>';
   document.getElementById('an-bm-activities').innerHTML='<div class="an-loading">Caricamento…</div>';
   document.getElementById('an-itineraries').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-stops').innerHTML='<div class="an-loading">Caricamento…</div>';
   fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.asc',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
@@ -3243,7 +3234,6 @@ function renderAnalytics(){
     renderAnBmPlaces(events);
     renderAnBmActivities(events);
     renderAnItineraries(events);
-    renderAnStops(events);
   })
   .catch(function(e){
     console.error('analytics fetch error',e);
@@ -3252,7 +3242,6 @@ function renderAnalytics(){
     document.getElementById('an-bm-places').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
     document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
     document.getElementById('an-itineraries').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-stops').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
   });
 }
 
@@ -3392,37 +3381,6 @@ function renderAnItineraries(events){
   .catch(function(){document.getElementById('an-itineraries').innerHTML='<div class="an-empty">Errore caricamento</div>';});
 }
 
-function renderAnStops(events){
-  var stEvents=events.filter(function(e){return e.event_type==='itinerary_stop_view'&&e.place_id;});
-  var counts={};
-  stEvents.forEach(function(e){counts[e.place_id]=(counts[e.place_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){
-    document.getElementById('an-stops').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
-    return;
-  }
-  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+sorted.join(',')+')',{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  })
-  .then(function(r){return r.json();})
-  .then(function(places){
-    anStopsData={sorted:sorted,counts:counts,items:places};
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
-      return '<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+p.name+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'stops\')">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-stops').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-stops').innerHTML='<div class="an-empty">Errore caricamento</div>';});
-}
-
 function renderAnBmPlaces(events){
   var bmEvents=events.filter(function(e){return e.event_type==='bookmark_place'&&e.place_id;});
   var counts={};
@@ -3539,17 +3497,6 @@ function openAnAll(type){
         +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
         +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
         +'<span class="an-count">'+anItinerariesData.counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-  } else if(type==='stops'&&anStopsData){
-    title='Tappe più visitate (top '+anStopsData.sorted.length+')';
-    html=anStopsData.sorted.map(function(id,i){
-      var p=anStopsData.items.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
-      return '<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+p.name+'</span>'
-        +'<span class="an-count">'+anStopsData.counts[id]+'</span>'
         +'</div>';
     }).join('');
   } else if(type==='bookmark_activities'&&anBmActivitiesData){
