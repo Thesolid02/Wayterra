@@ -3172,7 +3172,7 @@ function fetchAnLive(){
       :Promise.resolve([]);
     Promise.all([pFetch,aFetch]).then(function(res){
       var places=res[0]||[],acts=res[1]||[];
-      var html=events.map(function(e){
+      var html=events.filter(function(e){return e.event_type!=='itinerary_stop_view';}).map(function(e){
         var icon,name;
         if(e.event_type==='place_view'){
           icon='📍';
@@ -3184,7 +3184,8 @@ function fetchAnLive(){
           name=a?a.name:'Attività #'+e.activity_id;
         }else if(e.event_type==='itinerary_view'){
           icon='🗺️';
-          name='Itinerario #'+e.experience_id;
+          var ex=anItinerariesData&&anItinerariesData.items?anItinerariesData.items.find(function(x){return String(x.id)===String(e.experience_id);}):null;
+          name=ex?ex.title:'Itinerario';
         }else if(e.event_type==='itinerary_map_open'){
           icon='🗺️';
           name='Mappa aperta';
