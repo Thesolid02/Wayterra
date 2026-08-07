@@ -3361,7 +3361,7 @@ function trackEvent(payload){
     method:'POST',
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'},
     body:JSON.stringify(payload)
-  }).catch(function(){});
+  }).then(function(r){if(payload.event_type&&payload.event_type.startsWith('itinerary'))console.log('[trackEvent]',payload.event_type,r.status);}).catch(function(e){console.error('[trackEvent]',payload.event_type,e);});
 }
 
 function normalizeData(d){
@@ -3609,6 +3609,7 @@ function openItinerario(id){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
+  console.log('[analytics] itinerary_view',e.id,'umami:',!!window.umami);
   if(window.umami)umami.track('itinerary_view',{id:e.id,title:e.titleIt});
   trackEvent({event_type:'itinerary_view',experience_id:e.id});
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
@@ -3956,6 +3957,7 @@ function closeMapPopup(){
 function openItinMapPopup(id){
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
+  console.log('[analytics] itinerary_map_open',id,'umami:',!!window.umami);
   if(window.umami)umami.track('itinerary_map_open',{experience_id:id});
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
   var _btnSt='padding:9px 16px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
@@ -4129,6 +4131,7 @@ function openMyMaps(url){
   if(window.innerWidth<768){window.location.href=url;}else{window.open(url,'_blank');}
 }
 function openItinerarioGMaps(coords){
+  console.log('[analytics] itinerary_gmaps_open','umami:',!!window.umami);
   if(window.umami)umami.track('itinerary_gmaps_open');
   var origin=coords[0][1]+','+coords[0][0];
   var dest=coords[coords.length-1][1]+','+coords[coords.length-1][0];
@@ -4140,6 +4143,7 @@ function openItinerarioGMaps(coords){
 
 var _detailFromItinerario=false;
 function openStopFromItinerario(type,id,placeId){
+  console.log('[analytics] itinerary_stop_view',type,id,placeId,'umami:',!!window.umami);
   if(window.umami)umami.track('itinerary_stop_view',{place_id:type==='place'?id:placeId});
   trackEvent({event_type:'itinerary_stop_view',place_id:type==='place'?id:placeId});
   if(type==='place'){
