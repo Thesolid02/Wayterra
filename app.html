@@ -3609,6 +3609,8 @@ function openItinerario(id){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
+  if(window.umami)umami.track('itinerary_view',{id:e.id,title:e.titleIt});
+  trackEvent({event_type:'itinerary_view',experience_id:e.id});
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
   var desc=(lang==='en'&&e.descEn)?e.descEn:e.descIt;
   var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
@@ -3954,6 +3956,7 @@ function closeMapPopup(){
 function openItinMapPopup(id){
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
+  if(window.umami)umami.track('itinerary_map_open',{experience_id:id});
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
   var _btnSt='padding:9px 16px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
   var footerHtml=_itdMapCoords.length>=2
@@ -4126,6 +4129,7 @@ function openMyMaps(url){
   if(window.innerWidth<768){window.location.href=url;}else{window.open(url,'_blank');}
 }
 function openItinerarioGMaps(coords){
+  if(window.umami)umami.track('itinerary_gmaps_open');
   var origin=coords[0][1]+','+coords[0][0];
   var dest=coords[coords.length-1][1]+','+coords[coords.length-1][0];
   var wps=coords.slice(1,-1).map(function(c){return c[1]+','+c[0];}).join('|');
@@ -4136,6 +4140,8 @@ function openItinerarioGMaps(coords){
 
 var _detailFromItinerario=false;
 function openStopFromItinerario(type,id,placeId){
+  if(window.umami)umami.track('itinerary_stop_view',{place_id:type==='place'?id:placeId});
+  trackEvent({event_type:'itinerary_stop_view',place_id:type==='place'?id:placeId});
   if(type==='place'){
     var p=DATA.places.find(function(x){return x.id==id;});
     if(!p||!hasDetail(p))return;
