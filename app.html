@@ -3959,6 +3959,8 @@ function _cleanMapPopup(){
     if(_mapPopupInstance.getLayer('mp-route-line'))_mapPopupInstance.removeLayer('mp-route-line');
     if(_mapPopupInstance.getSource('mp-route'))_mapPopupInstance.removeSource('mp-route');
   }
+  var leg=document.getElementById('map-popup-legend');
+  if(leg)leg.style.display='none';
 }
 function openMapPopup(title,footerHtml,setupFn){
   document.getElementById('map-popup-title').textContent=title;
@@ -4030,6 +4032,8 @@ function openItinMapPopup(id){
     }
     if(lat&&lng)_itdStops.push({lng:+lng,lat:+lat,optional:!!s.optional,name:name});
   });
+  var _leg=document.getElementById('map-popup-legend');
+  if(_leg)_leg.style.display='flex';
   openMapPopup(title,footerHtml,function(mp){
     var coords=_itdMapCoords;
     if(coords.length>=2){
@@ -4457,7 +4461,12 @@ window.addEventListener('DOMContentLoaded',function(){
       <span id="map-popup-title" style="font-size:.85rem;font-weight:500;"></span>
       <button onclick="closeMapPopup()" style="background:none;border:none;cursor:pointer;padding:4px;"><i class="ti ti-x" style="font-size:18px;color:var(--g400);"></i></button>
     </div>
-    <div id="map-popup-map" style="flex:1;"></div>
+    <div id="map-popup-map" style="flex:1;position:relative;">
+      <div id="map-popup-legend" style="display:none;position:absolute;bottom:8px;right:8px;z-index:10;background:rgba(255,255,255,0.9);border-radius:8px;padding:6px 10px;font-size:.72rem;display:flex;flex-direction:column;gap:4px;">
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#dc6b2f;flex-shrink:0;"></div><span>Principale</span></div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#888;flex-shrink:0;"></div><span>Opzionale</span></div>
+      </div>
+    </div>
     <div id="map-popup-footer" style="padding:8px 12px;display:flex;gap:8px;border-top:0.5px solid var(--g100);"></div>
   </div>
 </div>
