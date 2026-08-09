@@ -1123,11 +1123,11 @@ lottie.loadAnimation({
       <div id="itd-dur" class="itd-dur"></div>
       <div id="itd-desc" class="itd-desc"></div>
       <div id="itd-info-utili"></div>
-      <div id="itd-stops"></div>
       <div id="itd-map-wrap" style="display:none;">
         <img id="itd-map-img" src="" alt="Mappa percorso">
       </div>
       <div id="itd-map-btns"></div>
+      <div id="itd-stops"></div>
     </div>
   </div>
 </div>
@@ -4015,15 +4015,16 @@ function openItinMapPopup(id){
   var _itdStops=[];
   (e.stops||[]).forEach(function(s){
     var lat=null,lng=null,name='';
+    var _isAirport=false;
     if(s.type==='place'){
       var _p=DATA.places.find(function(x){return x.id==s.id;});
-      if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;name=(lang==='en'&&_p.nameEn)?_p.nameEn:_p.name;}
+      if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;name=(lang==='en'&&_p.nameEn)?_p.nameEn:_p.name;_isAirport=(_p.activities||[]).some(function(a){return a.experienceTypeId===11;});}
       else{
         outerNA:for(var _fpi=0;_fpi<DATA.places.length;_fpi++){
           var _faa=DATA.places[_fpi].activities||[];
           for(var _fai=0;_fai<_faa.length;_fai++){
             if(_faa[_fai].id==s.id&&_faa[_fai].lat&&_faa[_fai].lng){
-              lat=_faa[_fai].lat;lng=_faa[_fai].lng;name=_faa[_fai].name||DATA.places[_fpi].name;break outerNA;
+              lat=_faa[_fai].lat;lng=_faa[_fai].lng;name=_faa[_fai].name||DATA.places[_fpi].name;_isAirport=(DATA.places[_fpi].activities||[]).some(function(a){return a.experienceTypeId===11;});break outerNA;
             }
           }
         }
@@ -4037,9 +4038,9 @@ function openItinMapPopup(id){
         }
       }
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
-      if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);name=_fa.name||(_fp&&_fp.name)||'';}
+      if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);name=_fa.name||(_fp&&_fp.name)||'';_isAirport=(_fp&&(_fp.activities||[]).some(function(a){return a.experienceTypeId===11;}))||false;}
     }
-    if(lat&&lng)_itdStops.push({lng:+lng,lat:+lat,optional:!!s.optional,name:name,travelTime:s.travel_time||null});
+    if(lat&&lng)_itdStops.push({lng:+lng,lat:+lat,optional:!!s.optional,name:name,travelTime:s.travel_time||null,isAirport:_isAirport});
   });
   _mapPopupStops=_itdStops;
   var _leg=document.getElementById('map-popup-legend');
@@ -4051,10 +4052,12 @@ function openItinMapPopup(id){
       mp.addLayer({id:'mp-route-line',type:'line',source:'mp-route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#dc6b2f','line-width':2,'line-dasharray':[4,3]}});
     }
     _itdStops.forEach(function(st,i){
-      var col=st.optional?'#888':'#dc6b2f';
+      var col=st.isAirport?'#2563eb':st.optional?'#888':'#dc6b2f';
+      var sz=st.isAirport?'28px':'24px';
+      var inner=st.isAirport?'<i class="ti ti-plane-departure" style="font-size:12px;color:white;"></i>':(i+1);
       var el=document.createElement('div');
       el.style.cssText='display:flex;flex-direction:column;align-items:center;gap:2px;cursor:default;';
-      el.innerHTML='<div style="width:24px;height:24px;border-radius:50%;background:'+col+';color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);">'+(i+1)+'</div>'
+      el.innerHTML='<div style="width:'+sz+';height:'+sz+';border-radius:50%;background:'+col+';color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);">'+inner+'</div>'
         +'<div style="background:rgba(255,255,255,0.9);border-radius:4px;padding:1px 5px;font-size:9px;font-weight:500;white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis;font-family:var(--f);">'+st.name+'</div>';
       _mapPopupMks.push(new mapboxgl.Marker({element:el,anchor:'center'}).setLngLat([st.lng,st.lat]).addTo(mp));
     });
