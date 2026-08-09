@@ -301,7 +301,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itd-info-row>i{font-size:1rem;color:var(--g400);flex-shrink:0;line-height:1;}
 .itd-info-row>span{flex:1;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
 .itd-info-badge{display:inline-block;font-size:.7rem;font-weight:600;background:var(--g100);color:var(--g500);border-radius:100px;padding:2px 8px;}
-.itd-travel-time{display:flex;align-items:center;gap:6px;padding:4px 0 4px 30px;font-size:.72rem;color:var(--g400);}
+
 #itd-map-wrap{margin-top:16px;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;}
 #itd-map-wrap img{width:100%;display:block;}
 #itd-map-btns{display:none;gap:8px;margin-top:10px;}
@@ -3744,9 +3744,7 @@ function openItinerario(id){
     if(!hasDays){
       // rendering originale — retrocompatibilità itinerari senza day
       html+=e.stops.map(function(s,i){
-        var card=renderStopCard(s,i,resolveStop(s));
-        if(s.travel_time&&i<totalStops-1) card+='<div class="itd-travel-time"><i class="ti ti-arrow-down"></i><span>'+s.travel_time+'</span></div>';
-        return card;
+        return renderStopCard(s,i,resolveStop(s));
       }).join('');
     } else {
       // raggruppa per giorno; stops senza day (day=0) in cima senza intestazione
@@ -3762,7 +3760,6 @@ function openItinerario(id){
         var bodyHtml='';
         dayStops.forEach(function(s){
           bodyHtml+=renderStopCard(s,globalIdx,resolveStop(s));
-          if(s.travel_time&&globalIdx<totalStops-1) bodyHtml+='<div class="itd-travel-time"><i class="ti ti-arrow-down"></i><span>'+s.travel_time+'</span></div>';
           globalIdx++;
         });
         if(d>0){
@@ -4104,10 +4101,14 @@ function openMapPopupTimes(){
     }
     if(lastIdx!==i){html+=_renderTimesStop(stops[i],i);}
     var col=stops[i].optional?'#888':'#dc6b2f';
-    html+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0 4px 12px;">'
-      +'<div style="width:1px;border-left:1.5px dashed '+col+';height:16px;"></div>'
+    html+='<div style="display:flex;align-items:stretch;gap:6px;padding:4px 0;">'
+      +'<div style="display:flex;flex-direction:column;align-items:center;padding-left:5px;">'
+      +'<div style="width:1.5px;flex:1;background:repeating-linear-gradient(to bottom,'+col+' 0,'+col+' 4px,transparent 4px,transparent 8px);min-height:20px;"></div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px;">'
       +'<i class="ti ti-car" style="font-size:.8rem;color:var(--g400);"></i>'
       +'<span style="font-size:.75rem;color:var(--g500);">'+stops[i].travelTime+'</span>'
+      +'</div>'
       +'</div>';
     html+=_renderTimesStop(stops[i+1],i+1);
     lastIdx=i+1;
@@ -4537,8 +4538,8 @@ window.addEventListener('DOMContentLoaded',function(){
     </div>
     <div id="map-popup-spostamenti" style="display:none;"></div>
     <div id="map-popup-footer" style="padding:8px 12px;display:flex;gap:8px;border-top:0.5px solid var(--g100);"></div>
-    <div id="map-popup-times" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:750;align-items:center;justify-content:center;">
-      <div style="width:90%;max-width:400px;background:var(--w);border-radius:16px;overflow:hidden;max-height:80vh;display:flex;flex-direction:column;">
+    <div id="map-popup-times" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:750;align-items:flex-start;justify-content:center;padding:16px 0;box-sizing:border-box;">
+      <div style="width:90%;max-width:400px;background:var(--w);border-radius:16px;overflow:hidden;max-height:100%;display:flex;flex-direction:column;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid var(--g100);">
           <span style="font-size:.85rem;font-weight:500;">Tempi di spostamento</span>
           <button onclick="closeMapPopupTimes()" style="background:none;border:none;cursor:pointer;padding:4px;"><i class="ti ti-x" style="font-size:18px;color:var(--g400);"></i></button>
