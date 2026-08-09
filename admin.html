@@ -2956,6 +2956,7 @@ function addEspStopRow(stop){
   div.id='esp-stop-'+idx;
   div.setAttribute('data-idx',idx);
   var isOpt=stop&&stop.optional?true:false;
+  var isAirport=stop&&stop.is_airport?true:false;
   var stopDay=(stop&&stop.day)||'';
   var stopDur=(stop&&stop.duration)||'';
   div.innerHTML='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
@@ -2967,6 +2968,8 @@ function addEspStopRow(stop){
     +'<select class="fs2 esp-stop-id" style="flex:1;min-width:160px;" id="esp-stop-id-'+idx+'"></select>'
     +'<label style="display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--g500);white-space:nowrap;cursor:pointer;">'
     +'<input type="checkbox" class="esp-stop-optional"'+(isOpt?' checked':'')+'> Opz.</label>'
+    +'<label style="display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--g500);white-space:nowrap;cursor:pointer;">'
+    +'<input type="checkbox" class="esp-stop-airport"'+(isAirport?' checked':'')+'> ✈️</label>'
     +'<input type="number" class="fs2 esp-stop-day" min="1" max="30" placeholder="Gg" title="Giorno" style="width:52px;" value="'+stopDay+'">'
     +'<input type="text" class="fs2 esp-stop-dur" placeholder="es. 2h" title="Durata" style="width:72px;" value="'+stopDur+'">'
     +'<input type="text" class="fs2 esp-stop-travel" placeholder="es. 15 min in macchina" title="Spostamento verso prossima tappa" style="width:160px;" value="'+((stop&&stop.travel_time)||'')+'">'
@@ -3042,6 +3045,7 @@ function collectEspStops(){
     var idSel=row.querySelector('.esp-stop-id');
     if(!typeSel||!idSel||!idSel.value)return;
     var optCb=row.querySelector('.esp-stop-optional');
+    var airportCb=row.querySelector('.esp-stop-airport');
     var dayInp=row.querySelector('.esp-stop-day');
     var durInp=row.querySelector('.esp-stop-dur');
     var travelInp=row.querySelector('.esp-stop-travel');
@@ -3049,6 +3053,7 @@ function collectEspStops(){
       type:typeSel.value,
       id:parseInt(idSel.value)||idSel.value,
       optional:optCb?optCb.checked:false,
+      is_airport:airportCb?airportCb.checked:false,
       day:(dayInp&&dayInp.value)?parseInt(dayInp.value)||null:null,
       duration:(durInp&&durInp.value.trim())?durInp.value.trim():null,
       travel_time:(travelInp&&travelInp.value.trim())?travelInp.value.trim():null

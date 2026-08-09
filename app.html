@@ -3529,7 +3529,7 @@ function renderItdPill(){
   document.getElementById('itd-pill-list').innerHTML=featured.slice(0,3).map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
-    var _sc=(e.stops||[]).filter(function(s){var p=(DATA.places||[]).find(function(x){return x.id==s.id;});return!(p&&p.placeTypeId===14);}).length;
+    var _sc=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
     var stops=_sc?_sc+' tappe':'';
     var meta=[dur,stops].filter(Boolean).join(' · ');
     var img=e.coverPhoto
@@ -3609,7 +3609,7 @@ function renderItinerariPage(){
     var img=e.coverPhoto
       ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
       :'<div class="itp-card-img-ph">🗺</div>';
-    var _sc=(e.stops||[]).filter(function(s){var p=(DATA.places||[]).find(function(x){return x.id==s.id;});return!(p&&p.placeTypeId===14);}).length;
+    var _sc=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
     var stops=_sc?'<span class="itp-stop-badge">'+_sc+' tappe</span>':'';
     return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
@@ -3654,12 +3654,11 @@ function openItinerario(id){
   if(e.stops&&e.stops.length){
     // helper: risolve name/thumb/meta/sc/onclick per una tappa
     function resolveStop(s){
-      var name='',meta='',thumb='',sc=null,onclick='',placeRef=null,isAirport=false;
+      var name='',meta='',thumb='',sc=null,onclick='',placeRef=null,isAirport=!!s.is_airport;
       if(s.type==='place'){
         var p=DATA.places.find(function(x){return x.id==s.id;});
         if(p){
           placeRef=p;
-          isAirport=p.placeTypeId===14;
           name=(lang==='en'&&p.nameEn)?p.nameEn:p.name;
           meta=p.region||'';
           sc=scoreColor(p.hiddenScore);
@@ -3792,15 +3791,15 @@ function openItinerario(id){
   _itdMapCoords=[];
   (e.stops||[]).forEach(function(s){
     var lat=null,lng=null;
-    var _isAp=false;
+    var _isAp=!!s.is_airport;
     if(s.type==='place'){
       var _p=DATA.places.find(function(x){return x.id==s.id;});
-      if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;_isAp=_p.placeTypeId===14;}
+      if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;}
       else{
         for(var _fpi=0;_fpi<DATA.places.length;_fpi++){
           var _faa=DATA.places[_fpi].activities||[];
           for(var _fai=0;_fai<_faa.length;_fai++){
-            if(_faa[_fai].id==s.id&&_faa[_fai].lat&&_faa[_fai].lng){lat=_faa[_fai].lat;lng=_faa[_fai].lng;_isAp=DATA.places[_fpi].placeTypeId===14;break;}
+            if(_faa[_fai].id==s.id&&_faa[_fai].lat&&_faa[_fai].lng){lat=_faa[_fai].lat;lng=_faa[_fai].lng;break;}
           }
           if(lat&&lng)break;
         }
@@ -3813,9 +3812,9 @@ function openItinerario(id){
         if(_fa)break;
       }
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
-      if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);_isAp=(_fp&&_fp.placeTypeId===14)||false;}
+      if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);}
     }
-    if(lat&&lng)_itdMapCoords.push([+lng,+lat,!!s.optional,!!_isAp]);
+    if(lat&&lng)_itdMapCoords.push([+lng,+lat,!!s.optional,_isAp]);
     else console.log('[itd-map] no coords for stop',s.id,s.type);
   });
   var _mapWrap=document.getElementById('itd-map-wrap');
@@ -4026,16 +4025,16 @@ function openItinMapPopup(id){
   var _itdStops=[];
   (e.stops||[]).forEach(function(s){
     var lat=null,lng=null,name='';
-    var _isAirport=false;
+    var _isAirport=!!s.is_airport;
     if(s.type==='place'){
       var _p=DATA.places.find(function(x){return x.id==s.id;});
-      if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;name=(lang==='en'&&_p.nameEn)?_p.nameEn:_p.name;_isAirport=_p.placeTypeId===14;}
+      if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;name=(lang==='en'&&_p.nameEn)?_p.nameEn:_p.name;}
       else{
         outerNA:for(var _fpi=0;_fpi<DATA.places.length;_fpi++){
           var _faa=DATA.places[_fpi].activities||[];
           for(var _fai=0;_fai<_faa.length;_fai++){
             if(_faa[_fai].id==s.id&&_faa[_fai].lat&&_faa[_fai].lng){
-              lat=_faa[_fai].lat;lng=_faa[_fai].lng;name=_faa[_fai].name||DATA.places[_fpi].name;_isAirport=DATA.places[_fpi].placeTypeId===14;break outerNA;
+              lat=_faa[_fai].lat;lng=_faa[_fai].lng;name=_faa[_fai].name||DATA.places[_fpi].name;break outerNA;
             }
           }
         }
@@ -4049,7 +4048,7 @@ function openItinMapPopup(id){
         }
       }
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
-      if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);name=_fa.name||(_fp&&_fp.name)||'';_isAirport=(_fp&&_fp.placeTypeId===14)||false;}
+      if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);name=_fa.name||(_fp&&_fp.name)||'';}
     }
     if(lat&&lng)_itdStops.push({lng:+lng,lat:+lat,optional:!!s.optional,name:name,travelTime:s.travel_time||null,isAirport:_isAirport});
   });
@@ -4161,7 +4160,7 @@ function renderTravelsPage(){
     var img=e.coverPhoto
       ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
       :'<div class="itp-card-img-ph">🌍</div>';
-    var stopsCount=(e.stops||[]).filter(function(s){var p=(DATA.places||[]).find(function(x){return x.id==s.id;});return!(p&&p.placeTypeId===14);}).length;
+    var stopsCount=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
     var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
     return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
