@@ -3529,7 +3529,8 @@ function renderItdPill(){
   document.getElementById('itd-pill-list').innerHTML=featured.slice(0,3).map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
-    var stops=e.stops&&e.stops.length?e.stops.length+' tappe':'';
+    var _sc=(e.stops||[]).filter(function(s){var p=(DATA.places||[]).find(function(x){return x.id==s.id;});return!(p&&p.placeTypeId===14);}).length;
+    var stops=_sc?_sc+' tappe':'';
     var meta=[dur,stops].filter(Boolean).join(' · ');
     var img=e.coverPhoto
       ?'<img class="itd-pill-img" src="'+e.coverPhoto+'" alt="">'
@@ -3608,8 +3609,8 @@ function renderItinerariPage(){
     var img=e.coverPhoto
       ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
       :'<div class="itp-card-img-ph">🗺</div>';
-    var stops=e.stops&&e.stops.length
-      ?'<span class="itp-stop-badge">'+e.stops.length+' tappe</span>':'';
+    var _sc=(e.stops||[]).filter(function(s){var p=(DATA.places||[]).find(function(x){return x.id==s.id;});return!(p&&p.placeTypeId===14);}).length;
+    var stops=_sc?'<span class="itp-stop-badge">'+_sc+' tappe</span>':'';
     return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
       +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
@@ -4160,7 +4161,7 @@ function renderTravelsPage(){
     var img=e.coverPhoto
       ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
       :'<div class="itp-card-img-ph">🌍</div>';
-    var stopsCount=e.stops&&e.stops.length?e.stops.length:0;
+    var stopsCount=(e.stops||[]).filter(function(s){var p=(DATA.places||[]).find(function(x){return x.id==s.id;});return!(p&&p.placeTypeId===14);}).length;
     var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
     return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
