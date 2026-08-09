@@ -3791,14 +3791,15 @@ function openItinerario(id){
   _itdMapCoords=[];
   (e.stops||[]).forEach(function(s){
     var lat=null,lng=null;
+    var _isAp=false;
     if(s.type==='place'){
       var _p=DATA.places.find(function(x){return x.id==s.id;});
-      if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;}
+      if(_p&&_p.lat&&_p.lng){lat=_p.lat;lng=_p.lng;_isAp=_p.placeTypeId===14;}
       else{
         for(var _fpi=0;_fpi<DATA.places.length;_fpi++){
           var _faa=DATA.places[_fpi].activities||[];
           for(var _fai=0;_fai<_faa.length;_fai++){
-            if(_faa[_fai].id==s.id&&_faa[_fai].lat&&_faa[_fai].lng){lat=_faa[_fai].lat;lng=_faa[_fai].lng;break;}
+            if(_faa[_fai].id==s.id&&_faa[_fai].lat&&_faa[_fai].lng){lat=_faa[_fai].lat;lng=_faa[_fai].lng;_isAp=DATA.places[_fpi].placeTypeId===14;break;}
           }
           if(lat&&lng)break;
         }
@@ -3811,9 +3812,9 @@ function openItinerario(id){
         if(_fa)break;
       }
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
-      if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);}
+      if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);_isAp=(_fp&&_fp.placeTypeId===14)||false;}
     }
-    if(lat&&lng)_itdMapCoords.push([+lng,+lat,!!s.optional]);
+    if(lat&&lng)_itdMapCoords.push([+lng,+lat,!!s.optional,!!_isAp]);
     else console.log('[itd-map] no coords for stop',s.id,s.type);
   });
   var _mapWrap=document.getElementById('itd-map-wrap');
@@ -4208,9 +4209,12 @@ var _itdMapCoords=[];
 function buildItdMapUrl(coords){
   var TOKEN='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
   // pin markers: literal in URL path — no encodeURIComponent on the full overlay string
-  var pins=coords.map(function(c,i){
+  var pinNum=0;
+  var pins=coords.map(function(c){
+    if(c[3]){return 'pin-s-a+2563eb('+c[0].toFixed(4)+','+c[1].toFixed(4)+')';}
+    pinNum++;
     var col=c[2]?'888888':'dc6b2f';
-    return 'pin-s-'+(i+1)+'+'+col+'('+c[0].toFixed(4)+','+c[1].toFixed(4)+')';
+    return 'pin-s-'+pinNum+'+'+col+'('+c[0].toFixed(4)+','+c[1].toFixed(4)+')';
   }).join(',');
   // path: GeoJSON LineString — only the JSON content inside parens is URL-encoded
   var lineGeoJSON=JSON.stringify({type:'LineString',coordinates:coords.map(function(c){return[+c[0].toFixed(4),+c[1].toFixed(4)];})});
