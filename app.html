@@ -4081,6 +4081,8 @@ function openItinMapPopup(id){
 }
 function openMapPopupTimes(){
   var stops=_mapPopupStops;
+  var displayNums=[],_dc=0;
+  for(var k=0;k<stops.length;k++){displayNums.push(stops[k].isAirport?'':++_dc);}
   var html='';
   var lastIdx=-1;
   for(var i=0;i<stops.length-1;i++){
@@ -4088,8 +4090,8 @@ function openMapPopupTimes(){
     if(lastIdx!==-1&&lastIdx!==i){
       html+='<div style="height:0.5px;background:var(--g100);margin:0;"></div>';
     }
-    if(lastIdx!==i){html+=_renderTimesStop(stops[i],i);}
-    var col=stops[i].optional?'#888':'#dc6b2f';
+    if(lastIdx!==i){html+=_renderTimesStop(stops[i],displayNums[i]);}
+    var col=stops[i].isAirport?'#2563eb':stops[i].optional?'#888':'#dc6b2f';
     html+='<div style="display:flex;align-items:stretch;gap:6px;padding:4px 0;">'
       +'<div style="display:flex;flex-direction:column;align-items:center;padding-left:5px;">'
       +'<div style="width:1.5px;flex:1;background:repeating-linear-gradient(to bottom,'+col+' 0,'+col+' 4px,transparent 4px,transparent 8px);min-height:20px;"></div>'
@@ -4099,16 +4101,17 @@ function openMapPopupTimes(){
       +'<span style="font-size:.75rem;color:var(--g500);">'+stops[i].travelTime+'</span>'
       +'</div>'
       +'</div>';
-    html+=_renderTimesStop(stops[i+1],i+1);
+    html+=_renderTimesStop(stops[i+1],displayNums[i+1]);
     lastIdx=i+1;
   }
   document.getElementById('map-popup-times-body').innerHTML=html;
   document.getElementById('map-popup-times').style.display='flex';
 }
-function _renderTimesStop(st,i){
-  var col=st.optional?'#888':'#dc6b2f';
+function _renderTimesStop(st,displayNum){
+  var col=st.isAirport?'#2563eb':st.optional?'#888':'#dc6b2f';
+  var inner=st.isAirport?'<i class="ti ti-plane-departure" style="font-size:11px;color:white;line-height:1;"></i>':displayNum;
   return '<div style="display:flex;align-items:center;gap:10px;">'
-    +'<div style="width:24px;height:24px;border-radius:50%;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;">'+(i+1)+'</div>'
+    +'<div style="width:24px;height:24px;border-radius:50%;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;">'+inner+'</div>'
     +'<span style="font-size:.82rem;font-weight:500;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+st.name+'</span>'
     +'</div>';
 }
