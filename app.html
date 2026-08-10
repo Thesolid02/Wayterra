@@ -307,7 +307,10 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #itd-map-wrap img{width:100%;display:block;}
 #itd-map-btns{display:none;gap:8px;margin-top:10px;margin-bottom:16px;}
 .itd-services-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px;}
-.itd-service-card{background:var(--w);border:0.5px solid var(--g100);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;}
+.itd-service-card{background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;}
+.itd-svc-desc{font-size:.78rem;color:var(--g500);line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.itd-svc-desc.expanded{display:block;}
+.itd-svc-toggle{font-size:.73rem;color:#dc6b2f;background:none;border:none;padding:0;cursor:pointer;font-family:var(--f);text-align:left;display:none;}
 .itd-service-btn{display:flex;align-items:center;justify-content:center;padding:6px;background:#dc6b2f;border-radius:7px;border:none;color:#fff;font-size:.75rem;font-weight:500;cursor:pointer;margin-top:auto;width:100%;font-family:var(--f);}
 .mode-sq-btn{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;box-sizing:border-box;transition:opacity .15s,border-color .15s;position:relative;padding:0;background:none;}
 #mode-btn-city.msq-active{border-color:#dc6b2f;opacity:1;}
@@ -3857,12 +3860,21 @@ function openItinerario(id){
           +'<div style="width:28px;height:28px;border-radius:7px;background:#fef3e8;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
           +'<i class="ti ti-external-link" style="font-size:.9rem;color:#dc6b2f;"></i></div>'
           +'<span style="font-weight:500;font-size:.85rem;color:var(--g900);line-height:1.3;">'+s.name+'</span></div>'
-          +(s.description?'<div style="font-size:.78rem;color:var(--g500);line-height:1.4;">'+s.description+'</div>':'')
+          +(s.description
+            ?'<div class="itd-svc-desc">'+s.description+'</div>'
+             +'<button class="itd-svc-toggle" onclick="toggleSvcDesc(this)">Maggiori dettagli</button>'
+            :'')
           +(s.url?'<button class="itd-service-btn" onclick="openTravelSvc(\''+s.url+'\')">'+((s.button_text)||'Scopri →')+'</button>':'')
           +'</div>';
       });
       html+='</div>';
       _svcEl.innerHTML=html;
+      _svcEl.querySelectorAll('.itd-svc-desc').forEach(function(el){
+        if(el.scrollHeight>el.clientHeight){
+          var tog=el.nextElementSibling;
+          if(tog&&tog.classList.contains('itd-svc-toggle'))tog.style.display='block';
+        }
+      });
     }).catch(function(){_svcEl.innerHTML='';});
   document.getElementById('itinerario-detail').style.zIndex=_travelContext?'620':'510';
   document.getElementById('itinerario-detail').classList.add('show');
@@ -3871,6 +3883,12 @@ function openTravelSvc(url){
   if(!url)return;
   if(url.startsWith('tel:')){window.location.href=url;return;}
   if(window.innerWidth<768){window.location.href=url;}else{window.open(url,'_blank');}
+}
+function toggleSvcDesc(btn){
+  var desc=btn.previousElementSibling;
+  if(!desc)return;
+  var expanded=desc.classList.toggle('expanded');
+  btn.textContent=expanded?'Meno dettagli':'Maggiori dettagli';
 }
 function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').style.zIndex='510';
