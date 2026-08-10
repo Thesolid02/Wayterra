@@ -3086,6 +3086,7 @@ function addTravelServiceRow(svc){
     +'<input type="url" class="fs2 tsvc-url" placeholder="URL" value="'+((svc&&svc.url)||'')+'">'
     +'</div>'
     +'<div style="display:flex;flex-direction:column;gap:4px;min-width:140px;">'
+    +'<input type="text" class="fs2 tsvc-icon" placeholder="Icona Tabler (es. shield-check)" value="'+((svc&&svc.icon)||'external-link')+'" title="Icona (Tabler Icons)">'
     +'<input type="text" class="fs2 tsvc-btn" placeholder="Testo pulsante" value="'+((svc&&svc.button_text)||'Scopri →')+'">'
     +'<input type="number" class="fs2 tsvc-sort" min="0" placeholder="Ordine" style="width:80px;" value="'+((svc&&svc.sort_order!=null)?svc.sort_order:idx)+'">'
     +'</div>'
@@ -3104,8 +3105,9 @@ function collectTravelServices(){
     var btn=((row.querySelector('.tsvc-btn')||{}).value||'').trim()||'Scopri →';
     var sort=parseInt((row.querySelector('.tsvc-sort')||{}).value);
     if(isNaN(sort))sort=i;
+    var icon=((row.querySelector('.tsvc-icon')||{}).value||'').trim()||'external-link';
     if(!name&&!url)return;
-    services.push({name:name,description:desc||null,url:url||null,button_text:btn,sort_order:sort});
+    services.push({name:name,description:desc||null,url:url||null,button_text:btn,sort_order:sort,icon:icon});
   });
   return services;
 }
