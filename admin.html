@@ -483,6 +483,11 @@ textarea.ft{resize:vertical;line-height:1.65;}
     </div>
     <div class="fg"><label>Da sapere</label><textarea id="esp-notes" rows="3" placeholder="Informazioni utili, avvertenze, consigli pratici..." style="width:100%;resize:vertical;"></textarea></div>
     <div class="sdiv">
+      Servizi utili
+      <button class="btn bs sm" onclick="addTravelServiceRow(null)">+ Aggiungi servizio</button>
+    </div>
+    <div id="esp-services"></div>
+    <div class="sdiv">
       Tappe
       <button class="btn bs sm" onclick="addEspStopRow(null)">+ Aggiungi tappa</button>
     </div>
@@ -2892,6 +2897,7 @@ function openAddEsperienza(){
   document.querySelectorAll('.esp-season').forEach(function(cb){cb.checked=false;});
   document.querySelectorAll('.esp-triptype').forEach(function(cb){cb.checked=false;});
   document.getElementById('esp-stops').innerHTML='';
+  document.getElementById('esp-services').innerHTML='';
   document.getElementById('m-esp').classList.add('on');
 }
 
@@ -2925,6 +2931,8 @@ function openEditEsperienza(id){
   document.querySelectorAll('.esp-triptype').forEach(function(cb){cb.checked=(e.tripTypes||[]).indexOf(cb.value)>=0;});
   document.getElementById('esp-stops').innerHTML='';
   (e.stops||[]).forEach(function(s){addEspStopRow(s);});
+  document.getElementById('esp-services').innerHTML='';
+  loadTravelServices(e.id);
   document.getElementById('m-esp').classList.add('on');
 }
 
@@ -3066,6 +3074,66 @@ function collectEspStops(){
   return stops;
 }
 
+function addTravelServiceRow(svc){
+  var container=document.getElementById('esp-services');
+  var idx=container.children.length;
+  var div=document.createElement('div');
+  div.className='arow-wrap';
+  div.innerHTML='<div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">'
+    +'<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:180px;">'
+    +'<input type="text" class="fs2 tsvc-name" placeholder="Nome servizio" value="'+((svc&&svc.name)||'')+'">'
+    +'<textarea class="fs2 tsvc-desc" rows="2" placeholder="Descrizione breve" style="resize:vertical;">'+((svc&&svc.description)||'')+'</textarea>'
+    +'<input type="url" class="fs2 tsvc-url" placeholder="URL" value="'+((svc&&svc.url)||'')+'">'
+    +'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:4px;min-width:140px;">'
+    +'<input type="text" class="fs2 tsvc-btn" placeholder="Testo pulsante" value="'+((svc&&svc.button_text)||'Scopri →')+'">'
+    +'<input type="number" class="fs2 tsvc-sort" min="0" placeholder="Ordine" style="width:80px;" value="'+((svc&&svc.sort_order!=null)?svc.sort_order:idx)+'">'
+    +'</div>'
+    +'<button class="btn bd sm ico" onclick="this.closest(\'.arow-wrap\').remove()" style="align-self:flex-start;margin-top:2px;">✕</button>'
+    +'</div>';
+  container.appendChild(div);
+}
+
+function collectTravelServices(){
+  var container=document.getElementById('esp-services');
+  var services=[];
+  Array.from(container.children).forEach(function(row,i){
+    var name=((row.querySelector('.tsvc-name')||{}).value||'').trim();
+    var desc=((row.querySelector('.tsvc-desc')||{}).value||'').trim();
+    var url=((row.querySelector('.tsvc-url')||{}).value||'').trim();
+    var btn=((row.querySelector('.tsvc-btn')||{}).value||'').trim()||'Scopri →';
+    var sort=parseInt((row.querySelector('.tsvc-sort')||{}).value);
+    if(isNaN(sort))sort=i;
+    if(!name&&!url)return;
+    services.push({name:name,description:desc||null,url:url||null,button_text:btn,sort_order:sort});
+  });
+  return services;
+}
+
+function loadTravelServices(expId){
+  sbFetch('travel_services?experience_id=eq.'+expId+'&order=sort_order')
+    .then(function(r){return r.json();})
+    .then(function(rows){
+      document.getElementById('esp-services').innerHTML='';
+      (rows||[]).forEach(function(svc){addTravelServiceRow(svc);});
+    }).catch(function(){});
+}
+
+function saveTravelServices(expId,services){
+  sbFetch('travel_services?experience_id=eq.'+expId,{
+    method:'DELETE',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
+  }).then(function(){
+    if(!services||!services.length)return;
+    var rows=services.map(function(s){return Object.assign({},s,{experience_id:expId});});
+    return sbFetch('travel_services',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify(rows)
+    });
+  }).catch(function(e){toast('⚠️ Errore servizi: '+e.message,'err');});
+}
+
 function saveEsperienza(){
   var titleIt=document.getElementById('esp-title-it').value.trim();
   if(!titleIt){toast('Titolo IT obbligatorio','err');return;}
@@ -3091,6 +3159,7 @@ function saveEsperienza(){
   };
   if(editEspId) body.id=editEspId;
   var wasId=editEspId;
+  var _services=collectTravelServices();
   closeEsperienza();
   sbFetch('experiences',{
     method:'POST',
@@ -3107,6 +3176,7 @@ function saveEsperienza(){
     }
     renderEsperienze();
     toast(wasId?'Itinerario aggiornato ✓':'Itinerario aggiunto ✓','ok');
+    saveTravelServices(saved.id,_services);
   }).catch(function(e){toast('⚠️ Errore: '+e.message,'err');});
 }
 
