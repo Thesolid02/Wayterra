@@ -481,6 +481,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
         </div>
       </div>
     </div>
+    <div class="fg"><label>Da sapere</label><textarea id="esp-notes" rows="3" placeholder="Informazioni utili, avvertenze, consigli pratici..." style="width:100%;resize:vertical;"></textarea></div>
     <div class="sdiv">
       Tappe
       <button class="btn bs sm" onclick="addEspStopRow(null)">+ Aggiungi tappa</button>
@@ -2836,7 +2837,8 @@ function rowToEsperienza(row){
     clothing: row.clothing||'',
     seasons: row.seasons||[],
     tripTypes: row.trip_types||[],
-    budget: row.budget||''
+    budget: row.budget||'',
+    notes: row.notes||''
   };
 }
 
@@ -2886,6 +2888,7 @@ function openAddEsperienza(){
   document.getElementById('esp-transport').value='';
   document.getElementById('esp-clothing').value='';
   document.getElementById('esp-budget').value='';
+  document.getElementById('esp-notes').value='';
   document.querySelectorAll('.esp-season').forEach(function(cb){cb.checked=false;});
   document.querySelectorAll('.esp-triptype').forEach(function(cb){cb.checked=false;});
   document.getElementById('esp-stops').innerHTML='';
@@ -2917,6 +2920,7 @@ function openEditEsperienza(id){
   document.getElementById('esp-transport').value=e.transport||'';
   document.getElementById('esp-clothing').value=e.clothing||'';
   document.getElementById('esp-budget').value=e.budget||'';
+  document.getElementById('esp-notes').value=e.notes||'';
   document.querySelectorAll('.esp-season').forEach(function(cb){cb.checked=(e.seasons||[]).indexOf(cb.value)>=0;});
   document.querySelectorAll('.esp-triptype').forEach(function(cb){cb.checked=(e.tripTypes||[]).indexOf(cb.value)>=0;});
   document.getElementById('esp-stops').innerHTML='';
@@ -3082,7 +3086,8 @@ function saveEsperienza(){
     clothing: document.getElementById('esp-clothing').value.trim()||null,
     seasons: Array.from(document.querySelectorAll('.esp-season:checked')).map(function(cb){return cb.value;}),
     trip_types: Array.from(document.querySelectorAll('.esp-triptype:checked')).map(function(cb){return cb.value;}),
-    budget: document.getElementById('esp-budget').value.trim()||null
+    budget: document.getElementById('esp-budget').value.trim()||null,
+    notes: document.getElementById('esp-notes').value.trim()||null
   };
   if(editEspId) body.id=editEspId;
   var wasId=editEspId;

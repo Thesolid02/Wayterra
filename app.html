@@ -3466,7 +3466,7 @@ function loadEsperienze(){
                myMaps:r.my_maps_url||'',
                transport:r.transport||'',clothing:r.clothing||'',
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
-               budget:r.budget||''};
+               budget:r.budget||'',notes:r.notes||''};
       });
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
@@ -3632,7 +3632,7 @@ function openItinerario(id){
   document.getElementById('itd-dur').textContent=dur||'';
   renderExpandableText(desc||'','itd-desc',280);
   var infoEl=document.getElementById('itd-info-utili');
-  var hasInfo=e.transport||(e.clothing)||(e.seasons&&e.seasons.length)||(e.tripTypes&&e.tripTypes.length)||(e.budget);
+  var hasInfo=e.transport||(e.clothing)||(e.seasons&&e.seasons.length)||(e.tripTypes&&e.tripTypes.length)||(e.budget)||(e.notes);
   if(hasInfo){
     var _SEASON_ICON={'Primavera':'🌸','Estate':'☀️','Autunno':'🍂','Inverno':'❄️'};
     var infoHtml='<div class="itd-info-utili">';
@@ -3641,6 +3641,7 @@ function openItinerario(id){
     if(e.seasons&&e.seasons.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+e.seasons.map(function(s){return'<span class="itd-info-badge">'+(_SEASON_ICON[s]||'')+' '+s+'</span>';}).join('')+'</span></div>';
     if(e.tripTypes&&e.tripTypes.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-map"></i><span>'+e.tripTypes.map(function(t){return'<span class="itd-info-badge">'+t+'</span>';}).join('')+'</span></div>';
     if(e.budget) infoHtml+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span>'+e.budget+'</span></div>';
+    if(e.notes) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:2px;">Da sapere</span><span style="font-size:.82rem;font-weight:400;color:var(--g500);white-space:pre-line;">'+e.notes+'</span></span></div>';
     infoHtml+='</div>';
     infoEl.innerHTML=infoHtml;
   }else{
