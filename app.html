@@ -4346,6 +4346,9 @@ function applyItinerariState(){
 function bootApp(d){
   DATA=d;
   lang=localStorage.getItem(K.LANG)||'it';
+  if(!localStorage.getItem(K.LANG)){
+    lang=(navigator.language||'').toLowerCase().startsWith('it')?'it':'en';
+  }
   unlocked=checkUnlock();
   updateLazioBtn();
   loadFavs();
