@@ -3478,6 +3478,15 @@ function loadEsperienze(){
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
       updateRegionPageLang();
+      var _urlParams=new URLSearchParams(window.location.search);
+      var _itinerarioId=_urlParams.get('itinerario');
+      if(_itinerarioId){
+        var _exp=(DATA.experiences||[]).find(function(e){return String(e.id)===String(_itinerarioId);});
+        if(_exp){
+          if(_exp.isTravel){_travelContext=true;}
+          openItinerario(parseInt(_itinerarioId));
+        }
+      }
     })
     .catch(function(){DATA.experiences=[];});
 }
