@@ -1278,7 +1278,11 @@ var T={
     rp_sec_mondo:'Nel mondo',
     rp_explore_travels:'Esplora →',
     trv_title:'I miei viaggi all\'estero',
-    itd_soon_toast:'Presto disponibile! Stiamo preparando i primi itinerari 🗺️'
+    itd_soon_toast:'Presto disponibile! Stiamo preparando i primi itinerari 🗺️',
+    itd_legend_main:'Principale',
+    itd_legend_opt:'Opzionale',
+    itd_legend_air:'Aeroporto',
+    itd_travel_times:'Tempi di spostamento'
   },
   en:{
     search_placeholder:'Where do you want to go?',
@@ -1343,7 +1347,11 @@ var T={
     rp_sec_mondo:'Around the world',
     rp_explore_travels:'Explore →',
     trv_title:'My travels abroad',
-    itd_soon_toast:'Coming soon! We\'re preparing our first itineraries 🗺️'
+    itd_soon_toast:'Coming soon! We\'re preparing our first itineraries 🗺️',
+    itd_legend_main:'Main',
+    itd_legend_opt:'Optional',
+    itd_legend_air:'Airport',
+    itd_travel_times:'Travel times'
   }
 };
 
@@ -3657,7 +3665,7 @@ function openItinerario(id){
     if(e.seasons&&e.seasons.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+e.seasons.map(function(s){return'<span class="itd-info-badge">'+(_SEASON_ICON[s]||'')+' '+s+'</span>';}).join('')+'</span></div>';
     if(e.tripTypes&&e.tripTypes.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-map"></i><span>'+e.tripTypes.map(function(t){return'<span class="itd-info-badge">'+t+'</span>';}).join('')+'</span></div>';
     if(e.budget) infoHtml+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.budget+'</span></span></div>';
-    if(e.notes) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">Da sapere</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:500;color:var(--g500);"></div></span></div>';
+    if(e.notes) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:500;color:var(--g500);"></div></span></div>';
     infoHtml+='</div>';
     infoEl.innerHTML=infoHtml;
     if(e.notes) renderExpandableText(e.notes,'itd-notes-el',120);
@@ -3752,7 +3760,7 @@ function openItinerario(id){
       return '<div class="itd-stop-card"'+r.onclick+'>'
         +'<div class="itd-stop-num" style="background:'+numBg+';">'+numInner+'</div>'
         +r.thumb
-        +'<div class="itd-stop-body"><div class="itd-stop-name">'+name+(isOpt?'<span class="itd-stop-opt-badge">opzionale</span>':'')+'</div>'
+        +'<div class="itd-stop-body"><div class="itd-stop-name">'+name+(isOpt?'<span class="itd-stop-opt-badge">'+(lang==='en'?'optional':'opzionale')+'</span>':'')+'</div>'
         +durHtml
         +(r.meta?'<div class="itd-stop-meta">'+r.meta+'</div>':'')
         +scoreHtml
@@ -3794,8 +3802,8 @@ function openItinerario(id){
           globalIdx++;
         });
         if(d>0){
-          var tappeLabel=dayNonAirport===1?'1 tappa':dayNonAirport+' tappe';
-          html+='<div class="itd-day-card"><div class="itd-day-card-header-wrap"><div class="itd-day-card-header" style="display:flex;justify-content:space-between;align-items:center;"><span>Giorno '+d+'</span><span style="font-weight:400;opacity:0.7;">('+tappeLabel+')</span></div></div><div class="itd-day-card-body">'+bodyHtml+'</div></div>';
+          var tappeLabel=dayNonAirport===1?(lang==='en'?'1 stop':'1 tappa'):(dayNonAirport+(lang==='en'?' stops':' tappe'));
+          html+='<div class="itd-day-card"><div class="itd-day-card-header-wrap"><div class="itd-day-card-header" style="display:flex;justify-content:space-between;align-items:center;"><span>'+(lang==='en'?'Day':'Giorno')+' '+d+'</span><span style="font-weight:400;opacity:0.7;">('+tappeLabel+')</span></div></div><div class="itd-day-card-body">'+bodyHtml+'</div></div>';
         }else{
           html+=bodyHtml;
         }
@@ -3847,9 +3855,9 @@ function openItinerario(id){
   }
   var _btnStyle='flex:1;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
   var _eid2=e.id;
-  var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">Mappa tappe</button>';
+  var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
   if(_itdMapCoords.length>=2){
-    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:#dc6b2f;color:#fff;">Apri percorso</button>';
+    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:#dc6b2f;color:#fff;">'+(lang==='en'?'Open route':'Apri percorso')+'</button>';
   }
 
   _btnsEl.innerHTML=_btnsHtml;
@@ -3861,7 +3869,7 @@ function openItinerario(id){
     .then(function(r){return r.json();})
     .then(function(svcs){
       if(!svcs||!svcs.length){_svcEl.innerHTML='';return;}
-      var html='<div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-top:16px;margin-bottom:0;">Prima di partire</div>'
+      var html='<div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-top:16px;margin-bottom:0;">'+(lang==='en'?'Before you go':'Prima di partire')+'</div>'
         +'<div class="itd-services-grid">';
       svcs.forEach(function(s){
         html+='<div class="itd-service-card">'
@@ -3871,7 +3879,7 @@ function openItinerario(id){
           +'<span style="font-weight:500;font-size:.85rem;color:var(--g900);line-height:1.3;">'+s.name+'</span></div>'
           +(s.description
             ?'<div class="itd-svc-desc">'+s.description+'</div>'
-             +'<button class="itd-svc-toggle" onclick="toggleSvcDesc(this)">Maggiori dettagli</button>'
+             +'<button class="itd-svc-toggle" onclick="toggleSvcDesc(this)">'+(lang==='en'?'More details':'Maggiori dettagli')+'</button>'
             :'')
           +(s.url?'<button class="itd-service-btn" onclick="openTravelSvc(\''+s.url+'\')">'+((s.button_text)||'Scopri →')+'</button>':'')
           +'</div>';
@@ -3897,7 +3905,7 @@ function toggleSvcDesc(btn){
   var desc=btn.previousElementSibling;
   if(!desc)return;
   var expanded=desc.classList.toggle('expanded');
-  btn.textContent=expanded?'Meno dettagli':'Maggiori dettagli';
+  btn.textContent=expanded?(lang==='en'?'Less details':'Meno dettagli'):(lang==='en'?'More details':'Maggiori dettagli');
 }
 function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').style.zIndex='510';
@@ -4076,10 +4084,10 @@ function openItinMapPopup(id){
   var hasTravelTimes=!!(e.stops||[]).some(function(s){return !!s.travel_time;});
   var footerHtml='';
   if(_itdMapCoords.length>=2){
-    footerHtml='<button onclick="closeMapPopup();openItinerarioGMaps(_itdMapCoords)" style="'+_btnSt+'background:#dc6b2f;color:#fff;">Apri percorso</button>';
+    footerHtml='<button onclick="closeMapPopup();openItinerarioGMaps(_itdMapCoords)" style="'+_btnSt+'background:#dc6b2f;color:#fff;">'+(lang==='en'?'Open route':'Apri percorso')+'</button>';
   }
   if(hasTravelTimes){
-    footerHtml+='<button onclick="openMapPopupTimes()" style="'+_btnSt+'background:var(--g100);color:var(--g900);">Tempi tappe</button>';
+    footerHtml+='<button onclick="openMapPopupTimes()" style="'+_btnSt+'background:var(--g100);color:var(--g900);">'+(lang==='en'?'Travel times':'Tempi tappe')+'</button>';
   }
   // re-deriva stops con nome e coordinate
   var _itdStops=[];
@@ -4591,16 +4599,16 @@ window.addEventListener('DOMContentLoaded',function(){
     </div>
     <div id="map-popup-map" style="flex:1;position:relative;overflow:hidden;">
       <div id="map-popup-legend" style="display:none;position:absolute;bottom:8px;right:8px;z-index:10;background:rgba(255,255,255,0.9);border-radius:8px;padding:6px 10px;font-size:.72rem;display:flex;flex-direction:column;gap:4px;">
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#dc6b2f;flex-shrink:0;"></div><span>Principale</span></div>
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#888;flex-shrink:0;"></div><span>Opzionale</span></div>
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#2563eb;flex-shrink:0;"></div><span>Aeroporto</span></div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#dc6b2f;flex-shrink:0;"></div><span data-t="itd_legend_main">Principale</span></div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#888;flex-shrink:0;"></div><span data-t="itd_legend_opt">Opzionale</span></div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#2563eb;flex-shrink:0;"></div><span data-t="itd_legend_air">Aeroporto</span></div>
       </div>
     </div>
     <div id="map-popup-footer" style="padding:8px 12px;display:flex;gap:8px;border-top:0.5px solid var(--g100);"></div>
     <div id="map-popup-times" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:750;align-items:flex-start;justify-content:center;padding:16px 0;box-sizing:border-box;">
       <div style="width:90%;max-width:400px;background:var(--w);border-radius:16px;overflow:hidden;max-height:100%;display:flex;flex-direction:column;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid var(--g100);">
-          <span style="font-size:.85rem;font-weight:500;">Tempi di spostamento</span>
+          <span style="font-size:.85rem;font-weight:500;" data-t="itd_travel_times">Tempi di spostamento</span>
           <button onclick="closeMapPopupTimes()" style="background:none;border:none;cursor:pointer;padding:4px;"><i class="ti ti-x" style="font-size:18px;color:var(--g400);"></i></button>
         </div>
         <div id="map-popup-times-body" style="overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:12px;"></div>
