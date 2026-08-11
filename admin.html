@@ -481,7 +481,10 @@ textarea.ft{resize:vertical;line-height:1.65;}
         </div>
       </div>
     </div>
-    <div class="fg"><label>Da sapere</label><textarea id="esp-notes" rows="3" placeholder="Informazioni utili, avvertenze, consigli pratici..." style="width:100%;resize:vertical;"></textarea></div>
+    <div class="g2">
+      <div class="fg"><label>Da sapere</label><textarea id="esp-notes" rows="3" placeholder="Informazioni utili, avvertenze, consigli pratici..." style="width:100%;resize:vertical;"></textarea></div>
+      <div class="fg"><label>Good to know (EN)</label><textarea id="esp-notes-en" rows="3" placeholder="Useful info, warnings, practical tips..." style="width:100%;resize:vertical;"></textarea></div>
+    </div>
     <div class="sdiv">
       Servizi utili
       <button class="btn bs sm" onclick="addTravelServiceRow(null)">+ Aggiungi servizio</button>
@@ -2843,7 +2846,8 @@ function rowToEsperienza(row){
     seasons: row.seasons||[],
     tripTypes: row.trip_types||[],
     budget: row.budget||'',
-    notes: row.notes||''
+    notes: row.notes||'',
+    notesEn: row.notes_en||''
   };
 }
 
@@ -2894,6 +2898,7 @@ function openAddEsperienza(){
   document.getElementById('esp-clothing').value='';
   document.getElementById('esp-budget').value='';
   document.getElementById('esp-notes').value='';
+  document.getElementById('esp-notes-en').value='';
   document.querySelectorAll('.esp-season').forEach(function(cb){cb.checked=false;});
   document.querySelectorAll('.esp-triptype').forEach(function(cb){cb.checked=false;});
   document.getElementById('esp-stops').innerHTML='';
@@ -2927,6 +2932,7 @@ function openEditEsperienza(id){
   document.getElementById('esp-clothing').value=e.clothing||'';
   document.getElementById('esp-budget').value=e.budget||'';
   document.getElementById('esp-notes').value=e.notes||'';
+  document.getElementById('esp-notes-en').value=e.notesEn||'';
   document.querySelectorAll('.esp-season').forEach(function(cb){cb.checked=(e.seasons||[]).indexOf(cb.value)>=0;});
   document.querySelectorAll('.esp-triptype').forEach(function(cb){cb.checked=(e.tripTypes||[]).indexOf(cb.value)>=0;});
   document.getElementById('esp-stops').innerHTML='';
@@ -2983,8 +2989,10 @@ function addEspStopRow(stop){
     +'<label style="display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--g500);white-space:nowrap;cursor:pointer;">'
     +'<input type="checkbox" class="esp-stop-airport"'+(isAirport?' checked':'')+'> ✈️</label>'
     +'<input type="number" class="fs2 esp-stop-day" min="1" max="30" placeholder="Gg" title="Giorno" style="width:52px;" value="'+stopDay+'">'
-    +'<input type="text" class="fs2 esp-stop-dur" placeholder="es. 2h" title="Durata" style="width:72px;" value="'+stopDur+'">'
-    +'<input type="text" class="fs2 esp-stop-travel" placeholder="es. 15 min in macchina" title="Spostamento verso prossima tappa" style="width:160px;" value="'+((stop&&stop.travel_time)||'')+'">'
+    +'<input type="text" class="fs2 esp-stop-dur" placeholder="es. 2h" title="Durata IT" style="width:72px;" value="'+stopDur+'">'
+    +'<input type="text" class="fs2 esp-stop-dur-en" placeholder="e.g. 2h" title="Duration EN" style="width:72px;" value="'+((stop&&stop.duration_en)||'')+'">'
+    +'<input type="text" class="fs2 esp-stop-travel" placeholder="es. 15 min in macchina" title="Spostamento IT" style="width:150px;" value="'+((stop&&stop.travel_time)||'')+'">'
+    +'<input type="text" class="fs2 esp-stop-travel-en" placeholder="e.g. 15 min by car" title="Travel time EN" style="width:150px;" value="'+((stop&&stop.travel_time_en)||'')+'">'
     +'<div style="display:flex;gap:4px;margin-left:auto;">'
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',-1)" title="Su">↑</button>'
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',1)" title="Giù">↓</button>'
@@ -3060,7 +3068,9 @@ function collectEspStops(){
     var airportCb=row.querySelector('.esp-stop-airport');
     var dayInp=row.querySelector('.esp-stop-day');
     var durInp=row.querySelector('.esp-stop-dur');
+    var durEnInp=row.querySelector('.esp-stop-dur-en');
     var travelInp=row.querySelector('.esp-stop-travel');
+    var travelEnInp=row.querySelector('.esp-stop-travel-en');
     stops.push({
       type:typeSel.value,
       id:parseInt(idSel.value)||idSel.value,
@@ -3068,7 +3078,9 @@ function collectEspStops(){
       is_airport:airportCb?airportCb.checked:false,
       day:(dayInp&&dayInp.value)?parseInt(dayInp.value)||null:null,
       duration:(durInp&&durInp.value.trim())?durInp.value.trim():null,
-      travel_time:(travelInp&&travelInp.value.trim())?travelInp.value.trim():null
+      duration_en:(durEnInp&&durEnInp.value.trim())?durEnInp.value.trim():null,
+      travel_time:(travelInp&&travelInp.value.trim())?travelInp.value.trim():null,
+      travel_time_en:(travelEnInp&&travelEnInp.value.trim())?travelEnInp.value.trim():null
     });
   });
   return stops;
@@ -3080,14 +3092,19 @@ function addTravelServiceRow(svc){
   var div=document.createElement('div');
   div.className='arow-wrap';
   div.innerHTML='<div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">'
-    +'<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:180px;">'
+    +'<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:160px;">'
     +'<input type="text" class="fs2 tsvc-name" placeholder="Nome servizio" value="'+((svc&&svc.name)||'')+'">'
     +'<textarea class="fs2 tsvc-desc" rows="2" placeholder="Descrizione breve" style="resize:vertical;">'+((svc&&svc.description)||'')+'</textarea>'
     +'<input type="url" class="fs2 tsvc-url" placeholder="URL" value="'+((svc&&svc.url)||'')+'">'
     +'</div>'
-    +'<div style="display:flex;flex-direction:column;gap:4px;min-width:140px;">'
+    +'<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:160px;">'
+    +'<input type="text" class="fs2 tsvc-name-en" placeholder="Service name EN" value="'+((svc&&svc.name_en)||'')+'">'
+    +'<textarea class="fs2 tsvc-desc-en" rows="2" placeholder="Description EN" style="resize:vertical;">'+((svc&&svc.description_en)||'')+'</textarea>'
+    +'<input type="text" class="fs2 tsvc-btn-en" placeholder="e.g. Discover →" value="'+((svc&&svc.button_text_en)||'')+'">'
+    +'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:4px;min-width:130px;">'
     +'<input type="text" class="fs2 tsvc-icon" placeholder="Icona Tabler (es. shield-check)" value="'+((svc&&svc.icon)||'external-link')+'" title="Icona (Tabler Icons)">'
-    +'<input type="text" class="fs2 tsvc-btn" placeholder="Testo pulsante" value="'+((svc&&svc.button_text)||'Scopri →')+'">'
+    +'<input type="text" class="fs2 tsvc-btn" placeholder="Testo pulsante IT" value="'+((svc&&svc.button_text)||'Scopri →')+'">'
     +'<input type="number" class="fs2 tsvc-sort" min="0" placeholder="Ordine" style="width:80px;" value="'+((svc&&svc.sort_order!=null)?svc.sort_order:idx)+'">'
     +'</div>'
     +'<button class="btn bd sm ico" onclick="this.closest(\'.arow-wrap\').remove()" style="align-self:flex-start;margin-top:2px;">✕</button>'
@@ -3106,8 +3123,12 @@ function collectTravelServices(){
     var sort=parseInt((row.querySelector('.tsvc-sort')||{}).value);
     if(isNaN(sort))sort=i;
     var icon=((row.querySelector('.tsvc-icon')||{}).value||'').trim()||'external-link';
+    var nameEn=((row.querySelector('.tsvc-name-en')||{}).value||'').trim();
+    var descEn=((row.querySelector('.tsvc-desc-en')||{}).value||'').trim();
+    var btnEn=((row.querySelector('.tsvc-btn-en')||{}).value||'').trim();
     if(!name&&!url)return;
-    services.push({name:name,description:desc||null,url:url||null,button_text:btn,sort_order:sort,icon:icon});
+    services.push({name:name,description:desc||null,url:url||null,button_text:btn,sort_order:sort,icon:icon,
+      name_en:nameEn||null,description_en:descEn||null,button_text_en:btnEn||null});
   });
   return services;
 }
@@ -3157,7 +3178,8 @@ function saveEsperienza(){
     seasons: Array.from(document.querySelectorAll('.esp-season:checked')).map(function(cb){return cb.value;}),
     trip_types: Array.from(document.querySelectorAll('.esp-triptype:checked')).map(function(cb){return cb.value;}),
     budget: document.getElementById('esp-budget').value.trim()||null,
-    notes: document.getElementById('esp-notes').value.trim()||null
+    notes: document.getElementById('esp-notes').value.trim()||null,
+    notes_en: document.getElementById('esp-notes-en').value.trim()||null
   };
   if(editEspId) body.id=editEspId;
   var wasId=editEspId;

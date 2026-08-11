@@ -3481,7 +3481,7 @@ function loadEsperienze(){
                myMaps:r.my_maps_url||'',
                transport:r.transport||'',clothing:r.clothing||'',
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
-               budget:r.budget||'',notes:r.notes||''};
+               budget:r.budget||'',notes:r.notes||'',notesEn:r.notes_en||''};
       });
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
@@ -3656,19 +3656,22 @@ function openItinerario(id){
   document.getElementById('itd-dur').textContent=dur||'';
   renderExpandableText(desc||'','itd-desc',280);
   var infoEl=document.getElementById('itd-info-utili');
-  var hasInfo=e.transport||(e.clothing)||(e.seasons&&e.seasons.length)||(e.tripTypes&&e.tripTypes.length)||(e.budget)||(e.notes);
+  var _notesText=lang==='en'?(e.notesEn||e.notes):e.notes;
+  var _TRANSPORT_EN={'Auto':'Car','Treno':'Train','Aereo':'Plane','Bus':'Bus','Misto':'Mixed','A piedi':'On foot'};
+  var _transportDisplay=e.transport?(lang==='en'?(_TRANSPORT_EN[e.transport]||e.transport):e.transport):'';
+  var hasInfo=_transportDisplay||(e.clothing)||(e.seasons&&e.seasons.length)||(e.tripTypes&&e.tripTypes.length)||(e.budget)||_notesText;
   if(hasInfo){
     var _SEASON_ICON={'Primavera':'🌸','Estate':'☀️','Autunno':'🍂','Inverno':'❄️'};
     var infoHtml='<div class="itd-info-utili">';
-    if(e.transport) infoHtml+='<div class="itd-info-row"><i class="ti ti-car"></i><span><span class="itd-info-badge">'+e.transport+'</span></span></div>';
+    if(_transportDisplay) infoHtml+='<div class="itd-info-row"><i class="ti ti-car"></i><span><span class="itd-info-badge">'+_transportDisplay+'</span></span></div>';
     if(e.clothing) infoHtml+='<div class="itd-info-row"><i class="ti ti-shirt"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.clothing+'</span></span></div>';
     if(e.seasons&&e.seasons.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+e.seasons.map(function(s){return'<span class="itd-info-badge">'+(_SEASON_ICON[s]||'')+' '+s+'</span>';}).join('')+'</span></div>';
     if(e.tripTypes&&e.tripTypes.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-map"></i><span>'+e.tripTypes.map(function(t){return'<span class="itd-info-badge">'+t+'</span>';}).join('')+'</span></div>';
     if(e.budget) infoHtml+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.budget+'</span></span></div>';
-    if(e.notes) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:500;color:var(--g500);"></div></span></div>';
+    if(_notesText) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:500;color:var(--g500);"></div></span></div>';
     infoHtml+='</div>';
     infoEl.innerHTML=infoHtml;
-    if(e.notes) renderExpandableText(e.notes,'itd-notes-el',120);
+    if(_notesText) renderExpandableText(_notesText,'itd-notes-el',120);
   }else{
     infoEl.innerHTML='';
   }
@@ -3754,7 +3757,8 @@ function openItinerario(id){
         }
       }else{scoreHtml=r.sc?'<span class="itd-stop-score" style="background:'+r.sc.bg+';color:'+r.sc.color+';border:0.5px solid '+r.sc.border+';">'+r.sc.gems+'</span>':'';}
       var isOpt=e.isTravel&&!!s.optional;
-      var durHtml=s.duration?'<div style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--g400);margin-top:1px;"><i class="ti ti-clock" style="font-size:.72rem;"></i><span>'+s.duration+'</span></div>':'';
+      var _sDur=lang==='en'?(s.duration_en||s.duration):s.duration;
+      var durHtml=_sDur?'<div style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--g400);margin-top:1px;"><i class="ti ti-clock" style="font-size:.72rem;"></i><span>'+_sDur+'</span></div>':'';
       var numBg=r.isAirport?'#2563eb':(isOpt?'#888':'#dc6b2f');
       var numInner=r.isAirport?'<i class="ti ti-plane-departure" style="font-size:.82rem;color:white;line-height:1;"></i>':displayNum;
       return '<div class="itd-stop-card"'+r.onclick+'>'
@@ -3778,7 +3782,8 @@ function openItinerario(id){
         var r=resolveStop(s);
         var dn=r.isAirport?'':++_dc;
         var card=renderStopCard(s,i,r,dn);
-        if(s.travel_time&&i<totalStops-1) card+='<div class="itd-travel-time"><i class="ti ti-arrow-down"></i><span>'+s.travel_time+'</span></div>';
+        var _sTt0=lang==='en'?(s.travel_time_en||s.travel_time):s.travel_time;
+        if(_sTt0&&i<totalStops-1) card+='<div class="itd-travel-time"><i class="ti ti-arrow-down"></i><span>'+_sTt0+'</span></div>';
         return card;
       }).join('');
     } else {
@@ -3798,7 +3803,8 @@ function openItinerario(id){
           var dn=r.isAirport?'':(++_dc);
           if(!r.isAirport) dayNonAirport++;
           bodyHtml+=renderStopCard(s,globalIdx,r,dn);
-          if(s.travel_time&&globalIdx<totalStops-1) bodyHtml+='<div class="itd-travel-time"><i class="ti ti-arrow-down"></i><span>'+s.travel_time+'</span></div>';
+          var _sTt1=lang==='en'?(s.travel_time_en||s.travel_time):s.travel_time;
+          if(_sTt1&&globalIdx<totalStops-1) bodyHtml+='<div class="itd-travel-time"><i class="ti ti-arrow-down"></i><span>'+_sTt1+'</span></div>';
           globalIdx++;
         });
         if(d>0){
@@ -3872,16 +3878,19 @@ function openItinerario(id){
       var html='<div style="font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-top:16px;margin-bottom:0;">'+(lang==='en'?'Before you go':'Prima di partire')+'</div>'
         +'<div class="itd-services-grid">';
       svcs.forEach(function(s){
+        var _sName=lang==='en'?(s.name_en||s.name):s.name;
+        var _sDesc=lang==='en'?(s.description_en||s.description):s.description;
+        var _sBtn=lang==='en'?(s.button_text_en||s.button_text):s.button_text;
         html+='<div class="itd-service-card">'
           +'<div style="display:flex;align-items:center;gap:8px;">'
           +'<div style="width:28px;height:28px;border-radius:7px;background:#fef3e8;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
           +'<i class="ti ti-'+(s.icon||'external-link')+'" style="font-size:.9rem;color:#dc6b2f;"></i></div>'
-          +'<span style="font-weight:500;font-size:.85rem;color:var(--g900);line-height:1.3;">'+s.name+'</span></div>'
-          +(s.description
-            ?'<div class="itd-svc-desc">'+s.description+'</div>'
+          +'<span style="font-weight:500;font-size:.85rem;color:var(--g900);line-height:1.3;">'+_sName+'</span></div>'
+          +(_sDesc
+            ?'<div class="itd-svc-desc">'+_sDesc+'</div>'
              +'<button class="itd-svc-toggle" onclick="toggleSvcDesc(this)">'+(lang==='en'?'More details':'Maggiori dettagli')+'</button>'
             :'')
-          +(s.url?'<button class="itd-service-btn" onclick="openTravelSvc(\''+s.url+'\')">'+((s.button_text)||'Scopri →')+'</button>':'')
+          +(s.url?'<button class="itd-service-btn" onclick="openTravelSvc(\''+s.url+'\')">'+(_sBtn||'Scopri →')+'</button>':'')
           +'</div>';
       });
       html+='</div>';
