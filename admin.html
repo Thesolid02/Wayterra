@@ -396,6 +396,13 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div id="an-itineraries"><div class="an-loading">Caricamento…</div></div>
     </div>
   </div>
+  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Luoghi</div>
+  <div class="an-top-grid">
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Gallerie più aperte (top 10)</div>
+      <div id="an-gallery"><div class="an-loading">Caricamento…</div></div>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -3315,6 +3322,7 @@ var anActivitiesData=null;
 var anBmPlacesData=null;
 var anBmActivitiesData=null;
 var anItinerariesData=null;
+var anGalleryData=null;
 
 function timeAgo(isoStr){
   var sec=Math.floor((Date.now()-new Date(isoStr).getTime())/1000);
@@ -3344,7 +3352,7 @@ function fetchAnLive(){
     }
     var placeIds=[],actIds=[];
     events.forEach(function(e){
-      if(e.event_type==='place_view'&&e.place_id)placeIds.push(e.place_id);
+      if((e.event_type==='place_view'||e.event_type==='place_gallery_open')&&e.place_id)placeIds.push(e.place_id);
       if(e.event_type==='activity_view'&&e.activity_id)actIds.push(e.activity_id);
     });
     var uniqP=[...new Set(placeIds)];
@@ -3371,6 +3379,10 @@ function fetchAnLive(){
           icon='🗺️';
           var ex=anItinerariesData&&anItinerariesData.items?anItinerariesData.items.find(function(x){return String(x.id)===String(e.experience_id);}):null;
           name=ex?ex.title:'Itinerario';
+        }else if(e.event_type==='place_gallery_open'){
+          icon='📸';
+          var pg=places.find(function(x){return String(x.id)===String(e.place_id);});
+          name='Galleria: '+(pg?pg.name:'Luogo #'+e.place_id);
         }else if(e.event_type==='itinerary_map_open'){
           icon='🗺️';
           name='Mappa aperta';
@@ -3409,6 +3421,7 @@ function renderAnalytics(){
   document.getElementById('an-bm-places').innerHTML='<div class="an-loading">Caricamento…</div>';
   document.getElementById('an-bm-activities').innerHTML='<div class="an-loading">Caricamento…</div>';
   document.getElementById('an-itineraries').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-gallery').innerHTML='<div class="an-loading">Caricamento…</div>';
   fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.asc',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
@@ -3420,6 +3433,7 @@ function renderAnalytics(){
     renderAnBmPlaces(events);
     renderAnBmActivities(events);
     renderAnItineraries(events);
+    renderAnGallery(events);
   })
   .catch(function(e){
     console.error('analytics fetch error',e);
@@ -3428,6 +3442,7 @@ function renderAnalytics(){
     document.getElementById('an-bm-places').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
     document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
     document.getElementById('an-itineraries').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    document.getElementById('an-gallery').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
   });
 }
 
@@ -3636,6 +3651,37 @@ function renderAnBmActivities(events){
   .catch(function(){document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Errore caricamento</div>';});
 }
 
+function renderAnGallery(events){
+  var gEvents=events.filter(function(e){return e.event_type==='place_gallery_open'&&e.place_id;});
+  var counts={};
+  gEvents.forEach(function(e){counts[e.place_id]=(counts[e.place_id]||0)+1;});
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){
+    document.getElementById('an-gallery').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
+    return;
+  }
+  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+sorted.join(',')+')',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  })
+  .then(function(r){return r.json();})
+  .then(function(places){
+    anGalleryData={sorted:sorted,counts:counts,items:places};
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
+      var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+p.name+'</span>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'gallery\')">Vedi tutti ('+sorted.length+')</button>';}
+    document.getElementById('an-gallery').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-gallery').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
 function openAnAll(type){
   var title='',html='';
   if(type==='places'&&anPlacesData){
@@ -3697,6 +3743,17 @@ function openAnAll(type){
         +'<div class="an-sub">'+tag+'</div>'
         +'</div>'
         +'<span class="an-count">'+anBmActivitiesData.counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+  } else if(type==='gallery'&&anGalleryData){
+    title='Gallerie più aperte (top '+anGalleryData.sorted.length+')';
+    html=anGalleryData.sorted.map(function(id,i){
+      var p=anGalleryData.items.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+p.name+'</span>'
+        +'<span class="an-count">'+anGalleryData.counts[id]+'</span>'
         +'</div>';
     }).join('');
   }
