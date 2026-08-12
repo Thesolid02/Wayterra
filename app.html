@@ -3489,7 +3489,7 @@ function loadEsperienze(){
                myMaps:r.my_maps_url||'',
                transport:r.transport||'',clothing:r.clothing||'',
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
-               budget:r.budget||'',notes:r.notes||'',notesEn:r.notes_en||''};
+               budget:r.budget||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||''};
       });
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
@@ -3667,7 +3667,8 @@ function openItinerario(id){
   var _notesText=lang==='en'?(e.notesEn||e.notes):e.notes;
   var _TRANSPORT_EN={'Auto':'Car','Treno':'Train','Aereo':'Plane','Bus':'Bus','Misto':'Mixed','A piedi':'On foot'};
   var _transportDisplay=e.transport?(lang==='en'?(_TRANSPORT_EN[e.transport]||e.transport):e.transport):'';
-  var hasInfo=_transportDisplay||(e.clothing)||(e.seasons&&e.seasons.length)||(e.tripTypes&&e.tripTypes.length)||(e.budget)||_notesText;
+  var _climateText=lang==='en'?(e.climateEn||e.climate):e.climate;
+  var hasInfo=_transportDisplay||(e.clothing)||(e.seasons&&e.seasons.length)||(e.tripTypes&&e.tripTypes.length)||(e.budget)||_climateText||_notesText;
   if(hasInfo){
     var _SEASON_ICON={'Primavera':'🌸','Estate':'☀️','Autunno':'🍂','Inverno':'❄️'};
     var infoHtml='<div class="itd-info-utili">';
@@ -3676,6 +3677,7 @@ function openItinerario(id){
     if(e.seasons&&e.seasons.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+e.seasons.map(function(s){return'<span class="itd-info-badge">'+(_SEASON_ICON[s]||'')+' '+s+'</span>';}).join('')+'</span></div>';
     if(e.tripTypes&&e.tripTypes.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-map"></i><span>'+e.tripTypes.map(function(t){return'<span class="itd-info-badge">'+t+'</span>';}).join('')+'</span></div>';
     if(e.budget) infoHtml+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.budget+'</span></span></div>';
+    if(_climateText) infoHtml+='<div class="itd-info-row"><i class="ti ti-cloud"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+_climateText+'</span></span></div>';
     if(_notesText) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:500;color:var(--g500);"></div></span></div>';
     infoHtml+='</div>';
     infoEl.innerHTML=infoHtml;

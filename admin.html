@@ -459,6 +459,10 @@ textarea.ft{resize:vertical;line-height:1.65;}
       </div>
       <div class="fg"><label>Budget</label><input type="text" id="esp-budget" placeholder="es. €150-200 a persona"></div>
     </div>
+    <div class="g2">
+      <div class="fg"><label>Clima</label><input type="text" id="esp-climate" placeholder="es. Piogge frequenti, temperature miti 15-20°C"></div>
+      <div class="fg"><label>Climate (EN)</label><input type="text" id="esp-climate-en" placeholder="e.g. Frequent rain, mild temperatures 15-20°C"></div>
+    </div>
     <div class="fg"><label>Abbigliamento</label><input type="text" id="esp-clothing" placeholder="es. scarpe comode + giacca a vento"></div>
     <div class="g2">
       <div class="fg">
@@ -2846,6 +2850,8 @@ function rowToEsperienza(row){
     seasons: row.seasons||[],
     tripTypes: row.trip_types||[],
     budget: row.budget||'',
+    climate: row.climate||'',
+    climateEn: row.climate_en||'',
     notes: row.notes||'',
     notesEn: row.notes_en||''
   };
@@ -2897,6 +2903,8 @@ function openAddEsperienza(){
   document.getElementById('esp-transport').value='';
   document.getElementById('esp-clothing').value='';
   document.getElementById('esp-budget').value='';
+  document.getElementById('esp-climate').value='';
+  document.getElementById('esp-climate-en').value='';
   document.getElementById('esp-notes').value='';
   document.getElementById('esp-notes-en').value='';
   document.querySelectorAll('.esp-season').forEach(function(cb){cb.checked=false;});
@@ -2931,6 +2939,8 @@ function openEditEsperienza(id){
   document.getElementById('esp-transport').value=e.transport||'';
   document.getElementById('esp-clothing').value=e.clothing||'';
   document.getElementById('esp-budget').value=e.budget||'';
+  document.getElementById('esp-climate').value=e.climate||'';
+  document.getElementById('esp-climate-en').value=e.climateEn||'';
   document.getElementById('esp-notes').value=e.notes||'';
   document.getElementById('esp-notes-en').value=e.notesEn||'';
   document.querySelectorAll('.esp-season').forEach(function(cb){cb.checked=(e.seasons||[]).indexOf(cb.value)>=0;});
@@ -3178,6 +3188,8 @@ function saveEsperienza(){
     seasons: Array.from(document.querySelectorAll('.esp-season:checked')).map(function(cb){return cb.value;}),
     trip_types: Array.from(document.querySelectorAll('.esp-triptype:checked')).map(function(cb){return cb.value;}),
     budget: document.getElementById('esp-budget').value.trim()||null,
+    climate: document.getElementById('esp-climate').value.trim()||null,
+    climate_en: document.getElementById('esp-climate-en').value.trim()||null,
     notes: document.getElementById('esp-notes').value.trim()||null,
     notes_en: document.getElementById('esp-notes-en').value.trim()||null
   };
