@@ -301,7 +301,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itd-info-row{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:400;color:var(--g500);}
 .itd-info-row>i{font-size:1rem;color:var(--g400);flex-shrink:0;line-height:1;}
 .itd-info-row>span{flex:1;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
-.itd-info-badge{display:inline-block;font-size:.82rem;font-weight:500;background:var(--g100);color:var(--g500);border-radius:100px;padding:2px 8px;border:0.5px solid var(--g200);}
+.itd-info-badge{display:inline-block;font-size:.82rem;font-weight:400;background:var(--g100);color:var(--g500);border-radius:100px;padding:2px 8px;border:0.5px solid var(--g200);}
 
 #itd-map-wrap{margin-top:16px;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;}
 #itd-map-wrap img{width:100%;display:block;}
@@ -3691,7 +3691,7 @@ function openItinerario(id){
       }).join('');
       infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-cloud" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Climate':'Clima')+'</span><div style="display:flex;flex-direction:column;gap:4px;">'+_climateHtml+'</div></span></div>';
     }
-    if(_notesText) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:500;color:var(--g500);"></div></span></div>';
+    if(_notesText) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:400;color:var(--g500);"></div></span></div>';
     infoHtml+='</div>';
     infoEl.innerHTML=infoHtml;
     if(_notesText) renderExpandableText(_notesText,'itd-notes-el',120);
