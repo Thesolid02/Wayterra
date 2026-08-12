@@ -1837,6 +1837,10 @@ function showLightboxItem(src){
 function openLightbox(idx,p){
   var gallery=(p.gallery||[]).filter(function(s){return s&&s.length>10;});
   if(idx<0||idx>=gallery.length)return;
+  if(currentPlace&&p===currentPlace){
+    if(window.umami)umami.track('place_gallery_open',{id:currentPlace.id,name:currentPlace.name});
+    trackEvent({event_type:'place_gallery_open',place_id:currentPlace.id});
+  }
   currentLightboxGallery=gallery;
   currentLightboxIdx=idx;
   var lb=document.getElementById('dp-lightbox');
@@ -3049,6 +3053,10 @@ function openDetail(){
 
   document.getElementById('dp-maps-btn').textContent=t('maps');
   document.getElementById('dp-maps-btn').href=p.maps;
+  document.getElementById('dp-maps-btn').onclick=function(){
+    if(window.umami)umami.track('place_maps_open',{id:p.id,name:p.name});
+    trackEvent({event_type:'place_maps_open',place_id:p.id});
+  };
   setupDpSave(p.id);
   // desktop: restringi mappa e chiudi bubble
   if(window.innerWidth>=768){
