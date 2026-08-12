@@ -3677,7 +3677,20 @@ function openItinerario(id){
     if(e.seasons&&e.seasons.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+e.seasons.map(function(s){return'<span class="itd-info-badge">'+(_SEASON_ICON[s]||'')+' '+s+'</span>';}).join('')+'</span></div>';
     if(e.tripTypes&&e.tripTypes.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-map"></i><span>'+e.tripTypes.map(function(t){return'<span class="itd-info-badge">'+t+'</span>';}).join('')+'</span></div>';
     if(e.budget) infoHtml+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.budget+'</span></span></div>';
-    if(_climateText) infoHtml+='<div class="itd-info-row"><i class="ti ti-cloud"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+_climateText+'</span></span></div>';
+    if(_climateText){
+      var _climateLines=_climateText.split('\n').filter(function(l){return l.trim();});
+      var _climateHtml=_climateLines.map(function(l){
+        var t=l.trim();
+        var low=t.toLowerCase();
+        var bullet=low.startsWith('primavera')||low.startsWith('spring')?'🌸'
+          :low.startsWith('estate')||low.startsWith('summer')?'🌞'
+          :low.startsWith('autunno')||low.startsWith('autumn')||low.startsWith('fall')?'🍂'
+          :low.startsWith('inverno')||low.startsWith('winter')?'❄️'
+          :'<span style="color:#dc6b2f;font-size:.7rem;">•</span>';
+        return'<div style="display:flex;align-items:baseline;gap:5px;font-size:.78rem;color:var(--g500);line-height:1.4;">'+bullet+' '+t+'</div>';
+      }).join('');
+      infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-cloud" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Climate':'Clima')+'</span><div style="display:flex;flex-direction:column;gap:4px;">'+_climateHtml+'</div></span></div>';
+    }
     if(_notesText) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:500;color:var(--g500);"></div></span></div>';
     infoHtml+='</div>';
     infoEl.innerHTML=infoHtml;
