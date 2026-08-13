@@ -3676,8 +3676,8 @@ function openItinerario(id){
     if(e.intensity){
       var _INTENSITY_LABEL={'rilassato':lang==='en'?'Easy':'Rilassato','moderato':lang==='en'?'Moderate':'Moderato','intenso':lang==='en'?'Intense':'Intenso'};
       var _INTENSITY_BARS={
-        'rilassato':'<div style="display:flex;align-items:flex-end;gap:3px;height:18px;"><div style="width:6px;height:60%;background:#16a34a;border-radius:2px;"></div><div style="width:6px;height:80%;background:transparent;border:1.5px solid #dc6b2f;border-radius:2px;box-sizing:border-box;"></div><div style="width:6px;height:100%;background:transparent;border:1.5px solid #dc6b2f;border-radius:2px;box-sizing:border-box;"></div></div>',
-        'moderato':'<div style="display:flex;align-items:flex-end;gap:3px;height:18px;"><div style="width:6px;height:60%;background:#f59e0b;border-radius:2px;"></div><div style="width:6px;height:80%;background:#f59e0b;border-radius:2px;"></div><div style="width:6px;height:100%;background:transparent;border:1.5px solid #dc6b2f;border-radius:2px;box-sizing:border-box;"></div></div>',
+        'rilassato':'<div style="display:flex;align-items:flex-end;gap:3px;height:18px;"><div style="width:6px;height:60%;background:#16a34a;border-radius:2px;"></div><div style="width:6px;height:80%;background:var(--g200);border-radius:2px;"></div><div style="width:6px;height:100%;background:var(--g200);border-radius:2px;"></div></div>',
+        'moderato':'<div style="display:flex;align-items:flex-end;gap:3px;height:18px;"><div style="width:6px;height:60%;background:#f59e0b;border-radius:2px;"></div><div style="width:6px;height:80%;background:#f59e0b;border-radius:2px;"></div><div style="width:6px;height:100%;background:var(--g200);border-radius:2px;"></div></div>',
         'intenso':'<div style="display:flex;align-items:flex-end;gap:3px;height:18px;"><div style="width:6px;height:60%;background:#dc6b2f;border-radius:2px;"></div><div style="width:6px;height:80%;background:#dc6b2f;border-radius:2px;"></div><div style="width:6px;height:100%;background:#dc6b2f;border-radius:2px;"></div></div>'
       };
       var _intLabel=_INTENSITY_LABEL[e.intensity]||e.intensity;
