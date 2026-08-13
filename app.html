@@ -3390,6 +3390,7 @@ function sbFetch(path,opts){
   },opts||{}));
 }
 function trackEvent(payload){
+  if(localStorage.getItem('wayterra.dev')==='1') return;
   fetch(SB_URL+'/rest/v1/analytics_events',{
     method:'POST',
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'},
