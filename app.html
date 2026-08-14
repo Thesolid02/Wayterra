@@ -1903,7 +1903,6 @@ function expSubtypeOf(id){return DATA.expSubtypes.find(function(t){return t.id==
 
 function initMap(){
   var isMobile=window.innerWidth<600;
-  var romaPlaces=[];
 
   mapboxgl.accessToken='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
   map_o=new mapboxgl.Map({
@@ -1915,27 +1914,14 @@ function initMap(){
   });
   map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
   map_o.on('style.load',function(){
-    romaPlaces=DATA.places.filter(function(p){
-      return (p.mode||'outside')==='city';
-    });
-
     DATA.places.forEach(function(p){addL1(p);});
     addCityLabels();
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
   map_o.on('click',function(){if(_itineraryViewId!==null)return;closeBubble();closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();});
-  map_o.on('zoom',function(){
-    if(_itineraryViewId!==null)return;
-    if(mapMode==='city')return;
-    var z=map_o.getZoom();
-    if(z<11){
-      romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
-    }
-  });
   map_o.on('zoomend',function(){
     if(_itineraryViewId!==null)return;
-    if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(window.innerWidth<768){
       DATA.places.forEach(function(p){
@@ -1944,11 +1930,7 @@ function initMap(){
         m.getElement().innerHTML=el.innerHTML;
       });
     }
-    if(z<11){
-      romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
-    } else {
-      if(activePId)dimL1(activePId);else restoreL1();
-    }
+    if(activePId)dimL1(activePId);else restoreL1();
   });
   setTimeout(function(){
     if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(pos){
