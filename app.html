@@ -1965,6 +1965,20 @@ function addL1(p){
   });
   l1Mk[p.id]=m;
 }
+function _mkActPinEl(a){
+  var et=expTypeOf(a.experienceTypeId);
+  var est=a.experienceSubtypeId?expSubtypeOf(a.experienceSubtypeId):null;
+  var icon=(est&&est.icon)?est.icon:((et&&et.icon)?et.icon:'ti-map-pin');
+  var color=(est&&est.color)?est.color:((et&&et.color)?et.color:'#374151');
+  var el=document.createElement('div');
+  el.innerHTML='<div class="pin-hover-wrap" style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
+    +'<div class="pin-tooltip">'+(a.name||'')+'</div>'
+    +'<div style="width:22px;height:22px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px solid white;">'
+    +renderIcon(icon,'white')
+    +'</div>'
+    +'</div>';
+  return el;
+}
 function addCityActivityMarker(a){
   if(!a.lat||!a.lng)return;
   var isPremium=a.premium&&!unlocked;
@@ -4485,14 +4499,10 @@ function closeMapPopupTimes(){
 function openPlaceActsPopup(p){
   if(!p)return;
   openMapPopup(p.name,'',function(mp){
-    var _PMETA={'1':{col:'#16a34a',ic:'ti-tools-kitchen-2'},'2':{col:'#dc6b2f',ic:'ti-route'},'3':{col:'#dc6b2f',ic:'ti-camera'},'4':{col:'#2563eb',ic:'ti-bed'},'5':{col:'#dc6b2f',ic:'ti-star'},'9':{col:'#888',ic:'ti-parking'},'11':{col:'#888',ic:'ti-plane-departure'}};
     var actsWithCoords=(p.activities||[]).filter(function(a){return a.lat&&a.lng;});
     var b=new mapboxgl.LngLatBounds();
     actsWithCoords.forEach(function(a){
-      var _pm=_PMETA[String(a.experienceTypeId)]||{col:'#dc6b2f',ic:'ti-map-pin'};
-      var el=document.createElement('div');
-      el.style.cssText='width:28px;height:28px;border-radius:50%;background:'+_pm.col+';display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);cursor:pointer;';
-      el.innerHTML='<i class="ti '+_pm.ic+'" style="font-size:13px;color:white;"></i>';
+      var el=_mkActPinEl(a);
       el.addEventListener('click',function(ev){
         ev.stopPropagation();
         if(window.innerWidth>=768){document.getElementById('act-map-popup').style.zIndex='750';showActBubble(a,[a.lat,a.lng]);}
