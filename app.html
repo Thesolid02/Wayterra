@@ -97,18 +97,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .fp-section-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
   color:var(--g400);padding:0 16px 10px;display:flex;align-items:center;gap:8px;}
 .fp-badge{font-size:.62rem;background:var(--g100);color:var(--g500);padding:1px 7px;border-radius:4px;font-weight:600;letter-spacing:0;}
-.fp-mode-row{display:flex;gap:8px;padding:0 16px 20px;}
-.fp-mode-btn{position:relative;flex:1;height:72px;border-radius:var(--r);border:2px solid transparent;
-  overflow:hidden;background-size:cover;background-position:center;cursor:pointer;
-  font-family:var(--f);font-size:.82rem;font-weight:700;color:#fff;text-align:center;
-  display:flex;align-items:center;justify-content:center;transition:border-color .15s;box-sizing:border-box;transform:translateZ(0);}
-#fp-btn-fuori{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');}
-#fp-btn-roma{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/chris-czermak-7ybKmhDTcz0-unsplash.jpg');}
-.fp-mode-ov{position:absolute;inset:0;background:rgba(0,0,0,.42);transition:opacity .2s;pointer-events:none;}
-.fp-mode-btn span{position:relative;z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.55);}
-.fp-mode-btn.active-outside{border-color:#16a34a;}
-.fp-mode-btn.active-city{border-color:#dc6b2f;}
-.fp-mode-btn.active-outside .fp-mode-ov,.fp-mode-btn.active-city .fp-mode-ov{opacity:0;}
 .fp-cats{display:flex;flex-direction:column;padding:0 8px 8px;}
 .fp-cat-btn{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);
   border:none;background:none;width:100%;text-align:left;font-family:var(--f);
@@ -965,17 +953,6 @@ lottie.loadAnimation({
   <div class="fp-header">
     <span class="fp-header-title" data-t="filters">Filtri</span>
     <button class="fp-close" onclick="closeFilterPopup()">✕</button>
-  </div>
-  <div class="fp-section-lbl" data-t="where_to_go">Dove vuoi andare?</div>
-  <div class="fp-mode-row">
-    <button class="fp-mode-btn active-outside" id="fp-btn-fuori" onclick="setMapMode('outside')">
-      <div class="fp-mode-ov"></div>
-      <span><span data-t="outside">Fuori porta</span></span>
-    </button>
-    <button class="fp-mode-btn" id="fp-btn-roma" onclick="setMapMode('city')">
-      <div class="fp-mode-ov"></div>
-      <span>Roma</span>
-    </button>
   </div>
   <div class="fp-section-lbl" data-t="categories">Categorie</div>
   <div class="fp-cats" id="fp-cats"></div>
@@ -3568,7 +3545,7 @@ function loadEsperienze(){
                myMaps:r.my_maps_url||'',
                transport:r.transport||'',clothing:r.clothing||'',
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
-               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',region:r.region||''};
+               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',region:r.region?r.region.toLowerCase():''};
       });
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
