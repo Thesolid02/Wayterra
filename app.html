@@ -3413,11 +3413,13 @@ function selectRegion(regionId){
   _currentRegionCenter=[12.8,41.8];
   _currentRegionZoom=window.innerWidth<768?7:8;
   if(_mapReady){
+    document.getElementById('map').style.visibility='hidden';
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
     stopSplashRotation();startSplashRotation();
     setTimeout(function(){
       stopSplashRotation();sp.classList.add('hide');
+      document.getElementById('map').style.visibility='';
       if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
       renderItdPill();
     },3000);
@@ -3437,11 +3439,13 @@ function selectTravelRegion(regionId,center,zoom){
   _currentRegionCenter=center;
   _currentRegionZoom=z;
   if(_mapReady){
+    document.getElementById('map').style.visibility='hidden';
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
     stopSplashRotation();startSplashRotation();
     setTimeout(function(){
       stopSplashRotation();sp.classList.add('hide');
+      document.getElementById('map').style.visibility='';
       if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
       renderItdPill();
     },3000);
