@@ -1921,10 +1921,6 @@ function initMap(){
 
     DATA.places.forEach(function(p){addL1(p);});
     addCityLabels();
-
-
-    // initial state: zoom < 11, hide individual Roma markers
-    romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
@@ -2018,7 +2014,7 @@ function addL1(p){
   var el=createPinEl(p,false,false);
   var m=new mapboxgl.Marker({element:el,anchor:'center'})
     .setLngLat([p.lng,p.lat]);
-  if((p.mode||'outside')===mapMode)m.addTo(map_o);
+  m.addTo(map_o);
   m.getElement().style.zIndex='2';
   el.addEventListener('mouseenter',function(){el.style.zIndex='9999';});
   el.addEventListener('mouseleave',function(){el.style.zIndex='';});
@@ -2221,7 +2217,7 @@ function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
     m.getElement().innerHTML=createPinEl(p,false,false).innerHTML;
-    var show=(p.mode||'outside')===mapMode&&catMatchFn(p);
+    var show=catMatchFn(p);
     if(show)m.addTo(map_o);else m.remove();
   });
 }
@@ -2677,7 +2673,7 @@ function refreshL1(){
   clearCityActivityMarkers();
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    var show=(p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
+    var show=catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
     if(show)m.addTo(map_o);else m.remove();
   });
 }
@@ -3490,6 +3486,7 @@ function selectTravelRegion(regionId,center,zoom){
     _currentRegionCenter=center;
     _currentRegionZoom=z;
     if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
+    renderItdPill();
     showOnboarding();
   },3000);
 }
@@ -3608,7 +3605,9 @@ function renderItdPill(){
     if(hint)hint.style.display='none';
     return;
   }
-  var featured=DATA.experiences.filter(function(e){return e.featured&&!e.isTravel;});
+  var featured=_travelContext
+    ?DATA.experiences.filter(function(e){return e.isTravel&&e.region===_currentTravelRegion;})
+    :DATA.experiences.filter(function(e){return e.featured&&!e.isTravel;});
   if(level===2||mapMode==='city'||!featured.length){
     wrap.style.display='none';
     return;
