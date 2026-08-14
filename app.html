@@ -1122,7 +1122,7 @@ lottie.loadAnimation({
 <div id="itinerari-page">
   <div class="itp-header">
     <button class="itp-back" onclick="closeItinerariPage()">←</button>
-    <div class="itp-title">Itinerari</div>
+    <div class="itp-title" id="itp-title">Itinerari</div>
   </div>
   <div class="itp-scroll" id="itp-scroll"></div>
 </div>
@@ -3673,39 +3673,76 @@ function updateExpCarousel(){
   if(p)p.style.opacity=expCardIndex<=0?'.3':'1';
   if(n)n.style.opacity=expCardIndex>=max?'.3':'1';
 }
-function openItinerariPage(){
+function openItinerariPage(region){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
-  renderItinerariPage();
-  document.getElementById('itinerari-page').classList.add('show');
+  region=region||null;
+  renderItinerariPage(region);
+  var regionNames={cotswolds:'Cotswolds',highlands:'Highlands'};
+  var titleEl=document.getElementById('itp-title');
+  if(titleEl)titleEl.textContent=region&&regionNames[region]?regionNames[region]:(lang==='en'?'Itineraries':'Itinerari');
+  var page=document.getElementById('itinerari-page');
+  page.style.zIndex=region?'610':'';
+  page.classList.add('show');
   setBottomNav('itinerari');
 }
 function closeItinerariPage(){
-  document.getElementById('itinerari-page').classList.remove('show');
+  var page=document.getElementById('itinerari-page');
+  page.classList.remove('show');
+  page.style.zIndex='';
   setBottomNav('mappa');
 }
-function renderItinerariPage(){
+function renderItinerariPage(region){
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
-  var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
-  if(!lazioExp.length){
-    scroll.innerHTML='<div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div>';
-    return;
-  }
-  var cards=lazioExp.map(function(e){
-    var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
-    var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
-    var img=e.coverPhoto
-      ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
-      :'<div class="itp-card-img-ph">🗺</div>';
-    var _sc=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
-    var stops=_sc?'<span class="itp-stop-badge">'+_sc+' tappe</span>':'';
-    return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
-      +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
-      +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
-      +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+  if(region){
+    var travels=DATA.experiences.filter(function(e){return e.isTravel&&e.region===region;});
+    var activeHtml=travels.length?travels.map(function(e){
+      var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+      var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+      var img=e.coverPhoto
+        ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
+        :'<div class="itp-card-img-ph">🌍</div>';
+      var stopsCount=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
+      var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
+      return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
+        +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
+        +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
+        +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+        +'</div></div>';
+    }).join(''):'';
+    var soonLabel=lang==='en'?'Coming soon':'In arrivo';
+    var soonBadge=lang==='en'?'Coming soon':'Prossimamente';
+    var fakeHtml='<div class="itp-card itp-card-locked">'
+      +'<div class="itp-card-img-ph itp-locked-ph"><i class="ti ti-lock" style="font-size:1.6rem;color:var(--g300);"></i></div>'
+      +'<div class="itp-card-body"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">'
+      +'<div class="itp-card-title" style="color:var(--g500);">'+(lang==='en'?'New itinerary':'Nuovo itinerario')+'</div>'
+      +'<span class="itp-soon-badge">'+soonBadge+'</span>'
+      +'</div>'
+      +'<div class="itp-card-dur">'+(lang==='en'?'Coming soon...':'In preparazione...')+'</div>'
       +'</div></div>';
-  }).join('');
-  scroll.innerHTML=cards;
+    scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
+  } else {
+    var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
+    if(!lazioExp.length){
+      scroll.innerHTML='<div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div>';
+      return;
+    }
+    var cards=lazioExp.map(function(e){
+      var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+      var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+      var img=e.coverPhoto
+        ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
+        :'<div class="itp-card-img-ph">🗺</div>';
+      var _sc=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
+      var stops=_sc?'<span class="itp-stop-badge">'+_sc+' tappe</span>':'';
+      return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
+        +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
+        +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
+        +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+        +'</div></div>';
+    }).join('');
+    scroll.innerHTML=cards;
+  }
 }
 function openItinerario(id){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
@@ -4470,30 +4507,14 @@ function toggleCountry(id){
   if(!wasOpen)el.classList.add('open');
 }
 function openTravelsPage(region){
-  _currentTravelRegion=region||null;
-  renderTravelsPage();
-  _travelContext=true;
-  var titleEl=document.getElementById('trv-title');
-  if(titleEl){
-    var regionNames={cotswolds:'Cotswolds',highlands:'Highlands'};
-    titleEl.textContent=(_currentTravelRegion&&regionNames[_currentTravelRegion])
-      ?regionNames[_currentTravelRegion]
-      :(lang==='en'?'My travels abroad':'I miei viaggi all\'estero');
-  }
-  document.getElementById('travels-page').classList.add('show');
+  openItinerariPage(region||_currentTravelRegion);
 }
 function closeTravelsPage(){
-  _travelContext=false;
-  _currentTravelRegion=null;
-  document.getElementById('travels-page').classList.remove('show');
+  closeItinerariPage();
 }
 function renderTravelsPage(){
   var scroll=document.getElementById('trv-scroll');
   if(!scroll)return;
-  console.log('[travels] _currentTravelRegion:',_currentTravelRegion);
-  console.log('[travels] _travelContext:',_travelContext);
-  console.log('[travels] DATA.experiences:',DATA.experiences.map(function(e){return{id:e.id,title:e.titleIt,region:e.region,isTravel:e.isTravel};}));
-  console.log('[travels] filtered isTravel:',DATA.experiences.filter(function(e){return e.isTravel;}));
   var travels=DATA.experiences.filter(function(e){
     return e.isTravel&&(_currentTravelRegion?e.region===_currentTravelRegion:true);
   });
@@ -4807,7 +4828,7 @@ window.addEventListener('DOMContentLoaded',function(){
       <button class="itd-pill-close" onclick="closeItdPill()">✕</button>
     </div>
     <div id="itd-pill-list"></div>
-    <div class="itd-pill-footer" onclick="openItinerariPage();closeItdPill();">Vedi tutti gli itinerari →</div>
+    <div class="itd-pill-footer" onclick="openItinerariPage(_travelContext?_currentTravelRegion:null);closeItdPill();">Vedi tutti gli itinerari →</div>
   </div>
 </div>
 
@@ -4832,7 +4853,7 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-map-2"></i>
     <span>Mappa</span>
   </button>
-  <button class="bn-item" data-nav="itinerari" onclick="_travelContext?openTravelsPage(_currentTravelRegion):(_itineraryViewId!==null?closeItineraryMapView():openItinerariPage())">
+  <button class="bn-item" data-nav="itinerari" onclick="_itineraryViewId!==null?closeItineraryMapView():openItinerariPage(_travelContext?_currentTravelRegion:null)">
     <i class="ti ti-route"></i>
     <span>Itinerari</span>
   </button>
