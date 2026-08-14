@@ -152,7 +152,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   #mode-toggle{bottom:160px;}
   #fab{bottom:calc(env(safe-area-inset-bottom,0px) + 22px + 56px);}
   #bottom-card{bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important;}
-  #fav-btn{display:none;}
+  #profile-btn-d{display:none;}
 }
 /* ── BOTTOM NAV (mobile only) ── */
 #bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:310;
@@ -943,7 +943,7 @@ lottie.loadAnimation({
         <div class="filter-dot" id="filter-dot"></div>
       </button>
       <button class="search-btn" id="itinerari-btn-d" onclick="openItinerariPage(_travelContext?_currentTravelRegion:null)" style="display:none;" title="Itinerari"><i class="ti ti-route"></i></button>
-      <button class="fav-btn" id="fav-btn" onclick="openProfilePage()"><i class="ti ti-user"></i></button>
+      <button class="fav-btn" id="profile-btn-d" onclick="openProfilePage()"><i class="ti ti-user" style="font-size:20px;"></i></button>
     </div>
   </div>
 </div>
@@ -3134,9 +3134,9 @@ function updFavBtn(){
   var favsArr=favsRaw?JSON.parse(favsRaw):[];
   var favActsArr=favActsRaw?JSON.parse(favActsRaw):[];
   var hasAny=favsArr.length>0||favActsArr.length>0;
-  var btn=document.getElementById('fav-btn');
+  var btn=document.getElementById('profile-btn-d');
   if(btn){
-    btn.innerHTML=hasAny?'<i class="ti ti-bookmark-filled" style="color:#2563eb;"></i>':'<i class="ti ti-bookmark"></i>';
+    btn.innerHTML=hasAny?'<i class="ti ti-user" style="font-size:20px;color:#dc6b2f;"></i>':'<i class="ti ti-user" style="font-size:20px;"></i>';
   }
 }
 function updateItdBookmarkBtn(){
@@ -5002,7 +5002,8 @@ window.addEventListener('DOMContentLoaded',function(){
 </div>
 <!-- PROFILE PAGE -->
 <div id="profile-page">
-  <div id="profile-header">
+  <div id="profile-header" style="position:relative;">
+    <button onclick="closeProfilePage()" style="position:absolute;top:calc(env(safe-area-inset-top,0px)+12px);right:14px;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="ti ti-x" style="font-size:16px;color:#fff;"></i></button>
     <div id="profile-avatar-wrap" style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;margin-bottom:10px;"></div>
     <div id="profile-name-el" style="font-size:1rem;font-weight:600;color:#fff;margin-bottom:2px;min-height:1.2em;"></div>
     <div id="profile-email-el" style="font-size:.78rem;color:rgba(255,255,255,.75);margin-bottom:0;min-height:1em;"></div>
@@ -5021,6 +5022,7 @@ window.addEventListener('DOMContentLoaded',function(){
 
 <!-- AUTH PAGE -->
 <div id="auth-page" style="display:none;position:fixed;inset:0;z-index:800;background:var(--w);overflow-y:auto;">
+  <button onclick="closeAuthPage()" style="position:absolute;top:16px;right:16px;background:var(--g50);border:0.5px solid var(--g200);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="ti ti-x" style="font-size:16px;color:var(--g500);"></i></button>
   <div style="max-width:400px;margin:0 auto;padding:40px 24px;">
     <div style="text-align:center;margin-bottom:32px;">
       <div style="width:56px;height:56px;border-radius:16px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
@@ -5231,10 +5233,10 @@ function renderProfileSettings(){
   var isLoggedIn=!!_currentUser;
   var langLabel=lang==='it'?'Italiano':'English';
   var html='<div style="padding-top:8px;">'
-    +'<div class="profile-setting-row" onclick="setLang(lang===\'it\'?\'en\':\'it\');renderProfileSettings();">'
+    +'<div class="profile-setting-row" onclick="setLang(lang===\'it\'?\'en\':\'it\');renderProfilePage();">'
     +'<div class="profile-setting-icon" style="background:#f0f9ff;"><i class="ti ti-language" style="color:#0284c7;font-size:16px;"></i></div>'
     +'<div class="profile-setting-label">'+t('settings_language')+'</div>'
-    +'<div class="profile-setting-value">'+langLabel+' <i class="ti ti-chevron-right" style="font-size:12px;"></i></div>'
+    +'<div class="profile-setting-value" id="settings-lang-value">'+langLabel+' <i class="ti ti-chevron-right" style="font-size:12px;"></i></div>'
     +'</div>';
   if(isLoggedIn){
     html+='<div class="profile-setting-row" onclick="signOut()">'
