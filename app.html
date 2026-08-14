@@ -693,8 +693,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .rp-header{padding:calc(env(safe-area-inset-top,0px)+32px) 16px 20px;text-align:center;}
 .rp-title{font-size:1.4rem;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:6px;}
 .rp-sub{font-size:.86rem;color:var(--g500);line-height:1.5;}
-.rp-list{display:flex;flex-direction:column;gap:12px;padding:0 20px calc(env(safe-area-inset-bottom,0px)+36px);}
-.rp-country{border-radius:var(--rl);overflow:hidden;border:1.5px solid transparent;transition:border-color .2s,box-shadow .2s;}
+.rp-list{display:flex;flex-direction:column;gap:12px;padding:0 0 calc(env(safe-area-inset-bottom,0px)+36px);}
+.rp-country{border-radius:var(--rl);overflow:hidden;border:1.5px solid transparent;transition:border-color .2s,box-shadow .2s;margin:0 20px;}
 .rp-country.open{border-color:#dc6b2f;box-shadow:0 0 0 0.5px rgba(220,107,47,.12);}
 .rp-country-disabled{opacity:0.5;pointer-events:none;}
 .rp-country-hd{position:relative;height:130px;cursor:pointer;overflow:hidden;}
@@ -741,6 +741,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   .rp-content{max-width:560px;margin:0 auto;padding:0 24px;box-sizing:border-box;}
   .rp-header{padding-left:0;padding-right:0;}
   .rp-list{padding-left:0;padding-right:0;gap:14px;}
+  .rp-country{margin:0;}
   .rp-country-hd{height:160px;}
 }</style>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="8ac51bd2-99a5-4dbd-bf8e-9dd98d87d138"></script>
