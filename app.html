@@ -940,7 +940,7 @@ lottie.loadAnimation({
         <i class="ti ti-adjustments-horizontal"></i>
         <div class="filter-dot" id="filter-dot"></div>
       </button>
-      <button class="search-btn" id="itinerari-btn-d" onclick="openItinerariPage()" style="display:none;" title="Itinerari"><i class="ti ti-route"></i></button>
+      <button class="search-btn" id="itinerari-btn-d" onclick="openItinerariPage(_travelContext?_currentTravelRegion:null)" style="display:none;" title="Itinerari"><i class="ti ti-route"></i></button>
       <button class="fav-btn" id="fav-btn" onclick="openFavPage()"><i class="ti ti-bookmark"></i></button>
     </div>
   </div>
@@ -3449,6 +3449,8 @@ function hideRegionPage(cb){
   setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
 }
 function selectRegion(regionId){
+  _travelContext=false;
+  _currentTravelRegion=null;
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
@@ -3464,6 +3466,7 @@ function selectRegion(regionId){
     _currentRegionCenter=[12.8,41.8];
     _currentRegionZoom=window.innerWidth<768?7:8;
     if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
+    renderItdPill();
     showOnboarding();
   },3000);
 }
@@ -3505,7 +3508,8 @@ function updateRegionPageLang(){
   var lazioSub=document.getElementById('rp-lazio-sub');
   if(lazioSub){
     var n=(DATA&&DATA.places)?DATA.places.filter(function(p){return !p.region||p.region==='lazio'||p.region.indexOf('lazio')>=0;}).length:0;
-    lazioSub.textContent=n+(lang==='en'?' places to discover':' luoghi da scoprire');
+    var ni=(DATA&&DATA.experiences)?DATA.experiences.filter(function(e){return !e.isTravel;}).length:0;
+    lazioSub.textContent=n+(lang==='en'?' places':' luoghi')+(ni?' · '+ni+(lang==='en'?' itineraries':' itinerari'):'');
   }
   var cotswoldsSub=document.getElementById('rp-cotswolds-sub');
   if(cotswoldsSub){
