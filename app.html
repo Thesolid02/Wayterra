@@ -882,12 +882,13 @@ lottie.loadAnimation({
         <i class="ti ti-chevron-down rp-country-chevron"></i>
       </div>
       <div class="rp-regions">
-        <div class="rp-region-row" onclick="openTravelsPage('cotswolds')">
+        <div class="rp-region-row" onclick="selectTravelRegion('cotswolds',[-1.8,51.7],9)">
           <img class="rp-region-thumb" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg" alt="">
           <div class="rp-region-info">
             <div class="rp-region-name">Cotswolds</div>
+            <div class="rp-region-meta" id="rp-cotswolds-sub"></div>
           </div>
-          <i class="ti ti-chevron-right" style="font-size:.85rem;color:#dc6b2f;flex-shrink:0;"></i>
+          <span class="rp-region-cta" id="rp-cotswolds-btn">Esplora →</span>
         </div>
         <div class="rp-region-row rp-region-row-locked">
           <img class="rp-region-thumb" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/highlands.jpg" alt="">
@@ -3491,6 +3492,26 @@ function selectRegion(regionId){
     showOnboarding();
   },3000);
 }
+function selectTravelRegion(regionId,center,zoom){
+  _travelContext=true;
+  _currentTravelRegion=regionId;
+  if(_itineraryViewId!==null)closeItineraryMapView();
+  localStorage.setItem('WT_REGION',regionId);
+  updateRegionPill(regionId);
+  var sp=document.getElementById('splash');
+  sp.classList.remove('hide');
+  sp.style.display='';
+  stopSplashRotation();
+  startSplashRotation();
+  hideRegionPage(null);
+  setTimeout(function(){
+    stopSplashRotation();
+    sp.classList.add('hide');
+    var z=window.innerWidth<768?zoom-1:zoom;
+    if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
+    showOnboarding();
+  },3000);
+}
 function updateRegionPill(regionId){
   var names={lazio:'Lazio',toscana:'Toscana',campania:'Campania',umbria:'Umbria',abruzzo:'Abruzzo'};
   var label=names[regionId]||(regionId.charAt(0).toUpperCase()+regionId.slice(1));
@@ -3505,8 +3526,14 @@ function showRegionToast(){
 function updateRegionPageLang(){
   var lazioSub=document.getElementById('rp-lazio-sub');
   if(lazioSub){
-    var n=(DATA&&DATA.places)?DATA.places.length:0;
+    var n=(DATA&&DATA.places)?DATA.places.filter(function(p){return !p.region||p.region==='lazio'||p.region.indexOf('lazio')>=0;}).length:0;
     lazioSub.textContent=n+(lang==='en'?' places to discover':' luoghi da scoprire');
+  }
+  var cotswoldsSub=document.getElementById('rp-cotswolds-sub');
+  if(cotswoldsSub){
+    var np=(DATA&&DATA.places)?DATA.places.filter(function(p){return p.region==='cotswolds';}).length:0;
+    var ni=(DATA&&DATA.experiences)?DATA.experiences.filter(function(e){return e.region==='cotswolds';}).length:0;
+    cotswoldsSub.textContent=np+(lang==='en'?' places':' luoghi')+(ni?' · '+ni+(lang==='en'?' itineraries':' itinerari'):'');
   }
 }
 
@@ -4715,7 +4742,7 @@ window.addEventListener('DOMContentLoaded',function(){
       return{
         id:row.id,cat:row.cat,placeTypeId:row.place_types_id||null,
         mode:row.mode||'outside',city:row.city||'',
-        name:row.name,region:row.region||'',
+        name:row.name,region:row.region?row.region.toLowerCase():'',
         lat:row.lat,lng:row.lng,
         tagline:row.tagline||'',taglineEn:row.tagline_en||'',
         desc:row.description||'',descEn:row.description_en||'',
@@ -4730,7 +4757,7 @@ window.addEventListener('DOMContentLoaded',function(){
 
     var cityActivities_=(actRows||[]).filter(function(a){return a.place_id===null||a.place_id===undefined;}).map(function(a){
       return{id:a.id,type:a.type,name:a.name,lat:a.lat||null,lng:a.lng||null,
-             region:a.region||'',premium:a.premium||false,
+             region:a.region?a.region.toLowerCase():'',premium:a.premium||false,
              desc:a.description||'',descEn:a.description_en||'',
              secret:a.secret||'',secretEn:a.secret_en||'',specs:a.specs||[],
              coverPhoto:a.cover_photo||'',maps:a.maps_url||'',
