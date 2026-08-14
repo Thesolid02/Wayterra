@@ -1123,6 +1123,7 @@ lottie.loadAnimation({
     <button class="itp-back" onclick="closeItinerarioDetail()">←</button>
     <div class="itp-title" id="itd-title"></div>
     <button id="itd-bookmark-btn" onclick="openFavPage('itinerario-detail')" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;"><i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i></button>
+    <button onclick="openItinerarioPDF()" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;" title="Scarica PDF"><i class="ti ti-download" style="font-size:20px;color:var(--g500);"></i></button>
   </div>
   <div class="itd-scroll">
     <div id="itd-cover-wrap"></div>
@@ -3666,6 +3667,7 @@ function openItinerario(id){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
+  _currentItdExp=e;
   if(window.umami)umami.track('itinerary_view',{id:e.id,title:e.titleIt});
   trackEvent({event_type:'itinerary_view',experience_id:e.id});
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
@@ -3966,9 +3968,158 @@ function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').style.zIndex='510';
   document.getElementById('itinerario-detail').classList.remove('show');
 }
+function openItinerarioPDF(){
+  var e=_currentItdExp;
+  if(!e)return;
+  var isEN=lang==='en';
+  var title=isEN&&e.titleEn?e.titleEn:e.titleIt;
+  var dur=isEN&&e.durationEn?e.durationEn:e.durationIt;
+  var stops=e.stops||[];
+  var nonAirport=stops.filter(function(s){return !s.is_airport;}).length;
+  var dest=e.region||'';
+  if(!dest){for(var _di=0;_di<stops.length;_di++){if(stops[_di].type==='place'){var _dp=DATA.places.find(function(x){return x.id==stops[_di].id;});if(_dp&&_dp.city){dest=_dp.city;break;}}}}
+  var _TR_EN={'Auto':'Car','Treno':'Train','Aereo':'Plane','Bus':'Bus','Misto':'Mixed','A piedi':'On foot'};
+  var _INT_LBL={'rilassato':isEN?'Easy':'Rilassato','moderato':isEN?'Moderate':'Moderato','intenso':isEN?'Intense':'Intenso'};
+  var _S_ICO={'Primavera':'🌸','Estate':'☀️','Autunno':'🍂','Inverno':'❄️'};
+  var transport=e.transport?(isEN?(_TR_EN[e.transport]||e.transport):e.transport):'';
+  var clothing=isEN?(e.clothingEn||e.clothing):e.clothing;
+  var budget=isEN?(e.budgetEn||e.budget):e.budget;
+  var intensity=e.intensity?(_INT_LBL[e.intensity]||e.intensity):'';
+  var seasons=(e.seasons||[]).map(function(s){return (_S_ICO[s]||'')+' '+s;}).join(', ');
+  var tripTypes=(e.tripTypes||[]).join(', ');
+  var infoRows=[];
+  if(transport)infoRows.push({label:isEN?'Transport':'Mezzo',val:transport});
+  if(clothing)infoRows.push({label:isEN?'Clothing':'Abbigliamento',val:clothing});
+  if(seasons)infoRows.push({label:isEN?'Season':'Periodo',val:seasons});
+  if(tripTypes)infoRows.push({label:isEN?'Trip type':'Tipologia',val:tripTypes});
+  if(budget)infoRows.push({label:isEN?'Budget':'Budget',val:budget});
+  if(intensity)infoRows.push({label:isEN?'Intensity':'Intensità',val:intensity});
+  var _ACT_EMO={'ti-tools-kitchen-2':'🍽️','ti-bed':'🛏️','ti-camera':'📸','ti-route':'👁️','ti-walk':'🥾','ti-mountain':'🥾','ti-trekking':'🥾','ti-parking':'🅿️','ti-plane-departure':'✈️','ti-plane':'✈️'};
+  function _getEmoji(a){var et=expTypeOf(a.experienceTypeId)||{};return _ACT_EMO[et.icon]||'📍';}
+  function _getCat(a){var et=expTypeOf(a.experienceTypeId)||{};return isEN&&et.nameEn?et.nameEn:(et.name||'');}
+  function _resolveStop(s){
+    var name='',place=null,isAirport=!!s.is_airport;
+    if(s.type==='place'){
+      var _pf=DATA.places.find(function(x){return x.id==s.id;});
+      if(_pf){place=_pf;name=isEN&&_pf.nameEn?_pf.nameEn:_pf.name;}
+      else{outer:for(var _i=0;_i<DATA.places.length;_i++){var _fa=DATA.places[_i].activities||[];for(var _ai=0;_ai<_fa.length;_ai++){if(_fa[_ai].id==s.id){name=_fa[_ai].name||'';break outer;}}}}
+    }else if(s.type==='activity'){
+      outer2:for(var _pi=0;_pi<DATA.places.length;_pi++){var _aa=DATA.places[_pi].activities||[];for(var _aii=0;_aii<_aa.length;_aii++){if(_aa[_aii].id==s.id){name=_aa[_aii].name||'';break outer2;}}}
+      if(!name){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca)name=_ca.name||'';}
+    }
+    return {name:name,place:place,isAirport:isAirport};
+  }
+  function _renderStop(s,dc,globalIdx,totalStops){
+    var r=_resolveStop(s);
+    var isOpt=e.isTravel&&!!s.optional;
+    var dn=r.isAirport?'✈':(dc);
+    var numBg=r.isAirport?'#2563eb':'#dc6b2f';
+    var name=r.name||('Tappa '+dc);
+    var sDur=isEN?(s.duration_en||s.duration):s.duration;
+    var sTt=isEN?(s.travel_time_en||s.travel_time):s.travel_time;
+    var p=r.place;
+    var desc=p?((isEN&&p.descEn?p.descEn:p.desc)||''):'';
+    var h='<div class="pdf-stop">'
+      +'<div class="pdf-stop-num" style="background:'+numBg+';">'+dn+'</div>'
+      +'<div class="pdf-stop-body">'
+      +'<div class="pdf-stop-name">'+name+(isOpt?'<span class="pdf-stop-opt">'+(isEN?'optional':'opzionale')+'</span>':'')+'</div>'
+      +(sDur?'<div class="pdf-stop-dur">⏱ '+sDur+'</div>':'')
+      +(desc?'<div class="pdf-stop-desc">'+desc+'</div>':'');
+    if(p&&p.activities&&p.activities.length){
+      h+='<div class="pdf-stop-acts">';
+      p.activities.forEach(function(a){
+        var mapsUrl=a.maps||('https://maps.google.com/?q='+encodeURIComponent(a.name));
+        h+='<div class="pdf-stop-act">'+_getEmoji(a)+' <a href="'+mapsUrl+'" target="_blank">'+a.name+'</a> <span class="pdf-stop-act-cat">'+_getCat(a)+'</span></div>';
+      });
+      h+='</div>';
+    }
+    h+='</div></div>';
+    if(sTt&&globalIdx<totalStops-1)h+='<div class="pdf-travel-time">↓ '+sTt+'</div>';
+    return h;
+  }
+  var hasDays=stops.some(function(s){return !!s.day;});
+  var stopsHtml='';
+  var _dcG=0,totalStops=stops.length;
+  if(!hasDays){
+    var body='';
+    stops.forEach(function(s,i){var dn=s.is_airport?0:++_dcG;body+=_renderStop(s,dn,i,totalStops);});
+    stopsHtml='<div class="pdf-day"><div class="pdf-day-body" style="border-radius:6px;border:1px solid #e5e5e5;padding:12px;">'+body+'</div></div>';
+  }else{
+    var dayGroups=[],dayMap={};
+    stops.forEach(function(s){var d=s.day||0;if(!dayMap[d]){dayMap[d]=[];dayGroups.push(d);}dayMap[d].push(s);});
+    var globalIdx=0;
+    dayGroups.forEach(function(d){
+      var dayStops=dayMap[d],body='',dayNA=0;
+      dayStops.forEach(function(s){
+        var dn=s.is_airport?0:++_dcG;
+        if(!s.is_airport)dayNA++;
+        body+=_renderStop(s,dn,globalIdx,totalStops);
+        globalIdx++;
+      });
+      if(d>0){
+        var lbl=dayNA===1?(isEN?'1 stop':'1 tappa'):(dayNA+(isEN?' stops':' tappe'));
+        stopsHtml+='<div class="pdf-day"><div class="pdf-day-header">'+(isEN?'Day':'Giorno')+' '+d+' <span style="font-weight:400;opacity:.8;">('+lbl+')</span></div><div class="pdf-day-body">'+body+'</div></div>';
+      }else{
+        stopsHtml+='<div class="pdf-day"><div class="pdf-day-body" style="border-radius:6px;border:1px solid #e5e5e5;padding:12px;">'+body+'</div></div>';
+      }
+    });
+  }
+  var infoHtml='';
+  if(infoRows.length){
+    infoHtml='<div class="pdf-info-box">';
+    infoRows.forEach(function(row){infoHtml+='<div class="pdf-info-row"><span class="pdf-info-label">'+row.label+'</span><span class="pdf-info-val">'+row.val+'</span></div>';});
+    infoHtml+='</div>';
+  }
+  var meta=[];
+  if(dur)meta.push(dur);
+  if(nonAirport)meta.push(nonAirport+(isEN?' stops':' tappe'));
+  if(dest)meta.push(dest);
+  var css='*{box-sizing:border-box;margin:0;padding:0;}'
+    +'body{font-family:Arial,sans-serif;font-size:13px;color:#1a1a1a;background:#fff;}'
+    +'.pdf-header{background:#dc6b2f;color:#fff;padding:20px 24px;}'
+    +'.pdf-header-title{font-size:22px;font-weight:700;margin-bottom:8px;}'
+    +'.pdf-header-meta{font-size:13px;opacity:.9;}'
+    +'.pdf-info-box{background:#f5f5f5;border-radius:8px;padding:14px 16px;margin:16px 24px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;}'
+    +'.pdf-info-row{display:flex;align-items:flex-start;gap:6px;font-size:12px;}'
+    +'.pdf-info-label{color:#777;font-weight:600;min-width:90px;flex-shrink:0;}'
+    +'.pdf-info-val{color:#1a1a1a;}'
+    +'.pdf-day{margin:16px 24px 0;}'
+    +'.pdf-day:last-of-type{margin-bottom:16px;}'
+    +'.pdf-day-header{background:#dc6b2f;color:#fff;padding:7px 14px;border-radius:6px 6px 0 0;font-weight:700;font-size:13px;}'
+    +'.pdf-day-body{border:1px solid #e5e5e5;border-top:none;border-radius:0 0 6px 6px;padding:12px;}'
+    +'.pdf-stop{display:flex;gap:10px;margin-bottom:12px;}'
+    +'.pdf-stop:last-child{margin-bottom:0;}'
+    +'.pdf-stop-num{width:26px;height:26px;border-radius:50%;color:#fff;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}'
+    +'.pdf-stop-body{flex:1;min-width:0;}'
+    +'.pdf-stop-name{font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:3px;}'
+    +'.pdf-stop-opt{background:#f3f4f6;color:#777;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:600;}'
+    +'.pdf-stop-dur{font-size:11px;color:#888;margin-bottom:4px;}'
+    +'.pdf-stop-desc{font-size:12px;color:#555;line-height:1.5;margin-bottom:6px;}'
+    +'.pdf-stop-acts{margin-top:4px;}'
+    +'.pdf-stop-act{font-size:11px;color:#555;margin-bottom:3px;display:flex;gap:5px;align-items:baseline;flex-wrap:wrap;}'
+    +'.pdf-stop-act a{color:#dc6b2f;text-decoration:none;font-weight:500;}'
+    +'.pdf-stop-act-cat{color:#aaa;font-size:10px;}'
+    +'.pdf-travel-time{font-size:11px;color:#888;margin:4px 0 10px 36px;}'
+    +'.pdf-footer{margin:20px 24px 16px;font-size:11px;color:#aaa;text-align:center;border-top:1px solid #e5e5e5;padding-top:10px;}'
+    +'@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+    +'@page{size:A4;margin:1.5cm;}'
+    +'.pdf-header,.pdf-day-header,.pdf-stop-num{-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+    +'a{color:#dc6b2f!important;}}';
+  var html='<!DOCTYPE html><html lang="'+(isEN?'en':'it')+'"><head><meta charset="UTF-8"><title>'+title+'</title><style>'+css+'</style></head><body>'
+    +'<div class="pdf-header"><div class="pdf-header-title">'+title+'</div>'+(meta.length?'<div class="pdf-header-meta">'+meta.join(' · ')+'</div>':'')+'</div>'
+    +infoHtml+stopsHtml
+    +'<div class="pdf-footer">wayterra.it · '+(isEN?'Links open Google Maps':'I link aprono Google Maps')+'</div>'
+    +'</body></html>';
+  var win=window.open('','_blank');
+  if(!win)return;
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){win.print();},500);
+}
 function openItinerarioDetail(id){openItinerario(id);}
 
 var _travelContext=false;
+var _currentItdExp=null;
 var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[],_itineraryViewFromDetail=false;
 
 function openItineraryMapView(id,fromDetail){
