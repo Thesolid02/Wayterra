@@ -633,32 +633,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .bc-act-ico i{font-size:10px;color:white;}
 .bc-gems{font-size:.75rem;color:var(--g500);}
 
-/* ── ONBOARDING POPUP ── */
-#ob-overlay{display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.45);}
-#ob-overlay.show{display:block;}
-#ob-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);z-index:651;
-  background:var(--w);border-radius:var(--rxl);padding:28px 20px 24px;
-  width:320px;max-width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.22);
-  opacity:0;pointer-events:none;
-  transition:transform .25s cubic-bezier(.33,1,.68,1),opacity .25s;}
-#ob-popup.show{transform:translate(-50%,-50%);opacity:1;pointer-events:auto;}
-.ob-handle{display:none;}
-.ob-emoji{font-size:2rem;text-align:center;margin-bottom:10px;}
-.ob-title{font-size:1.05rem;font-weight:700;color:var(--g900);text-align:center;margin-bottom:8px;font-family:var(--f);}
-.ob-sub{font-size:.8rem;color:var(--g500);text-align:center;line-height:1.55;margin-bottom:24px;font-family:var(--f);}
-.ob-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:4px;}
-.ob-btn{position:relative;height:80px;border-radius:var(--r);border:none;overflow:hidden;
-  background-size:cover;background-position:center;cursor:pointer;font-family:var(--f);
-  width:100%;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.ob-btn-green{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');background-position:center 30%;}
-.ob-btn-orange{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/chris-czermak-7ybKmhDTcz0-unsplash.jpg');}
-.ob-btn-ov{position:absolute;inset:0;background:rgba(0,0,0,.38);transition:opacity .2s;pointer-events:none;}
-.ob-btn:active .ob-btn-ov{opacity:0;}
-.ob-btn-lbl{position:relative;z-index:1;color:#fff;font-size:.9rem;font-weight:700;
-  text-shadow:0 1px 4px rgba(0,0,0,.55);font-family:var(--f);}
-@media(min-width:768px){
-  #ob-popup{width:380px;}
-}
 
 /* ── SEARCH ── */
 .search-btn{background:var(--w);border-radius:100px;box-shadow:var(--sh-sm);
@@ -991,22 +965,6 @@ lottie.loadAnimation({
 </div>
 
 <!-- ONBOARDING POPUP -->
-<div id="ob-overlay" onclick="closeOnboarding()"></div>
-<div id="ob-popup">
-  <div class="ob-emoji">🗺️</div>
-  <div class="ob-title" data-t="ob_title">Cosa vuoi fare oggi?</div>
-  <div class="ob-sub" data-t="ob_sub">Non è una scelta definitiva. Se decidi di cambiare posto basta selezionarlo dal filtro nella mappa</div>
-  <div class="ob-btns">
-    <button class="ob-btn ob-btn-green" onclick="chooseMode('outside')">
-      <div class="ob-btn-ov"></div>
-      <span class="ob-btn-lbl" data-t="ob_outside">Gitarella fuori porta</span>
-    </button>
-    <button class="ob-btn ob-btn-orange" onclick="chooseMode('city')">
-      <div class="ob-btn-ov"></div>
-      <span class="ob-btn-lbl" data-t="ob_city">Resto in città — Roma</span>
-    </button>
-  </div>
-</div>
 
 <!-- SEARCH PANEL -->
 <div id="search-bg" onclick="closeSearch()"></div>
@@ -1604,20 +1562,6 @@ function _expExpand(el){
 
 /* ═══ LANGUAGE ═══ */
 /* ═══ ONBOARDING ═══ */
-function showOnboarding(){
-  if(localStorage.getItem('WT_MODE_CHOSEN'))return;
-  document.getElementById('ob-overlay').classList.add('show');
-  document.getElementById('ob-popup').classList.add('show');
-}
-function closeOnboarding(){
-  document.getElementById('ob-overlay').classList.remove('show');
-  document.getElementById('ob-popup').classList.remove('show');
-}
-function chooseMode(mode){
-  localStorage.setItem('WT_MODE_CHOSEN','1');
-  closeOnboarding();
-  setMapMode(mode);
-}
 
 /* ═══ SEARCH ═══ */
 function openSearch(){
@@ -3462,7 +3406,6 @@ function selectRegion(regionId){
     _currentRegionZoom=window.innerWidth<768?7:8;
     if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
     renderItdPill();
-    showOnboarding();
   },3000);
 }
 function selectTravelRegion(regionId,center,zoom){
@@ -3485,7 +3428,6 @@ function selectTravelRegion(regionId,center,zoom){
     _currentRegionZoom=z;
     if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
     renderItdPill();
-    showOnboarding();
   },3000);
 }
 var _regionDropdownOpen=false;
