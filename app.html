@@ -1874,6 +1874,7 @@ function initMap(){
   map_o.on('style.load',function(){
     DATA.places.forEach(function(p){addL1(p);});
     addCityLabels();
+    _mapReady=true;
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
@@ -3408,20 +3409,22 @@ function selectRegion(regionId){
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
-  var sp=document.getElementById('splash');
-  sp.classList.remove('hide');
-  sp.style.display='';
-  stopSplashRotation();
-  startSplashRotation();
   hideRegionPage(null);
-  setTimeout(function(){
-    stopSplashRotation();
-    sp.classList.add('hide');
-    _currentRegionCenter=[12.8,41.8];
-    _currentRegionZoom=window.innerWidth<768?7:8;
+  _currentRegionCenter=[12.8,41.8];
+  _currentRegionZoom=window.innerWidth<768?7:8;
+  if(!_mapReady){
+    var sp=document.getElementById('splash');
+    sp.classList.remove('hide');sp.style.display='';
+    stopSplashRotation();startSplashRotation();
+    setTimeout(function(){
+      stopSplashRotation();sp.classList.add('hide');
+      if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
+      renderItdPill();
+    },3000);
+  }else{
     if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
     renderItdPill();
-  },3000);
+  }
 }
 function selectTravelRegion(regionId,center,zoom){
   _travelContext=true;
@@ -3429,21 +3432,23 @@ function selectTravelRegion(regionId,center,zoom){
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
-  var sp=document.getElementById('splash');
-  sp.classList.remove('hide');
-  sp.style.display='';
-  stopSplashRotation();
-  startSplashRotation();
   hideRegionPage(null);
-  setTimeout(function(){
-    stopSplashRotation();
-    sp.classList.add('hide');
-    var z=window.innerWidth<768?zoom-1:zoom;
-    _currentRegionCenter=center;
-    _currentRegionZoom=z;
+  var z=window.innerWidth<768?zoom-1:zoom;
+  _currentRegionCenter=center;
+  _currentRegionZoom=z;
+  if(!_mapReady){
+    var sp=document.getElementById('splash');
+    sp.classList.remove('hide');sp.style.display='';
+    stopSplashRotation();startSplashRotation();
+    setTimeout(function(){
+      stopSplashRotation();sp.classList.add('hide');
+      if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
+      renderItdPill();
+    },3000);
+  }else{
     if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
     renderItdPill();
-  },3000);
+  }
 }
 var _regionDropdownOpen=false;
 function openRegionDropdown(){
@@ -4224,6 +4229,7 @@ var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[],_it
 var _currentTravelRegion=null;
 var _currentRegionCenter=[12.8,41.8];
 var _currentRegionZoom=8;
+var _mapReady=false;
 
 function openItineraryMapView(id,fromDetail){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
