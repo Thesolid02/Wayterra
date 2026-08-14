@@ -1722,8 +1722,10 @@ function searchGoPlaceAct(placeId,actId){
 function setLang(l){
   lang=l;
   localStorage.setItem(K.LANG,l);
-  document.getElementById('btn-it').className='lang-btn '+(l==='it'?'on':'off');
-  document.getElementById('btn-en').className='lang-btn '+(l==='en'?'on':'off');
+  var btnIt=document.getElementById('btn-it');
+  var btnEn=document.getElementById('btn-en');
+  if(btnIt)btnIt.className='lang-btn '+(l==='it'?'on':'off');
+  if(btnEn)btnEn.className='lang-btn '+(l==='en'?'on':'off');
   applyTranslations();
   buildDD();
 }
