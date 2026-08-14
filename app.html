@@ -4490,6 +4490,10 @@ function closeTravelsPage(){
 function renderTravelsPage(){
   var scroll=document.getElementById('trv-scroll');
   if(!scroll)return;
+  console.log('[travels] _currentTravelRegion:',_currentTravelRegion);
+  console.log('[travels] _travelContext:',_travelContext);
+  console.log('[travels] DATA.experiences:',DATA.experiences.map(function(e){return{id:e.id,title:e.titleIt,region:e.region,isTravel:e.isTravel};}));
+  console.log('[travels] filtered isTravel:',DATA.experiences.filter(function(e){return e.isTravel;}));
   var travels=DATA.experiences.filter(function(e){
     return e.isTravel&&(_currentTravelRegion?e.region===_currentTravelRegion:true);
   });
