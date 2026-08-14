@@ -545,6 +545,25 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 /* ── FAVORITES PAGE ── */
 #fav-page{position:fixed;inset:0;z-index:500;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #fav-page.show{display:flex;}
+/* ── PROFILE PAGE ── */
+#profile-page{position:fixed;inset:0;z-index:500;background:var(--w);flex-direction:column;overflow:hidden;}
+#profile-page.show{display:flex;}
+#profile-header{background:#dc6b2f;padding-top:calc(env(safe-area-inset-top,0px)+44px);display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.profile-tab{flex:1;text-align:center;padding:10px 0;font-size:.82rem;color:rgba(255,255,255,.7);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;}
+.profile-tab.active{color:#fff;border-bottom-color:#fff;font-weight:500;}
+.profile-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px 16px;}
+.profile-stat-card{background:var(--g50);border-radius:12px;padding:16px;text-align:center;}
+.profile-stat-num{font-size:1.8rem;font-weight:700;color:#dc6b2f;}
+.profile-stat-lbl{font-size:.72rem;color:var(--g500);margin-top:2px;}
+.profile-setting-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid var(--g100);cursor:pointer;}
+.profile-setting-row:active{background:var(--g50);}
+.profile-setting-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.profile-setting-label{flex:1;font-size:.88rem;font-weight:500;}
+.profile-setting-value{font-size:.8rem;color:var(--g400);}
+.profile-saved-filter{display:flex;gap:6px;padding:12px 16px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.profile-saved-filter::-webkit-scrollbar{display:none;}
+.psf-btn{padding:5px 12px;border-radius:100px;border:0.5px solid var(--g200);background:var(--w);font-size:.78rem;font-family:var(--f);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.psf-btn.active{background:#dc6b2f;border-color:#dc6b2f;color:#fff;}
 .fav-header{display:flex;align-items:center;gap:10px;padding:12px 16px;
   padding-top:calc(env(safe-area-inset-top,0px) + 12px);border-bottom:1px solid var(--g100);flex-shrink:0;}
 .fav-back{width:34px;height:34px;border-radius:50%;background:var(--g50);border:0.5px solid var(--g200);
@@ -918,17 +937,13 @@ lottie.loadAnimation({
       </div>
     </div>
     <div class="tb-right">
-      <div class="lang-sw">
-        <button class="lang-btn on" id="btn-it" onclick="setLang('it')">IT</button>
-        <button class="lang-btn off" id="btn-en" onclick="setLang('en')">EN</button>
-      </div>
       <button class="search-btn" id="search-btn" onclick="openSearch()"><i class="ti ti-search"></i></button>
       <button class="filter-btn" id="filter-btn" onclick="openFilterPopup()">
         <i class="ti ti-adjustments-horizontal"></i>
         <div class="filter-dot" id="filter-dot"></div>
       </button>
       <button class="search-btn" id="itinerari-btn-d" onclick="openItinerariPage(_travelContext?_currentTravelRegion:null)" style="display:none;" title="Itinerari"><i class="ti ti-route"></i></button>
-      <button class="fav-btn" id="fav-btn" onclick="openFavPage()"><i class="ti ti-bookmark"></i></button>
+      <button class="fav-btn" id="fav-btn" onclick="openProfilePage()"><i class="ti ti-user"></i></button>
     </div>
   </div>
 </div>
@@ -1275,7 +1290,21 @@ var T={
     itd_legend_opt:'Opzionale',
     itd_legend_air:'Aeroporto',
     itd_travel_times:'Tempi di spostamento',
-    rdd_change_country:'Cambia paese'
+    rdd_change_country:'Cambia paese',
+    nav_itinerari:'Itinerari',
+    nav_profile:'Profilo',
+    profile_tab_saved:'Salvati',
+    profile_tab_stats:'Statistiche',
+    profile_tab_settings:'Impostazioni',
+    stat_saved_label:'Luoghi salvati',
+    stat_itineraries_label:'Itinerari fatti',
+    stat_countries_label:'Paesi visitati',
+    stat_places_label:'Luoghi visitati',
+    settings_language:'Lingua',
+    settings_logout:'Esci',
+    settings_login:'Accedi / Registrati',
+    no_saved:'Nessun luogo salvato',
+    stats_hint:'Le statistiche si aggiornano con le tue azioni'
   },
   en:{
     search_placeholder:'Where do you want to go?',
@@ -1345,7 +1374,21 @@ var T={
     itd_legend_opt:'Optional',
     itd_legend_air:'Airport',
     itd_travel_times:'Travel times',
-    rdd_change_country:'Change country'
+    rdd_change_country:'Change country',
+    nav_itinerari:'Itineraries',
+    nav_profile:'Profile',
+    profile_tab_saved:'Saved',
+    profile_tab_stats:'Statistics',
+    profile_tab_settings:'Settings',
+    stat_saved_label:'Places saved',
+    stat_itineraries_label:'Trips completed',
+    stat_countries_label:'Countries visited',
+    stat_places_label:'Places visited',
+    settings_language:'Language',
+    settings_logout:'Sign out',
+    settings_login:'Sign in / Register',
+    no_saved:'No saved places',
+    stats_hint:'Statistics update with your actions'
   }
 };
 
@@ -3067,11 +3110,14 @@ function setupDpSave(id){
 }
 
 /* ═══ FAVORITES ═══ */
-function toggleFav(id){
+async function toggleFav(id){
   if(!favs.has(id)&&!_currentUser){openAuthPage(lang==='en'?'Sign in to save places':'Accedi per salvare i luoghi',function(){toggleFav(id);});return;}
-  if(favs.has(id)){favs.delete(id);}
-  else{
+  if(favs.has(id)){
+    favs.delete(id);
+    if(_currentUser&&_supaAuth)_supaAuth.from('user_favorites').delete().eq('user_id',_currentUser.id).eq('place_id',id).then(function(){});
+  }else{
     favs.add(id);toast(t('saved'));
+    if(_currentUser&&_supaAuth)_supaAuth.from('user_favorites').insert({user_id:_currentUser.id,place_id:id}).then(function(){});
     var p=(DATA.places||[]).find(function(x){return x.id===id;});
     if(p){
       if(window.umami)umami.track('bookmark_place',{id:p.id,name:p.name});
@@ -3559,7 +3605,12 @@ function setBottomNav(name){
 function goToMap(){
   document.getElementById('itinerari-page').classList.remove('show');
   var fp=document.getElementById('fav-page');if(fp)fp.classList.remove('show');
+  var pp=document.getElementById('profile-page');if(pp)pp.classList.remove('show');
   setBottomNav('mappa');
+}
+function openItinerariNav(){
+  if(_itineraryViewId!==null)closeItineraryMapView();
+  else openItinerariPage(_travelContext?_currentTravelRegion:null);
 }
 
 // ── ITINERARI ──
@@ -4887,13 +4938,13 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-map-2"></i>
     <span>Mappa</span>
   </button>
-  <button class="bn-item" data-nav="itinerari" onclick="_itineraryViewId!==null?closeItineraryMapView():openItinerariPage(_travelContext?_currentTravelRegion:null)">
+  <button class="bn-item" data-nav="itinerari" onclick="openItinerariNav()">
     <i class="ti ti-route"></i>
-    <span>Itinerari</span>
+    <span data-t="nav_itinerari">Itinerari</span>
   </button>
-  <button class="bn-item" data-nav="salvati" onclick="openFavPage()">
-    <i class="ti ti-bookmark"></i>
-    <span data-t="nav_saved">Diario</span>
+  <button class="bn-item" data-nav="profilo" onclick="openProfilePage()">
+    <i class="ti ti-user"></i>
+    <span data-t="nav_profile">Profilo</span>
   </button>
 </div>
 <div id="access-request-modal" onclick="if(event.target===this)closeAccessRequestModal()">
@@ -4947,6 +4998,25 @@ window.addEventListener('DOMContentLoaded',function(){
     </div>
   </div>
 </div>
+<!-- PROFILE PAGE -->
+<div id="profile-page">
+  <div id="profile-header">
+    <div id="profile-avatar-wrap" style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;margin-bottom:10px;"></div>
+    <div id="profile-name-el" style="font-size:1rem;font-weight:600;color:#fff;margin-bottom:2px;min-height:1.2em;"></div>
+    <div id="profile-email-el" style="font-size:.78rem;color:rgba(255,255,255,.75);margin-bottom:0;min-height:1em;"></div>
+    <div style="display:flex;width:100%;border-top:0.5px solid rgba(255,255,255,.2);margin-top:12px;">
+      <div class="profile-tab active" data-ptab="saved" id="ptab-saved" onclick="switchProfileTab('saved')">Salvati</div>
+      <div class="profile-tab" data-ptab="stats" id="ptab-stats" onclick="switchProfileTab('stats')">Statistiche</div>
+      <div class="profile-tab" data-ptab="settings" id="ptab-settings" onclick="switchProfileTab('settings')">Impostazioni</div>
+    </div>
+  </div>
+  <div id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+    <div id="ptab-content-saved"></div>
+    <div id="ptab-content-stats" style="display:none;"></div>
+    <div id="ptab-content-settings" style="display:none;"></div>
+  </div>
+</div>
+
 <!-- AUTH PAGE -->
 <div id="auth-page" style="display:none;position:fixed;inset:0;z-index:800;background:var(--w);overflow-y:auto;">
   <div style="max-width:400px;margin:0 auto;padding:40px 24px;">
@@ -5036,16 +5106,147 @@ async function signOut(){
 async function checkAuthSession(){
   if(!_supaAuth)return;
   var res=await _supaAuth.auth.getSession();
-  if(res.data&&res.data.session){_currentUser=res.data.session.user;updateProfileUI();}
+  if(res.data&&res.data.session){
+    _currentUser=res.data.session.user;
+    _loadFavsFromSupabase(_currentUser.id);
+    updateProfileUI();
+  }
   _supaAuth.auth.onAuthStateChange(function(event,session){
     _currentUser=session?session.user:null;
     updateProfileUI();
-    if(event==='SIGNED_IN'&&_authCallback){_authCallback();_authCallback=null;}
+    if(event==='SIGNED_IN'){
+      if(_currentUser)_loadFavsFromSupabase(_currentUser.id);
+      if(_authCallback){_authCallback();_authCallback=null;}
+    }
   });
 }
+async function _loadFavsFromSupabase(userId){
+  if(!_supaAuth)return;
+  var res=await _supaAuth.from('user_favorites').select('place_id').eq('user_id',userId);
+  if(res.data){res.data.forEach(function(r){if(r.place_id)favs.add(r.place_id);});saveFavs();updFavBtn();}
+}
 function updateProfileUI(){
+  var pp=document.getElementById('profile-page');
+  if(pp&&pp.classList.contains('show'))renderProfilePage();
+}
+
+/* ── PROFILE PAGE ── */
+var _profileTab='saved';
+function openProfilePage(){
+  renderProfilePage();
+  document.getElementById('profile-page').classList.add('show');
+  setBottomNav('profilo');
+}
+function closeProfilePage(){
+  document.getElementById('profile-page').classList.remove('show');
+  setBottomNav('mappa');
+}
+function switchProfileTab(tab){
+  _profileTab=tab;
+  document.querySelectorAll('.profile-tab').forEach(function(el){
+    el.classList.toggle('active',el.getAttribute('data-ptab')===tab);
+  });
+  document.getElementById('ptab-content-saved').style.display=tab==='saved'?'block':'none';
+  document.getElementById('ptab-content-stats').style.display=tab==='stats'?'block':'none';
+  document.getElementById('ptab-content-settings').style.display=tab==='settings'?'block':'none';
+}
+function renderProfilePage(){
   var isLoggedIn=!!_currentUser;
-  console.log('[auth] user:',isLoggedIn?_currentUser.email:'not logged in');
+  var email=isLoggedIn?(_currentUser.email||''):'';
+  var initials=email?email.charAt(0).toUpperCase():'';
+  var avatarContent=initials
+    ?'<span style="font-size:1.4rem;font-weight:700;color:#fff;">'+initials+'</span>'
+    :'<i class="ti ti-user" style="font-size:1.6rem;color:rgba(255,255,255,.85);"></i>';
+  document.getElementById('profile-avatar-wrap').innerHTML=avatarContent;
+  document.getElementById('profile-name-el').textContent=isLoggedIn?(email.split('@')[0]||''):'';
+  document.getElementById('profile-email-el').textContent=email;
+  document.getElementById('ptab-saved').textContent=t('profile_tab_saved');
+  document.getElementById('ptab-stats').textContent=t('profile_tab_stats');
+  document.getElementById('ptab-settings').textContent=t('profile_tab_settings');
+  renderProfileSaved();
+  renderProfileStats();
+  renderProfileSettings();
+  switchProfileTab(_profileTab);
+}
+function renderProfileSaved(){
+  var container=document.getElementById('ptab-content-saved');
+  var favList=DATA.places.filter(function(p){return favs.has(p.id);});
+  if(!favList.length){
+    container.innerHTML='<div style="text-align:center;padding:48px 24px;color:var(--g400);font-size:.88rem;">'+t('no_saved')+'</div>';
+    return;
+  }
+  var regions=[...new Set(favList.map(function(p){return p.region||'lazio';}))]
+    .map(function(r){return{id:r,label:r.charAt(0).toUpperCase()+r.slice(1)};});
+  var filterHtml='<div class="profile-saved-filter">'
+    +'<button class="psf-btn active" data-region="all" onclick="filterProfileSaved(\'all\',this)">'+(lang==='en'?'All':'Tutti')+'</button>'
+    +regions.map(function(r){return '<button class="psf-btn" data-region="'+r.id+'" onclick="filterProfileSaved(\''+r.id+'\',this)">'+r.label+'</button>';}).join('')
+    +'</div>';
+  var listHtml='<div id="profile-saved-list" style="padding:8px 16px 80px;">'
+    +favList.map(function(p){
+      var c=placeTypeOf(p.placeTypeId);
+      var imgHtml=p.coverPhoto
+        ?'<img src="'+p.coverPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
+        :'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:'+p.gradient+';border-radius:10px;">'+renderIcon(c.icon)+'</div>';
+      return '<div class="fav-item" data-region="'+(p.region||'lazio')+'" style="cursor:pointer;" onclick="goToFavProfile('+p.id+')">'
+        +'<div class="fav-item-img">'+imgHtml+'</div>'
+        +'<div class="fav-item-body">'
+        +'<div class="fav-item-cat" style="color:'+c.color+';">'+renderIcon(c.icon)+' '+catName(c)+'</div>'
+        +'<div class="fav-item-name">'+p.name+'</div>'
+        +'<div style="font-size:.72rem;color:var(--g400);margin-top:2px;">'+(p.region?p.region.charAt(0).toUpperCase()+p.region.slice(1):'')+'</div>'
+        +'</div>'
+        +'<button onclick="event.stopPropagation();toggleFav('+p.id+')" style="background:none;border:none;cursor:pointer;padding:8px;color:#dc6b2f;font-size:1.1rem;flex-shrink:0;"><i class="ti ti-bookmark-filled"></i></button>'
+        +'</div>';
+    }).join('')
+    +'</div>';
+  container.innerHTML=filterHtml+listHtml;
+}
+function filterProfileSaved(region,btn){
+  document.querySelectorAll('.psf-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.querySelectorAll('#profile-saved-list .fav-item').forEach(function(el){
+    el.style.display=(region==='all'||el.getAttribute('data-region')===region)?'':'none';
+  });
+}
+function goToFavProfile(id){
+  closeProfilePage();
+  var p=DATA.places.find(function(x){return x.id===id;});
+  if(!p)return;
+  if(p.premium&&!unlocked){showPW();return;}
+  currentPlace=p;
+  openDetail();
+}
+function renderProfileStats(){
+  document.getElementById('ptab-content-stats').innerHTML=
+    '<div class="profile-stat-grid">'
+    +'<div class="profile-stat-card"><div class="profile-stat-num">'+favs.size+'</div><div class="profile-stat-lbl">'+t('stat_saved_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num">0</div><div class="profile-stat-lbl">'+t('stat_itineraries_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num">0</div><div class="profile-stat-lbl">'+t('stat_countries_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num">0</div><div class="profile-stat-lbl">'+t('stat_places_label')+'</div></div>'
+    +'</div>'
+    +'<p style="text-align:center;font-size:.76rem;color:var(--g400);padding:0 24px 24px;">'+t('stats_hint')+'</p>';
+}
+function renderProfileSettings(){
+  var isLoggedIn=!!_currentUser;
+  var langLabel=lang==='it'?'Italiano':'English';
+  var html='<div style="padding-top:8px;">'
+    +'<div class="profile-setting-row" onclick="setLang(lang===\'it\'?\'en\':\'it\');renderProfileSettings();">'
+    +'<div class="profile-setting-icon" style="background:#f0f9ff;"><i class="ti ti-language" style="color:#0284c7;font-size:16px;"></i></div>'
+    +'<div class="profile-setting-label">'+t('settings_language')+'</div>'
+    +'<div class="profile-setting-value">'+langLabel+' <i class="ti ti-chevron-right" style="font-size:12px;"></i></div>'
+    +'</div>';
+  if(isLoggedIn){
+    html+='<div class="profile-setting-row" onclick="signOut()">'
+    +'<div class="profile-setting-icon" style="background:#fef2f2;"><i class="ti ti-logout" style="color:#dc2626;font-size:16px;"></i></div>'
+    +'<div class="profile-setting-label" style="color:#dc2626;">'+t('settings_logout')+'</div>'
+    +'</div>';
+  }else{
+    html+='<div class="profile-setting-row" onclick="openAuthPage(null,null)">'
+    +'<div class="profile-setting-icon" style="background:#fff7ed;"><i class="ti ti-login" style="color:#dc6b2f;font-size:16px;"></i></div>'
+    +'<div class="profile-setting-label" style="color:#dc6b2f;">'+t('settings_login')+'</div>'
+    +'</div>';
+  }
+  html+='</div>';
+  document.getElementById('ptab-content-settings').innerHTML=html;
 }
 </script>
 </body>
