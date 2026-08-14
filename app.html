@@ -1122,6 +1122,7 @@ lottie.loadAnimation({
   <div class="itp-header">
     <button class="itp-back" onclick="closeItinerarioDetail()">←</button>
     <div class="itp-title" id="itd-title"></div>
+    <button id="itd-bookmark-btn" onclick="openFavPage('itinerario-detail')" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;"><i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i></button>
   </div>
   <div class="itd-scroll">
     <div id="itd-cover-wrap"></div>
@@ -3104,7 +3105,7 @@ function toggleFav(id){
       trackEvent({event_type:'bookmark_place',place_id:p.id});
     }
   }
-  saveFavs();updFavBtn();
+  saveFavs();updFavBtn();updateItdBookmarkBtn();
 }
 function updFavBtn(){
   var favsRaw=localStorage.getItem('WT_FAVS_v1');
@@ -3117,8 +3118,17 @@ function updFavBtn(){
     btn.innerHTML=hasAny?'<i class="ti ti-bookmark-filled" style="color:#2563eb;"></i>':'<i class="ti ti-bookmark"></i>';
   }
 }
-function openFavPage(){
-  setBottomNav('salvati');
+function updateItdBookmarkBtn(){
+  var btn=document.getElementById('itd-bookmark-btn');
+  if(!btn)return;
+  var filled=favs.size>0;
+  btn.innerHTML=filled?'<i class="ti ti-bookmark-filled" style="font-size:20px;color:var(--g500);"></i>':'<i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i>';
+}
+var _favFrom=null;
+function openFavPage(from){
+  _favFrom=from||null;
+  if(_favFrom!=='itinerario-detail'){setBottomNav('salvati');}
+  else{document.getElementById('fav-page').style.zIndex='650';}
   var title=document.getElementById('fav-title');
   title.textContent=t('favorites');
   var scroll=document.getElementById('fav-scroll');
@@ -3183,7 +3193,7 @@ function openFavPage(){
   }
   document.getElementById('fav-page').classList.add('show');
 }
-function closeFavPage(){document.getElementById('fav-page').classList.remove('show');setBottomNav('mappa');}
+function closeFavPage(){var fp=document.getElementById('fav-page');fp.classList.remove('show');fp.style.zIndex='500';if(_favFrom!=='itinerario-detail'){setBottomNav('mappa');}  _favFrom=null;}
 function removeFav(id){favs.delete(id);saveFavs();updFavBtn();openFavPage();}
 function removeFavAct(id){favActs.delete(id);saveFavActs();updFavBtn();openFavPage();}
 function openCityActById(id){var a=(DATA.cityActivities||[]).find(function(x){return x.id===id;});if(a){closeFavPage();openCityActivityDetail(a);}}
@@ -3939,6 +3949,7 @@ function openItinerario(id){
     }).catch(function(){_svcEl.innerHTML='';});
   document.getElementById('itinerario-detail').style.zIndex=_travelContext?'620':'510';
   document.getElementById('itinerario-detail').classList.add('show');
+  updateItdBookmarkBtn();
 }
 function openTravelSvc(url){
   if(!url)return;
