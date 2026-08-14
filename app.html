@@ -2636,7 +2636,7 @@ function setMapModePopup(mode){
   if(mode==='city'){
     if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:10,duration:800});
   } else {
-    if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:8,duration:800});
+    if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:800});
   }
   refreshL1();
 }
@@ -2732,7 +2732,7 @@ function exitL2(){
   var _er=document.getElementById('exp-row');
   if(_er&&_er.classList.contains('show'))_er.style.display='';
   renderItdPill();
-  map_o.flyTo({center:[12.8,41.8],zoom:8,duration:700});
+  map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:700});
 }
 
 /* ═══ BUBBLE CARD ═══ */
@@ -3488,7 +3488,9 @@ function selectRegion(regionId){
   setTimeout(function(){
     stopSplashRotation();
     sp.classList.add('hide');
-    if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:window.innerWidth<768?7:8,duration:600});
+    _currentRegionCenter=[12.8,41.8];
+    _currentRegionZoom=window.innerWidth<768?7:8;
+    if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
     showOnboarding();
   },3000);
 }
@@ -3508,6 +3510,8 @@ function selectTravelRegion(regionId,center,zoom){
     stopSplashRotation();
     sp.classList.add('hide');
     var z=window.innerWidth<768?zoom-1:zoom;
+    _currentRegionCenter=center;
+    _currentRegionZoom=z;
     if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
     showOnboarding();
   },3000);
@@ -4185,6 +4189,8 @@ var _travelContext=false;
 var _currentItdExp=null;
 var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[],_itineraryViewFromDetail=false;
 var _currentTravelRegion=null;
+var _currentRegionCenter=[12.8,41.8];
+var _currentRegionZoom=8;
 
 function openItineraryMapView(id,fromDetail){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
@@ -4845,7 +4851,7 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-map-2"></i>
     <span>Mappa</span>
   </button>
-  <button class="bn-item" data-nav="itinerari" onclick="_travelContext?openTravelsPage():(_itineraryViewId!==null?closeItineraryMapView():openItinerariPage())">
+  <button class="bn-item" data-nav="itinerari" onclick="_travelContext?openTravelsPage(_currentTravelRegion):(_itineraryViewId!==null?closeItineraryMapView():openItinerariPage())">
     <i class="ti ti-route"></i>
     <span>Itinerari</span>
   </button>
