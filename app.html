@@ -731,27 +731,31 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .rp-header{padding:calc(env(safe-area-inset-top,0px)+32px) 16px 20px;text-align:center;}
 .rp-title{font-size:1.4rem;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:6px;}
 .rp-sub{font-size:.86rem;color:var(--g500);line-height:1.5;}
-.rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px calc(env(safe-area-inset-bottom,0px)+36px);}
-.rp-card{position:relative;height:130px;border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;}
-.rp-card:active{transform:scale(.97);}
-.rp-card-main{grid-column:1/-1;}
-.rp-card-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
-.rp-card-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 60%);}
-.rp-card-body{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px;}
-.rp-card-name{font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.01em;margin-bottom:4px;text-shadow:0 1px 6px rgba(0,0,0,.4);}
-.rp-card-sub{font-size:.72rem;color:rgba(255,255,255,.78);margin-bottom:10px;}
-.rp-card-btn{display:inline-flex;align-items:center;background:#dc6b2f;color:#fff;font-family:var(--f);font-size:.78rem;font-weight:700;padding:7px 14px;border-radius:100px;border:none;cursor:pointer;}
-.rp-card-locked{cursor:default;}
-.rp-card-locked .rp-card-ov{background:rgba(0,0,0,.38);}
-.rp-lock-ico{font-size:1rem;margin-bottom:5px;}
-.rp-card-locked .rp-card-name{font-size:.9rem;}
-.rp-soon-badge{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.85);padding:2px 8px;border-radius:100px;}
-.rp-card-travels{border:2.5px solid #2563eb;box-sizing:border-box;}
-.rp-travels-globe{position:absolute;top:50%;left:50%;transform:translate(-50%,-65%);font-size:3rem;color:rgba(255,255,255,.18);pointer-events:none;}
-.rp-new-badge{display:inline-block;font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:#2563eb;border:1px solid #1d4ed8;color:#fff;padding:2px 7px;border-radius:100px;margin-left:6px;vertical-align:middle;}
-.rp-card-btn-blue{background:#2563eb;}
-.rp-sec-label{grid-column:1/-1;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);padding:2px 0 6px;}
-.rp-sec-label-sep{border-top:0.5px solid var(--g100);padding-top:14px;margin-top:4px;}
+.rp-list{display:flex;flex-direction:column;gap:12px;padding:0 16px calc(env(safe-area-inset-bottom,0px)+36px);}
+.rp-country{border-radius:var(--rl);overflow:hidden;border:1.5px solid transparent;transition:border-color .2s,box-shadow .2s;}
+.rp-country.open{border-color:#dc6b2f;box-shadow:0 0 0 0.5px rgba(220,107,47,.12);}
+.rp-country-disabled{opacity:0.5;pointer-events:none;}
+.rp-country-hd{position:relative;height:130px;cursor:pointer;overflow:hidden;}
+.rp-country-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
+.rp-country-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 60%);}
+.rp-country-body{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px;}
+.rp-country-name{font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.01em;margin-bottom:3px;text-shadow:0 1px 6px rgba(0,0,0,.4);}
+.rp-country-count{font-size:.72rem;color:rgba(255,255,255,.72);}
+.rp-country-chevron{position:absolute;top:12px;right:12px;color:rgba(255,255,255,.85);font-size:1rem;transition:transform .2s;}
+.rp-country.open .rp-country-chevron{transform:rotate(180deg);}
+.rp-country-lock{position:absolute;top:12px;right:12px;color:rgba(255,255,255,.65);font-size:1rem;}
+.rp-regions{display:none;background:var(--g50);border-top:0.5px solid rgba(0,0,0,.07);}
+.rp-country.open .rp-regions{display:block;}
+.rp-region-row{display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer;transition:background .1s;border-bottom:0.5px solid var(--g100);}
+.rp-region-row:last-child{border-bottom:none;}
+.rp-region-row:active{background:var(--g100);}
+.rp-region-row-locked{opacity:0.5;cursor:default;pointer-events:none;}
+.rp-region-thumb{width:50px;height:50px;border-radius:var(--r);object-fit:cover;flex-shrink:0;}
+.rp-region-info{flex:1;min-width:0;}
+.rp-region-name{font-size:.88rem;font-weight:700;color:var(--g900);margin-bottom:2px;}
+.rp-region-meta{font-size:.73rem;color:var(--g400);}
+.rp-region-cta{font-size:.7rem;font-weight:700;color:#dc6b2f;white-space:nowrap;flex-shrink:0;}
+.rp-region-lock{font-size:.85rem;color:var(--g300);flex-shrink:0;}
 #travels-page{position:fixed;inset:0;z-index:610;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #travels-page.show{display:flex;}
 .itp-card-locked{cursor:default;}
@@ -774,9 +778,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 @media(min-width:768px){
   .rp-content{max-width:560px;margin:0 auto;padding:0 24px;box-sizing:border-box;}
   .rp-header{padding-left:0;padding-right:0;}
-  .rp-grid{padding-left:0;padding-right:0;gap:14px;}
-  .rp-card{height:160px;}
-  .rp-card-main{height:220px;}
+  .rp-list{padding-left:0;padding-right:0;gap:14px;}
+  .rp-country-hd{height:160px;}
 }</style>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="8ac51bd2-99a5-4dbd-bf8e-9dd98d87d138"></script>
 </head>
@@ -812,84 +815,104 @@ lottie.loadAnimation({
     <div class="rp-title" data-t="rp_title">Scegli la regione</div>
     <div class="rp-sub" data-t="rp_sub">Dove vuoi esplorare oggi?</div>
   </div>
-  <div class="rp-grid" style="padding-left:16px!important;padding-right:16px!important;">
-    <div class="rp-sec-label" data-t="rp_sec_italia">Esplora l'Italia</div>
-    <div class="rp-card rp-card-main" onclick="openAccessRequestModal()">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-card-name">Lazio</div>
-        <div class="rp-card-sub" id="rp-lazio-sub"></div>
-        <button class="rp-card-btn" id="rp-lazio-btn">Richiedi accesso →</button>
+  <div class="rp-list">
+    <!-- 🇮🇹 Italia -->
+    <div class="rp-country open" id="rpc-italia">
+      <div class="rp-country-hd" onclick="toggleCountry('italia')">
+        <div class="rp-country-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio.jpg');"></div>
+        <div class="rp-country-ov"></div>
+        <div class="rp-country-body">
+          <div class="rp-country-name">🇮🇹 Italia</div>
+          <div class="rp-country-count">5 regioni</div>
+        </div>
+        <i class="ti ti-chevron-down rp-country-chevron"></i>
+      </div>
+      <div class="rp-regions">
+        <div class="rp-region-row" onclick="openAccessRequestModal()">
+          <img class="rp-region-thumb" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio.jpg" alt="">
+          <div class="rp-region-info">
+            <div class="rp-region-name">Lazio</div>
+            <div class="rp-region-meta" id="rp-lazio-sub"></div>
+          </div>
+          <span class="rp-region-cta" id="rp-lazio-btn">Richiedi accesso →</span>
+        </div>
+        <div class="rp-region-row rp-region-row-locked">
+          <img class="rp-region-thumb" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/toscana.jpg" alt="">
+          <div class="rp-region-info">
+            <div class="rp-region-name">Toscana</div>
+            <div class="rp-region-meta" data-t="rp_soon">Prossimamente</div>
+          </div>
+          <i class="ti ti-lock rp-region-lock"></i>
+        </div>
+        <div class="rp-region-row rp-region-row-locked">
+          <img class="rp-region-thumb" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/campania.jpg" alt="">
+          <div class="rp-region-info">
+            <div class="rp-region-name">Campania</div>
+            <div class="rp-region-meta" data-t="rp_soon">Prossimamente</div>
+          </div>
+          <i class="ti ti-lock rp-region-lock"></i>
+        </div>
+        <div class="rp-region-row rp-region-row-locked">
+          <img class="rp-region-thumb" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/umbria.jpg" alt="">
+          <div class="rp-region-info">
+            <div class="rp-region-name">Umbria</div>
+            <div class="rp-region-meta" data-t="rp_soon">Prossimamente</div>
+          </div>
+          <i class="ti ti-lock rp-region-lock"></i>
+        </div>
+        <div class="rp-region-row rp-region-row-locked">
+          <img class="rp-region-thumb" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/abruzzo.jpg" alt="">
+          <div class="rp-region-info">
+            <div class="rp-region-name">Abruzzo</div>
+            <div class="rp-region-meta" data-t="rp_soon">Prossimamente</div>
+          </div>
+          <i class="ti ti-lock rp-region-lock"></i>
+        </div>
       </div>
     </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/toscana.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-lock-ico">🔒</div>
-        <div class="rp-card-name">Toscana</div>
-        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
+    <!-- 🇬🇧 UK -->
+    <div class="rp-country" id="rpc-uk">
+      <div class="rp-country-hd" onclick="toggleCountry('uk')">
+        <div class="rp-country-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg');"></div>
+        <div class="rp-country-ov"></div>
+        <div class="rp-country-body">
+          <div class="rp-country-name">🇬🇧 UK</div>
+          <div class="rp-country-count">2 regioni</div>
+        </div>
+        <i class="ti ti-chevron-down rp-country-chevron"></i>
+      </div>
+      <div class="rp-regions">
+        <div class="rp-region-row" onclick="openTravelsPage('cotswolds')">
+          <img class="rp-region-thumb" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg" alt="">
+          <div class="rp-region-info">
+            <div class="rp-region-name">Cotswolds</div>
+          </div>
+          <i class="ti ti-chevron-right" style="font-size:.85rem;color:#dc6b2f;flex-shrink:0;"></i>
+        </div>
+        <div class="rp-region-row rp-region-row-locked">
+          <img class="rp-region-thumb" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/highlands.jpg" alt="">
+          <div class="rp-region-info">
+            <div class="rp-region-name">Highlands</div>
+            <div class="rp-region-meta" data-t="rp_soon">Prossimamente</div>
+          </div>
+          <i class="ti ti-lock rp-region-lock"></i>
+        </div>
       </div>
     </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/campania.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-lock-ico">🔒</div>
-        <div class="rp-card-name">Campania</div>
-        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
-      </div>
-    </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/umbria.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-lock-ico">🔒</div>
-        <div class="rp-card-name">Umbria</div>
-        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
-      </div>
-    </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/abruzzo.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-lock-ico">🔒</div>
-        <div class="rp-card-name">Abruzzo</div>
-        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
-      </div>
-    </div>
-    <div class="rp-sec-label rp-sec-label-sep" data-t="rp_sec_mondo">Nel mondo</div>
-    <div class="rp-card rp-card-main" onclick="openCountryPage('uk')">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-card-name">🇬🇧 UK <span class="rp-new-badge" data-t="rp_new">Nuovo</span></div>
-        <div class="rp-card-sub">Cotswolds · Highlands</div>
-        <button class="rp-card-btn" style="pointer-events:none;">Esplora →</button>
-      </div>
-    </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background:linear-gradient(135deg,#006600 0%,#009900 60%,#006600 100%);background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-lock-ico">🔒</div>
-        <div class="rp-card-name">🇵🇹 Portogallo</div>
-        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
+    <!-- 🇵🇹 Portogallo -->
+    <div class="rp-country rp-country-disabled">
+      <div class="rp-country-hd">
+        <div class="rp-country-bg" style="background:linear-gradient(135deg,#5a6a7a 0%,#7a8a9a 100%);"></div>
+        <div class="rp-country-ov"></div>
+        <div class="rp-country-body">
+          <div class="rp-country-name">🇵🇹 Portogallo</div>
+          <div class="rp-country-count" data-t="rp_soon">Prossimamente</div>
+        </div>
+        <i class="ti ti-lock rp-country-lock"></i>
       </div>
     </div>
   </div>
   </div>
-</div>
-
-<!-- COUNTRY PAGE -->
-<div id="country-page" style="display:none;position:fixed;inset:0;z-index:605;background:var(--w);overflow-y:auto;">
-  <div class="itp-header">
-    <button class="itp-back" onclick="closeCountryPage()">←</button>
-    <span id="ctp-flag" style="font-size:1.3rem;line-height:1;flex-shrink:0;"></span>
-    <div class="itp-title" id="ctp-title"></div>
-  </div>
-  <div id="ctp-scroll" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-bottom:calc(env(safe-area-inset-bottom,0px)+32px);"></div>
 </div>
 
 <!-- TOP BAR -->
@@ -4134,7 +4157,6 @@ function openItinerarioDetail(id){openItinerario(id);}
 var _travelContext=false;
 var _currentItdExp=null;
 var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[],_itineraryViewFromDetail=false;
-var _currentCountry=null;
 var _currentTravelRegion=null;
 
 function openItineraryMapView(id,fromDetail){
@@ -4430,43 +4452,12 @@ function openPlaceActsPopup(p){
     if(!b.isEmpty())mp.fitBounds(b,{padding:60,maxZoom:14,duration:700});
   });
 }
-function openCountryPage(country){
-  _currentCountry=country;
-  var meta={uk:{flag:'🇬🇧',name:'UK'}};
-  var m=meta[country]||{flag:'🌍',name:country};
-  document.getElementById('ctp-flag').textContent=m.flag;
-  document.getElementById('ctp-title').textContent=m.name;
-  renderCountryPage(country);
-  document.getElementById('country-page').style.display='';
-}
-function closeCountryPage(){
-  document.getElementById('country-page').style.display='none';
-  _currentCountry=null;
-}
-function renderCountryPage(country){
-  var scroll=document.getElementById('ctp-scroll');
-  if(!scroll)return;
-  var soonBadge=lang==='en'?'Coming soon':'Prossimamente';
-  var exploreBtn=lang==='en'?'Explore →':'Esplora →';
-  var html='';
-  if(country==='uk'){
-    html+='<div class="rp-card rp-card-main" onclick="openTravelsPage(\'cotswolds\')" style="cursor:pointer;">'
-      +'<div class="rp-card-bg" style="background-image:url(\'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg\');background-size:cover;background-position:center;"></div>'
-      +'<div class="rp-card-ov"></div>'
-      +'<div class="rp-card-body">'
-      +'<div class="rp-card-name">Cotswolds</div>'
-      +'<button class="rp-card-btn" style="pointer-events:none;">'+exploreBtn+'</button>'
-      +'</div></div>';
-    html+='<div class="rp-card rp-card-locked" onclick="showRegionToast()">'
-      +'<div class="rp-card-bg" style="background-image:url(\'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/highlands.jpg\');background-size:cover;background-position:center;"></div>'
-      +'<div class="rp-card-ov"></div>'
-      +'<div class="rp-card-body">'
-      +'<div class="rp-lock-ico">🔒</div>'
-      +'<div class="rp-card-name">Highlands</div>'
-      +'<span class="rp-soon-badge">'+soonBadge+'</span>'
-      +'</div></div>';
-  }
-  scroll.innerHTML=html;
+function toggleCountry(id){
+  var el=document.getElementById('rpc-'+id);
+  if(!el)return;
+  var wasOpen=el.classList.contains('open');
+  document.querySelectorAll('.rp-country.open').forEach(function(c){c.classList.remove('open');});
+  if(!wasOpen)el.classList.add('open');
 }
 function openTravelsPage(region){
   _currentTravelRegion=region||null;
@@ -4485,7 +4476,6 @@ function closeTravelsPage(){
   _travelContext=false;
   _currentTravelRegion=null;
   document.getElementById('travels-page').classList.remove('show');
-  if(_currentCountry){document.getElementById('country-page').style.display='';}
 }
 function renderTravelsPage(){
   var scroll=document.getElementById('trv-scroll');
