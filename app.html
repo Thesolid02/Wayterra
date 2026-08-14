@@ -1466,7 +1466,7 @@ var currentLightboxIdx=0,currentLightboxGallery=[];
 var lang='it';
 var unlocked=false;
 var mapMode='outside';
-var splashPhrases={it:['🎒 Preparo lo zaino...','🗺️ Scovo i sentieri nascosti...','✨ Sveglio le gemme del Lazio...','🧭 Calibro la bussola...'],en:['🎒 Packing the backpack...','🗺️ Scouting hidden trails...','✨ Waking up Lazio\'s hidden gems...','🧭 Calibrating the compass...']};
+var splashPhrases={it:['🎒 Preparando il tuo viaggio...','🗺️ Caricamento luoghi nascosti...','✨ Scopri posti unici...','🧭 Il tuo itinerario ti aspetta...','🌿 Esplora come un locale...'],en:['🎒 Preparing your journey...','🗺️ Loading hidden places...','✨ Discover unique spots...','🧭 Your itinerary awaits...','🌿 Explore like a local...']};
 var _splashIdx=0;
 var _splashIv=null;
 
@@ -4706,14 +4706,16 @@ function bootApp(d){
 function startSplashRotation(){
   var el=document.getElementById('sp-sub');
   if(!el)return;
-  _splashIdx=Math.floor(Math.random()*4);
   var l=localStorage.getItem(K.LANG)||'it';
+  var _splashLen=splashPhrases[l].length;
+  _splashIdx=Math.floor(Math.random()*_splashLen);
   el.textContent=splashPhrases[l][_splashIdx];
   _splashIv=setInterval(function(){
     var l2=lang||localStorage.getItem(K.LANG)||'it';
+    var _len=splashPhrases[l2].length;
     el.style.opacity='0';
     setTimeout(function(){
-      _splashIdx=(_splashIdx+1)%4;
+      _splashIdx=(_splashIdx+1)%_len;
       el.textContent=splashPhrases[l2][_splashIdx];
       el.style.opacity='1';
     },400);
