@@ -860,18 +860,36 @@ lottie.loadAnimation({
       </div>
     </div>
     <div class="rp-sec-label rp-sec-label-sep" data-t="rp_sec_mondo">Nel mondo</div>
-    <div class="rp-card rp-card-main rp-card-travels" onclick="openTravelsPage()">
-      <div class="rp-card-bg" style="background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#3b82f6 100%);background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov" style="background:linear-gradient(to top,rgba(0,0,0,.45) 0%,transparent 60%);"></div>
-      <div class="rp-travels-globe"><i class="ti ti-world"></i></div>
+    <div class="rp-card rp-card-main" onclick="openCountryPage('uk')">
+      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg');background-size:cover;background-position:center;"></div>
+      <div class="rp-card-ov"></div>
       <div class="rp-card-body">
-        <div class="rp-card-name">I miei viaggi all'estero <span class="rp-new-badge" data-t="rp_new">Nuovo</span></div>
-        <div class="rp-card-sub" id="rp-travels-sub"></div>
-        <button class="rp-card-btn rp-card-btn-blue" data-t="rp_explore_travels">Esplora →</button>
+        <div class="rp-card-name">🇬🇧 UK <span class="rp-new-badge" data-t="rp_new">Nuovo</span></div>
+        <div class="rp-card-sub">Cotswolds · Highlands</div>
+        <button class="rp-card-btn" style="pointer-events:none;">Esplora →</button>
+      </div>
+    </div>
+    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
+      <div class="rp-card-bg" style="background:linear-gradient(135deg,#006600 0%,#009900 60%,#006600 100%);background-size:cover;background-position:center;"></div>
+      <div class="rp-card-ov"></div>
+      <div class="rp-card-body">
+        <div class="rp-lock-ico">🔒</div>
+        <div class="rp-card-name">🇵🇹 Portogallo</div>
+        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
       </div>
     </div>
   </div>
   </div>
+</div>
+
+<!-- COUNTRY PAGE -->
+<div id="country-page" style="display:none;position:fixed;inset:0;z-index:605;background:var(--w);overflow-y:auto;">
+  <div class="itp-header">
+    <button class="itp-back" onclick="closeCountryPage()">←</button>
+    <span id="ctp-flag" style="font-size:1.3rem;line-height:1;flex-shrink:0;"></span>
+    <div class="itp-title" id="ctp-title"></div>
+  </div>
+  <div id="ctp-scroll" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-bottom:calc(env(safe-area-inset-bottom,0px)+32px);"></div>
 </div>
 
 <!-- TOP BAR -->
@@ -1112,7 +1130,7 @@ lottie.loadAnimation({
 <div id="travels-page">
   <div class="itp-header">
     <button class="itp-back" onclick="closeTravelsPage()">←</button>
-    <div class="itp-title" data-t="trv_title">I miei viaggi all'estero</div>
+    <div class="itp-title" id="trv-title" data-t="trv_title">I miei viaggi all'estero</div>
   </div>
   <div class="itp-scroll" id="trv-scroll"></div>
 </div>
@@ -3467,11 +3485,6 @@ function updateRegionPageLang(){
     var n=(DATA&&DATA.places)?DATA.places.length:0;
     lazioSub.textContent=n+(lang==='en'?' places to discover':' luoghi da scoprire');
   }
-  var travelsSub=document.getElementById('rp-travels-sub');
-  if(travelsSub){
-    var nt=(DATA&&DATA.experiences)?DATA.experiences.filter(function(e){return e.isTravel;}).length:0;
-    travelsSub.textContent=nt+(lang==='en'?' itineraries abroad':' itinerari all\'estero');
-  }
 }
 
 // ── BOTTOM NAV ──
@@ -3501,7 +3514,7 @@ function loadEsperienze(){
                myMaps:r.my_maps_url||'',
                transport:r.transport||'',clothing:r.clothing||'',
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
-               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||''};
+               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',region:r.region||''};
       });
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
@@ -4121,6 +4134,8 @@ function openItinerarioDetail(id){openItinerario(id);}
 var _travelContext=false;
 var _currentItdExp=null;
 var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[],_itineraryViewFromDetail=false;
+var _currentCountry=null;
+var _currentTravelRegion=null;
 
 function openItineraryMapView(id,fromDetail){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
@@ -4415,19 +4430,69 @@ function openPlaceActsPopup(p){
     if(!b.isEmpty())mp.fitBounds(b,{padding:60,maxZoom:14,duration:700});
   });
 }
-function openTravelsPage(){
+function openCountryPage(country){
+  _currentCountry=country;
+  var meta={uk:{flag:'🇬🇧',name:'UK'}};
+  var m=meta[country]||{flag:'🌍',name:country};
+  document.getElementById('ctp-flag').textContent=m.flag;
+  document.getElementById('ctp-title').textContent=m.name;
+  renderCountryPage(country);
+  document.getElementById('country-page').style.display='';
+}
+function closeCountryPage(){
+  document.getElementById('country-page').style.display='none';
+  _currentCountry=null;
+}
+function renderCountryPage(country){
+  var scroll=document.getElementById('ctp-scroll');
+  if(!scroll)return;
+  var soonBadge=lang==='en'?'Coming soon':'Prossimamente';
+  var exploreBtn=lang==='en'?'Explore →':'Esplora →';
+  var html='';
+  if(country==='uk'){
+    html+='<div class="rp-card rp-card-main" onclick="openTravelsPage(\'cotswolds\')" style="cursor:pointer;">'
+      +'<div class="rp-card-bg" style="background-image:url(\'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg\');background-size:cover;background-position:center;"></div>'
+      +'<div class="rp-card-ov"></div>'
+      +'<div class="rp-card-body">'
+      +'<div class="rp-card-name">Cotswolds</div>'
+      +'<button class="rp-card-btn" style="pointer-events:none;">'+exploreBtn+'</button>'
+      +'</div></div>';
+    html+='<div class="rp-card rp-card-locked" onclick="showRegionToast()">'
+      +'<div class="rp-card-bg" style="background-image:url(\'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/highlands.jpg\');background-size:cover;background-position:center;"></div>'
+      +'<div class="rp-card-ov"></div>'
+      +'<div class="rp-card-body">'
+      +'<div class="rp-lock-ico">🔒</div>'
+      +'<div class="rp-card-name">Highlands</div>'
+      +'<span class="rp-soon-badge">'+soonBadge+'</span>'
+      +'</div></div>';
+  }
+  scroll.innerHTML=html;
+}
+function openTravelsPage(region){
+  _currentTravelRegion=region||null;
   renderTravelsPage();
   _travelContext=true;
+  var titleEl=document.getElementById('trv-title');
+  if(titleEl){
+    var regionNames={cotswolds:'Cotswolds',highlands:'Highlands'};
+    titleEl.textContent=(_currentTravelRegion&&regionNames[_currentTravelRegion])
+      ?regionNames[_currentTravelRegion]
+      :(lang==='en'?'My travels abroad':'I miei viaggi all\'estero');
+  }
   document.getElementById('travels-page').classList.add('show');
 }
 function closeTravelsPage(){
   _travelContext=false;
+  _currentTravelRegion=null;
   document.getElementById('travels-page').classList.remove('show');
+  if(_currentCountry){document.getElementById('country-page').style.display='';}
 }
 function renderTravelsPage(){
   var scroll=document.getElementById('trv-scroll');
   if(!scroll)return;
-  var travels=DATA.experiences.filter(function(e){return e.isTravel;});
+  var travels=DATA.experiences.filter(function(e){
+    return e.isTravel&&(_currentTravelRegion?e.region===_currentTravelRegion:true);
+  });
   var activeHtml=travels.length?travels.map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
@@ -4444,14 +4509,15 @@ function renderTravelsPage(){
   }).join(''):'';
   var soonLabel=lang==='en'?'Coming soon':'In arrivo';
   var soonBadge=lang==='en'?'Coming soon':'Prossimamente';
-  var fakes=[
+  var fakes=_currentTravelRegion?[
+    {title:lang==='en'?'New itinerary':'Nuovo itinerario',region:lang==='en'?'Coming soon...':'In preparazione...',img:null}
+  ]:[
     {title:'1 settimana tra le Highlands',region:'Scozia',img:'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/highlands.jpg'},
     {title:'6 giorni nella Romantische Straße',region:'Germania',img:'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/romantic.jpg'},
     {title:lang==='en'?'New itinerary':'Nuovo itinerario',region:lang==='en'?'Coming soon...':'In preparazione...',img:null}
   ];
   var fakeHtml=fakes.map(function(f){
     if(f.img){
-      // card con immagine: tutto il contenuto dentro l'overlay sull'immagine (body bianco non usato)
       return '<div class="itp-card itp-card-locked">'
         +'<div style="position:relative;height:160px;background-image:url(\''+f.img+'\');background-size:cover;background-position:center;">'
         +'<div style="position:absolute;inset:0;background:rgba(0,0,0,.5);"></div>'
