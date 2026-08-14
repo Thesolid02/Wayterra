@@ -36,7 +36,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   pointer-events:none;display:flex;flex-direction:column;gap:6px;}
 #topbar-row1{display:flex;align-items:center;justify-content:space-between;}
 .brand-pill{pointer-events:all;background:var(--w);border-radius:100px;box-shadow:var(--sh-md);
-  padding:7px 14px 7px 9px;display:flex;align-items:center;gap:7px;border:0.5px solid var(--g200);}
+  padding:7px 14px 7px 9px;display:flex;align-items:center;gap:7px;border:0.5px solid var(--g200);position:relative;}
 .brand-name{font-size:.88rem;font-weight:700;color:var(--g900);letter-spacing:-.02em;}
 .tb-right{pointer-events:all;display:flex;align-items:center;gap:7px;}
 /* language switch */
@@ -923,11 +923,22 @@ lottie.loadAnimation({
       </svg>
       <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;">
         <span class="brand-name">Wayterra</span>
-        <span class="brand-rgn-mobile" id="brand-rgn-mobile" onclick="showRegionPage()">Lazio ▾</span>
+        <span class="brand-rgn-mobile" id="brand-rgn-mobile" onclick="if(_regionDropdownOpen){closeRegionDropdown();}else{openRegionDropdown();}">Lazio ▾</span>
       </div>
-      <div class="region-pill" id="region-pill" onclick="showRegionPage()">
+      <div class="region-pill" id="region-pill" onclick="if(_regionDropdownOpen){closeRegionDropdown();}else{openRegionDropdown();}">
         <span class="region-pill-name" id="region-pill-name">Lazio</span>
         <span class="region-pill-arrow">▾</span>
+      </div>
+      <div id="region-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--w);border-radius:12px;overflow:hidden;border:0.5px solid var(--g100);box-shadow:var(--sh-lg);z-index:500;min-width:200px;">
+        <div id="region-dropdown-header" style="padding:8px 12px;border-bottom:0.5px solid var(--g100);">
+          <p style="font-size:.68rem;color:var(--g400);letter-spacing:.06em;margin:0;" id="rdd-country-label"></p>
+        </div>
+        <div id="region-dropdown-list"></div>
+        <div style="height:0.5px;background:var(--g100);"></div>
+        <div onclick="closeRegionDropdown();showRegionPage();" style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;">
+          <i class="ti ti-world" style="font-size:13px;color:var(--g400);"></i>
+          <span style="font-size:.8rem;color:var(--g500);" data-t="rdd_change_country">Cambia paese</span>
+        </div>
       </div>
     </div>
     <div class="tb-right">
@@ -1303,7 +1314,8 @@ var T={
     itd_legend_main:'Principale',
     itd_legend_opt:'Opzionale',
     itd_legend_air:'Aeroporto',
-    itd_travel_times:'Tempi di spostamento'
+    itd_travel_times:'Tempi di spostamento',
+    rdd_change_country:'Cambia paese'
   },
   en:{
     search_placeholder:'Where do you want to go?',
@@ -1372,7 +1384,8 @@ var T={
     itd_legend_main:'Main',
     itd_legend_opt:'Optional',
     itd_legend_air:'Airport',
-    itd_travel_times:'Travel times'
+    itd_travel_times:'Travel times',
+    rdd_change_country:'Change country'
   }
 };
 
@@ -1919,7 +1932,7 @@ function initMap(){
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
-  map_o.on('click',function(){if(_itineraryViewId!==null)return;closeBubble();closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();});
+  map_o.on('click',function(){if(_itineraryViewId!==null)return;closeBubble();closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();if(_regionDropdownOpen)closeRegionDropdown();});
   map_o.on('zoomend',function(){
     if(_itineraryViewId!==null)return;
     var z=map_o.getZoom();
@@ -3474,6 +3487,70 @@ function selectTravelRegion(regionId,center,zoom){
     renderItdPill();
     showOnboarding();
   },3000);
+}
+var _regionDropdownOpen=false;
+function openRegionDropdown(){
+  var dd=document.getElementById('region-dropdown');
+  var list=document.getElementById('region-dropdown-list');
+  var countryLabel=document.getElementById('rdd-country-label');
+  var currentRegion=_travelContext?_currentTravelRegion:'lazio';
+  var countries={
+    'lazio':{label:'ITALIA',regions:[
+      {id:'lazio',name:'Lazio',active:true},
+      {id:'toscana',name:'Toscana',active:false},
+      {id:'campania',name:'Campania',active:false},
+      {id:'umbria',name:'Umbria',active:false},
+      {id:'abruzzo',name:'Abruzzo',active:false}
+    ]},
+    'cotswolds':{label:'REGNO UNITO',regions:[
+      {id:'cotswolds',name:'Cotswolds',active:true},
+      {id:'highlands',name:'Highlands',active:false}
+    ]},
+    'highlands':{label:'REGNO UNITO',regions:[
+      {id:'cotswolds',name:'Cotswolds',active:true},
+      {id:'highlands',name:'Highlands',active:false}
+    ]}
+  };
+  var country=countries[currentRegion]||countries['lazio'];
+  countryLabel.textContent=country.label;
+  list.innerHTML=country.regions.map(function(r){
+    var isCurrent=r.id===currentRegion;
+    if(r.active){
+      return '<div onclick="selectRegionFromDropdown(\''+r.id+'\')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;background:'+(isCurrent?'#fff3ed':'')+';transition:background .12s;">'
+        +'<div style="width:6px;height:6px;border-radius:50%;background:'+(isCurrent?'#dc6b2f':'var(--g200)')+';flex-shrink:0;"></div>'
+        +'<span style="font-size:.8rem;font-weight:'+(isCurrent?'600':'400')+';color:'+(isCurrent?'#dc6b2f':'var(--g600)')+';flex:1;">'+r.name+'</span>'
+        +(isCurrent?'<i class="ti ti-check" style="font-size:13px;color:#dc6b2f;"></i>':'')
+        +'</div>';
+    }else{
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;opacity:.5;">'
+        +'<i class="ti ti-lock" style="font-size:12px;color:var(--g400);"></i>'
+        +'<span style="font-size:.8rem;color:var(--g500);flex:1;">'+r.name+'</span>'
+        +'<span style="font-size:.68rem;color:var(--g400);">'+(lang==='en'?'Soon':'Presto')+'</span>'
+        +'</div>';
+    }
+  }).join('');
+  dd.style.display='block';
+  _regionDropdownOpen=true;
+}
+function closeRegionDropdown(){
+  document.getElementById('region-dropdown').style.display='none';
+  _regionDropdownOpen=false;
+}
+function selectRegionFromDropdown(regionId){
+  closeRegionDropdown();
+  if(regionId==='lazio'){
+    selectRegion('lazio');
+  }else{
+    selectTravelRegion(regionId,getRegionCenter(regionId),getRegionZoom(regionId));
+  }
+}
+function getRegionCenter(regionId){
+  var centers={cotswolds:[-1.8,51.7],highlands:[-4.2,57.0]};
+  return centers[regionId]||[-1.8,51.7];
+}
+function getRegionZoom(regionId){
+  var zooms={cotswolds:9,highlands:8};
+  return zooms[regionId]||9;
 }
 function updateRegionPill(regionId){
   var names={lazio:'Lazio',toscana:'Toscana',campania:'Campania',umbria:'Umbria',abruzzo:'Abruzzo'};
