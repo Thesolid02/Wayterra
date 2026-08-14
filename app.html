@@ -3412,7 +3412,7 @@ function selectRegion(regionId){
   hideRegionPage(null);
   _currentRegionCenter=[12.8,41.8];
   _currentRegionZoom=window.innerWidth<768?7:8;
-  if(!_mapReady){
+  if(_mapReady){
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
     stopSplashRotation();startSplashRotation();
@@ -3436,7 +3436,7 @@ function selectTravelRegion(regionId,center,zoom){
   var z=window.innerWidth<768?zoom-1:zoom;
   _currentRegionCenter=center;
   _currentRegionZoom=z;
-  if(!_mapReady){
+  if(_mapReady){
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
     stopSplashRotation();startSplashRotation();
