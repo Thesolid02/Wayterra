@@ -1143,7 +1143,7 @@ lottie.loadAnimation({
   <div class="itp-header">
     <button class="itp-back" onclick="closeItinerarioDetail()">←</button>
     <div class="itp-title" id="itd-title"></div>
-    <button id="itd-bookmark-btn" onclick="openFavPage('itinerario-detail')" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;"><i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i></button>
+    <button id="itd-bookmark-btn" onclick="toggleFavItinerary(_currentItdExp&&_currentItdExp.id)" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;"><i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i></button>
     <button onclick="openItinerarioPDF()" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;" title="Scarica PDF"><i class="ti ti-download" style="font-size:20px;color:var(--g500);"></i></button>
   </div>
   <div class="itd-scroll">
@@ -3181,8 +3181,23 @@ function updFavBtn(){
 function updateItdBookmarkBtn(){
   var btn=document.getElementById('itd-bookmark-btn');
   if(!btn)return;
-  var filled=favs.size>0;
-  btn.innerHTML=filled?'<i class="ti ti-bookmark-filled" style="font-size:20px;color:var(--g500);"></i>':'<i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i>';
+  var isSaved=_currentUser&&_currentItdExp&&favItineraries.has(_currentItdExp.id);
+  btn.innerHTML=isSaved?'<i class="ti ti-bookmark-filled" style="font-size:20px;color:var(--g500);"></i>':'<i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i>';
+}
+function toggleFavItinerary(expId){
+  if(!expId)return;
+  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to save itineraries':'Accedi per salvare gli itinerari',function(){toggleFavItinerary(expId);});return;}
+  if(favItineraries.has(expId)){
+    favItineraries.delete(expId);
+    if(_supaAuth)_supaAuth.from('user_favorite_itineraries').delete().eq('user_id',_currentUser.id).eq('experience_id',expId).then(function(){});
+  }else{
+    favItineraries.add(expId);
+    if(_supaAuth)_supaAuth.from('user_favorite_itineraries').insert({user_id:_currentUser.id,experience_id:expId}).then(function(){});
+    toast(lang==='en'?'Itinerary saved':'Itinerario salvato');
+  }
+  updateItdBookmarkBtn();
+  var _pp=document.getElementById('profile-page');
+  if(_pp&&_pp.classList.contains('show'))renderProfileSaved();
 }
 var _favFrom=null;
 function openFavPage(from){
@@ -3455,6 +3470,7 @@ var _authCallback=null;
 var completedItineraries=new Set();
 var visitedPlaces=new Set();
 var downloadedSet=new Map();
+var favItineraries=new Set();
 
 function sbFetch(path,opts){
   return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
@@ -3600,6 +3616,10 @@ function closeRegionDropdown(){
 }
 function selectRegionFromDropdown(regionId){
   closeRegionDropdown();
+  if(document.getElementById('detail-page').classList.contains('show'))closeDetail();
+  if(document.getElementById('itinerario-detail').classList.contains('show'))closeItinerarioDetail();
+  if(document.getElementById('fav-page').classList.contains('show'))closeFavPage();
+  if(document.getElementById('itinerari-page').classList.contains('show'))closeItinerariPage();
   if(regionId==='lazio'){
     selectRegion('lazio');
   }else{
@@ -5139,6 +5159,7 @@ window.addEventListener('DOMContentLoaded',function(){
       <div id="auth-form" style="display:flex;flex-direction:column;gap:12px;">
         <input type="email" id="auth-email" placeholder="Email" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
         <input type="password" id="auth-password" placeholder="Password" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
+        <p onclick="resetPassword()" id="forgot-pw-link" style="font-size:.78rem;color:#dc6b2f;cursor:pointer;text-align:right;margin:-4px 0 4px;">Password dimenticata?</p>
         <div id="auth-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>
         <button onclick="submitAuth()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.9rem;font-weight:500;cursor:pointer;" id="auth-submit-btn">Accedi</button>
       </div>
@@ -5182,6 +5203,22 @@ function updateAuthMode(){
   document.getElementById('auth-toggle-btn').textContent=isLogin?(lang==='en'?' Sign up':' Registrati'):(lang==='en'?' Sign in':' Accedi');
   document.getElementById('auth-google-label').textContent=lang==='en'?'Continue with Google':'Continua con Google';
   document.getElementById('auth-skip-label').textContent=lang==='en'?'Continue without account':'Continua senza account';
+  var fpLink=document.getElementById('forgot-pw-link');
+  if(fpLink){
+    fpLink.style.display=isLogin?'':'none';
+    fpLink.textContent=lang==='en'?'Forgot password?':'Password dimenticata?';
+  }
+}
+function resetPassword(){
+  var email=document.getElementById('auth-email').value.trim();
+  var errEl=document.getElementById('auth-error');
+  if(!email){errEl.textContent=lang==='en'?'Enter your email first':'Inserisci prima la tua email';errEl.style.display='block';return;}
+  if(!_supaAuth)return;
+  _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname}).then(function(){
+    errEl.style.display='none';
+    toast(lang==='en'?'Reset email sent! Check your inbox':'Email di reset inviata! Controlla la tua casella');
+    closeAuthPage();
+  });
 }
 function toggleAuthMode(){
   _authMode=_authMode==='login'?'signup':'login';
@@ -5215,6 +5252,7 @@ async function signOut(){
   visitedPlaces.clear();
   favs.clear();
   downloadedSet.clear();
+  favItineraries.clear();
   saveFavs();
   localStorage.removeItem('WT_FAVS_v2');
   closeProfilePage();
@@ -5251,6 +5289,8 @@ async function _loadGamificationFromSupabase(userId){
   if(r2.data)r2.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
   var r3=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',userId);
   if(r3.data)r3.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
+  var r4=await _supaAuth.from('user_favorite_itineraries').select('experience_id').eq('user_id',userId);
+  if(r4.data)r4.data.forEach(function(r){if(r.experience_id)favItineraries.add(r.experience_id);});
   _refreshItineraryChecks();
   var _pp=document.getElementById('profile-page');
   if(_pp&&_pp.classList.contains('show'))renderProfilePage();
@@ -5433,6 +5473,31 @@ function renderProfileSaved(){
       +'</div>';
     savedHtml=filterHtml+listHtml;
   }
+  var itLabel=lang==='en'?'SAVED ITINERARIES':'ITINERARI SALVATI';
+  var itHtml='<p style="font-size:.68rem;font-weight:500;color:var(--g400);letter-spacing:.06em;margin:16px 16px 8px;">'+itLabel+'</p>'
+    +'<div id="profile-favit-list">';
+  if(!favItineraries.size){
+    itHtml+='<div style="text-align:center;padding:16px 24px;color:var(--g400);font-size:.82rem;">'+(lang==='en'?'No saved itineraries':'Nessun itinerario salvato')+'</div>';
+  }else{
+    favItineraries.forEach(function(expId){
+      var exp=DATA.experiences.find(function(x){return x.id===expId;});
+      if(!exp)return;
+      var title=lang==='en'&&exp.titleEn?exp.titleEn:exp.titleIt;
+      var dur=lang==='en'&&exp.durationEn?exp.durationEn:exp.durationIt;
+      var img=exp.coverPhoto
+        ?'<img src="'+exp.coverPhoto+'" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
+        :'<div style="width:52px;height:52px;border-radius:8px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🗺</div>';
+      itHtml+='<div onclick="closeProfilePage();openItinerario('+expId+')" style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:0.5px solid var(--g100);cursor:pointer;">'
+        +img
+        +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:.82rem;font-weight:600;color:var(--g900);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">'+title+'</div>'
+        +(dur?'<div style="font-size:.7rem;color:var(--g400);margin-top:2px;">'+dur+'</div>':'')
+        +'</div>'
+        +'<button onclick="event.stopPropagation();toggleFavItinerary('+expId+')" style="background:none;border:none;cursor:pointer;padding:8px;color:#dc6b2f;font-size:1.1rem;flex-shrink:0;"><i class="ti ti-bookmark-filled"></i></button>'
+        +'</div>';
+    });
+  }
+  itHtml+='</div>';
   var dlLabel=lang==='en'?'DOWNLOADED ITINERARIES':'ITINERARI SCARICATI';
   var dlHtml='<p style="font-size:.68rem;font-weight:500;color:var(--g400);letter-spacing:.06em;margin:16px 16px 8px;">'+dlLabel+'</p>'
     +'<div id="profile-downloads-list">';
@@ -5459,7 +5524,7 @@ function renderProfileSaved(){
     });
   }
   dlHtml+='</div><div style="height:80px;"></div>';
-  container.innerHTML=savedHtml+dlHtml;
+  container.innerHTML=savedHtml+itHtml+dlHtml;
 }
 function filterProfileSaved(region,btn){
   document.querySelectorAll('.psf-btn').forEach(function(b){b.classList.remove('active');});
