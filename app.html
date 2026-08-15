@@ -546,8 +546,18 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #fav-page{position:fixed;inset:0;z-index:500;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #fav-page.show{display:flex;}
 /* ── PROFILE PAGE ── */
-#profile-page{position:fixed;inset:0;z-index:500;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
+#profile-page{position:fixed;inset:0;z-index:500;display:none;}
 #profile-page.show{display:flex;}
+.profile-inner{display:flex;flex-direction:column;width:100%;height:100%;background:var(--w);overflow:hidden;}
+#auth-page{background:var(--w);overflow-y:auto;}
+.auth-inner{position:relative;width:100%;min-height:100%;}
+@media(min-width:768px){
+  #profile-page.show{background:rgba(0,0,0,.5);align-items:center;justify-content:center;}
+  .profile-inner{width:480px;max-width:100%;max-height:80vh;height:auto;border-radius:16px;overflow:hidden;}
+  #profile-body{max-height:calc(80vh - 224px);}
+  #auth-page{background:rgba(0,0,0,.5) !important;overflow-y:hidden;display:flex;align-items:center;justify-content:center;}
+  .auth-inner{max-width:400px;width:100%;min-height:0;background:var(--w);border-radius:16px;overflow:hidden;}
+}
 #profile-header{background:#dc6b2f;padding-top:calc(env(safe-area-inset-top,0px)+44px);display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
 .profile-tab{flex:1;text-align:center;padding:10px 0;font-size:.82rem;color:rgba(255,255,255,.7);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;}
 .profile-tab.active{color:#fff;border-bottom-color:#fff;font-weight:500;}
@@ -5002,55 +5012,60 @@ window.addEventListener('DOMContentLoaded',function(){
 </div>
 <!-- PROFILE PAGE -->
 <div id="profile-page">
-  <div id="profile-header" style="position:relative;">
-    <button onclick="closeProfilePage()" style="position:absolute;top:calc(env(safe-area-inset-top,0px)+12px);right:14px;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="ti ti-x" style="font-size:16px;color:#fff;"></i></button>
-    <div id="profile-avatar-wrap" style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;margin-bottom:10px;"></div>
-    <div id="profile-name-el" style="font-size:1rem;font-weight:600;color:#fff;margin-bottom:2px;min-height:1.2em;"></div>
-    <div id="profile-email-el" style="font-size:.78rem;color:rgba(255,255,255,.75);margin-bottom:0;min-height:1em;"></div>
-    <div style="display:flex;width:100%;border-top:0.5px solid rgba(255,255,255,.2);margin-top:12px;">
-      <div class="profile-tab active" data-ptab="saved" id="ptab-saved" onclick="switchProfileTab('saved')">Salvati</div>
-      <div class="profile-tab" data-ptab="stats" id="ptab-stats" onclick="switchProfileTab('stats')">Statistiche</div>
-      <div class="profile-tab" data-ptab="settings" id="ptab-settings" onclick="switchProfileTab('settings')">Impostazioni</div>
+  <div class="profile-inner">
+    <div id="profile-header" style="position:relative;">
+      <button onclick="closeProfilePage()" style="position:absolute;top:12px;right:14px;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="ti ti-x" style="font-size:16px;color:#fff;"></i></button>
+      <div id="profile-avatar-wrap" onclick="triggerAvatarUpload()" style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;margin-bottom:10px;cursor:pointer;overflow:hidden;"></div>
+      <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarChange(this)">
+      <div id="profile-name-el" style="font-size:1rem;font-weight:600;color:#fff;margin-bottom:2px;min-height:1.2em;"></div>
+      <div id="profile-email-el" style="font-size:.78rem;color:rgba(255,255,255,.75);margin-bottom:0;min-height:1em;"></div>
+      <div style="display:flex;width:100%;border-top:0.5px solid rgba(255,255,255,.2);margin-top:12px;">
+        <div class="profile-tab active" data-ptab="saved" id="ptab-saved" onclick="switchProfileTab('saved')">Salvati</div>
+        <div class="profile-tab" data-ptab="stats" id="ptab-stats" onclick="switchProfileTab('stats')">Statistiche</div>
+        <div class="profile-tab" data-ptab="settings" id="ptab-settings" onclick="switchProfileTab('settings')">Impostazioni</div>
+      </div>
     </div>
-  </div>
-  <div id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">
-    <div id="ptab-content-saved"></div>
-    <div id="ptab-content-stats" style="display:none;"></div>
-    <div id="ptab-content-settings" style="display:none;"></div>
+    <div id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+      <div id="ptab-content-saved"></div>
+      <div id="ptab-content-stats" style="display:none;"></div>
+      <div id="ptab-content-settings" style="display:none;"></div>
+    </div>
   </div>
 </div>
 
 <!-- AUTH PAGE -->
-<div id="auth-page" style="display:none;position:fixed;inset:0;z-index:800;background:var(--w);overflow-y:auto;">
-  <button onclick="closeAuthPage()" style="position:absolute;top:16px;right:16px;background:var(--g50);border:0.5px solid var(--g200);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="ti ti-x" style="font-size:16px;color:var(--g500);"></i></button>
-  <div style="max-width:400px;margin:0 auto;padding:40px 24px;">
-    <div style="text-align:center;margin-bottom:32px;">
-      <div style="width:56px;height:56px;border-radius:16px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-        <i class="ti ti-map-2" style="font-size:28px;color:#fff;"></i>
+<div id="auth-page" style="display:none;position:fixed;inset:0;z-index:800;">
+  <div class="auth-inner">
+    <button onclick="closeAuthPage()" style="position:absolute;top:16px;right:16px;background:var(--g50);border:0.5px solid var(--g200);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1;"><i class="ti ti-x" style="font-size:16px;color:var(--g500);"></i></button>
+    <div style="max-width:400px;margin:0 auto;padding:40px 24px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="width:56px;height:56px;border-radius:16px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+          <i class="ti ti-map-2" style="font-size:28px;color:#fff;"></i>
+        </div>
+        <p style="font-size:1.2rem;font-weight:500;margin:0 0 4px;">Wayterra</p>
+        <p style="font-size:.85rem;color:var(--g500);margin:0;" id="auth-subtitle">Accedi per salvare i tuoi luoghi preferiti</p>
       </div>
-      <p style="font-size:1.2rem;font-weight:500;margin:0 0 4px;">Wayterra</p>
-      <p style="font-size:.85rem;color:var(--g500);margin:0;" id="auth-subtitle">Accedi per salvare i tuoi luoghi preferiti</p>
+      <div id="auth-form" style="display:flex;flex-direction:column;gap:12px;">
+        <input type="email" id="auth-email" placeholder="Email" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
+        <input type="password" id="auth-password" placeholder="Password" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
+        <div id="auth-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>
+        <button onclick="submitAuth()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.9rem;font-weight:500;cursor:pointer;" id="auth-submit-btn">Accedi</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin:16px 0;">
+        <div style="flex:1;height:0.5px;background:var(--g100);"></div>
+        <span style="font-size:.78rem;color:var(--g400);">oppure</span>
+        <div style="flex:1;height:0.5px;background:var(--g100);"></div>
+      </div>
+      <button onclick="signInWithGoogle()" style="width:100%;padding:10px;background:var(--w);border:0.5px solid var(--g200);border-radius:8px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
+        <i class="ti ti-brand-google" style="font-size:18px;"></i>
+        <span id="auth-google-label">Continua con Google</span>
+      </button>
+      <p style="text-align:center;font-size:.82rem;color:var(--g500);margin-top:16px;">
+        <span id="auth-toggle-text">Non hai un account?</span>
+        <span onclick="toggleAuthMode()" style="color:#dc6b2f;cursor:pointer;font-weight:500;" id="auth-toggle-btn"> Registrati</span>
+      </p>
+      <p onclick="closeAuthPage()" style="text-align:center;font-size:.78rem;color:var(--g400);cursor:pointer;margin-top:8px;" id="auth-skip-label">Continua senza account</p>
     </div>
-    <div id="auth-form" style="display:flex;flex-direction:column;gap:12px;">
-      <input type="email" id="auth-email" placeholder="Email" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
-      <input type="password" id="auth-password" placeholder="Password" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
-      <div id="auth-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>
-      <button onclick="submitAuth()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.9rem;font-weight:500;cursor:pointer;" id="auth-submit-btn">Accedi</button>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;margin:16px 0;">
-      <div style="flex:1;height:0.5px;background:var(--g100);"></div>
-      <span style="font-size:.78rem;color:var(--g400);">oppure</span>
-      <div style="flex:1;height:0.5px;background:var(--g100);"></div>
-    </div>
-    <button onclick="signInWithGoogle()" style="width:100%;padding:10px;background:var(--w);border:0.5px solid var(--g200);border-radius:8px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
-      <i class="ti ti-brand-google" style="font-size:18px;"></i>
-      <span id="auth-google-label">Continua con Google</span>
-    </button>
-    <p style="text-align:center;font-size:.82rem;color:var(--g500);margin-top:16px;">
-      <span id="auth-toggle-text">Non hai un account?</span>
-      <span onclick="toggleAuthMode()" style="color:#dc6b2f;cursor:pointer;font-weight:500;" id="auth-toggle-btn"> Registrati</span>
-    </p>
-    <p onclick="closeAuthPage()" style="text-align:center;font-size:.78rem;color:var(--g400);cursor:pointer;margin-top:8px;" id="auth-skip-label">Continua senza account</p>
   </div>
 </div>
 
@@ -5061,7 +5076,7 @@ function openAuthPage(subtitle,callback){
   document.getElementById('auth-email').value='';
   document.getElementById('auth-password').value='';
   document.getElementById('auth-error').style.display='none';
-  document.getElementById('auth-page').style.display='block';
+  document.getElementById('auth-page').style.display=window.innerWidth>=768?'flex':'block';
   _authMode='login';
   updateAuthMode();
 }
@@ -5154,13 +5169,52 @@ function switchProfileTab(tab){
   document.getElementById('ptab-content-stats').style.display=tab==='stats'?'block':'none';
   document.getElementById('ptab-content-settings').style.display=tab==='settings'?'block':'none';
 }
+function triggerAvatarUpload(){
+  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to set a profile photo':'Accedi per aggiungere una foto profilo',null);return;}
+  document.getElementById('avatar-file-input').click();
+}
+async function handleAvatarChange(input){
+  if(!input.files||!input.files[0])return;
+  var file=input.files[0];
+  var blob=await _compressImage(file,320,320,0.82);
+  var avatarEl=document.getElementById('profile-avatar-wrap');
+  var localUrl=URL.createObjectURL(blob);
+  avatarEl.innerHTML='<img src="'+localUrl+'" style="width:100%;height:100%;object-fit:cover;">';
+  if(!_supaAuth||!_currentUser)return;
+  var path='avatars/'+_currentUser.id+'.jpg';
+  var up=await _supaAuth.storage.from('wayterra-images').upload(path,blob,{upsert:true,contentType:'image/jpeg'});
+  if(up.error){console.warn('[avatar]',up.error.message);return;}
+  var pub=_supaAuth.storage.from('wayterra-images').getPublicUrl(path);
+  var url=pub.data&&pub.data.publicUrl?pub.data.publicUrl:'';
+  if(url)await _supaAuth.auth.updateUser({data:{avatar_url:url}});
+}
+function _compressImage(file,maxW,maxH,quality){
+  return new Promise(function(resolve){
+    var img=new Image();
+    var reader=new FileReader();
+    reader.onload=function(e){
+      img.onload=function(){
+        var w=img.width,h=img.height,scale=Math.min(maxW/w,maxH/h,1);
+        var canvas=document.createElement('canvas');
+        canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        canvas.toBlob(function(b){resolve(b);},'image/jpeg',quality);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 function renderProfilePage(){
   var isLoggedIn=!!_currentUser;
   var email=isLoggedIn?(_currentUser.email||''):'';
+  var avatarUrl=isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.avatar_url?_currentUser.user_metadata.avatar_url:'';
   var initials=email?email.charAt(0).toUpperCase():'';
-  var avatarContent=initials
-    ?'<span style="font-size:1.4rem;font-weight:700;color:#fff;">'+initials+'</span>'
-    :'<i class="ti ti-user" style="font-size:1.6rem;color:rgba(255,255,255,.85);"></i>';
+  var avatarContent=avatarUrl
+    ?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">'
+    :(initials
+      ?'<span style="font-size:1.4rem;font-weight:700;color:#fff;">'+initials+'</span>'
+      :'<i class="ti ti-user" style="font-size:1.6rem;color:rgba(255,255,255,.85);"></i>');
   document.getElementById('profile-avatar-wrap').innerHTML=avatarContent;
   document.getElementById('profile-name-el').textContent=isLoggedIn?(email.split('@')[0]||''):'';
   document.getElementById('profile-email-el').textContent=email;
@@ -5233,10 +5287,10 @@ function renderProfileSettings(){
   var isLoggedIn=!!_currentUser;
   var langLabel=lang==='it'?'Italiano':'English';
   var html='<div style="padding-top:8px;">'
-    +'<div class="profile-setting-row" onclick="setLang(lang===\'it\'?\'en\':\'it\');renderProfilePage();">'
+    +'<div class="profile-setting-row" onclick="setLang(lang===\'it\'?\'en\':\'it\');var el=document.getElementById(\'settings-lang-value\');if(el)el.textContent=(lang===\'it\'?\'Italiano\':\'English\');">'
     +'<div class="profile-setting-icon" style="background:#f0f9ff;"><i class="ti ti-language" style="color:#0284c7;font-size:16px;"></i></div>'
     +'<div class="profile-setting-label">'+t('settings_language')+'</div>'
-    +'<div class="profile-setting-value" id="settings-lang-value">'+langLabel+' <i class="ti ti-chevron-right" style="font-size:12px;"></i></div>'
+    +'<div class="profile-setting-value" id="settings-lang-value">'+langLabel+'</div>'
     +'</div>';
   if(isLoggedIn){
     html+='<div class="profile-setting-row" onclick="signOut()">'
