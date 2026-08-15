@@ -1115,6 +1115,7 @@ lottie.loadAnimation({
     <button id="dp-act-map-btn" onclick="openPlaceActsPopup(currentPlace)" style="display:none;margin-top:8px;width:100%;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);">Esplora sulla mappa</button>
   </div>
   <div class="dp-cta">
+    <button id="dp-visited-btn" style="flex:1;padding:13px;border-radius:var(--rl);border:none;font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);"></button>
     <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
   </div>
 </div>
@@ -3104,6 +3105,7 @@ function openDetail(){
     trackEvent({event_type:'place_maps_open',place_id:p.id});
   };
   setupDpSave(p.id);
+  setupDpVisited(p.id);
   // desktop: restringi mappa e chiudi bubble
   if(window.innerWidth>=768){
     closeBubble();
@@ -3137,6 +3139,14 @@ function setupDpSave(id){
   sv.className='dp-save'+(favs.has(id)?' saved':'');
   sv.innerHTML=favs.has(id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';
   sv.onclick=function(){toggleFav(id);sv.className='dp-save'+(favs.has(id)?' saved':'');sv.innerHTML=favs.has(id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';};
+}
+function setupDpVisited(id){
+  var btn=document.getElementById('dp-visited-btn');
+  if(!btn)return;
+  var _v=visitedPlaces.has(id);
+  btn.style.cssText='flex:1;padding:13px;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;'+(_v?'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;box-sizing:border-box;border:none;':'background:var(--g100);color:var(--g900);border:none;');
+  btn.textContent=_v?(lang==='en'?'Been here ✓':'Ci sono stato ✓'):(lang==='en'?"I've been here":'Sono stato qui');
+  btn.onclick=function(){markPlaceVisited(id);};
 }
 
 /* ═══ FAVORITES ═══ */
@@ -3441,6 +3451,8 @@ var _supaAuth=(function(){try{return supabase.createClient(SB_URL,SB_KEY);}catch
 var _authMode='login';
 var _currentUser=null;
 var _authCallback=null;
+var completedItineraries=new Set();
+var visitedPlaces=new Set();
 
 function sbFetch(path,opts){
   return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
@@ -4104,10 +4116,11 @@ function openItinerario(id){
   }
   var _btnStyle='flex:1;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
   var _eid2=e.id;
+  var _isDone=completedItineraries.has(_eid2);
   var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
-  if(_itdMapCoords.length>=2){
-    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:#dc6b2f;color:#fff;">'+(lang==='en'?'Open route':'Apri percorso')+'</button>';
-  }
+  var _doneStyle=_isDone?'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;box-sizing:border-box;':'background:#16a34a;color:#fff;';
+  _btnsHtml+='<button id="itd-done-btn-'+_eid2+'" onclick="markItineraryDone('+_eid2+')" style="'+_btnStyle+_doneStyle+'">'
+    +(_isDone?(lang===’en’?’Done ✓’:’Fatto ✓’):(lang===’en’?’I did it!’:"L’ho fatto!"))+’</button>’;
 
   _btnsEl.innerHTML=_btnsHtml;
   _btnsEl.style.display='flex';
@@ -4490,7 +4503,7 @@ function openItinMapPopup(id){
   var hasTravelTimes=!!(e.stops||[]).some(function(s){return !!s.travel_time;});
   var footerHtml='';
   if(_itdMapCoords.length>=2){
-    footerHtml='<button onclick="closeMapPopup();openItinerarioGMaps(_itdMapCoords)" style="'+_btnSt+'background:#dc6b2f;color:#fff;">'+(lang==='en'?'Open route':'Apri percorso')+'</button>';
+    footerHtml='<button onclick="closeMapPopup();openItinerarioGMaps(_itdMapCoords)" style="'+_btnSt+'background:#dc6b2f;color:#fff;">'+(lang==='en'?'Open in Google Maps':'Apri su Google Maps')+'</button>';
   }
   if(hasTravelTimes){
     footerHtml+='<button onclick="openMapPopupTimes()" style="'+_btnSt+'background:var(--g100);color:var(--g900);">'+(lang==='en'?'Travel times':'Tempi tappe')+'</button>';
@@ -5177,7 +5190,7 @@ async function checkAuthSession(){
     _currentUser=session?session.user:null;
     updateProfileUI();
     if(event==='SIGNED_IN'){
-      if(_currentUser)_loadFavsFromSupabase(_currentUser.id);
+      if(_currentUser){_loadFavsFromSupabase(_currentUser.id);_loadGamificationFromSupabase(_currentUser.id);}
       if(_authCallback){_authCallback();_authCallback=null;}
     }
   });
@@ -5186,6 +5199,60 @@ async function _loadFavsFromSupabase(userId){
   if(!_supaAuth)return;
   var res=await _supaAuth.from('user_favorites').select('place_id').eq('user_id',userId);
   if(res.data){res.data.forEach(function(r){if(r.place_id)favs.add(r.place_id);});saveFavs();updFavBtn();}
+}
+async function _loadGamificationFromSupabase(userId){
+  if(!_supaAuth)return;
+  var r1=await _supaAuth.from('user_completed_itineraries').select('experience_id').eq('user_id',userId);
+  if(r1.data)r1.data.forEach(function(r){if(r.experience_id)completedItineraries.add(r.experience_id);});
+  var r2=await _supaAuth.from('user_visited_places').select('place_id').eq('user_id',userId);
+  if(r2.data)r2.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
+}
+async function markItineraryDone(expId){
+  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to track your trips':'Accedi per tracciare i tuoi itinerari',function(){markItineraryDone(expId);});return;}
+  var _isDone=completedItineraries.has(expId);
+  if(_isDone){
+    completedItineraries.delete(expId);
+    if(_supaAuth)_supaAuth.from('user_completed_itineraries').delete().eq('user_id',_currentUser.id).eq('experience_id',expId).then(function(){});
+  }else{
+    completedItineraries.add(expId);
+    if(_supaAuth)_supaAuth.from('user_completed_itineraries').insert({user_id:_currentUser.id,experience_id:expId}).then(function(){});
+    showCompletionModal('itinerary',expId);
+  }
+  var btn=document.getElementById('itd-done-btn-'+expId);
+  if(btn){
+    var _now=completedItineraries.has(expId);
+    btn.style.cssText=(_now?'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;box-sizing:border-box;':'background:#16a34a;color:#fff;');
+    btn.textContent=_now?(lang==='en'?'Done ✓':'Fatto ✓'):(lang==='en'?'I did it!':"L'ho fatto!");
+  }
+  if(document.getElementById('profile-page').classList.contains('show'))renderProfileStats();
+}
+async function markPlaceVisited(placeId){
+  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to track visited places':'Accedi per tracciare i luoghi visitati',function(){markPlaceVisited(placeId);});return;}
+  var _isV=visitedPlaces.has(placeId);
+  if(_isV){
+    visitedPlaces.delete(placeId);
+    if(_supaAuth)_supaAuth.from('user_visited_places').delete().eq('user_id',_currentUser.id).eq('place_id',placeId).then(function(){});
+  }else{
+    visitedPlaces.add(placeId);
+    if(_supaAuth)_supaAuth.from('user_visited_places').insert({user_id:_currentUser.id,place_id:placeId}).then(function(){});
+    showCompletionModal('place',placeId);
+  }
+  setupDpVisited(placeId);
+  if(document.getElementById('profile-page').classList.contains('show'))renderProfileStats();
+}
+function showCompletionModal(type,id){
+  var msg='';
+  if(type==='itinerary'){
+    var e=DATA.experiences.find(function(x){return x.id==id;});
+    var title=e?(lang==='en'&&e.titleEn?e.titleEn:e.titleIt):'';
+    msg=lang==='en'?'Trip completed! 🎉':'Itinerario completato! 🎉';
+    if(title)msg+=' <b>'+title+'</b>';
+  }else{
+    var p=DATA.places.find(function(x){return x.id==id;});
+    msg=lang==='en'?'Place visited! 📍':'Luogo visitato! 📍';
+    if(p&&p.name)msg+=' <b>'+p.name+'</b>';
+  }
+  toast(msg);
 }
 function updateProfileUI(){
   var pp=document.getElementById('profile-page');
@@ -5322,9 +5389,9 @@ function renderProfileStats(){
   document.getElementById('ptab-content-stats').innerHTML=
     '<div class="profile-stat-grid">'
     +'<div class="profile-stat-card"><div class="profile-stat-num">'+favs.size+'</div><div class="profile-stat-lbl">'+t('stat_saved_label')+'</div></div>'
-    +'<div class="profile-stat-card"><div class="profile-stat-num">0</div><div class="profile-stat-lbl">'+t('stat_itineraries_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num">'+completedItineraries.size+'</div><div class="profile-stat-lbl">'+t('stat_itineraries_label')+'</div></div>'
     +'<div class="profile-stat-card"><div class="profile-stat-num">0</div><div class="profile-stat-lbl">'+t('stat_countries_label')+'</div></div>'
-    +'<div class="profile-stat-card"><div class="profile-stat-num">0</div><div class="profile-stat-lbl">'+t('stat_places_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num">'+visitedPlaces.size+'</div><div class="profile-stat-lbl">'+t('stat_places_label')+'</div></div>'
     +'</div>'
     +'<p style="text-align:center;font-size:.76rem;color:var(--g400);padding:0 24px 24px;">'+t('stats_hint')+'</p>';
 }
