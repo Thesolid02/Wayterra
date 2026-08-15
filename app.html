@@ -5196,6 +5196,7 @@ async function checkAuthSession(){
   if(res.data&&res.data.session){
     _currentUser=res.data.session.user;
     _loadFavsFromSupabase(_currentUser.id);
+    _loadGamificationFromSupabase(_currentUser.id);
     updateProfileUI();
   }
   _supaAuth.auth.onAuthStateChange(function(event,session){
@@ -5218,6 +5219,16 @@ async function _loadGamificationFromSupabase(userId){
   if(r1.data)r1.data.forEach(function(r){if(r.experience_id)completedItineraries.add(r.experience_id);});
   var r2=await _supaAuth.from('user_visited_places').select('place_id').eq('user_id',userId);
   if(r2.data)r2.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
+  _refreshItineraryChecks();
+}
+function _refreshItineraryChecks(){
+  completedItineraries.forEach(function(id){
+    var el=document.getElementById('itinerary-check-'+id);
+    if(!el)return;
+    el.style.background='#16a34a';
+    var icon=el.querySelector('i');
+    if(icon)icon.style.color='#fff';
+  });
 }
 async function markItineraryDone(expId){
   if(!_currentUser){openAuthPage(lang==='en'?'Sign in to track your trips':'Accedi per tracciare i tuoi itinerari',function(){markItineraryDone(expId);});return;}
