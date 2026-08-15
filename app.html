@@ -3454,6 +3454,7 @@ var _currentUser=null;
 var _authCallback=null;
 var completedItineraries=new Set();
 var visitedPlaces=new Set();
+var downloadedSet=new Map();
 
 function sbFetch(path,opts){
   return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
@@ -4332,6 +4333,14 @@ function openItinerarioPDF(){
   win.document.write(html);
   win.document.close();
   setTimeout(function(){win.print();},500);
+  if(_currentUser&&_supaAuth){
+    var _dlExpId=e.id;
+    _supaAuth.from('user_downloaded_itineraries').insert({user_id:_currentUser.id,experience_id:_dlExpId}).then(function(){
+      downloadedSet.set(_dlExpId,new Date().toISOString());
+      var _pp=document.getElementById('profile-page');
+      if(_pp&&_pp.classList.contains('show'))renderProfileSaved();
+    });
+  }
 }
 function openItinerarioDetail(id){openItinerario(id);}
 
@@ -5063,15 +5072,24 @@ window.addEventListener('DOMContentLoaded',function(){
       <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarChange(this)">
       <div id="profile-name-el" style="font-size:1rem;font-weight:600;color:#fff;margin-bottom:2px;min-height:1.2em;"></div>
       <div id="profile-email-el" style="font-size:.78rem;color:rgba(255,255,255,.75);margin-bottom:0;min-height:1em;"></div>
-      <div style="display:flex;width:100%;border-top:0.5px solid rgba(255,255,255,.2);margin-top:12px;">
+      <div style="width:100%;display:flex;justify-content:space-around;padding:12px 0;border-top:0.5px solid rgba(255,255,255,0.3);margin-top:4px;">
+        <div style="text-align:center;">
+          <p style="font-size:1.25rem;font-weight:500;color:#fff;margin:0;" id="stat-itineraries">0</p>
+          <p style="font-size:.72rem;color:rgba(255,255,255,.75);margin:3px 0 0;" data-t="stat_itineraries_label">Itinerari fatti</p>
+        </div>
+        <div style="width:0.5px;background:rgba(255,255,255,0.3);"></div>
+        <div style="text-align:center;">
+          <p style="font-size:1.25rem;font-weight:500;color:#fff;margin:0;" id="stat-places">0</p>
+          <p style="font-size:.72rem;color:rgba(255,255,255,.75);margin:3px 0 0;" data-t="stat_places_label">Luoghi visitati</p>
+        </div>
+      </div>
+      <div style="display:flex;width:100%;border-top:0.5px solid rgba(255,255,255,.2);">
         <div class="profile-tab active" data-ptab="saved" id="ptab-saved" onclick="switchProfileTab('saved')">Salvati</div>
-        <div class="profile-tab" data-ptab="stats" id="ptab-stats" onclick="switchProfileTab('stats')">Statistiche</div>
         <div class="profile-tab" data-ptab="settings" id="ptab-settings" onclick="switchProfileTab('settings')">Impostazioni</div>
       </div>
     </div>
     <div id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">
       <div id="ptab-content-saved"></div>
-      <div id="ptab-content-stats" style="display:none;"></div>
       <div id="ptab-content-settings" style="display:none;"></div>
     </div>
   </div>
@@ -5191,7 +5209,9 @@ async function signOut(){
   completedItineraries.clear();
   visitedPlaces.clear();
   favs.clear();
+  downloadedSet.clear();
   saveFavs();
+  localStorage.removeItem('WT_FAVS_v2');
   closeProfilePage();
   toast(lang==='en'?'Signed out':'Disconnesso');
 }
@@ -5224,6 +5244,8 @@ async function _loadGamificationFromSupabase(userId){
   if(r1.data)r1.data.forEach(function(r){if(r.experience_id)completedItineraries.add(r.experience_id);});
   var r2=await _supaAuth.from('user_visited_places').select('place_id').eq('user_id',userId);
   if(r2.data)r2.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
+  var r3=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',userId);
+  if(r3.data)r3.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
   _refreshItineraryChecks();
   var _pp=document.getElementById('profile-page');
   if(_pp&&_pp.classList.contains('show'))renderProfilePage();
@@ -5311,7 +5333,6 @@ function switchProfileTab(tab){
     el.classList.toggle('active',el.getAttribute('data-ptab')===tab);
   });
   document.getElementById('ptab-content-saved').style.display=tab==='saved'?'block':'none';
-  document.getElementById('ptab-content-stats').style.display=tab==='stats'?'block':'none';
   document.getElementById('ptab-content-settings').style.display=tab==='settings'?'block':'none';
 }
 function triggerAvatarUpload(){
@@ -5364,10 +5385,12 @@ function renderProfilePage(){
   document.getElementById('profile-name-el').textContent=isLoggedIn?(email.split('@')[0]||''):'';
   document.getElementById('profile-email-el').textContent=email;
   document.getElementById('ptab-saved').textContent=t('profile_tab_saved');
-  document.getElementById('ptab-stats').textContent=t('profile_tab_stats');
   document.getElementById('ptab-settings').textContent=t('profile_tab_settings');
+  var _itEl=document.getElementById('stat-itineraries');
+  var _plEl=document.getElementById('stat-places');
+  if(_itEl)_itEl.textContent=completedItineraries.size;
+  if(_plEl)_plEl.textContent=visitedPlaces.size;
   renderProfileSaved();
-  renderProfileStats();
   renderProfileSettings();
   var langVal=document.getElementById('settings-lang-value');
   if(langVal)langVal.textContent=lang==='it'?'Italiano':'English';
@@ -5376,34 +5399,62 @@ function renderProfilePage(){
 function renderProfileSaved(){
   var container=document.getElementById('ptab-content-saved');
   var favList=DATA.places.filter(function(p){return favs.has(p.id);});
+  var savedHtml='';
   if(!favList.length){
-    container.innerHTML='<div style="text-align:center;padding:48px 24px;color:var(--g400);font-size:.88rem;">'+t('no_saved')+'</div>';
-    return;
+    savedHtml='<div style="text-align:center;padding:32px 24px 0;color:var(--g400);font-size:.88rem;">'+t('no_saved')+'</div>';
+  }else{
+    var regions=[...new Set(favList.map(function(p){return p.region||'lazio';}))]
+      .map(function(r){return{id:r,label:r.charAt(0).toUpperCase()+r.slice(1)};});
+    var filterHtml='<div class="profile-saved-filter">'
+      +'<button class="psf-btn active" data-region="all" onclick="filterProfileSaved(\'all\',this)">'+(lang==='en'?'All':'Tutti')+'</button>'
+      +regions.map(function(r){return '<button class="psf-btn" data-region="'+r.id+'" onclick="filterProfileSaved(\''+r.id+'\',this)">'+r.label+'</button>';}).join('')
+      +'</div>';
+    var listHtml='<div id="profile-saved-list" style="padding:8px 16px 0;">'
+      +favList.map(function(p){
+        var c=placeTypeOf(p.placeTypeId);
+        var imgHtml=p.coverPhoto
+          ?'<img src="'+p.coverPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
+          :'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:'+p.gradient+';border-radius:10px;">'+renderIcon(c.icon)+'</div>';
+        return '<div class="fav-item" data-region="'+(p.region||'lazio')+'" style="cursor:pointer;" onclick="goToFavProfile('+p.id+')">'
+          +'<div class="fav-item-img">'+imgHtml+'</div>'
+          +'<div class="fav-item-body">'
+          +'<div class="fav-item-cat" style="color:'+c.color+';">'+renderIcon(c.icon)+' '+catName(c)+'</div>'
+          +'<div class="fav-item-name">'+p.name+'</div>'
+          +'<div style="font-size:.72rem;color:var(--g400);margin-top:2px;">'+(p.region?p.region.charAt(0).toUpperCase()+p.region.slice(1):'')+'</div>'
+          +'</div>'
+          +'<button onclick="event.stopPropagation();toggleFav('+p.id+')" style="background:none;border:none;cursor:pointer;padding:8px;color:#dc6b2f;font-size:1.1rem;flex-shrink:0;"><i class="ti ti-bookmark-filled"></i></button>'
+          +'</div>';
+      }).join('')
+      +'</div>';
+    savedHtml=filterHtml+listHtml;
   }
-  var regions=[...new Set(favList.map(function(p){return p.region||'lazio';}))]
-    .map(function(r){return{id:r,label:r.charAt(0).toUpperCase()+r.slice(1)};});
-  var filterHtml='<div class="profile-saved-filter">'
-    +'<button class="psf-btn active" data-region="all" onclick="filterProfileSaved(\'all\',this)">'+(lang==='en'?'All':'Tutti')+'</button>'
-    +regions.map(function(r){return '<button class="psf-btn" data-region="'+r.id+'" onclick="filterProfileSaved(\''+r.id+'\',this)">'+r.label+'</button>';}).join('')
-    +'</div>';
-  var listHtml='<div id="profile-saved-list" style="padding:8px 16px 80px;">'
-    +favList.map(function(p){
-      var c=placeTypeOf(p.placeTypeId);
-      var imgHtml=p.coverPhoto
-        ?'<img src="'+p.coverPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
-        :'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:'+p.gradient+';border-radius:10px;">'+renderIcon(c.icon)+'</div>';
-      return '<div class="fav-item" data-region="'+(p.region||'lazio')+'" style="cursor:pointer;" onclick="goToFavProfile('+p.id+')">'
-        +'<div class="fav-item-img">'+imgHtml+'</div>'
-        +'<div class="fav-item-body">'
-        +'<div class="fav-item-cat" style="color:'+c.color+';">'+renderIcon(c.icon)+' '+catName(c)+'</div>'
-        +'<div class="fav-item-name">'+p.name+'</div>'
-        +'<div style="font-size:.72rem;color:var(--g400);margin-top:2px;">'+(p.region?p.region.charAt(0).toUpperCase()+p.region.slice(1):'')+'</div>'
+  var dlLabel=lang==='en'?'DOWNLOADED ITINERARIES':'ITINERARI SCARICATI';
+  var dlHtml='<p style="font-size:.68rem;font-weight:500;color:var(--g400);letter-spacing:.06em;margin:16px 16px 8px;">'+dlLabel+'</p>'
+    +'<div id="profile-downloads-list">';
+  if(!downloadedSet.size){
+    dlHtml+='<div style="text-align:center;padding:16px 24px;color:var(--g400);font-size:.82rem;">'+(lang==='en'?'No downloaded itineraries':'Nessun itinerario scaricato')+'</div>';
+  }else{
+    downloadedSet.forEach(function(downloadedAt,expId){
+      var exp=DATA.experiences.find(function(x){return x.id===expId;});
+      if(!exp)return;
+      var title=lang==='en'&&exp.titleEn?exp.titleEn:exp.titleIt;
+      var dateStr='';
+      if(downloadedAt){var d=new Date(downloadedAt);dateStr=d.toLocaleDateString(lang==='en'?'en-GB':'it-IT',{day:'2-digit',month:'short',year:'numeric'});}
+      var img=exp.coverPhoto
+        ?'<img src="'+exp.coverPhoto+'" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
+        :'<div style="width:52px;height:52px;border-radius:8px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🗺</div>';
+      dlHtml+='<div onclick="closeProfilePage();openItinerario('+expId+')" style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:0.5px solid var(--g100);cursor:pointer;">'
+        +img
+        +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:.82rem;font-weight:600;color:var(--g900);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">'+title+'</div>'
+        +(dateStr?'<div style="font-size:.7rem;color:var(--g400);margin-top:2px;">'+dateStr+'</div>':'')
         +'</div>'
-        +'<button onclick="event.stopPropagation();toggleFav('+p.id+')" style="background:none;border:none;cursor:pointer;padding:8px;color:#dc6b2f;font-size:1.1rem;flex-shrink:0;"><i class="ti ti-bookmark-filled"></i></button>'
+        +'<i class="ti ti-file-type-pdf" style="font-size:18px;color:#dc6b2f;flex-shrink:0;"></i>'
         +'</div>';
-    }).join('')
-    +'</div>';
-  container.innerHTML=filterHtml+listHtml;
+    });
+  }
+  dlHtml+='</div><div style="height:80px;"></div>';
+  container.innerHTML=savedHtml+dlHtml;
 }
 function filterProfileSaved(region,btn){
   document.querySelectorAll('.psf-btn').forEach(function(b){b.classList.remove('active');});
@@ -5421,19 +5472,10 @@ function goToFavProfile(id){
   openDetail();
 }
 function renderProfileStats(){
-  var _countries=new Set();
-  Array.from(visitedPlaces).forEach(function(pid){
-    var _p=(DATA.places||[]).find(function(x){return x.id===pid;});
-    if(_p&&_p.region)_countries.add(_p.region);
-  });
-  document.getElementById('ptab-content-stats').innerHTML=
-    '<div class="profile-stat-grid">'
-    +'<div class="profile-stat-card"><div class="profile-stat-num" id="stat-saved">'+favs.size+'</div><div class="profile-stat-lbl">'+t('stat_saved_label')+'</div></div>'
-    +'<div class="profile-stat-card"><div class="profile-stat-num" id="stat-itineraries">'+completedItineraries.size+'</div><div class="profile-stat-lbl">'+t('stat_itineraries_label')+'</div></div>'
-    +'<div class="profile-stat-card"><div class="profile-stat-num" id="stat-countries">'+_countries.size+'</div><div class="profile-stat-lbl">'+t('stat_countries_label')+'</div></div>'
-    +'<div class="profile-stat-card"><div class="profile-stat-num" id="stat-places">'+visitedPlaces.size+'</div><div class="profile-stat-lbl">'+t('stat_places_label')+'</div></div>'
-    +'</div>'
-    +'<p style="text-align:center;font-size:.76rem;color:var(--g400);padding:0 24px 24px;">'+t('stats_hint')+'</p>';
+  var _itEl=document.getElementById('stat-itineraries');
+  var _plEl=document.getElementById('stat-places');
+  if(_itEl)_itEl.textContent=completedItineraries.size;
+  if(_plEl)_plEl.textContent=visitedPlaces.size;
 }
 function renderProfileSettings(){
   var isLoggedIn=!!_currentUser;
@@ -5442,7 +5484,8 @@ function renderProfileSettings(){
     +'<div class="profile-setting-row" onclick="openLangPopup()">'
     +'<div class="profile-setting-icon" style="background:#f0f9ff;"><i class="ti ti-language" style="color:#0284c7;font-size:16px;"></i></div>'
     +'<div class="profile-setting-label">'+t('settings_language')+'</div>'
-    +'<div class="profile-setting-value" id="settings-lang-value" style="display:flex;align-items:center;gap:4px;">'+langLabel+' <i class="ti ti-chevron-right" style="font-size:12px;"></i></div>'
+    +'<div class="profile-setting-value" id="settings-lang-value">'+langLabel+'</div>'
+    +'<i class="ti ti-chevron-right" style="font-size:14px;color:var(--g400);flex-shrink:0;margin-left:8px;"></i>'
     +'</div>';
   if(isLoggedIn){
     html+='<div class="profile-setting-row" onclick="signOut()">'
