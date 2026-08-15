@@ -1729,8 +1729,8 @@ function searchGoPlaceAct(placeId,actId){
   },needSwitch?900:50);
 }
 
+function toggleLang(){setLang(lang==='it'?'en':'it');}
 function setLang(l){
-  console.log('[lang] prima:',lang,'→ richiesto:',l);
   lang=l;
   localStorage.setItem(K.LANG,l);
   var btnIt=document.getElementById('btn-it');
@@ -1740,9 +1740,7 @@ function setLang(l){
   applyTranslations();
   buildDD();
   var langVal=document.getElementById('settings-lang-value');
-  console.log('[lang] #settings-lang-value found:',!!langVal,'lang ora:',lang);
   if(langVal)langVal.textContent=l==='it'?'Italiano':'English';
-  console.log('[lang] dopo:',l);
 }
 function applyTranslations(){
   document.getElementById('fav-title').textContent=t('favorites');
@@ -5229,6 +5227,8 @@ function renderProfilePage(){
   renderProfileSaved();
   renderProfileStats();
   renderProfileSettings();
+  var langVal=document.getElementById('settings-lang-value');
+  if(langVal)langVal.textContent=lang==='it'?'Italiano':'English';
   switchProfileTab(_profileTab);
 }
 function renderProfileSaved(){
@@ -5292,7 +5292,7 @@ function renderProfileSettings(){
   var isLoggedIn=!!_currentUser;
   var langLabel=lang==='it'?'Italiano':'English';
   var html='<div style="padding-top:8px;">'
-    +'<div class="profile-setting-row" onclick="setLang(lang===\'it\'?\'en\':\'it\');var el=document.getElementById(\'settings-lang-value\');if(el)el.textContent=(lang===\'it\'?\'Italiano\':\'English\');">'
+    +'<div class="profile-setting-row" onclick="toggleLang()">'
     +'<div class="profile-setting-icon" style="background:#f0f9ff;"><i class="ti ti-language" style="color:#0284c7;font-size:16px;"></i></div>'
     +'<div class="profile-setting-label">'+t('settings_language')+'</div>'
     +'<div class="profile-setting-value" id="settings-lang-value">'+langLabel+'</div>'
