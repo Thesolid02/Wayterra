@@ -4127,7 +4127,7 @@ function openItinerario(id){
   var _eid2=e.id;
   var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:#dc6b2f;color:#fff;border:none;">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
   if(_itdMapCoords.length>=2){
-    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:var(--w);border:0.5px solid var(--g200);color:var(--g600);">'+(lang==='en'?'Open in Google Maps':'Apri su Google Maps')+'</button>';
+    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:var(--g100);color:var(--g900);border:none;">'+(lang==='en'?'Open in Google Maps':'Apri su Google Maps')+'</button>';
   }
 
   _btnsEl.innerHTML=_btnsHtml;
