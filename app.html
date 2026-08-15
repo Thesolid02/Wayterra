@@ -4120,7 +4120,7 @@ function openItinerario(id){
   var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
   var _doneStyle=_isDone?'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;box-sizing:border-box;':'background:#16a34a;color:#fff;';
   _btnsHtml+='<button id="itd-done-btn-'+_eid2+'" onclick="markItineraryDone('+_eid2+')" style="'+_btnStyle+_doneStyle+'">'
-    +(_isDone?(lang===’en’?’Done ✓’:’Fatto ✓’):(lang===’en’?’I did it!’:"L’ho fatto!"))+’</button>’;
+    +(_isDone?(lang==='en'?'Done ✓':'Fatto ✓'):(lang==='en'?'I did it!':"L'ho fatto!"))+'</button>';
 
   _btnsEl.innerHTML=_btnsHtml;
   _btnsEl.style.display='flex';
