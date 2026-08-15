@@ -1096,7 +1096,6 @@ lottie.loadAnimation({
     <div class="dp-region" id="dp-region"></div>
     <div class="dp-tagline" id="dp-tagline"></div>
     <div class="dp-desc" id="dp-desc"></div>
-    <div id="dp-actions-row" style="display:none;gap:8px;margin:4px 0 14px;"></div>
     <div class="dp-secret" id="dp-secret-box">
       <div class="dp-secret-lbl">🤫 <span data-t="secret_lbl">Il segreto locale</span></div>
       <p id="dp-secret"></p>
@@ -1116,6 +1115,7 @@ lottie.loadAnimation({
     <button id="dp-act-map-btn" onclick="openPlaceActsPopup(currentPlace)" style="display:none;margin-top:8px;width:100%;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);">Esplora sulla mappa</button>
   </div>
   <div class="dp-cta">
+    <button id="dp-visited-btn" style="flex:1;padding:13px;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;background:#dc6b2f;color:#fff;"></button>
     <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
   </div>
 </div>
@@ -3141,18 +3141,13 @@ function setupDpSave(id){
   sv.onclick=function(){toggleFav(id);sv.className='dp-save'+(favs.has(id)?' saved':'');sv.innerHTML=favs.has(id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';};
 }
 function setupDpVisited(id){
-  var row=document.getElementById('dp-actions-row');
-  if(!row)return;
+  var btn=document.getElementById('dp-visited-btn');
+  if(!btn)return;
   var _v=visitedPlaces.has(id);
-  var _btnBase='flex:1;padding:13px;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;box-sizing:border-box;';
-  var _saveStyle=_btnBase+'background:transparent;border:1.5px solid #dc6b2f;color:#dc6b2f;';
-  var _visitStyle=_v
-    ?_btnBase+'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;'
-    :_btnBase+'background:#16a34a;border:none;color:#fff;';
-  var _visitLabel=_v?(lang==='en'?'Visited ✓':'Visitato ✓'):(lang==='en'?'I\'ve been here':'Sono stato qui');
-  row.innerHTML='<button style="'+_saveStyle+'" onclick="toggleFav('+id+')">'+(lang==='en'?'Save':'Salva')+'</button>'
-    +'<button id="visited-btn-'+id+'" style="'+_visitStyle+'" onclick="markPlaceVisited('+id+')">'+_visitLabel+'</button>';
-  row.style.display='flex';
+  btn.style.background=_v?'#16a34a':'#dc6b2f';
+  btn.style.color='#fff';
+  btn.textContent=_v?(lang==='en'?'Visited ✓':'Visitato ✓'):(lang==='en'?'I\'ve been here':'Sono stato qui');
+  btn.onclick=function(){markPlaceVisited(id);};
 }
 
 /* ═══ FAVORITES ═══ */
@@ -5254,11 +5249,10 @@ async function markPlaceVisited(placeId){
     if(_supaAuth)_supaAuth.from('user_visited_places').insert({user_id:_currentUser.id,place_id:placeId}).then(function(){});
     showCompletionModal('place',placeId);
   }
-  var _vBtn=document.getElementById('visited-btn-'+placeId);
+  var _vBtn=document.getElementById('dp-visited-btn');
   if(_vBtn){
     var _nowV=visitedPlaces.has(placeId);
-    var _btnBase='flex:1;padding:13px;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;box-sizing:border-box;';
-    _vBtn.style.cssText=_nowV?_btnBase+'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;':_btnBase+'background:#16a34a;border:none;color:#fff;';
+    _vBtn.style.background=_nowV?'#16a34a':'#dc6b2f';
     _vBtn.textContent=_nowV?(lang==='en'?'Visited ✓':'Visitato ✓'):(lang==='en'?'I\'ve been here':'Sono stato qui');
   }
   if(document.getElementById('profile-page').classList.contains('show'))renderProfileStats();
@@ -5269,11 +5263,11 @@ function showCompletionModal(type,id){
     var e=DATA.experiences.find(function(x){return x.id==id;});
     var title=e?(lang==='en'&&e.titleEn?e.titleEn:e.titleIt):'';
     msg=lang==='en'?'Trip completed! 🎉':'Itinerario completato! 🎉';
-    if(title)msg+=' <b>'+title+'</b>';
+    if(title)msg+=' — '+title.replace(/<[^>]*>/g,'');
   }else{
     var p=DATA.places.find(function(x){return x.id==id;});
     msg=lang==='en'?'Place visited! 📍':'Luogo visitato! 📍';
-    if(p&&p.name)msg+=' <b>'+p.name+'</b>';
+    if(p&&p.name)msg+=' — '+p.name.replace(/<[^>]*>/g,'');
   }
   toast(msg);
 }
@@ -5409,11 +5403,16 @@ function goToFavProfile(id){
   openDetail();
 }
 function renderProfileStats(){
+  var _countries=new Set();
+  Array.from(visitedPlaces).forEach(function(pid){
+    var _p=(DATA.places||[]).find(function(x){return x.id===pid;});
+    if(_p&&_p.region)_countries.add(_p.region);
+  });
   document.getElementById('ptab-content-stats').innerHTML=
     '<div class="profile-stat-grid">'
     +'<div class="profile-stat-card"><div class="profile-stat-num">'+favs.size+'</div><div class="profile-stat-lbl">'+t('stat_saved_label')+'</div></div>'
     +'<div class="profile-stat-card"><div class="profile-stat-num">'+completedItineraries.size+'</div><div class="profile-stat-lbl">'+t('stat_itineraries_label')+'</div></div>'
-    +'<div class="profile-stat-card"><div class="profile-stat-num">0</div><div class="profile-stat-lbl">'+t('stat_countries_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num">'+_countries.size+'</div><div class="profile-stat-lbl">'+t('stat_countries_label')+'</div></div>'
     +'<div class="profile-stat-card"><div class="profile-stat-num">'+visitedPlaces.size+'</div><div class="profile-stat-lbl">'+t('stat_places_label')+'</div></div>'
     +'</div>'
     +'<p style="text-align:center;font-size:.76rem;color:var(--g400);padding:0 24px 24px;">'+t('stats_hint')+'</p>';
