@@ -553,8 +553,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .auth-inner{position:relative;width:100%;min-height:100%;}
 @media(min-width:768px){
   #profile-page.show{background:rgba(0,0,0,.5);align-items:center;justify-content:center;}
-  .profile-inner{width:480px;max-width:100%;max-height:80vh;height:auto;border-radius:16px;overflow:hidden;}
-  #profile-body{max-height:calc(80vh - 224px);}
+  .profile-inner{width:480px;max-width:100%;height:600px;max-height:80vh;border-radius:16px;overflow:hidden;}
+  #profile-body{overflow-y:auto;}
   #auth-page{background:rgba(0,0,0,.5) !important;overflow-y:hidden;display:flex;align-items:center;justify-content:center;}
   .auth-inner{max-width:400px;width:100%;min-height:0;background:var(--w);border-radius:16px;overflow:hidden;}
 }
@@ -1738,6 +1738,8 @@ function setLang(l){
   if(btnEn)btnEn.className='lang-btn '+(l==='en'?'on':'off');
   applyTranslations();
   buildDD();
+  var langVal=document.getElementById('settings-lang-value');
+  if(langVal)langVal.textContent=l==='it'?'Italiano':'English';
 }
 function applyTranslations(){
   document.getElementById('fav-title').textContent=t('favorites');
