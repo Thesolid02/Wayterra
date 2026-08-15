@@ -5188,7 +5188,12 @@ async function signOut(){
   if(!_supaAuth)return;
   await _supaAuth.auth.signOut();
   _currentUser=null;
-  updateProfileUI();
+  completedItineraries.clear();
+  visitedPlaces.clear();
+  favs.clear();
+  saveFavs();
+  closeProfilePage();
+  toast(lang==='en'?'Signed out':'Disconnesso');
 }
 async function checkAuthSession(){
   if(!_supaAuth)return;
@@ -5220,6 +5225,8 @@ async function _loadGamificationFromSupabase(userId){
   var r2=await _supaAuth.from('user_visited_places').select('place_id').eq('user_id',userId);
   if(r2.data)r2.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
   _refreshItineraryChecks();
+  var _pp=document.getElementById('profile-page');
+  if(_pp&&_pp.classList.contains('show'))renderProfilePage();
 }
 function _refreshItineraryChecks(){
   completedItineraries.forEach(function(id){
@@ -5421,10 +5428,10 @@ function renderProfileStats(){
   });
   document.getElementById('ptab-content-stats').innerHTML=
     '<div class="profile-stat-grid">'
-    +'<div class="profile-stat-card"><div class="profile-stat-num">'+favs.size+'</div><div class="profile-stat-lbl">'+t('stat_saved_label')+'</div></div>'
-    +'<div class="profile-stat-card"><div class="profile-stat-num">'+completedItineraries.size+'</div><div class="profile-stat-lbl">'+t('stat_itineraries_label')+'</div></div>'
-    +'<div class="profile-stat-card"><div class="profile-stat-num">'+_countries.size+'</div><div class="profile-stat-lbl">'+t('stat_countries_label')+'</div></div>'
-    +'<div class="profile-stat-card"><div class="profile-stat-num">'+visitedPlaces.size+'</div><div class="profile-stat-lbl">'+t('stat_places_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num" id="stat-saved">'+favs.size+'</div><div class="profile-stat-lbl">'+t('stat_saved_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num" id="stat-itineraries">'+completedItineraries.size+'</div><div class="profile-stat-lbl">'+t('stat_itineraries_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num" id="stat-countries">'+_countries.size+'</div><div class="profile-stat-lbl">'+t('stat_countries_label')+'</div></div>'
+    +'<div class="profile-stat-card"><div class="profile-stat-num" id="stat-places">'+visitedPlaces.size+'</div><div class="profile-stat-lbl">'+t('stat_places_label')+'</div></div>'
     +'</div>'
     +'<p style="text-align:center;font-size:.76rem;color:var(--g400);padding:0 24px 24px;">'+t('stats_hint')+'</p>';
 }
