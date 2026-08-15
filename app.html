@@ -1730,6 +1730,7 @@ function searchGoPlaceAct(placeId,actId){
 }
 
 function setLang(l){
+  console.log('[lang] prima:',lang,'→ richiesto:',l);
   lang=l;
   localStorage.setItem(K.LANG,l);
   var btnIt=document.getElementById('btn-it');
@@ -1739,7 +1740,9 @@ function setLang(l){
   applyTranslations();
   buildDD();
   var langVal=document.getElementById('settings-lang-value');
+  console.log('[lang] #settings-lang-value found:',!!langVal,'lang ora:',lang);
   if(langVal)langVal.textContent=l==='it'?'Italiano':'English';
+  console.log('[lang] dopo:',l);
 }
 function applyTranslations(){
   document.getElementById('fav-title').textContent=t('favorites');
