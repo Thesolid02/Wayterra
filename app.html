@@ -1096,6 +1096,7 @@ lottie.loadAnimation({
     <div class="dp-region" id="dp-region"></div>
     <div class="dp-tagline" id="dp-tagline"></div>
     <div class="dp-desc" id="dp-desc"></div>
+    <div id="dp-actions-row" style="display:none;gap:8px;margin:4px 0 14px;"></div>
     <div class="dp-secret" id="dp-secret-box">
       <div class="dp-secret-lbl">🤫 <span data-t="secret_lbl">Il segreto locale</span></div>
       <p id="dp-secret"></p>
@@ -1115,7 +1116,6 @@ lottie.loadAnimation({
     <button id="dp-act-map-btn" onclick="openPlaceActsPopup(currentPlace)" style="display:none;margin-top:8px;width:100%;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);">Esplora sulla mappa</button>
   </div>
   <div class="dp-cta">
-    <button id="dp-visited-btn" style="flex:1;padding:13px;border-radius:var(--rl);border:none;font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);"></button>
     <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
   </div>
 </div>
@@ -3141,12 +3141,18 @@ function setupDpSave(id){
   sv.onclick=function(){toggleFav(id);sv.className='dp-save'+(favs.has(id)?' saved':'');sv.innerHTML=favs.has(id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';};
 }
 function setupDpVisited(id){
-  var btn=document.getElementById('dp-visited-btn');
-  if(!btn)return;
+  var row=document.getElementById('dp-actions-row');
+  if(!row)return;
   var _v=visitedPlaces.has(id);
-  btn.style.cssText='flex:1;padding:13px;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;'+(_v?'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;box-sizing:border-box;border:none;':'background:var(--g100);color:var(--g900);border:none;');
-  btn.textContent=_v?(lang==='en'?'Been here ✓':'Ci sono stato ✓'):(lang==='en'?"I've been here":'Sono stato qui');
-  btn.onclick=function(){markPlaceVisited(id);};
+  var _btnBase='flex:1;padding:13px;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;box-sizing:border-box;';
+  var _saveStyle=_btnBase+'background:transparent;border:1.5px solid #dc6b2f;color:#dc6b2f;';
+  var _visitStyle=_v
+    ?_btnBase+'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;'
+    :_btnBase+'background:#16a34a;border:none;color:#fff;';
+  var _visitLabel=_v?(lang==='en'?'Visited ✓':'Visitato ✓'):(lang==='en'?'I\'ve been here':'Sono stato qui');
+  row.innerHTML='<button style="'+_saveStyle+'" onclick="toggleFav('+id+')">'+(lang==='en'?'Save':'Salva')+'</button>'
+    +'<button id="visited-btn-'+id+'" style="'+_visitStyle+'" onclick="markPlaceVisited('+id+')">'+_visitLabel+'</button>';
+  row.style.display='flex';
 }
 
 /* ═══ FAVORITES ═══ */
@@ -3826,9 +3832,13 @@ function renderItinerariPage(region){
     var activeHtml=travels.length?travels.map(function(e){
       var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
       var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+      var _done=completedItineraries.has(e.id);
+      var _chkBg=_done?'#16a34a':'rgba(0,0,0,0.35)';
+      var _chkClr=_done?'#fff':'rgba(255,255,255,0.7)';
+      var _chk='<div onclick="event.stopPropagation();markItineraryDone('+e.id+');" id="itinerary-check-'+e.id+'" style="position:absolute;bottom:10px;right:10px;width:30px;height:30px;border-radius:50%;background:'+_chkBg+';display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><i class="ti ti-check" style="font-size:15px;color:'+_chkClr+';"></i></div>';
       var img=e.coverPhoto
-        ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
-        :'<div class="itp-card-img-ph">🌍</div>';
+        ?'<div style="position:relative;"><img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'+_chk+'</div>'
+        :'<div class="itp-card-img-ph" style="position:relative;">🌍'+_chk+'</div>';
       var stopsCount=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
       var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
       return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
@@ -3857,9 +3867,13 @@ function renderItinerariPage(region){
     var cards=lazioExp.map(function(e){
       var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
       var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+      var _done=completedItineraries.has(e.id);
+      var _chkBg=_done?'#16a34a':'rgba(0,0,0,0.35)';
+      var _chkClr=_done?'#fff':'rgba(255,255,255,0.7)';
+      var _chk='<div onclick="event.stopPropagation();markItineraryDone('+e.id+');" id="itinerary-check-'+e.id+'" style="position:absolute;bottom:10px;right:10px;width:30px;height:30px;border-radius:50%;background:'+_chkBg+';display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><i class="ti ti-check" style="font-size:15px;color:'+_chkClr+';"></i></div>';
       var img=e.coverPhoto
-        ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
-        :'<div class="itp-card-img-ph">🗺</div>';
+        ?'<div style="position:relative;"><img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'+_chk+'</div>'
+        :'<div class="itp-card-img-ph" style="position:relative;">🗺'+_chk+'</div>';
       var _sc=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
       var stops=_sc?'<span class="itp-stop-badge">'+_sc+' tappe</span>':'';
       return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
@@ -4114,13 +4128,12 @@ function openItinerario(id){
   } else {
     _mapWrap.style.display='none';
   }
-  var _btnStyle='flex:1;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
+  var _btnStyle='flex:1;padding:9px 12px;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
   var _eid2=e.id;
-  var _isDone=completedItineraries.has(_eid2);
-  var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
-  var _doneStyle=_isDone?'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;box-sizing:border-box;':'background:#16a34a;color:#fff;';
-  _btnsHtml+='<button id="itd-done-btn-'+_eid2+'" onclick="markItineraryDone('+_eid2+')" style="'+_btnStyle+_doneStyle+'">'
-    +(_isDone?(lang==='en'?'Done ✓':'Fatto ✓'):(lang==='en'?'I did it!':"L'ho fatto!"))+'</button>';
+  var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:#dc6b2f;color:#fff;border:none;">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
+  if(_itdMapCoords.length>=2){
+    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:var(--w);border:0.5px solid var(--g200);color:var(--g600);">'+(lang==='en'?'Open in Google Maps':'Apri su Google Maps')+'</button>';
+  }
 
   _btnsEl.innerHTML=_btnsHtml;
   _btnsEl.style.display='flex';
@@ -4646,9 +4659,13 @@ function renderTravelsPage(){
   var activeHtml=travels.length?travels.map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+    var _done=completedItineraries.has(e.id);
+    var _chkBg=_done?'#16a34a':'rgba(0,0,0,0.35)';
+    var _chkClr=_done?'#fff':'rgba(255,255,255,0.7)';
+    var _chk='<div onclick="event.stopPropagation();markItineraryDone('+e.id+');" id="itinerary-check-'+e.id+'" style="position:absolute;bottom:10px;right:10px;width:30px;height:30px;border-radius:50%;background:'+_chkBg+';display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><i class="ti ti-check" style="font-size:15px;color:'+_chkClr+';"></i></div>';
     var img=e.coverPhoto
-      ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
-      :'<div class="itp-card-img-ph">🌍</div>';
+      ?'<div style="position:relative;"><img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'+_chk+'</div>'
+      :'<div class="itp-card-img-ph" style="position:relative;">🌍'+_chk+'</div>';
     var stopsCount=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
     var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
     return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
@@ -5218,11 +5235,11 @@ async function markItineraryDone(expId){
     if(_supaAuth)_supaAuth.from('user_completed_itineraries').insert({user_id:_currentUser.id,experience_id:expId}).then(function(){});
     showCompletionModal('itinerary',expId);
   }
-  var btn=document.getElementById('itd-done-btn-'+expId);
-  if(btn){
-    var _now=completedItineraries.has(expId);
-    btn.style.cssText=(_now?'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;box-sizing:border-box;':'background:#16a34a;color:#fff;');
-    btn.textContent=_now?(lang==='en'?'Done ✓':'Fatto ✓'):(lang==='en'?'I did it!':"L'ho fatto!");
+  var _nowDone=completedItineraries.has(expId);
+  var checkEl=document.getElementById('itinerary-check-'+expId);
+  if(checkEl){
+    checkEl.style.background=_nowDone?'#16a34a':'rgba(0,0,0,0.35)';
+    checkEl.querySelector('i').style.color=_nowDone?'#fff':'rgba(255,255,255,0.7)';
   }
   if(document.getElementById('profile-page').classList.contains('show'))renderProfileStats();
 }
@@ -5237,7 +5254,13 @@ async function markPlaceVisited(placeId){
     if(_supaAuth)_supaAuth.from('user_visited_places').insert({user_id:_currentUser.id,place_id:placeId}).then(function(){});
     showCompletionModal('place',placeId);
   }
-  setupDpVisited(placeId);
+  var _vBtn=document.getElementById('visited-btn-'+placeId);
+  if(_vBtn){
+    var _nowV=visitedPlaces.has(placeId);
+    var _btnBase='flex:1;padding:13px;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;box-sizing:border-box;';
+    _vBtn.style.cssText=_nowV?_btnBase+'background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;':_btnBase+'background:#16a34a;border:none;color:#fff;';
+    _vBtn.textContent=_nowV?(lang==='en'?'Visited ✓':'Visitato ✓'):(lang==='en'?'I\'ve been here':'Sono stato qui');
+  }
   if(document.getElementById('profile-page').classList.contains('show'))renderProfileStats();
 }
 function showCompletionModal(type,id){
