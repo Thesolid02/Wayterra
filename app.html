@@ -3464,6 +3464,9 @@ document.addEventListener('keydown',function(e){
 /* ═══ SUPABASE CONFIG ═══ */
 var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
+var _pendingRecovery=false;
+var _initHash=window.location.hash;
+if(_initHash.includes('type=recovery')||_initHash.includes('type=magiclink')){_pendingRecovery=true;}
 var _supaAuth=(function(){try{return supabase.createClient(SB_URL,SB_KEY);}catch(e){return null;}})();
 var _authMode='login';
 var _currentUser=null;
@@ -5362,6 +5365,15 @@ async function checkAuthSession(){
       updateProfileUI();
     }
   });
+  if(_pendingRecovery){
+    window.location.hash='';
+    _pendingRecovery=false;
+    var recRes=await _supaAuth.auth.getSession();
+    if(recRes.data&&recRes.data.session){
+      setTimeout(function(){openPasswordResetForm();},300);
+      return;
+    }
+  }
   var sesRes=await _supaAuth.auth.getSession();
   if(sesRes.data&&sesRes.data.session&&sesRes.data.session.user){
     _currentUser=sesRes.data.session.user;
