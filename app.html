@@ -5370,6 +5370,12 @@ async function checkAuthSession(){
     _pendingRecovery=false;
     var recRes=await _supaAuth.auth.getSession();
     if(recRes.data&&recRes.data.session){
+      var _savedReg=localStorage.getItem('WT_REGION');
+      if(_savedReg&&_savedReg!=='lazio'){
+        selectTravelRegion(_savedReg,getRegionCenter(_savedReg),getRegionZoom(_savedReg));
+      }else{
+        selectRegion('lazio');
+      }
       setTimeout(function(){openPasswordResetForm();},300);
       return;
     }
@@ -5411,6 +5417,7 @@ async function submitPasswordReset(){
   }
   document.getElementById('pw-reset-modal').remove();
   toast(lang==='en'?'Password updated successfully':'Password aggiornata con successo');
+  setTimeout(function(){openProfilePage();},500);
 }
 async function _loadFavsFromSupabase(userId){
   if(!_supaAuth)return;
