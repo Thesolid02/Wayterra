@@ -3517,6 +3517,7 @@ function hideRegionPage(cb){
   setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
 }
 function selectRegion(regionId){
+  document.getElementById('map').style.visibility='hidden';
   var _dp=document.getElementById('detail-page');
   if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');_dp.style.zIndex='';}
   var _itd=document.getElementById('itinerario-detail');
@@ -3561,6 +3562,7 @@ function selectRegion(regionId){
   }
 }
 function selectTravelRegion(regionId,center,zoom){
+  document.getElementById('map').style.visibility='hidden';
   var _dp=document.getElementById('detail-page');
   if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');_dp.style.zIndex='';}
   var _itd=document.getElementById('itinerario-detail');
