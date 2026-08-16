@@ -5372,23 +5372,31 @@ async function checkAuthSession(){
     _pendingRecovery=false;
     var recRes=await _supaAuth.auth.getSession();
     if(recRes.data&&recRes.data.session){
-      var waitForMap=function(){
-        if(_mapReady){
-          var _lastReg=localStorage.getItem('WT_LAST_REGION');
-          if(_lastReg&&_lastReg!=='lazio'){
-            selectTravelRegion(_lastReg,getRegionCenter(_lastReg),getRegionZoom(_lastReg));
+      var _lastReg=localStorage.getItem('WT_LAST_REGION');
+      if(_lastReg){
+        var waitForMap=function(){
+          if(_mapReady){
+            if(_lastReg!=='lazio'){
+              selectTravelRegion(_lastReg,getRegionCenter(_lastReg),getRegionZoom(_lastReg));
+            }else{
+              selectRegion('lazio');
+            }
+            setTimeout(function(){
+              openAuthPage(lang==='en'?'Update your password':'Aggiorna la tua password');
+              setTimeout(function(){openPasswordResetForm();},200);
+            },800);
           }else{
-            selectRegion('lazio');
+            setTimeout(waitForMap,200);
           }
-          setTimeout(function(){
-            openAuthPage(lang==='en'?'Update your password':'Aggiorna la tua password');
-            setTimeout(function(){openPasswordResetForm();},200);
-          },500);
-        }else{
-          setTimeout(waitForMap,200);
-        }
-      };
-      setTimeout(waitForMap,200);
+        };
+        setTimeout(waitForMap,200);
+      }else{
+        showRegionPage();
+        setTimeout(function(){
+          openAuthPage(lang==='en'?'Update your password':'Aggiorna la tua password');
+          setTimeout(function(){openPasswordResetForm();},200);
+        },300);
+      }
       return;
     }
   }
