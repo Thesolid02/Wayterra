@@ -3616,11 +3616,17 @@ function closeRegionDropdown(){
 }
 function selectRegionFromDropdown(regionId){
   closeRegionDropdown();
-  if(document.getElementById('detail-page').classList.contains('show'))closeDetail();
-  if(document.getElementById('itinerario-detail').classList.contains('show'))closeItinerarioDetail();
-  if(document.getElementById('fav-page').classList.contains('show'))closeFavPage();
-  if(document.getElementById('itinerari-page').classList.contains('show'))closeItinerariPage();
+  var _dp=document.getElementById('detail-page');
+  if(_dp&&_dp.classList.contains('show'))closeDetail();
+  var _itd=document.getElementById('itinerario-detail');
+  if(_itd&&_itd.classList.contains('show'))closeItinerarioDetail();
+  var _fp=document.getElementById('fav-page');
+  if(_fp&&_fp.classList.contains('show'))closeFavPage();
+  var _itp=document.getElementById('itinerari-page');
+  if(_itp&&_itp.classList.contains('show'))closeItinerariPage();
   if(regionId==='lazio'){
+    _travelContext=false;
+    _currentTravelRegion=null;
     selectRegion('lazio');
   }else{
     selectTravelRegion(regionId,getRegionCenter(regionId),getRegionZoom(regionId));
@@ -5274,7 +5280,40 @@ async function checkAuthSession(){
       if(_currentUser){_loadFavsFromSupabase(_currentUser.id);_loadGamificationFromSupabase(_currentUser.id);}
       if(_authCallback){_authCallback();_authCallback=null;}
     }
+    if(event==='PASSWORD_RECOVERY'){
+      openPasswordResetForm();
+    }
   });
+}
+function openPasswordResetForm(){
+  if(document.getElementById('pw-reset-modal'))return;
+  var modal=document.createElement('div');
+  modal.id='pw-reset-modal';
+  modal.style.cssText='position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML='<div style="background:var(--w);border-radius:14px;padding:24px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px;">'
+    +'<p style="font-size:1rem;font-weight:500;margin:0;">'+(lang==='en'?'Set new password':'Imposta nuova password')+'</p>'
+    +'<input type="password" id="pw-reset-input" placeholder="'+(lang==='en'?'New password':'Nuova password')+'" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-family:var(--f);font-size:.9rem;box-sizing:border-box;">'
+    +'<div id="pw-reset-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>'
+    +'<button onclick="submitPasswordReset()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-family:var(--f);font-size:.9rem;font-weight:500;cursor:pointer;">'+(lang==='en'?'Update password':'Aggiorna password')+'</button>'
+    +'</div>';
+  document.body.appendChild(modal);
+}
+async function submitPasswordReset(){
+  var newPassword=document.getElementById('pw-reset-input').value;
+  var errEl=document.getElementById('pw-reset-error');
+  if(!newPassword||newPassword.length<6){
+    errEl.textContent=lang==='en'?'Password must be at least 6 characters':'La password deve avere almeno 6 caratteri';
+    errEl.style.display='block';
+    return;
+  }
+  var res=await _supaAuth.auth.updateUser({password:newPassword});
+  if(res.error){
+    errEl.textContent=res.error.message;
+    errEl.style.display='block';
+    return;
+  }
+  document.getElementById('pw-reset-modal').remove();
+  toast(lang==='en'?'Password updated successfully':'Password aggiornata con successo');
 }
 async function _loadFavsFromSupabase(userId){
   if(!_supaAuth)return;
