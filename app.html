@@ -3545,6 +3545,7 @@ function selectRegion(regionId){
   _currentTravelRegion=null;
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
+  localStorage.setItem('WT_LAST_REGION','lazio');
   updateRegionPill(regionId);
   hideRegionPage(null);
   _currentRegionCenter=[12.8,41.8];
@@ -3591,6 +3592,7 @@ function selectTravelRegion(regionId,center,zoom){
   _currentTravelRegion=regionId;
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
+  localStorage.setItem('WT_LAST_REGION',regionId);
   updateRegionPill(regionId);
   hideRegionPage(null);
   var z=window.innerWidth<768?zoom-1:zoom;
@@ -5372,8 +5374,16 @@ async function checkAuthSession(){
     if(recRes.data&&recRes.data.session){
       var waitForMap=function(){
         if(_mapReady){
-          openAuthPage(lang==='en'?'Update your password':'Aggiorna la tua password');
-          setTimeout(function(){openPasswordResetForm();},200);
+          var _lastReg=localStorage.getItem('WT_LAST_REGION');
+          if(_lastReg&&_lastReg!=='lazio'){
+            selectTravelRegion(_lastReg,getRegionCenter(_lastReg),getRegionZoom(_lastReg));
+          }else{
+            selectRegion('lazio');
+          }
+          setTimeout(function(){
+            openAuthPage(lang==='en'?'Update your password':'Aggiorna la tua password');
+            setTimeout(function(){openPasswordResetForm();},200);
+          },500);
         }else{
           setTimeout(waitForMap,200);
         }
