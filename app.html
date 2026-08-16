@@ -5319,6 +5319,8 @@ async function signOut(){
 async function checkAuthSession(){
   if(!_supaAuth)return;
   _supaAuth.auth.onAuthStateChange(async function(event,session){
+    console.log('[auth] evento:',event,'session:',!!session,'user:',session?.user?.email);
+    console.log('[auth] URL al momento evento:',window.location.href);
     if(event==='PASSWORD_RECOVERY'){
       setTimeout(function(){openPasswordResetForm();},100);
       return;
