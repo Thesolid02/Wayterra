@@ -725,6 +725,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #region-page{position:fixed;inset:0;z-index:600;background:#fafaf8;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:opacity .35s;}
 #region-page.fade-out{opacity:0;pointer-events:none;}
 #region-page.gone{display:none;}
+.gone{display:none;}
 .rp-header{padding:calc(env(safe-area-inset-top,0px)+32px) 16px 20px;text-align:center;}
 .rp-title{font-size:1.4rem;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:6px;}
 .rp-sub{font-size:.86rem;color:var(--g500);line-height:1.5;}
@@ -3112,7 +3113,7 @@ function openDetail(){
     document.getElementById('map').classList.add('panel-open');
     setTimeout(function(){map_o.resize();},320);
   }
-  document.getElementById('detail-page').classList.add('show');
+  var _dpEl=document.getElementById('detail-page');_dpEl.classList.remove('gone');_dpEl.classList.add('show');
   if(window.umami)umami.track('place_view',{name:p.name,type:c.name||''});
   trackEvent({event_type:'place_view',place_id:p.id});
 }
@@ -3617,13 +3618,13 @@ function closeRegionDropdown(){
 function selectRegionFromDropdown(regionId){
   closeRegionDropdown();
   var _dp=document.getElementById('detail-page');
-  if(_dp&&_dp.classList.contains('show'))closeDetail();
+  if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');}
   var _itd=document.getElementById('itinerario-detail');
-  if(_itd&&_itd.classList.contains('show'))closeItinerarioDetail();
+  if(_itd){_itd.classList.remove('show');_itd.classList.add('gone');}
+  var _itp=document.getElementById('itinerari-page');
+  if(_itp){_itp.classList.remove('show');_itp.classList.add('gone');}
   var _fp=document.getElementById('fav-page');
   if(_fp&&_fp.classList.contains('show'))closeFavPage();
-  var _itp=document.getElementById('itinerari-page');
-  if(_itp&&_itp.classList.contains('show'))closeItinerariPage();
   if(regionId==='lazio'){
     _travelContext=false;
     _currentTravelRegion=null;
@@ -3837,7 +3838,7 @@ function openItinerariPage(region){
   if(titleEl)titleEl.textContent=region&&regionNames[region]?regionNames[region]:(lang==='en'?'Itineraries':'Itinerari');
   var page=document.getElementById('itinerari-page');
   page.style.zIndex=region?'610':'';
-  page.classList.add('show');
+  page.classList.remove('gone');page.classList.add('show');
   setBottomNav('itinerari');
 }
 function closeItinerariPage(){
@@ -4193,8 +4194,7 @@ function openItinerario(id){
         }
       });
     }).catch(function(){_svcEl.innerHTML='';});
-  document.getElementById('itinerario-detail').style.zIndex=_travelContext?'620':'510';
-  document.getElementById('itinerario-detail').classList.add('show');
+  var _itdEl=document.getElementById('itinerario-detail');_itdEl.style.zIndex=_travelContext?'620':'510';_itdEl.classList.remove('gone');_itdEl.classList.add('show');
   updateItdBookmarkBtn();
 }
 function openTravelSvc(url){
@@ -4853,6 +4853,15 @@ function bootApp(d){
   document.getElementById('splash').classList.add('hide');
   document.getElementById('splash').style.display='none';
   showRegionPage();
+  if(_supaAuth){
+    var _hashParams=new URLSearchParams(window.location.hash.slice(1));
+    if(_hashParams.get('type')==='recovery'){
+      window.location.hash='';
+      _supaAuth.auth.getSession().then(function(res){
+        if(res.data&&res.data.session)openPasswordResetForm();
+      });
+    }
+  }
   checkAuthSession();
 }
 
