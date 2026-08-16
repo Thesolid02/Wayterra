@@ -5370,7 +5370,8 @@ async function checkAuthSession(){
     _pendingRecovery=false;
     var recRes=await _supaAuth.auth.getSession();
     if(recRes.data&&recRes.data.session){
-      setTimeout(function(){openPasswordResetForm();},1500);
+      openAuthPage();
+      setTimeout(function(){openPasswordResetForm();},200);
       return;
     }
   }
@@ -5410,8 +5411,9 @@ async function submitPasswordReset(){
     return;
   }
   document.getElementById('pw-reset-modal').remove();
+  var _subtitleEl=document.getElementById('auth-subtitle');
+  if(_subtitleEl)_subtitleEl.textContent=lang==='en'?'Password updated! Sign in with your new password.':'Password aggiornata! Accedi con la nuova password.';
   toast(lang==='en'?'Password updated successfully':'Password aggiornata con successo');
-  setTimeout(function(){openProfilePage();},500);
 }
 async function _loadFavsFromSupabase(userId){
   if(!_supaAuth)return;
