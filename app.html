@@ -32,7 +32,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #map{position:fixed;inset:0;z-index:0;height:100vh;height:100dvh;transition:right .3s ease;}
 
 /* ── TOP BAR ── */
-#topbar{position:fixed;top:0;left:0;right:0;z-index:300;
+#topbar{position:fixed;top:0;left:0;right:0;z-index:320;
   padding:0 14px;padding-top:calc(env(safe-area-inset-top,0px) + 10px);padding-bottom:10px;
   pointer-events:none;display:flex;flex-direction:column;gap:6px;}
 #topbar-row1{display:flex;align-items:center;justify-content:space-between;}
@@ -940,7 +940,7 @@ lottie.loadAnimation({
         <span class="region-pill-name" id="region-pill-name">Lazio</span>
         <span class="region-pill-arrow">▾</span>
       </div>
-      <div id="region-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--w);border-radius:12px;overflow:hidden;border:0.5px solid var(--g100);box-shadow:var(--sh-lg);z-index:500;min-width:200px;">
+      <div id="region-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--w);border-radius:12px;overflow:hidden;border:0.5px solid var(--g100);box-shadow:var(--sh-lg);z-index:650;min-width:200px;">
         <div id="region-dropdown-header" style="padding:8px 12px;border-bottom:0.5px solid var(--g100);">
           <p style="font-size:.68rem;color:var(--g400);letter-spacing:.06em;margin:0;" id="rdd-country-label"></p>
         </div>
