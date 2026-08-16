@@ -4895,15 +4895,6 @@ function bootApp(d){
   document.getElementById('splash').classList.add('hide');
   document.getElementById('splash').style.display='none';
   showRegionPage();
-  if(_supaAuth){
-    var _hashParams=new URLSearchParams(window.location.hash.slice(1));
-    if(_hashParams.get('type')==='recovery'){
-      window.location.hash='';
-      _supaAuth.auth.getSession().then(function(res){
-        if(res.data&&res.data.session)openPasswordResetForm();
-      });
-    }
-  }
   checkAuthSession();
 }
 
@@ -5216,7 +5207,7 @@ window.addEventListener('DOMContentLoaded',function(){
       <div id="auth-form" style="display:flex;flex-direction:column;gap:12px;">
         <input type="email" id="auth-email" placeholder="Email" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
         <input type="password" id="auth-password" placeholder="Password" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
-        <p onclick="resetPassword()" id="forgot-pw-link" style="font-size:.78rem;color:#dc6b2f;cursor:pointer;text-align:right;margin:-4px 0 4px;">Password dimenticata?</p>
+        <p onclick="openPwForgotModal()" id="forgot-pw-link" style="font-size:.78rem;color:#dc6b2f;cursor:pointer;text-align:right;margin:-4px 0 4px;">Password dimenticata?</p>
         <div id="auth-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>
         <button onclick="submitAuth()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.9rem;font-weight:500;cursor:pointer;" id="auth-submit-btn">Accedi</button>
       </div>
@@ -5266,16 +5257,26 @@ function updateAuthMode(){
     fpLink.textContent=lang==='en'?'Forgot password?':'Password dimenticata?';
   }
 }
-function resetPassword(){
-  var email=document.getElementById('auth-email').value.trim();
-  var errEl=document.getElementById('auth-error');
-  if(!email){errEl.textContent=lang==='en'?'Enter your email first':'Inserisci prima la tua email';errEl.style.display='block';return;}
-  if(!_supaAuth)return;
-  _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname}).then(function(){
-    errEl.style.display='none';
-    toast(lang==='en'?'Reset email sent! Check your inbox':'Email di reset inviata! Controlla la tua casella');
-    closeAuthPage();
-  });
+function openPwForgotModal(){
+  var m=document.getElementById('pw-forgot-modal');
+  document.getElementById('pw-forgot-title').textContent=lang==='en'?'Reset password':'Recupera password';
+  document.getElementById('pw-forgot-subtitle').textContent=lang==='en'?'Enter your email and we\'ll send you a link to reset your password.':'Inserisci la tua email e ti invieremo un link per reimpostare la password.';
+  document.getElementById('pw-forgot-btn').textContent=lang==='en'?'Send link':'Invia link';
+  document.getElementById('pw-forgot-email').value=document.getElementById('auth-email')?.value||'';
+  document.getElementById('pw-forgot-error').style.display='none';
+  m.style.display='flex';
+}
+function closePwForgotModal(){
+  document.getElementById('pw-forgot-modal').style.display='none';
+}
+async function submitPwForgot(){
+  var email=document.getElementById('pw-forgot-email').value.trim();
+  var errEl=document.getElementById('pw-forgot-error');
+  if(!email){errEl.textContent=lang==='en'?'Please enter your email':'Inserisci la tua email';errEl.style.display='block';return;}
+  var res=await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+  if(res.error){errEl.textContent=res.error.message;errEl.style.display='block';return;}
+  closePwForgotModal();
+  toast(lang==='en'?'Email sent! Check your inbox':'Email inviata! Controlla la tua casella');
 }
 function toggleAuthMode(){
   _authMode=_authMode==='login'?'signup':'login';
@@ -5317,24 +5318,43 @@ async function signOut(){
 }
 async function checkAuthSession(){
   if(!_supaAuth)return;
-  var res=await _supaAuth.auth.getSession();
-  if(res.data&&res.data.session){
-    _currentUser=res.data.session.user;
-    _loadFavsFromSupabase(_currentUser.id);
-    _loadGamificationFromSupabase(_currentUser.id);
-    updateProfileUI();
-  }
-  _supaAuth.auth.onAuthStateChange(function(event,session){
-    _currentUser=session?session.user:null;
-    updateProfileUI();
+  _supaAuth.auth.onAuthStateChange(async function(event,session){
+    if(event==='PASSWORD_RECOVERY'){
+      setTimeout(function(){openPasswordResetForm();},100);
+      return;
+    }
     if(event==='SIGNED_IN'){
-      if(_currentUser){_loadFavsFromSupabase(_currentUser.id);_loadGamificationFromSupabase(_currentUser.id);}
+      _currentUser=session.user;
+      completedItineraries.clear();visitedPlaces.clear();favs.clear();favItineraries.clear();downloadedSet.clear();
+      var favRes=await _supaAuth.from('user_favorites').select('place_id').eq('user_id',session.user.id);
+      if(favRes.data)favRes.data.forEach(function(r){if(r.place_id)favs.add(r.place_id);});
+      saveFavs();
+      var compRes=await _supaAuth.from('user_completed_itineraries').select('experience_id').eq('user_id',session.user.id);
+      if(compRes.data)compRes.data.forEach(function(r){if(r.experience_id)completedItineraries.add(r.experience_id);});
+      var visRes=await _supaAuth.from('user_visited_places').select('place_id').eq('user_id',session.user.id);
+      if(visRes.data)visRes.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
+      var favItRes=await _supaAuth.from('user_favorite_itineraries').select('experience_id').eq('user_id',session.user.id);
+      if(favItRes.data)favItRes.data.forEach(function(r){if(r.experience_id)favItineraries.add(r.experience_id);});
+      var dlRes=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',session.user.id);
+      if(dlRes.data)dlRes.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
+      updateProfileUI();
+      _refreshItineraryChecks();
+      var _pp=document.getElementById('profile-page');
+      if(_pp&&_pp.style.display!=='none')renderProfilePage();
       if(_authCallback){_authCallback();_authCallback=null;}
     }
-    if(event==='PASSWORD_RECOVERY'){
-      openPasswordResetForm();
+    if(event==='SIGNED_OUT'){
+      _currentUser=null;
+      updateProfileUI();
     }
   });
+  var sesRes=await _supaAuth.auth.getSession();
+  if(sesRes.data&&sesRes.data.session&&sesRes.data.session.user){
+    _currentUser=sesRes.data.session.user;
+    updateProfileUI();
+    _loadFavsFromSupabase(_currentUser.id);
+    _loadGamificationFromSupabase(_currentUser.id);
+  }
 }
 function openPasswordResetForm(){
   if(document.getElementById('pw-reset-modal'))return;
@@ -5662,5 +5682,15 @@ function renderProfileSettings(){
   document.getElementById('ptab-content-settings').innerHTML=html;
 }
 </script>
+<div id="pw-forgot-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--w);border-radius:14px;padding:24px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px;position:relative;">
+    <button onclick="closePwForgotModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;"><i class="ti ti-x" style="font-size:18px;color:var(--g400);"></i></button>
+    <p style="font-size:1rem;font-weight:500;margin:0;" id="pw-forgot-title">Recupera password</p>
+    <p style="font-size:.82rem;color:var(--g500);margin:0;" id="pw-forgot-subtitle">Inserisci la tua email e ti invieremo un link per reimpostare la password.</p>
+    <input type="email" id="pw-forgot-email" placeholder="Email" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-family:var(--f);font-size:.9rem;box-sizing:border-box;">
+    <div id="pw-forgot-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>
+    <button onclick="submitPwForgot()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-family:var(--f);font-size:.9rem;font-weight:500;cursor:pointer;" id="pw-forgot-btn">Invia link</button>
+  </div>
+</div>
 </body>
 </html>
