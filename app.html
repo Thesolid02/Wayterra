@@ -5370,8 +5370,15 @@ async function checkAuthSession(){
     _pendingRecovery=false;
     var recRes=await _supaAuth.auth.getSession();
     if(recRes.data&&recRes.data.session){
-      openAuthPage();
-      setTimeout(function(){openPasswordResetForm();},200);
+      var waitForMap=function(){
+        if(_mapReady){
+          openAuthPage(lang==='en'?'Update your password':'Aggiorna la tua password');
+          setTimeout(function(){openPasswordResetForm();},200);
+        }else{
+          setTimeout(waitForMap,200);
+        }
+      };
+      setTimeout(waitForMap,200);
       return;
     }
   }
