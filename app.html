@@ -5285,7 +5285,7 @@ async function submitPwForgot(){
   var email=document.getElementById('pw-forgot-email').value.trim();
   var errEl=document.getElementById('pw-forgot-error');
   if(!email){errEl.textContent=lang==='en'?'Please enter your email':'Inserisci la tua email';errEl.style.display='block';return;}
-  var res=await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+  var res=await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:'https://v2-dev--glittery-pudding-104d72.netlify.app/app'});
   if(res.error){errEl.textContent=translateAuthError(res.error.message,lang);errEl.style.display='block';return;}
   closePwForgotModal();
   toast(lang==='en'?'Email sent! Check your inbox':'Email inviata! Controlla la tua casella');
