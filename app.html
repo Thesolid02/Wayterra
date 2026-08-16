@@ -5269,12 +5269,24 @@ function openPwForgotModal(){
 function closePwForgotModal(){
   document.getElementById('pw-forgot-modal').style.display='none';
 }
+function translateAuthError(message,lang){
+  var errors={
+    'email rate limit exceeded':{it:'Troppi tentativi. Riprova tra qualche minuto.',en:'Too many attempts. Please try again in a few minutes.'},
+    'invalid login credentials':{it:'Email o password non corretti.',en:'Incorrect email or password.'},
+    'email not confirmed':{it:'Email non confermata. Controlla la tua casella.',en:'Email not confirmed. Check your inbox.'},
+    'user already registered':{it:'Questa email è già registrata.',en:'This email is already registered.'},
+    'password should be at least 6 characters':{it:'La password deve avere almeno 6 caratteri.',en:'Password must be at least 6 characters.'}
+  };
+  var key=(message||'').toLowerCase();
+  for(var k in errors){if(key.includes(k))return errors[k][lang]||message;}
+  return message;
+}
 async function submitPwForgot(){
   var email=document.getElementById('pw-forgot-email').value.trim();
   var errEl=document.getElementById('pw-forgot-error');
   if(!email){errEl.textContent=lang==='en'?'Please enter your email':'Inserisci la tua email';errEl.style.display='block';return;}
   var res=await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
-  if(res.error){errEl.textContent=res.error.message;errEl.style.display='block';return;}
+  if(res.error){errEl.textContent=translateAuthError(res.error.message,lang);errEl.style.display='block';return;}
   closePwForgotModal();
   toast(lang==='en'?'Email sent! Check your inbox':'Email inviata! Controlla la tua casella');
 }
@@ -5292,7 +5304,7 @@ async function submitAuth(){
   var result=_authMode==='login'
     ?await _supaAuth.auth.signInWithPassword({email:email,password:password})
     :await _supaAuth.auth.signUp({email:email,password:password});
-  if(result.error){errEl.textContent=result.error.message;errEl.style.display='block';return;}
+  if(result.error){errEl.textContent=translateAuthError(result.error.message,lang);errEl.style.display='block';return;}
   _currentUser=result.data.user;
   closeAuthPage();
   updateProfileUI();
@@ -5381,7 +5393,7 @@ async function submitPasswordReset(){
   }
   var res=await _supaAuth.auth.updateUser({password:newPassword});
   if(res.error){
-    errEl.textContent=res.error.message;
+    errEl.textContent=translateAuthError(res.error.message,lang);
     errEl.style.display='block';
     return;
   }
