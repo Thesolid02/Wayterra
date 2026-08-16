@@ -3518,7 +3518,7 @@ function hideRegionPage(cb){
 }
 function selectRegion(regionId){
   var _dp=document.getElementById('detail-page');
-  if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');}
+  if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');_dp.style.zIndex='';}
   var _itd=document.getElementById('itinerario-detail');
   if(_itd){_itd.classList.remove('show');_itd.classList.add('gone');}
   var _itp=document.getElementById('itinerari-page');
@@ -3527,6 +3527,15 @@ function selectRegion(regionId){
   if(_fp&&_fp.classList.contains('show'))closeFavPage();
   var _pp=document.getElementById('profile-page');
   if(_pp&&_pp.style.display!=='none')closeProfilePage();
+  var _apo=document.getElementById('act-map-popup');
+  if(_apo)_apo.style.zIndex='';
+  var _lv2=document.getElementById('lv2-bar');
+  if(_lv2)_lv2.style.display='none';
+  _detailFromItinerario=false;
+  level=1;activePId=null;currentPlace=null;
+  closeBubble();clearL2();closeInlineBubble();
+  if(window.innerWidth>=768){document.getElementById('map').classList.remove('panel-open');setTimeout(function(){if(map_o)map_o.resize();},320);}
+  restoreL1();
   _travelContext=false;
   _currentTravelRegion=null;
   if(_itineraryViewId!==null)closeItineraryMapView();
@@ -3553,7 +3562,7 @@ function selectRegion(regionId){
 }
 function selectTravelRegion(regionId,center,zoom){
   var _dp=document.getElementById('detail-page');
-  if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');}
+  if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');_dp.style.zIndex='';}
   var _itd=document.getElementById('itinerario-detail');
   if(_itd){_itd.classList.remove('show');_itd.classList.add('gone');}
   var _itp=document.getElementById('itinerari-page');
@@ -3562,6 +3571,15 @@ function selectTravelRegion(regionId,center,zoom){
   if(_fp&&_fp.classList.contains('show'))closeFavPage();
   var _pp=document.getElementById('profile-page');
   if(_pp&&_pp.style.display!=='none')closeProfilePage();
+  var _apo=document.getElementById('act-map-popup');
+  if(_apo)_apo.style.zIndex='';
+  var _lv2=document.getElementById('lv2-bar');
+  if(_lv2)_lv2.style.display='none';
+  _detailFromItinerario=false;
+  level=1;activePId=null;currentPlace=null;
+  closeBubble();clearL2();closeInlineBubble();
+  if(window.innerWidth>=768){document.getElementById('map').classList.remove('panel-open');setTimeout(function(){if(map_o)map_o.resize();},320);}
+  restoreL1();
   _travelContext=true;
   _currentTravelRegion=regionId;
   if(_itineraryViewId!==null)closeItineraryMapView();
