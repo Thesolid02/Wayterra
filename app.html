@@ -871,6 +871,7 @@ lottie.loadAnimation({
       <div class="rp-card-body">
         <div class="rp-card-name">Cotswolds</div>
         <div class="rp-card-sub" id="rp-cotswolds-sub"></div>
+        <div id="rp-cotswolds-reviews" style="margin:8px 0 4px;"></div>
         <button class="rp-card-btn rp-card-btn-blue">Esplora →</button>
       </div>
     </div>
@@ -3501,6 +3502,35 @@ function loadAllReviews(){
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
     });
 }
+async function loadRegionReviews(regionId,elementId){
+  var el=document.getElementById(elementId);
+  if(!el||!_supaAuth||!DATA)return;
+  var ids=(DATA.experiences||[]).filter(function(e){return e.region===regionId;}).map(function(e){return e.id;});
+  if(!ids.length){el.innerHTML='';return;}
+  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,profiles!user_id(full_name,avatar_url)').in('experience_id',ids);
+  var reviews=res.data||[];
+  if(!reviews.length){el.innerHTML='';return;}
+  var shown=reviews.slice(0,3);
+  var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+  var avatars=shown.map(function(r,i){
+    var fullName=(r.profiles&&r.profiles.full_name)||'';
+    var parts=fullName.trim().split(' ');
+    var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+    var avatarContent=r.profiles&&r.profiles.avatar_url
+      ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      :'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span>';
+    return'<div style="width:22px;height:22px;border-radius:50%;background:'+_REVIEW_COLORS[i%_REVIEW_COLORS.length]+';border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';overflow:hidden;">'+avatarContent+'</div>';
+  }).join('');
+  el.innerHTML='<div onclick="event.stopPropagation();openReviewsPopup(\'region_'+regionId+'\');" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">'
+    +'<div style="display:flex;align-items:center;gap:6px;">'
+    +'<div style="display:flex;padding-right:6px;">'+avatars+'</div>'
+    +'<span style="font-size:11px;color:rgba(255,255,255,0.85);">'+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+'</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:3px;">'
+    +'<i class="ti ti-star" style="font-size:13px;color:#f59e0b;"></i>'
+    +'<span style="font-size:12px;font-weight:600;color:#fff;">'+avg+'</span>'
+    +'</div></div>';
+}
 function _buildReviewBar(expId){
   var reviews=_reviewsCache[expId];
   if(!reviews||!reviews.length)return'';
@@ -3586,6 +3616,7 @@ function showRegionPage(){
   if(!el)return;
   el.classList.remove('gone');
   el.classList.remove('fade-out');
+  loadRegionReviews('cotswolds','rp-cotswolds-reviews');
 }
 function hideRegionPage(cb){
   var el=document.getElementById('region-page');
@@ -4421,9 +4452,54 @@ async function openReviewsPopup(expId){
   _currentReviewsExpId=expId;
   var popup=document.getElementById('reviews-popup');
   popup.style.display='flex';
+  var list=document.getElementById('reviews-popup-list');
+  // Handle region aggregate popup
+  if(typeof expId==='string'&&expId.startsWith('region_')){
+    var regionId=expId.replace('region_','');
+    var regionNames={cotswolds:'Cotswolds',highlands:'Highlands',lazio:'Lazio'};
+    document.getElementById('reviews-popup-title').textContent=regionNames[regionId]||(regionId.charAt(0).toUpperCase()+regionId.slice(1));
+    list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">Caricamento...</p>';
+    var ids=(DATA.experiences||[]).filter(function(e){return e.region===regionId;}).map(function(e){return e.id;});
+    var rRevs=[];
+    if(ids.length){
+      var rRes=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)').in('experience_id',ids).order('created_at',{ascending:false});
+      rRevs=rRes.data||[];
+    }
+    if(!rRevs.length){
+      list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">'+(lang==='en'?'No reviews yet':'Nessuna recensione ancora')+'</p>';
+      document.getElementById('reviews-popup-rating').textContent='';
+      document.getElementById('reviews-popup-count').textContent='';
+    }else{
+      var rAvg=Math.round(rRevs.reduce(function(s,r){return s+r.rating;},0)/rRevs.length*10)/10;
+      document.getElementById('reviews-popup-rating').textContent=rAvg;
+      document.getElementById('reviews-popup-count').textContent='('+rRevs.length+' '+(lang==='en'?'reviews':'recensioni')+')';
+      list.innerHTML=rRevs.map(function(r,i){
+        var fullName=(r.profiles&&r.profiles.full_name)||'';
+        var parts=fullName.trim().split(' ');
+        var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0]||'?';
+        var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+        var color=_REVIEW_COLORS[i%_REVIEW_COLORS.length];
+        var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
+        var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
+        var avatarContent=r.profiles&&r.profiles.avatar_url
+          ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+          :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
+        return'<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);">'
+          +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+          +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'
+          +avatarContent+'</div>'
+          +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+displayName+'</p>'
+          +'<div style="display:flex;gap:2px;margin-top:1px;">'+stars+'</div></div>'
+          +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
+          +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
+          +'</div>';
+      }).join('');
+    }
+    document.getElementById('reviews-popup-cta').innerHTML='';
+    return;
+  }
   var e=(DATA.experiences||[]).find(function(x){return x.id===expId;});
   document.getElementById('reviews-popup-title').textContent=e?(lang==='en'?e.titleEn||e.titleIt:e.titleIt):'Recensioni';
-  var list=document.getElementById('reviews-popup-list');
   list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">Caricamento...</p>';
   var res=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)').eq('experience_id',expId).order('created_at',{ascending:false});
   var reviews=res.data||[];
@@ -5182,6 +5258,7 @@ function bootApp(d){
   if(savedRegion)updateRegionPill(savedRegion);
   loadEsperienze();
   loadAllReviews();
+  loadRegionReviews('cotswolds','rp-cotswolds-reviews');
   stopSplashRotation();
   document.getElementById('splash').classList.add('hide');
   document.getElementById('splash').style.display='none';
@@ -5665,6 +5742,7 @@ async function checkAuthSession(){
       var _pp=document.getElementById('profile-page');
       if(_pp&&_pp.style.display!=='none')renderProfilePage();
       loadAllReviews();
+      loadRegionReviews('cotswolds','rp-cotswolds-reviews');
       if(_authCallback){_authCallback();_authCallback=null;}
     }
     if(event==='SIGNED_OUT'){
