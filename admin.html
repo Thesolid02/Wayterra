@@ -481,7 +481,10 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div class="fg"><label>Clima</label><textarea id="esp-climate" rows="4" placeholder="es. Piogge frequenti, temperature miti 15-20°C" style="width:100%;resize:vertical;"></textarea></div>
       <div class="fg"><label>Climate (EN)</label><textarea id="esp-climate-en" rows="4" placeholder="e.g. Frequent rain, mild temperatures 15-20°C" style="width:100%;resize:vertical;"></textarea></div>
     </div>
-    <div class="fg"><label>Abbigliamento</label><input type="text" id="esp-clothing" placeholder="es. scarpe comode + giacca a vento"></div>
+    <div class="g2">
+      <div class="fg"><label>Abbigliamento</label><input type="text" id="esp-clothing" placeholder="es. scarpe comode + giacca a vento"></div>
+      <div class="fg"><label>Clothing (EN)</label><input type="text" id="esp-clothing-en" placeholder="e.g. comfortable shoes + windbreaker"></div>
+    </div>
     <div class="g2">
       <div class="fg">
         <label>Periodo consigliato</label>
@@ -2871,6 +2874,7 @@ function rowToEsperienza(row){
     intensity: row.intensity||'',
     climate: row.climate||'',
     climateEn: row.climate_en||'',
+    clothingEn: row.clothing_en||'',
     notes: row.notes||'',
     notesEn: row.notes_en||'',
     totalKm: row.total_km||'',
@@ -2923,6 +2927,7 @@ function openAddEsperienza(){
   document.getElementById('esp-my-maps').value='';
   document.getElementById('esp-transport').value='';
   document.getElementById('esp-clothing').value='';
+  document.getElementById('esp-clothing-en').value='';
   document.getElementById('esp-budget').value='';
   document.getElementById('esp-total-km').value='';
   document.getElementById('esp-total-drive').value='';
@@ -2962,6 +2967,7 @@ function openEditEsperienza(id){
   document.getElementById('esp-my-maps').value=e.myMaps||'';
   document.getElementById('esp-transport').value=e.transport||'';
   document.getElementById('esp-clothing').value=e.clothing||'';
+  document.getElementById('esp-clothing-en').value=e.clothingEn||'';
   document.getElementById('esp-budget').value=e.budget||'';
   document.getElementById('esp-total-km').value=e.totalKm||'';
   document.getElementById('esp-total-drive').value=e.totalDriveTime||'';
@@ -3212,6 +3218,7 @@ function saveEsperienza(){
     my_maps_url: document.getElementById('esp-my-maps').value.trim()||null,
     transport: document.getElementById('esp-transport').value||null,
     clothing: document.getElementById('esp-clothing').value.trim()||null,
+    clothing_en: document.getElementById('esp-clothing-en').value.trim()||null,
     seasons: Array.from(document.querySelectorAll('.esp-season:checked')).map(function(cb){return cb.value;}),
     trip_types: Array.from(document.querySelectorAll('.esp-triptype:checked')).map(function(cb){return cb.value;}),
     budget: document.getElementById('esp-budget').value.trim()||null,
