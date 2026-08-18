@@ -3499,24 +3499,7 @@ function loadAllReviews(){
     .then(function(res){
       _reviewsCache={};
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
-      function waitAndUpdateReviewBars(attempt){
-        attempt=attempt||0;
-        if(attempt>20){console.log('[reviewBar] timeout after 20 attempts');return;}
-        var expIds=Object.keys(_reviewsCache);
-        console.log('[reviewBar] attempt:',attempt,'expIds:',expIds);
-        expIds.forEach(function(id){
-          var el=document.getElementById('review-bar-'+id);
-          console.log('[reviewBar] div review-bar-'+id+':',!!el);
-        });
-        var allFound=expIds.every(function(id){return!!document.getElementById('review-bar-'+id);});
-        if(allFound&&expIds.length>0){
-          console.log('[reviewBar] all found, updating...');
-          expIds.forEach(function(id){_updateReviewBar(Number(id));});
-        }else{
-          setTimeout(function(){waitAndUpdateReviewBars(attempt+1);},100);
-        }
-      }
-      waitAndUpdateReviewBars();
+      Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});
     });
 }
 function _buildReviewBar(expId){
@@ -3996,6 +3979,7 @@ function renderItinerariPage(region){
       +'<div class="itp-card-dur">'+(lang==='en'?'Coming soon...':'In preparazione...')+'</div>'
       +'</div></div>';
     scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
+    if(Object.keys(_reviewsCache).length>0){Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});}else{loadAllReviews();}
   } else {
     var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
     if(!lazioExp.length){
@@ -4022,6 +4006,7 @@ function renderItinerariPage(region){
         +'</div></div>';
     }).join('');
     scroll.innerHTML=cards;
+    if(Object.keys(_reviewsCache).length>0){Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});}else{loadAllReviews();}
   }
 }
 function openItinerario(id){
@@ -5053,6 +5038,7 @@ function renderTravelsPage(){
     }
   }).join('');
   scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
+  if(Object.keys(_reviewsCache).length>0){Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});}else{loadAllReviews();}
 }
 
 var _itdMapCoords=[];
