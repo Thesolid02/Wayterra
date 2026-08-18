@@ -1131,6 +1131,10 @@ lottie.loadAnimation({
       <div id="itd-map-btns"></div>
       <div id="itd-stops"></div>
       <div id="itd-services"></div>
+      <div id="itd-suggested" style="display:none;margin-top:20px;">
+        <p style="font-size:.68rem;font-weight:600;color:var(--g400);letter-spacing:.06em;margin:0 0 10px;" id="itd-suggested-label">POTRESTI ANCHE VISITARE</p>
+        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;" id="itd-suggested-list"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -3718,7 +3722,7 @@ function loadEsperienze(){
                myMaps:r.my_maps_url||'',
                transport:r.transport||'',clothing:r.clothing||'',
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
-               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',region:r.region?r.region.toLowerCase():''};
+               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',totalKm:r.total_km||'',totalDriveTime:r.total_drive_time||'',region:r.region?r.region.toLowerCase():''};
       });
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
@@ -3965,6 +3969,8 @@ function openItinerario(id){
     if(e.seasons&&e.seasons.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+e.seasons.map(function(s){return'<span class="itd-info-badge">'+(_SEASON_ICON[s]||'')+' '+s+'</span>';}).join('')+'</span></div>';
     if(e.tripTypes&&e.tripTypes.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-map"></i><span>'+e.tripTypes.map(function(t){return'<span class="itd-info-badge">'+t+'</span>';}).join('')+'</span></div>';
     if(e.budget) infoHtml+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.budget+'</span></span></div>';
+    if(e.totalKm) infoHtml+='<div class="itd-info-row"><i class="ti ti-road"></i><span><span class="itd-info-badge">'+e.totalKm+' km</span><span style="font-size:.72rem;color:var(--g400);margin-left:6px;">'+(lang==='en'?'Total km':'Totale km')+'</span></span></div>';
+    if(e.totalDriveTime) infoHtml+='<div class="itd-info-row"><i class="ti ti-steering-wheel"></i><span><span class="itd-info-badge">'+e.totalDriveTime+'</span><span style="font-size:.72rem;color:var(--g400);margin-left:6px;">'+(lang==='en'?'Total drive time':'Totale ore guida')+'</span></span></div>';
     if(_climateText){
       var _climateLines=_climateText.split('\n').filter(function(l){return l.trim();});
       var _climateHtml=_climateLines.map(function(l){
@@ -4213,6 +4219,33 @@ function openItinerario(id){
         }
       });
     }).catch(function(){_svcEl.innerHTML='';});
+  var _suggestedEl=document.getElementById('itd-suggested');
+  var _suggestedList=document.getElementById('itd-suggested-list');
+  var _suggestedLabel=document.getElementById('itd-suggested-label');
+  if(_suggestedEl&&_suggestedList){
+    var _usedIds=(e.stops||[]).map(function(s){return s.id;});
+    var _suggested=(DATA.places||[]).filter(function(p){
+      return p.region&&e.region&&p.region.toLowerCase()===e.region.toLowerCase()&&!_usedIds.includes(p.id);
+    }).slice(0,6);
+    if(_suggested.length){
+      if(_suggestedLabel) _suggestedLabel.textContent=lang==='en'?'YOU MIGHT ALSO VISIT':'POTRESTI ANCHE VISITARE';
+      _suggestedList.innerHTML=_suggested.map(function(p){
+        var _pName=(lang==='en'&&p.nameEn)?p.nameEn:p.name;
+        var _pType=p.catName||p.type||'';
+        var _thumb=p.coverPhoto
+          ?'<img src="'+p.coverPhoto+'" style="width:130px;height:90px;border-radius:10px;object-fit:cover;display:block;">'
+          :'<div style="width:130px;height:90px;border-radius:10px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📍</div>';
+        return '<div onclick="openPlace('+p.id+')" style="width:130px;flex-shrink:0;cursor:pointer;">'
+          +_thumb
+          +'<div style="font-size:.78rem;font-weight:500;color:var(--g900);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+_pName+'</div>'
+          +(_pType?'<div style="font-size:.72rem;color:var(--g400);">'+_pType+'</div>':'')
+          +'</div>';
+      }).join('');
+      _suggestedEl.style.display='';
+    } else {
+      _suggestedEl.style.display='none';
+    }
+  }
   var _itdEl=document.getElementById('itinerario-detail');_itdEl.style.zIndex=_travelContext?'620':'510';_itdEl.classList.remove('gone');_itdEl.classList.add('show');
   updateItdBookmarkBtn();
 }
