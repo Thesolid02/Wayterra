@@ -3532,9 +3532,13 @@ function _buildReviewBarFromData(expId,reviews){
   var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
   var colors=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
   var avatars=shown.map(function(r,i){
-    var ini=(r.user_id||'').substring(0,2).toUpperCase();
-    return'<div style="width:22px;height:22px;border-radius:50%;background:'+colors[i%colors.length]+';border:2px solid var(--w);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';">'
-      +'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span></div>';
+    var name=(r.profiles&&r.profiles.full_name)||'User';
+    var ini=name.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
+    var avatarContent=r.profiles&&r.profiles.avatar_url
+      ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      :'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span>';
+    return'<div style="width:22px;height:22px;border-radius:50%;background:'+colors[i%colors.length]+';border:2px solid var(--w);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';overflow:hidden;">'
+      +avatarContent+'</div>';
   }).join('');
   return'<div onclick="event.stopPropagation();openReviewsPopup('+expId+');" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-top:8px;">'
     +'<div style="display:flex;align-items:center;gap:6px;">'
@@ -3968,7 +3972,7 @@ async function renderItinerariPage(region){
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
   var reviewsByExp={};
-  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
+  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
   console.log('[card] renderItinerariPage reviewsByExp keys:',Object.keys(reviewsByExp));
   if(region){
     var travels=DATA.experiences.filter(function(e){return e.isTravel&&e.region===region;});
@@ -4416,7 +4420,7 @@ async function openReviewsPopup(expId){
   document.getElementById('reviews-popup-title').textContent=e?(lang==='en'?e.titleEn||e.titleIt:e.titleIt):'Recensioni';
   var list=document.getElementById('reviews-popup-list');
   list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">Caricamento...</p>';
-  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at').eq('experience_id',expId).order('created_at',{ascending:false});
+  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,profiles(full_name,avatar_url)').eq('experience_id',expId).order('created_at',{ascending:false});
   var reviews=res.data||[];
   if(!reviews.length){
     list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">'+(lang==='en'?'No reviews yet':'Nessuna recensione ancora')+'</p>';
@@ -4427,15 +4431,19 @@ async function openReviewsPopup(expId){
     document.getElementById('reviews-popup-rating').textContent=avg;
     document.getElementById('reviews-popup-count').textContent='('+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+')';
     list.innerHTML=reviews.map(function(r,i){
-      var ini=(r.user_id||'').substring(0,2).toUpperCase();
+      var name=(r.profiles&&r.profiles.full_name)||'User';
+      var ini=name.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
       var color=_REVIEW_COLORS[i%_REVIEW_COLORS.length];
       var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
       var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
+      var avatarContent=r.profiles&&r.profiles.avatar_url
+        ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+        :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
       return'<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);">'
         +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
-        +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-        +'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span></div>'
-        +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+ini+'.</p>'
+        +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'
+        +avatarContent+'</div>'
+        +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+name+'</p>'
         +'<div style="display:flex;gap:2px;margin-top:1px;">'+stars+'</div></div>'
         +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
         +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
@@ -5003,7 +5011,7 @@ async function renderTravelsPage(){
   var scroll=document.getElementById('trv-scroll');
   if(!scroll)return;
   var reviewsByExp={};
-  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
+  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
   console.log('[card] renderTravelsPage reviewsByExp keys:',Object.keys(reviewsByExp));
   var travels=DATA.experiences.filter(function(e){
     return e.isTravel&&(_currentTravelRegion?e.region===_currentTravelRegion:true);
@@ -5628,6 +5636,7 @@ async function checkAuthSession(){
       if(favItRes.data)favItRes.data.forEach(function(r){if(r.experience_id)favItineraries.add(r.experience_id);});
       var dlRes=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',session.user.id);
       if(dlRes.data)dlRes.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
+      _supaAuth.from('profiles').upsert({id:session.user.id,full_name:(session.user.user_metadata&&session.user.user_metadata.full_name)?session.user.user_metadata.full_name:session.user.email.split('@')[0],avatar_url:(session.user.user_metadata&&session.user.user_metadata.avatar_url)||null},{onConflict:'id'});
       updateProfileUI();
       _refreshItineraryChecks();
       var _pp=document.getElementById('profile-page');
