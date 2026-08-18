@@ -3524,12 +3524,7 @@ function _buildReviewBar(expId){
 }
 function _updateReviewBar(expId){
   var el=document.getElementById('review-bar-'+expId);
-  console.log('[updateBar] expId:',expId,'el found:',!!el,'reviews:',_reviewsCache[expId]?_reviewsCache[expId].length:0);
-  if(el){
-    var html=_buildReviewBar(expId);
-    console.log('[updateBar] html length:',html.length,'html:',html.substring(0,100));
-    el.innerHTML=html;
-  }
+  if(el)el.innerHTML=_buildReviewBar(expId);
 }
 function sbFetch(path,opts){
   return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
@@ -3806,7 +3801,6 @@ function loadEsperienze(){
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
       updateRegionPageLang();
-      loadAllReviews();
       var _urlParams=new URLSearchParams(window.location.search);
       var _itinerarioId=_urlParams.get('itinerario');
       if(_itinerarioId){
@@ -3985,6 +3979,7 @@ function renderItinerariPage(region){
       +'<div class="itp-card-dur">'+(lang==='en'?'Coming soon...':'In preparazione...')+'</div>'
       +'</div></div>';
     scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
+    loadAllReviews();
   } else {
     var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
     if(!lazioExp.length){
@@ -4011,6 +4006,7 @@ function renderItinerariPage(region){
         +'</div></div>';
     }).join('');
     scroll.innerHTML=cards;
+    loadAllReviews();
   }
 }
 function openItinerario(id){
@@ -5042,6 +5038,7 @@ function renderTravelsPage(){
     }
   }).join('');
   scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
+  loadAllReviews();
 }
 
 var _itdMapCoords=[];
