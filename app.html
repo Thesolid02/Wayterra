@@ -3528,6 +3528,7 @@ function _updateReviewBar(expId){
 }
 function _buildReviewBarFromData(expId,reviews){
   if(!reviews||!reviews.length)return'';
+  console.log('[buildBar] exp:',expId,'first review profiles:',reviews[0].profiles,'user_id:',reviews[0].user_id);
   var shown=reviews.slice(0,3);
   var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
   var colors=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
