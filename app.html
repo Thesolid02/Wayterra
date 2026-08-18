@@ -3495,11 +3495,10 @@ var _writeReviewExpId=null;
 var _REVIEW_COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
 function loadAllReviews(){
   if(!_supaAuth)return;
-  _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,experience_id')
+  _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,experience_id,profiles!user_id(full_name,avatar_url)')
     .then(function(res){
       _reviewsCache={};
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
-      Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});
     });
 }
 function _buildReviewBar(expId){
@@ -3528,7 +3527,6 @@ function _updateReviewBar(expId){
 }
 function _buildReviewBarFromData(expId,reviews){
   if(!reviews||!reviews.length)return'';
-  console.log('[buildBar] exp:',expId,'first review profiles:',reviews[0].profiles,'user_id:',reviews[0].user_id);
   var shown=reviews.slice(0,3);
   var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
   var colors=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
@@ -4374,15 +4372,21 @@ function openItinerario(id){
         +[1,2,3,4,5].map(function(s){return'<i class="ti ti-star'+(s<=Math.round(_avg)?'':'-filled')+'" style="font-size:13px;color:'+(s<=Math.round(_avg)?'#f59e0b':'var(--g200)')+'"></i>';}).join('')
         +'</div><span style="font-size:.75rem;color:var(--g400);">'+_revs.length+' '+(lang==='en'?'reviews':'recensioni')+'</span></div></div>';
       _revs.slice(0,2).forEach(function(r){
-        var ini=(r.user_id||'').substring(0,2).toUpperCase();
+        var fullName=(r.profiles&&r.profiles.full_name)||'';
+        var parts=fullName.trim().split(' ');
+        var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0]||'?';
+        var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
         var color=_REVIEW_COLORS[_revs.indexOf(r)%_REVIEW_COLORS.length];
         var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
         var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
+        var avatarHtml=r.profiles&&r.profiles.avatar_url
+          ?'<img src="'+r.profiles.avatar_url+'" style="width:22px;height:22px;object-fit:cover;border-radius:50%;">'
+          :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
         _revHtml+='<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);margin-bottom:8px;">'
           +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
-          +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-          +'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span></div>'
-          +'<div style="flex:1;"><div style="display:flex;gap:2px;">'+stars+'</div></div>'
+          +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'
+          +avatarHtml+'</div>'
+          +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+displayName+'</p><div style="display:flex;gap:2px;">'+stars+'</div></div>'
           +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
           +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
           +'</div>';
