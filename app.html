@@ -3501,10 +3501,16 @@ function loadAllReviews(){
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
       function waitAndUpdateReviewBars(attempt){
         attempt=attempt||0;
-        if(attempt>20)return;
+        if(attempt>20){console.log('[reviewBar] timeout after 20 attempts');return;}
         var expIds=Object.keys(_reviewsCache);
+        console.log('[reviewBar] attempt:',attempt,'expIds:',expIds);
+        expIds.forEach(function(id){
+          var el=document.getElementById('review-bar-'+id);
+          console.log('[reviewBar] div review-bar-'+id+':',!!el);
+        });
         var allFound=expIds.every(function(id){return!!document.getElementById('review-bar-'+id);});
         if(allFound&&expIds.length>0){
+          console.log('[reviewBar] all found, updating...');
           expIds.forEach(function(id){_updateReviewBar(Number(id));});
         }else{
           setTimeout(function(){waitAndUpdateReviewBars(attempt+1);},100);
