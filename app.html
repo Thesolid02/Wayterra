@@ -3974,7 +3974,7 @@ async function renderItinerariPage(region){
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
   var reviewsByExp={};
-  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles!itinerary_reviews_user_id_profiles_fkey(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
+  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles!user_id(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
   if(region){
     var travels=DATA.experiences.filter(function(e){return e.isTravel&&e.region===region;});
     var activeHtml=travels.length?travels.map(function(e){
@@ -4421,7 +4421,7 @@ async function openReviewsPopup(expId){
   document.getElementById('reviews-popup-title').textContent=e?(lang==='en'?e.titleEn||e.titleIt:e.titleIt):'Recensioni';
   var list=document.getElementById('reviews-popup-list');
   list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">Caricamento...</p>';
-  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,profiles!itinerary_reviews_user_id_profiles_fkey(full_name,avatar_url)').eq('experience_id',expId).order('created_at',{ascending:false});
+  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)').eq('experience_id',expId).order('created_at',{ascending:false});
   var reviews=res.data||[];
   if(!reviews.length){
     list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">'+(lang==='en'?'No reviews yet':'Nessuna recensione ancora')+'</p>';
@@ -5014,7 +5014,7 @@ async function renderTravelsPage(){
   var scroll=document.getElementById('trv-scroll');
   if(!scroll)return;
   var reviewsByExp={};
-  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles!itinerary_reviews_user_id_profiles_fkey(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
+  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles!user_id(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
   var travels=DATA.experiences.filter(function(e){
     return e.isTravel&&(_currentTravelRegion?e.region===_currentTravelRegion:true);
   });
