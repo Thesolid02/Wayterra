@@ -5865,12 +5865,17 @@ function _compressImage(file,maxW,maxH,quality){
     reader.readAsDataURL(file);
   });
 }
-function renderProfilePage(){
+async function renderProfilePage(){
   var isLoggedIn=!!_currentUser;
   var email=isLoggedIn?(_currentUser.email||''):'';
-  var avatarUrl=isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.avatar_url?_currentUser.user_metadata.avatar_url:'';
-  var _fn=isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.full_name?_currentUser.user_metadata.full_name:'';
+  var profileRow=null;
+  if(isLoggedIn&&_supaAuth){
+    var {data:_pr}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
+    profileRow=_pr||null;
+  }
+  var _fn=(profileRow&&profileRow.full_name)?profileRow.full_name:((isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.full_name)?_currentUser.user_metadata.full_name:'');
   var _fnParts=_fn.trim().split(' ');
+  var avatarUrl=(profileRow&&profileRow.avatar_url)?profileRow.avatar_url:(isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.avatar_url?_currentUser.user_metadata.avatar_url:'');
   var initials=_fn?(_fnParts[0].charAt(0).toUpperCase()+(_fnParts[1]?_fnParts[1].charAt(0).toUpperCase():'')):(email?email.charAt(0).toUpperCase():'');
   var avatarContent=avatarUrl
     ?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">'
