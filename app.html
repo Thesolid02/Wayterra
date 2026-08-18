@@ -4347,7 +4347,7 @@ function openItinerario(id){
         var ini=(r.user_id||'').substring(0,2).toUpperCase();
         var color=_REVIEW_COLORS[_revs.indexOf(r)%_REVIEW_COLORS.length];
         var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
-        var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200))+'"></i>';}).join('');
+        var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
         _revHtml+='<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);margin-bottom:8px;">'
           +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
           +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
@@ -4405,7 +4405,7 @@ async function openReviewsPopup(expId){
       var ini=(r.user_id||'').substring(0,2).toUpperCase();
       var color=_REVIEW_COLORS[i%_REVIEW_COLORS.length];
       var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
-      var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200))+'"></i>';}).join('');
+      var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
       return'<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);">'
         +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
         +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
