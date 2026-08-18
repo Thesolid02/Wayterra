@@ -3994,7 +3994,7 @@ function openItinerario(id){
     if(_notesText) _extra+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:400;color:var(--g500);"></div></span></div>';
     var _toggleBtn=_extra?'<div onclick="toggleInfoUtili()" id="itd-info-toggle" style="margin-top:8px;text-align:center;cursor:pointer;"><span id="itd-info-toggle-label" style="font-size:.8rem;color:#dc6b2f;font-weight:500;">'+(lang==='en'?'See all ↓':'Vedi tutto ↓')+'</span></div>':'';
     var infoHtml='<div class="itd-info-utili">'
-      +'<div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:12px;">'+(lang==='en'?t('itd_info_title'):'Info utili')+'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><i class="ti ti-info-circle" style="font-size:16px;color:#dc6b2f;"></i><span style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);">'+(lang==='en'?t('itd_info_title'):'Info utili')+'</span></div>'
       +_always
       +(_extra?'<div id="itd-info-extra" style="display:none;">'+_extra+'</div>':'')
       +_toggleBtn
