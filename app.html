@@ -1116,8 +1116,8 @@ lottie.loadAnimation({
   <div class="itp-header">
     <button class="itp-back" onclick="closeItinerarioDetail()">←</button>
     <div class="itp-title" id="itd-title"></div>
-    <button id="itd-bookmark-btn" onclick="toggleFavItinerary(_currentItdExp&&_currentItdExp.id)" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;"><i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i></button>
-    <button onclick="openItinerarioPDF()" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;" title="Scarica PDF"><i class="ti ti-download" style="font-size:20px;color:var(--g500);"></i></button>
+    <button id="itd-bookmark-btn" onclick="toggleFavItinerary(_currentItdExp&&_currentItdExp.id)" style="background:#dc6b2f;border:none;border-radius:8px;padding:6px 8px;cursor:pointer;flex-shrink:0;"><i class="ti ti-bookmark" style="font-size:18px;color:#fff;"></i></button>
+    <button onclick="openItinerarioPDF()" style="background:#dc6b2f;border:none;border-radius:8px;padding:6px 8px;cursor:pointer;flex-shrink:0;" title="Scarica PDF"><i class="ti ti-download" style="font-size:18px;color:#fff;"></i></button>
   </div>
   <div class="itd-scroll">
     <div id="itd-cover-wrap"></div>
@@ -3161,7 +3161,7 @@ function updateItdBookmarkBtn(){
   var btn=document.getElementById('itd-bookmark-btn');
   if(!btn)return;
   var isSaved=_currentUser&&_currentItdExp&&favItineraries.has(_currentItdExp.id);
-  btn.innerHTML=isSaved?'<i class="ti ti-bookmark-filled" style="font-size:20px;color:var(--g500);"></i>':'<i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i>';
+  btn.innerHTML=isSaved?'<i class="ti ti-bookmark-filled" style="font-size:18px;color:#fff;"></i>':'<i class="ti ti-bookmark" style="font-size:18px;color:#fff;"></i>';
 }
 function toggleFavItinerary(expId){
   if(!expId)return;
