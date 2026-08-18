@@ -4469,8 +4469,14 @@ async function submitReview(){
   var errEl=document.getElementById('write-review-error');
   if(_writeReviewRating===0){errEl.textContent=lang==='en'?'Select a rating':'Seleziona un voto';errEl.style.display='block';return;}
   if(!text){errEl.textContent=lang==='en'?'Write your review':'Scrivi la tua recensione';errEl.style.display='block';return;}
-  var res=await _supaAuth.from('itinerary_reviews').upsert({user_id:_currentUser.id,experience_id:_writeReviewExpId,rating:_writeReviewRating,text:text},{onConflict:'user_id,experience_id'});
-  if(res.error){errEl.textContent=res.error.message;errEl.style.display='block';return;}
+  var existing=await _supaAuth.from('itinerary_reviews').select('id').eq('user_id',_currentUser.id).eq('experience_id',_writeReviewExpId).single();
+  var opRes;
+  if(existing.data){
+    opRes=await _supaAuth.from('itinerary_reviews').update({rating:_writeReviewRating,text:text}).eq('id',existing.data.id);
+  }else{
+    opRes=await _supaAuth.from('itinerary_reviews').insert({user_id:_currentUser.id,experience_id:_writeReviewExpId,rating:_writeReviewRating,text:text});
+  }
+  if(opRes.error){errEl.textContent=opRes.error.message;errEl.style.display='block';return;}
   closeWriteReview();
   toast(lang==='en'?'Review published!':'Recensione pubblicata!');
   openReviewsPopup(_writeReviewExpId);
