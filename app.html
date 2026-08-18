@@ -4235,7 +4235,7 @@ function openItinerario(id){
         var _thumb=p.coverPhoto
           ?'<img src="'+p.coverPhoto+'" style="width:130px;height:90px;border-radius:10px;object-fit:cover;display:block;">'
           :'<div style="width:130px;height:90px;border-radius:10px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📍</div>';
-        return '<div onclick="openPlace('+p.id+')" style="width:130px;flex-shrink:0;cursor:pointer;">'
+        return '<div onclick="openStopFromItinerario(\'place\','+p.id+')" style="width:130px;flex-shrink:0;cursor:pointer;">'
           +_thumb
           +'<div style="font-size:.78rem;font-weight:500;color:var(--g900);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+_pName+'</div>'
           +(_pType?'<div style="font-size:.72rem;color:var(--g400);">'+_pType+'</div>':'')
