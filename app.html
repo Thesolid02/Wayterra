@@ -3507,9 +3507,10 @@ async function loadRegionReviews(regionId,elementId){
   var el=document.getElementById(elementId);
   if(!el||!_supaAuth||!DATA)return;
   var ids=(DATA.experiences||[]).filter(function(e){
-    if(regionId==='lazio')return!e.isTravel&&(!e.region||e.region==='lazio');
+    if(regionId==='lazio')return!e.isTravel&&(e.region===undefined||e.region===null||e.region===''||e.region==='lazio');
     return e.region===regionId;
   }).map(function(e){return e.id;});
+  console.log('[regionReviews] regionId:',regionId,'expIds:',ids);
   if(!ids.length){el.innerHTML='';return;}
   var res=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,profiles!user_id(full_name,avatar_url)').in('experience_id',ids);
   var reviews=res.data||[];
@@ -3620,8 +3621,10 @@ function showRegionPage(){
   if(!el)return;
   el.classList.remove('gone');
   el.classList.remove('fade-out');
-  loadRegionReviews('cotswolds','rp-cotswolds-reviews');
-  loadRegionReviews('lazio','rp-lazio-reviews');
+  setTimeout(function(){
+    loadRegionReviews('cotswolds','rp-cotswolds-reviews');
+    loadRegionReviews('lazio','rp-lazio-reviews');
+  },100);
 }
 function hideRegionPage(cb){
   var el=document.getElementById('region-page');
@@ -5266,8 +5269,6 @@ function bootApp(d){
   if(savedRegion)updateRegionPill(savedRegion);
   loadEsperienze();
   loadAllReviews();
-  loadRegionReviews('cotswolds','rp-cotswolds-reviews');
-  loadRegionReviews('lazio','rp-lazio-reviews');
   stopSplashRotation();
   document.getElementById('splash').classList.add('hide');
   document.getElementById('splash').style.display='none';
