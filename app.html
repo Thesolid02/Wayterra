@@ -3189,7 +3189,7 @@ function updFavBtn(){
   var favActsArr=favActsRaw?JSON.parse(favActsRaw):[];
   var hasAny=favsArr.length>0||favActsArr.length>0;
   var btn=document.getElementById('profile-btn-d');
-  if(btn){
+  if(btn&&!_currentUser){
     btn.innerHTML=hasAny?'<i class="ti ti-user" style="font-size:20px;color:#dc6b2f;"></i>':'<i class="ti ti-user" style="font-size:20px;"></i>';
   }
 }
@@ -3484,6 +3484,7 @@ if(_initHash.includes('type=recovery')||_initHash.includes('type=magiclink')){_p
 var _supaAuth=(function(){try{return supabase.createClient(SB_URL,SB_KEY);}catch(e){return null;}})();
 var _authMode='login';
 var _currentUser=null;
+var _currentUserProfile=null;
 var _authCallback=null;
 var completedItineraries=new Set();
 var visitedPlaces=new Set();
@@ -5716,6 +5717,7 @@ async function signOut(){
   if(!_supaAuth)return;
   await _supaAuth.auth.signOut();
   _currentUser=null;
+  _currentUserProfile=null;
   completedItineraries.clear();
   visitedPlaces.clear();
   favs.clear();
@@ -5751,6 +5753,8 @@ async function checkAuthSession(){
       var dlRes=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',session.user.id);
       if(dlRes.data)dlRes.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
       _supaAuth.from('profiles').upsert({id:session.user.id,full_name:(session.user.user_metadata&&session.user.user_metadata.full_name)?session.user.user_metadata.full_name:session.user.email.split('@')[0],avatar_url:(session.user.user_metadata&&session.user.user_metadata.avatar_url)||null},{onConflict:'id'});
+      var {data:profileData}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
+      if(profileData)_currentUserProfile=profileData;
       updateProfileUI();
       updateNavProfileAvatar();
       _refreshItineraryChecks();
@@ -5782,7 +5786,10 @@ async function checkAuthSession(){
   var sesRes=await _supaAuth.auth.getSession();
   if(sesRes.data&&sesRes.data.session&&sesRes.data.session.user){
     _currentUser=sesRes.data.session.user;
+    var {data:sesProfile}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
+    if(sesProfile)_currentUserProfile=sesProfile;
     updateProfileUI();
+    updateNavProfileAvatar();
     _loadFavsFromSupabase(_currentUser.id);
     _loadGamificationFromSupabase(_currentUser.id);
   }
@@ -5959,24 +5966,24 @@ function _compressImage(file,maxW,maxH,quality){
     reader.readAsDataURL(file);
   });
 }
-async function updateNavProfileAvatar(avatarUrl,fullName){
-  var ico=document.getElementById('nav-profile-ico');
-  if(!ico)return;
-  if(!_currentUser){ico.innerHTML='<i class="ti ti-user"></i>';return;}
-  if(avatarUrl===undefined){
-    avatarUrl='';fullName='';
-    if(_supaAuth){
-      var {data:pr}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
-      if(pr){avatarUrl=pr.avatar_url||'';fullName=pr.full_name||'';}
+function updateNavProfileAvatar(){
+  var profile=_currentUserProfile;
+  var avatarHtml;
+  if(_currentUser&&profile){
+    if(profile.avatar_url){
+      avatarHtml='<div style="width:24px;height:24px;border-radius:50%;overflow:hidden;border:1.5px solid #dc6b2f;"><img src="'+profile.avatar_url+'" style="width:100%;height:100%;object-fit:cover;"></div>';
+    }else{
+      var parts=(profile.full_name||'').trim().split(' ');
+      var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+      avatarHtml='<div style="width:24px;height:24px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;"><span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span></div>';
     }
-  }
-  var parts=(fullName||'').trim().split(' ');
-  var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):(_currentUser.email||'').charAt(0).toUpperCase();
-  if(avatarUrl){
-    ico.innerHTML='<div style="width:24px;height:24px;border-radius:50%;overflow:hidden;border:1.5px solid #dc6b2f;"><img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;"></div>';
   }else{
-    ico.innerHTML='<div style="width:24px;height:24px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;"><span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span></div>';
+    avatarHtml='<i class="ti ti-user" style="font-size:18px;"></i>';
   }
+  var ico=document.getElementById('nav-profile-ico');
+  if(ico)ico.innerHTML=avatarHtml;
+  var desktopBtn=document.getElementById('profile-btn-d');
+  if(desktopBtn)desktopBtn.innerHTML=avatarHtml;
 }
 async function renderProfilePage(){
   var isLoggedIn=!!_currentUser;
@@ -6010,7 +6017,8 @@ async function renderProfilePage(){
   var langVal=document.getElementById('settings-lang-value');
   if(langVal)langVal.textContent=lang==='it'?'Italiano':'English';
   switchProfileTab(_profileTab);
-  updateNavProfileAvatar(avatarUrl,_fn);
+  if(profileRow)_currentUserProfile=profileRow;
+  updateNavProfileAvatar();
 }
 function renderProfileSaved(){
   var container=document.getElementById('ptab-content-saved');
