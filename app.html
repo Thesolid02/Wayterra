@@ -730,12 +730,12 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .rp-title{font-size:1.4rem;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:6px;}
 .rp-sub{font-size:.86rem;color:var(--g500);line-height:1.5;}
 .rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px calc(env(safe-area-inset-bottom,0px)+36px);}
-.rp-card{position:relative;height:130px;border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+.rp-card{position:relative;min-height:130px;border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;display:flex;flex-direction:column;justify-content:flex-end;}
 .rp-card:active{transform:scale(.97);}
 .rp-card-main{grid-column:1/-1;}
 .rp-card-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
 .rp-card-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 60%);}
-.rp-card-body{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px;}
+.rp-card-body{position:relative;z-index:1;display:flex;flex-direction:column;padding:14px 16px;}
 .rp-card-name{font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.01em;margin-bottom:4px;text-shadow:0 1px 6px rgba(0,0,0,.4);}
 .rp-card-sub{font-size:.72rem;color:rgba(255,255,255,.78);margin-bottom:10px;}
 .rp-card-btn{display:inline-flex;align-items:center;background:#dc6b2f;color:#fff;font-family:var(--f);font-size:.78rem;font-weight:700;padding:7px 14px;border-radius:100px;border:none;cursor:pointer;}
@@ -771,8 +771,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   .rp-content{max-width:560px;margin:0 auto;padding:0 24px;box-sizing:border-box;}
   .rp-header{padding-left:0;padding-right:0;}
   .rp-grid{padding-left:0;padding-right:0;gap:14px;}
-  .rp-card{height:160px;}
-  .rp-card-main{height:220px;}
+  .rp-card{min-height:160px;}
+  .rp-card-main{min-height:220px;}
 }</style>
 <script>if(localStorage.getItem('wayterra.dev')==='1')localStorage.setItem('umami.disabled','1');</script>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="8ac51bd2-99a5-4dbd-bf8e-9dd98d87d138"></script>
@@ -3507,10 +3507,9 @@ async function loadRegionReviews(regionId,elementId){
   var el=document.getElementById(elementId);
   if(!el||!_supaAuth||!DATA)return;
   var ids=(DATA.experiences||[]).filter(function(e){
-    if(regionId==='lazio')return!e.isTravel&&(e.region===undefined||e.region===null||e.region===''||e.region==='lazio');
+    if(regionId==='lazio')return!e.isTravel;
     return e.region===regionId;
   }).map(function(e){return e.id;});
-  console.log('[regionReviews] regionId:',regionId,'expIds:',ids);
   if(!ids.length){el.innerHTML='';return;}
   var res=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,profiles!user_id(full_name,avatar_url)').in('experience_id',ids);
   var reviews=res.data||[];
@@ -3621,10 +3620,10 @@ function showRegionPage(){
   if(!el)return;
   el.classList.remove('gone');
   el.classList.remove('fade-out');
-  setTimeout(function(){
+  if(DATA.experiences&&DATA.experiences.length>0){
     loadRegionReviews('cotswolds','rp-cotswolds-reviews');
     loadRegionReviews('lazio','rp-lazio-reviews');
-  },100);
+  }
 }
 function hideRegionPage(cb){
   var el=document.getElementById('region-page');
@@ -3864,6 +3863,10 @@ function loadEsperienze(){
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
       updateRegionPageLang();
+      setTimeout(function(){
+        loadRegionReviews('cotswolds','rp-cotswolds-reviews');
+        loadRegionReviews('lazio','rp-lazio-reviews');
+      },300);
       var _urlParams=new URLSearchParams(window.location.search);
       var _itinerarioId=_urlParams.get('itinerario');
       if(_itinerarioId){
@@ -4468,7 +4471,7 @@ async function openReviewsPopup(expId){
     document.getElementById('reviews-popup-title').textContent=regionNames[regionId]||(regionId.charAt(0).toUpperCase()+regionId.slice(1));
     list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">Caricamento...</p>';
     var ids=(DATA.experiences||[]).filter(function(e){
-      if(regionId==='lazio')return!e.isTravel&&(!e.region||e.region==='lazio');
+      if(regionId==='lazio')return!e.isTravel;
       return e.region===regionId;
     }).map(function(e){return e.id;});
     var rRevs=[];
