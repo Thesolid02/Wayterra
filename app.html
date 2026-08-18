@@ -4140,7 +4140,7 @@ function openItinerario(id){
     var infoHtml='<div class="itd-info-utili">'
       +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><i class="ti ti-info-circle" style="font-size:16px;color:#dc6b2f;"></i><span style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);">'+(lang==='en'?t('itd_info_title'):'Info utili')+'</span></div>'
       +_always
-      +(_extra?'<div id="itd-info-extra" style="display:none;">'+_extra+'</div>':'')
+      +(_extra?'<div id="itd-info-extra" style="display:none;flex-direction:column;gap:6px;">'+_extra+'</div>':'')
       +_toggleBtn
       +'</div>';
     infoEl.innerHTML=infoHtml;
@@ -4621,7 +4621,7 @@ function toggleInfoUtili(){
   var label=document.getElementById('itd-info-toggle-label');
   if(!extra||!label)return;
   var isOpen=extra.style.display!=='none';
-  extra.style.display=isOpen?'none':'block';
+  extra.style.display=isOpen?'none':'flex';
   label.textContent=isOpen?(lang==='en'?'See all ↓':'Vedi tutto ↓'):(lang==='en'?'See less ↑':'Vedi meno ↑');
 }
 function openTravelSvc(url){
@@ -5587,8 +5587,8 @@ window.addEventListener('DOMContentLoaded',function(){
         <p style="font-size:.85rem;color:var(--g500);margin:0;" id="auth-subtitle">Accedi per salvare i tuoi luoghi preferiti</p>
       </div>
       <div id="auth-form" style="display:flex;flex-direction:column;gap:12px;">
-        <input type="text" id="auth-firstname" placeholder="Nome (es. Mattia)" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;display:none;">
-        <input type="text" id="auth-lastname" placeholder="Cognome (es. Goduto)" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;display:none;">
+        <input type="text" id="auth-firstname" placeholder="Nome" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;display:none;">
+        <input type="text" id="auth-lastname" placeholder="Cognome" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;display:none;">
         <input type="email" id="auth-email" placeholder="Email" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
         <input type="password" id="auth-password" placeholder="Password" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
         <p onclick="openPwForgotModal()" id="forgot-pw-link" style="font-size:.78rem;color:#dc6b2f;cursor:pointer;text-align:right;margin:-4px 0 4px;">Password dimenticata?</p>
@@ -5643,8 +5643,8 @@ function updateAuthMode(){
     fpLink.textContent=lang==='en'?'Forgot password?':'Password dimenticata?';
   }
   var fn=document.getElementById('auth-firstname');var ln=document.getElementById('auth-lastname');
-  if(fn)fn.style.display=isLogin?'none':'';
-  if(ln)ln.style.display=isLogin?'none':'';
+  if(fn){fn.style.display=isLogin?'none':'';fn.placeholder=lang==='en'?'First name':'Nome';}
+  if(ln){ln.style.display=isLogin?'none':'';ln.placeholder=lang==='en'?'Last name':'Cognome';}
 }
 function openPwForgotModal(){
   var m=document.getElementById('pw-forgot-modal');
