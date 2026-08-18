@@ -3972,7 +3972,7 @@ async function renderItinerariPage(region){
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
   var reviewsByExp={};
-  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
+  try{var {data:revData,error:revError}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles(full_name,avatar_url)');console.log('[reviews] data:',revData,'error:',revError);if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){console.log('[reviews] catch:',e);}
   console.log('[card] renderItinerariPage reviewsByExp keys:',Object.keys(reviewsByExp));
   if(region){
     var travels=DATA.experiences.filter(function(e){return e.isTravel&&e.region===region;});
@@ -5011,7 +5011,7 @@ async function renderTravelsPage(){
   var scroll=document.getElementById('trv-scroll');
   if(!scroll)return;
   var reviewsByExp={};
-  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
+  try{var {data:revData,error:revError}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles(full_name,avatar_url)');console.log('[reviews] data:',revData,'error:',revError);if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){console.log('[reviews] catch:',e);}
   console.log('[card] renderTravelsPage reviewsByExp keys:',Object.keys(reviewsByExp));
   var travels=DATA.experiences.filter(function(e){
     return e.isTravel&&(_currentTravelRegion?e.region===_currentTravelRegion:true);
