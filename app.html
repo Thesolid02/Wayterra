@@ -3500,9 +3500,6 @@ function loadAllReviews(){
       _reviewsCache={};
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
       Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});
-      renderExpCards();
-      var _itp=document.getElementById('itp-scroll');if(_itp)renderItinerariPage(_currentTravelRegion||undefined);
-      var _trv=document.getElementById('trv-scroll');if(_trv&&document.getElementById('travels-page')&&document.getElementById('travels-page').style.display!=='none')renderTravelsPage();
     });
 }
 function _buildReviewBar(expId){
