@@ -3526,6 +3526,26 @@ function _updateReviewBar(expId){
   var el=document.getElementById('review-bar-'+expId);
   if(el)el.innerHTML=_buildReviewBar(expId);
 }
+function _buildReviewBarFromData(expId,reviews){
+  if(!reviews||!reviews.length)return'';
+  var shown=reviews.slice(0,3);
+  var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+  var colors=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
+  var avatars=shown.map(function(r,i){
+    var ini=(r.user_id||'').substring(0,2).toUpperCase();
+    return'<div style="width:22px;height:22px;border-radius:50%;background:'+colors[i%colors.length]+';border:2px solid var(--w);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';">'
+      +'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span></div>';
+  }).join('');
+  return'<div onclick="event.stopPropagation();openReviewsPopup('+expId+');" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-top:8px;">'
+    +'<div style="display:flex;align-items:center;gap:6px;">'
+    +'<div style="display:flex;">'+avatars+'</div>'
+    +'<span style="font-size:11px;color:var(--g500);padding-left:8px;">+'+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+'</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:3px;">'
+    +'<i class="ti ti-star" style="font-size:13px;color:#f59e0b;"></i>'
+    +'<span style="font-size:12px;font-weight:500;">'+avg+'</span>'
+    +'</div></div>';
+}
 function sbFetch(path,opts){
   return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
     headers:{
@@ -3944,9 +3964,11 @@ function closeItinerariPage(){
   page.style.zIndex='';
   setBottomNav('mappa');
 }
-function renderItinerariPage(region){
+async function renderItinerariPage(region){
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
+  var reviewsByExp={};
+  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
   if(region){
     var travels=DATA.experiences.filter(function(e){return e.isTravel&&e.region===region;});
     var activeHtml=travels.length?travels.map(function(e){
@@ -3965,7 +3987,7 @@ function renderItinerariPage(region){
         +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
         +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
         +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
-        +'<div id="review-bar-'+e.id+'">'+_buildReviewBar(e.id)+'</div>'
+        +'<div id="review-bar-'+e.id+'">'+_buildReviewBarFromData(e.id,reviewsByExp[e.id]||[])+'</div>'
         +'</div></div>';
     }).join(''):'';
     var soonLabel=lang==='en'?'Coming soon':'In arrivo';
@@ -3979,7 +4001,6 @@ function renderItinerariPage(region){
       +'<div class="itp-card-dur">'+(lang==='en'?'Coming soon...':'In preparazione...')+'</div>'
       +'</div></div>';
     scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
-    if(Object.keys(_reviewsCache).length>0){Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});}else{loadAllReviews();}
   } else {
     var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
     if(!lazioExp.length){
@@ -4002,11 +4023,10 @@ function renderItinerariPage(region){
         +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
         +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
         +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
-        +'<div id="review-bar-'+e.id+'">'+_buildReviewBar(e.id)+'</div>'
+        +'<div id="review-bar-'+e.id+'">'+_buildReviewBarFromData(e.id,reviewsByExp[e.id]||[])+'</div>'
         +'</div></div>';
     }).join('');
     scroll.innerHTML=cards;
-    if(Object.keys(_reviewsCache).length>0){Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});}else{loadAllReviews();}
   }
 }
 function openItinerario(id){
@@ -4977,9 +4997,11 @@ function openTravelsPage(region){
 function closeTravelsPage(){
   closeItinerariPage();
 }
-function renderTravelsPage(){
+async function renderTravelsPage(){
   var scroll=document.getElementById('trv-scroll');
   if(!scroll)return;
+  var reviewsByExp={};
+  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
   var travels=DATA.experiences.filter(function(e){
     return e.isTravel&&(_currentTravelRegion?e.region===_currentTravelRegion:true);
   });
@@ -4999,7 +5021,7 @@ function renderTravelsPage(){
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
       +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
       +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
-      +'<div id="review-bar-'+e.id+'">'+_buildReviewBar(e.id)+'</div>'
+      +'<div id="review-bar-'+e.id+'">'+_buildReviewBarFromData(e.id,reviewsByExp[e.id]||[])+'</div>'
       +'</div></div>';
   }).join(''):'';
   var soonLabel=lang==='en'?'Coming soon':'In arrivo';
@@ -5038,7 +5060,6 @@ function renderTravelsPage(){
     }
   }).join('');
   scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
-  if(Object.keys(_reviewsCache).length>0){Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});}else{loadAllReviews();}
 }
 
 var _itdMapCoords=[];
