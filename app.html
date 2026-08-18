@@ -3495,10 +3495,12 @@ var _writeReviewExpId=null;
 var _REVIEW_COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
 function loadAllReviews(){
   if(!_supaAuth)return;
+  console.log('[reviews] loadAllReviews START');
   _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,experience_id')
     .then(function(res){
       _reviewsCache={};
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
+      console.log('[reviews] cache populated:', Object.keys(_reviewsCache).length, 'exp ids:', Object.keys(_reviewsCache));
       renderExpCards();
       var _itp=document.getElementById('itp-scroll');if(_itp)renderItinerariPage(_currentTravelRegion||undefined);
       var _trv=document.getElementById('trv-scroll');if(_trv&&document.getElementById('travels-page')&&document.getElementById('travels-page').style.display!=='none')renderTravelsPage();
@@ -3506,6 +3508,7 @@ function loadAllReviews(){
 }
 function _buildReviewBar(expId){
   var reviews=_reviewsCache[expId];
+  console.log('[reviews] buildReviewBar exp:', expId, 'reviews in cache:', reviews?reviews.length:0);
   if(!reviews||!reviews.length)return'';
   var shown=reviews.slice(0,3);
   var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
@@ -4470,7 +4473,8 @@ async function submitReview(){
   errEl.style.display='none';
   if(_writeReviewRating===0){errEl.textContent=lang==='en'?'Select a rating':'Seleziona un voto';errEl.style.display='block';return;}
   if(!text){errEl.textContent=lang==='en'?'Write your review':'Scrivi la tua recensione';errEl.style.display='block';return;}
-  var {data:existing}=await _supaAuth.from('itinerary_reviews').select('id').eq('user_id',_currentUser.id).eq('experience_id',_writeReviewExpId).maybeSingle();
+  var {data:existing,error:existingError}=await _supaAuth.from('itinerary_reviews').select('id').eq('user_id',_currentUser.id).eq('experience_id',_writeReviewExpId).maybeSingle();
+  console.log('[review] maybeSingle existing:', existing, 'error:', existingError);
   var error;
   if(existing){
     var res=await _supaAuth.from('itinerary_reviews').update({rating:_writeReviewRating,text:text}).eq('id',existing.id);
