@@ -3499,7 +3499,9 @@ function loadAllReviews(){
     .then(function(res){
       _reviewsCache={};
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
-      Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});
+      setTimeout(function(){
+        Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});
+      },500);
     });
 }
 function _buildReviewBar(expId){
@@ -3979,7 +3981,6 @@ function renderItinerariPage(region){
       +'<div class="itp-card-dur">'+(lang==='en'?'Coming soon...':'In preparazione...')+'</div>'
       +'</div></div>';
     scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
-    loadAllReviews();
   } else {
     var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
     if(!lazioExp.length){
@@ -4006,7 +4007,6 @@ function renderItinerariPage(region){
         +'</div></div>';
     }).join('');
     scroll.innerHTML=cards;
-    loadAllReviews();
   }
 }
 function openItinerario(id){
@@ -5038,7 +5038,6 @@ function renderTravelsPage(){
     }
   }).join('');
   scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
-  loadAllReviews();
 }
 
 var _itdMapCoords=[];
@@ -5143,6 +5142,7 @@ function bootApp(d){
   var savedRegion=localStorage.getItem('WT_REGION');
   if(savedRegion)updateRegionPill(savedRegion);
   loadEsperienze();
+  loadAllReviews();
   stopSplashRotation();
   document.getElementById('splash').classList.add('hide');
   document.getElementById('splash').style.display='none';
@@ -5607,6 +5607,7 @@ async function checkAuthSession(){
       _refreshItineraryChecks();
       var _pp=document.getElementById('profile-page');
       if(_pp&&_pp.style.display!=='none')renderProfilePage();
+      loadAllReviews();
       if(_authCallback){_authCallback();_authCallback=null;}
     }
     if(event==='SIGNED_OUT'){
