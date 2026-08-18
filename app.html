@@ -746,8 +746,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .rp-soon-badge{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.85);padding:2px 8px;border-radius:100px;}
 .rp-card-travels{border:2.5px solid #2563eb;box-sizing:border-box;}
 .rp-card-btn-blue{background:#2563eb;}
-.rp-sec-label{grid-column:1/-1;font-size:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--g700);padding:2px 0 12px;}
-.rp-sec-label-sep{border-top:0.5px solid var(--g100);padding-top:14px;margin-top:4px;}
+.rp-sec-label{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:24px 0 12px;}
+.rp-sec-label-sep{margin-top:8px;}
 #travels-page{position:fixed;inset:0;z-index:610;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #travels-page.show{display:flex;}
 .itp-card-locked{cursor:default;}
@@ -811,7 +811,11 @@ lottie.loadAnimation({
   </div>
   <div class="rp-grid" style="padding-left:16px!important;padding-right:16px!important;">
     <!-- 🇮🇹 ITALIA -->
-    <div class="rp-sec-label">🇮🇹 ITALIA</div>
+    <div class="rp-sec-label">
+      <span style="font-size:20px;">🇮🇹</span>
+      <span style="font-size:14px;font-weight:500;color:var(--text-primary);">Italia</span>
+      <div style="flex:1;height:1px;background:var(--g200);"></div>
+    </div>
     <div class="rp-card rp-card-main" onclick="openAccessRequestModal()">
       <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio.jpg');background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov"></div>
@@ -858,7 +862,11 @@ lottie.loadAnimation({
       </div>
     </div>
     <!-- 🇬🇧 UK -->
-    <div class="rp-sec-label rp-sec-label-sep">🇬🇧 UK</div>
+    <div class="rp-sec-label rp-sec-label-sep">
+      <span style="font-size:20px;">🇬🇧</span>
+      <span style="font-size:14px;font-weight:500;color:var(--text-primary);">UK</span>
+      <div style="flex:1;height:1px;background:var(--g200);"></div>
+    </div>
     <div class="rp-card rp-card-main rp-card-travels" onclick="selectTravelRegion('cotswolds',[-1.8,51.7],9)">
       <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg');background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov"></div>
