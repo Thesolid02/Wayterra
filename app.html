@@ -3495,12 +3495,11 @@ var _writeReviewExpId=null;
 var _REVIEW_COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
 function loadAllReviews(){
   if(!_supaAuth)return;
-  console.log('[reviews] loadAllReviews START');
   _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,experience_id')
     .then(function(res){
       _reviewsCache={};
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
-      console.log('[reviews] cache populated:', Object.keys(_reviewsCache).length, 'exp ids:', Object.keys(_reviewsCache));
+      Object.keys(_reviewsCache).forEach(function(id){_updateReviewBar(Number(id));});
       renderExpCards();
       var _itp=document.getElementById('itp-scroll');if(_itp)renderItinerariPage(_currentTravelRegion||undefined);
       var _trv=document.getElementById('trv-scroll');if(_trv&&document.getElementById('travels-page')&&document.getElementById('travels-page').style.display!=='none')renderTravelsPage();
@@ -3508,7 +3507,6 @@ function loadAllReviews(){
 }
 function _buildReviewBar(expId){
   var reviews=_reviewsCache[expId];
-  console.log('[reviews] buildReviewBar exp:', expId, 'reviews in cache:', reviews?reviews.length:0);
   if(!reviews||!reviews.length)return'';
   var shown=reviews.slice(0,3);
   var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
@@ -3526,6 +3524,10 @@ function _buildReviewBar(expId){
     +'<i class="ti ti-star" style="font-size:13px;color:#f59e0b;"></i>'
     +'<span style="font-size:12px;font-weight:500;">'+avg+'</span>'
     +'</div></div>';
+}
+function _updateReviewBar(expId){
+  var el=document.getElementById('review-bar-'+expId);
+  if(el)el.innerHTML=_buildReviewBar(expId);
 }
 function sbFetch(path,opts){
   return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
@@ -3967,7 +3969,7 @@ function renderItinerariPage(region){
         +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
         +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
         +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
-        +_buildReviewBar(e.id)
+        +'<div id="review-bar-'+e.id+'">'+_buildReviewBar(e.id)+'</div>'
         +'</div></div>';
     }).join(''):'';
     var soonLabel=lang==='en'?'Coming soon':'In arrivo';
@@ -4003,7 +4005,7 @@ function renderItinerariPage(region){
         +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
         +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
         +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
-        +_buildReviewBar(e.id)
+        +'<div id="review-bar-'+e.id+'">'+_buildReviewBar(e.id)+'</div>'
         +'</div></div>';
     }).join('');
     scroll.innerHTML=cards;
@@ -4474,7 +4476,6 @@ async function submitReview(){
   if(_writeReviewRating===0){errEl.textContent=lang==='en'?'Select a rating':'Seleziona un voto';errEl.style.display='block';return;}
   if(!text){errEl.textContent=lang==='en'?'Write your review':'Scrivi la tua recensione';errEl.style.display='block';return;}
   var {data:existing,error:existingError}=await _supaAuth.from('itinerary_reviews').select('id').eq('user_id',_currentUser.id).eq('experience_id',_writeReviewExpId).maybeSingle();
-  console.log('[review] maybeSingle existing:', existing, 'error:', existingError);
   var error;
   if(existing){
     var res=await _supaAuth.from('itinerary_reviews').update({rating:_writeReviewRating,text:text}).eq('id',existing.id);
@@ -4487,10 +4488,7 @@ async function submitReview(){
   closeWriteReview();
   toast(lang==='en'?'Review published!':'Recensione pubblicata!');
   await openReviewsPopup(_writeReviewExpId);
-  var itpEl=document.getElementById('itinerari-page');
-  if(itpEl&&itpEl.classList.contains('show'))renderItinerariPage(_currentTravelRegion);
-  var trvEl=document.getElementById('travels-page');
-  if(trvEl&&trvEl.classList.contains('show'))renderTravelsPage();
+  _updateReviewBar(_writeReviewExpId);
 }
 function toggleInfoUtili(){
   var extra=document.getElementById('itd-info-extra');
@@ -5003,7 +5001,7 @@ function renderTravelsPage(){
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
       +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
       +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
-      +_buildReviewBar(e.id)
+      +'<div id="review-bar-'+e.id+'">'+_buildReviewBar(e.id)+'</div>'
       +'</div></div>';
   }).join(''):'';
   var soonLabel=lang==='en'?'Coming soon':'In arrivo';
