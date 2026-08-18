@@ -5461,7 +5461,7 @@ window.addEventListener('DOMContentLoaded',function(){
     <span data-t="nav_itinerari">Itinerari</span>
   </button>
   <button class="bn-item" data-nav="profilo" onclick="openProfilePage()">
-    <i class="ti ti-user"></i>
+    <span id="nav-profile-ico"><i class="ti ti-user"></i></span>
     <span data-t="nav_profile">Profilo</span>
   </button>
 </div>
@@ -5724,6 +5724,7 @@ async function signOut(){
   saveFavs();
   localStorage.removeItem('WT_FAVS_v2');
   closeProfilePage();
+  updateNavProfileAvatar();
   toast(lang==='en'?'Signed out':'Disconnesso');
 }
 async function checkAuthSession(){
@@ -5751,6 +5752,7 @@ async function checkAuthSession(){
       if(dlRes.data)dlRes.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
       _supaAuth.from('profiles').upsert({id:session.user.id,full_name:(session.user.user_metadata&&session.user.user_metadata.full_name)?session.user.user_metadata.full_name:session.user.email.split('@')[0],avatar_url:(session.user.user_metadata&&session.user.user_metadata.avatar_url)||null},{onConflict:'id'});
       updateProfileUI();
+      updateNavProfileAvatar();
       _refreshItineraryChecks();
       var _pp=document.getElementById('profile-page');
       if(_pp&&_pp.style.display!=='none')renderProfilePage();
@@ -5957,6 +5959,25 @@ function _compressImage(file,maxW,maxH,quality){
     reader.readAsDataURL(file);
   });
 }
+async function updateNavProfileAvatar(avatarUrl,fullName){
+  var ico=document.getElementById('nav-profile-ico');
+  if(!ico)return;
+  if(!_currentUser){ico.innerHTML='<i class="ti ti-user"></i>';return;}
+  if(avatarUrl===undefined){
+    avatarUrl='';fullName='';
+    if(_supaAuth){
+      var {data:pr}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
+      if(pr){avatarUrl=pr.avatar_url||'';fullName=pr.full_name||'';}
+    }
+  }
+  var parts=(fullName||'').trim().split(' ');
+  var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):(_currentUser.email||'').charAt(0).toUpperCase();
+  if(avatarUrl){
+    ico.innerHTML='<div style="width:24px;height:24px;border-radius:50%;overflow:hidden;border:1.5px solid #dc6b2f;"><img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;"></div>';
+  }else{
+    ico.innerHTML='<div style="width:24px;height:24px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;"><span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span></div>';
+  }
+}
 async function renderProfilePage(){
   var isLoggedIn=!!_currentUser;
   var email=isLoggedIn?(_currentUser.email||''):'';
@@ -5989,6 +6010,7 @@ async function renderProfilePage(){
   var langVal=document.getElementById('settings-lang-value');
   if(langVal)langVal.textContent=lang==='it'?'Italiano':'English';
   switchProfileTab(_profileTab);
+  updateNavProfileAvatar(avatarUrl,_fn);
 }
 function renderProfileSaved(){
   var container=document.getElementById('ptab-content-saved');
