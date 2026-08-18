@@ -1135,7 +1135,41 @@ lottie.loadAnimation({
         <p style="font-size:.68rem;font-weight:600;color:var(--g400);letter-spacing:.06em;margin:0 0 10px;" id="itd-suggested-label">POTRESTI ANCHE VISITARE</p>
         <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;" id="itd-suggested-list"></div>
       </div>
+      <div id="itd-reviews" style="display:none;margin-top:20px;"></div>
     </div>
+  </div>
+</div>
+
+<!-- REVIEWS POPUP -->
+<div id="reviews-popup" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center;">
+  <div style="background:var(--w);border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:80vh;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom,0px);">
+    <div style="padding:12px 16px;border-bottom:0.5px solid var(--g100);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--w);z-index:1;">
+      <div>
+        <p style="font-size:1rem;font-weight:500;margin:0;" id="reviews-popup-title">Recensioni</p>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+          <i class="ti ti-star" style="font-size:13px;color:#f59e0b;"></i>
+          <span style="font-size:13px;font-weight:500;" id="reviews-popup-rating"></span>
+          <span style="font-size:12px;color:var(--g400);" id="reviews-popup-count"></span>
+        </div>
+      </div>
+      <button onclick="closeReviewsPopup()" style="background:none;border:none;cursor:pointer;padding:4px;"><i class="ti ti-x" style="font-size:20px;color:var(--g400);"></i></button>
+    </div>
+    <div id="reviews-popup-list" style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;"></div>
+    <div style="padding:12px 16px;border-top:0.5px solid var(--g100);" id="reviews-popup-cta"></div>
+  </div>
+</div>
+
+<!-- WRITE REVIEW POPUP -->
+<div id="write-review-popup" style="display:none;position:fixed;inset:0;z-index:910;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:var(--w);border-radius:14px;padding:20px;max-width:400px;width:100%;display:flex;flex-direction:column;gap:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <p style="font-size:1rem;font-weight:500;margin:0;" id="write-review-title">Lascia una recensione</p>
+      <button onclick="closeWriteReview()" style="background:none;border:none;cursor:pointer;"><i class="ti ti-x" style="font-size:18px;color:var(--g400);"></i></button>
+    </div>
+    <div style="display:flex;gap:6px;" id="write-review-stars"></div>
+    <textarea id="write-review-text" placeholder="Racconta la tua esperienza..." style="width:100%;padding:10px;border-radius:8px;border:0.5px solid var(--g200);font-size:.85rem;min-height:80px;box-sizing:border-box;resize:none;font-family:inherit;"></textarea>
+    <div id="write-review-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>
+    <button onclick="submitReview()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.9rem;font-weight:500;cursor:pointer;" id="write-review-btn">Pubblica</button>
   </div>
 </div>
 
@@ -3453,7 +3487,43 @@ var completedItineraries=new Set();
 var visitedPlaces=new Set();
 var downloadedSet=new Map();
 var favItineraries=new Set();
+var _reviewsCache={};
+var _currentReviewsExpId=null;
+var _writeReviewRating=0;
+var _writeReviewExpId=null;
 
+var _REVIEW_COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
+function loadAllReviews(){
+  if(!_supaAuth)return;
+  _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,experience_id')
+    .then(function(res){
+      _reviewsCache={};
+      if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
+      renderExpCards();
+      var _itp=document.getElementById('itp-scroll');if(_itp)renderItinerariPage(_currentTravelRegion||undefined);
+      var _trv=document.getElementById('trv-scroll');if(_trv&&document.getElementById('travels-page')&&document.getElementById('travels-page').style.display!=='none')renderTravelsPage();
+    });
+}
+function _buildReviewBar(expId){
+  var reviews=_reviewsCache[expId];
+  if(!reviews||!reviews.length)return'';
+  var shown=reviews.slice(0,3);
+  var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+  var avatars=shown.map(function(r,i){
+    var ini=(r.user_id||'').substring(0,2).toUpperCase();
+    return'<div style="width:22px;height:22px;border-radius:50%;background:'+_REVIEW_COLORS[i%_REVIEW_COLORS.length]+';border:2px solid var(--w);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';">'
+      +'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span></div>';
+  }).join('');
+  return'<div onclick="event.stopPropagation();openReviewsPopup('+expId+');" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-top:8px;">'
+    +'<div style="display:flex;align-items:center;gap:6px;">'
+    +'<div style="display:flex;">'+avatars+'</div>'
+    +'<span style="font-size:11px;color:var(--g500);padding-left:8px;">+'+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+'</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:3px;">'
+    +'<i class="ti ti-star" style="font-size:13px;color:#f59e0b;"></i>'
+    +'<span style="font-size:12px;font-weight:500;">'+avg+'</span>'
+    +'</div></div>';
+}
 function sbFetch(path,opts){
   return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
     headers:{
@@ -3729,6 +3799,7 @@ function loadEsperienze(){
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
       updateRegionPageLang();
+      loadAllReviews();
       var _urlParams=new URLSearchParams(window.location.search);
       var _itinerarioId=_urlParams.get('itinerario');
       if(_itinerarioId){
@@ -3893,6 +3964,7 @@ function renderItinerariPage(region){
         +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
         +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
         +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+        +_buildReviewBar(e.id)
         +'</div></div>';
     }).join(''):'';
     var soonLabel=lang==='en'?'Coming soon':'In arrivo';
@@ -3928,6 +4000,7 @@ function renderItinerariPage(region){
         +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
         +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
         +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+        +_buildReviewBar(e.id)
         +'</div></div>';
     }).join('');
     scroll.innerHTML=cards;
@@ -4258,8 +4331,149 @@ function openItinerario(id){
       _suggestedEl.style.display='none';
     }
   }
+  var _revEl=document.getElementById('itd-reviews');
+  if(_revEl){
+    var _revs=_reviewsCache[e.id];
+    if(_revs&&_revs.length){
+      var _avg=Math.round(_revs.reduce(function(s,r){return s+r.rating;},0)/_revs.length*10)/10;
+      var _revHtml='<div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:10px;display:flex;align-items:center;gap:6px;">'
+        +'<i class="ti ti-star" style="font-size:14px;color:#f59e0b;"></i>'+(lang==='en'?'REVIEWS':'RECENSIONI')+'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
+        +'<span style="font-size:1.4rem;font-weight:700;">'+_avg+'</span>'
+        +'<div><div style="display:flex;gap:2px;">'
+        +[1,2,3,4,5].map(function(s){return'<i class="ti ti-star'+(s<=Math.round(_avg)?'':'-filled')+'" style="font-size:13px;color:'+(s<=Math.round(_avg)?'#f59e0b':'var(--g200)')+'"></i>';}).join('')
+        +'</div><span style="font-size:.75rem;color:var(--g400);">'+_revs.length+' '+(lang==='en'?'reviews':'recensioni')+'</span></div></div>';
+      _revs.slice(0,2).forEach(function(r){
+        var ini=(r.user_id||'').substring(0,2).toUpperCase();
+        var color=_REVIEW_COLORS[_revs.indexOf(r)%_REVIEW_COLORS.length];
+        var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
+        var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200))+'"></i>';}).join('');
+        _revHtml+='<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);margin-bottom:8px;">'
+          +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+          +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+          +'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span></div>'
+          +'<div style="flex:1;"><div style="display:flex;gap:2px;">'+stars+'</div></div>'
+          +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
+          +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
+          +'</div>';
+      });
+      if(_revs.length>2){
+        _revHtml+='<div onclick="openReviewsPopup('+e.id+')" style="text-align:center;padding:8px;cursor:pointer;">'
+          +'<span style="font-size:.8rem;color:#dc6b2f;font-weight:500;">'+(lang==='en'?'See all reviews':'Vedi tutte le recensioni')+' →</span></div>';
+      }
+      if(_currentUser){
+        var _myRev=_revs.find(function(r){return r.user_id===_currentUser.id;});
+        _revHtml+='<div onclick="openWriteReview('+e.id+')" style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:6px;">'
+          +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
+          +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?(_myRev?'Edit your review':'Leave a review'):(_myRev?'Modifica la tua recensione':'Lascia una recensione'))+'</span></div>';
+      }
+      _revEl.innerHTML=_revHtml;
+      _revEl.style.display='';
+    } else {
+      if(_currentUser){
+        _revEl.innerHTML='<div onclick="openWriteReview('+e.id+')" style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;">'
+          +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
+          +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
+        _revEl.style.display='';
+      } else {
+        _revEl.style.display='none';
+      }
+    }
+  }
   var _itdEl=document.getElementById('itinerario-detail');_itdEl.style.zIndex=_travelContext?'620':'510';_itdEl.classList.remove('gone');_itdEl.classList.add('show');
   updateItdBookmarkBtn();
+}
+async function openReviewsPopup(expId){
+  _currentReviewsExpId=expId;
+  var popup=document.getElementById('reviews-popup');
+  popup.style.display='flex';
+  var e=(DATA.experiences||[]).find(function(x){return x.id===expId;});
+  document.getElementById('reviews-popup-title').textContent=e?(lang==='en'?e.titleEn||e.titleIt:e.titleIt):'Recensioni';
+  var list=document.getElementById('reviews-popup-list');
+  list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">Caricamento...</p>';
+  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at').eq('experience_id',expId).order('created_at',{ascending:false});
+  var reviews=res.data||[];
+  if(!reviews.length){
+    list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">'+(lang==='en'?'No reviews yet':'Nessuna recensione ancora')+'</p>';
+    document.getElementById('reviews-popup-rating').textContent='';
+    document.getElementById('reviews-popup-count').textContent='';
+  } else {
+    var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+    document.getElementById('reviews-popup-rating').textContent=avg;
+    document.getElementById('reviews-popup-count').textContent='('+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+')';
+    list.innerHTML=reviews.map(function(r,i){
+      var ini=(r.user_id||'').substring(0,2).toUpperCase();
+      var color=_REVIEW_COLORS[i%_REVIEW_COLORS.length];
+      var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
+      var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200))+'"></i>';}).join('');
+      return'<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+        +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+        +'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span></div>'
+        +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+ini+'.</p>'
+        +'<div style="display:flex;gap:2px;margin-top:1px;">'+stars+'</div></div>'
+        +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
+        +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
+        +'</div>';
+    }).join('');
+  }
+  // refresh cache
+  _reviewsCache[expId]=reviews;
+  var cta=document.getElementById('reviews-popup-cta');
+  if(_currentUser){
+    var myRev=reviews.find(function(r){return r.user_id===_currentUser.id;});
+    if(myRev){
+      cta.innerHTML='<div style="padding:8px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);text-align:center;cursor:pointer;" onclick="openWriteReview('+expId+')">'
+        +'<span style="font-size:.8rem;color:var(--g500);">'+(lang==='en'?'Edit your review':'Modifica la tua recensione')+'</span></div>';
+    } else {
+      cta.innerHTML='<div style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;" onclick="openWriteReview('+expId+')">'
+        +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
+        +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
+    }
+  } else {
+    cta.innerHTML='<div style="padding:8px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);text-align:center;cursor:pointer;" onclick="openAuthPage()">'
+      +'<span style="font-size:.8rem;color:#dc6b2f;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</span></div>';
+  }
+}
+function closeReviewsPopup(){
+  document.getElementById('reviews-popup').style.display='none';
+  _currentReviewsExpId=null;
+}
+function openWriteReview(expId){
+  _writeReviewExpId=expId;
+  _writeReviewRating=0;
+  document.getElementById('write-review-title').textContent=lang==='en'?'Leave a review':'Lascia una recensione';
+  document.getElementById('write-review-btn').textContent=lang==='en'?'Publish':'Pubblica';
+  document.getElementById('write-review-text').value='';
+  document.getElementById('write-review-error').style.display='none';
+  renderWriteReviewStars(0);
+  document.getElementById('write-review-popup').style.display='flex';
+}
+function closeWriteReview(){
+  document.getElementById('write-review-popup').style.display='none';
+}
+function renderWriteReviewStars(selected){
+  var container=document.getElementById('write-review-stars');
+  container.innerHTML='';
+  for(var s=1;s<=5;s++){
+    var star=document.createElement('i');
+    star.className='ti ti-star';
+    star.style.cssText='font-size:28px;cursor:pointer;color:'+(s<=selected?'#f59e0b':'var(--g200)')+';';
+    star.dataset.val=s;
+    star.onclick=(function(val){return function(){_writeReviewRating=val;renderWriteReviewStars(val);};})(s);
+    container.appendChild(star);
+  }
+}
+async function submitReview(){
+  var text=document.getElementById('write-review-text').value.trim();
+  var errEl=document.getElementById('write-review-error');
+  if(_writeReviewRating===0){errEl.textContent=lang==='en'?'Select a rating':'Seleziona un voto';errEl.style.display='block';return;}
+  if(!text){errEl.textContent=lang==='en'?'Write your review':'Scrivi la tua recensione';errEl.style.display='block';return;}
+  var res=await _supaAuth.from('itinerary_reviews').upsert({user_id:_currentUser.id,experience_id:_writeReviewExpId,rating:_writeReviewRating,text:text},{onConflict:'user_id,experience_id'});
+  if(res.error){errEl.textContent=res.error.message;errEl.style.display='block';return;}
+  closeWriteReview();
+  toast(lang==='en'?'Review published!':'Recensione pubblicata!');
+  openReviewsPopup(_writeReviewExpId);
 }
 function toggleInfoUtili(){
   var extra=document.getElementById('itd-info-extra');
@@ -4772,6 +4986,7 @@ function renderTravelsPage(){
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
       +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
       +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+      +_buildReviewBar(e.id)
       +'</div></div>';
   }).join(''):'';
   var soonLabel=lang==='en'?'Coming soon':'In arrivo';
