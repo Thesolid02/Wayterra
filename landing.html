@@ -85,6 +85,19 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-
 .hcta-ghost{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:rgba(255,255,255,.12);color:#fff;border-radius:100px;font-size:.95rem;font-weight:600;border:1.5px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);transition:all .15s;}
 .hcta-ghost:hover{background:rgba(255,255,255,.2);}
 .hero-note{font-size:.75rem;color:rgba(255,255,255,.5);font-weight:500;}
+/* hero two-column */
+.hero-cols{display:flex;flex-direction:column;align-items:center;gap:40px;width:100%;}
+.hero-col-left{display:flex;flex-direction:column;align-items:center;text-align:center;}
+.hero-col-right{display:flex;justify-content:center;}
+@media(min-width:768px){
+  .hero-content{max-width:1100px;}
+  .hero-cols{flex-direction:row;align-items:center;gap:60px;}
+  .hero-col-left{align-items:flex-start;text-align:left;flex:1;}
+  .hero-col-right{flex:1;}
+  .hero-sub{margin-left:0;margin-right:0;}
+  .hero-ctas{justify-content:flex-start;}
+  .phone-mock{margin:0;}
+}
 
 /* ── SECTIONS ── */
 section{padding:80px 24px;}
@@ -97,7 +110,7 @@ section{padding:80px 24px;}
 /* ── APP PREVIEW ── */
 .preview-sec{background:var(--g900);overflow:hidden;}
 .preview-inner{display:grid;grid-template-columns:1fr;gap:40px;align-items:center;}
-@media(min-width:768px){.preview-inner{grid-template-columns:1fr 1fr;gap:60px;}}
+@media(min-width:768px){.preview-inner{grid-template-columns:1fr 1fr;gap:60px;}.preview-text{order:2;}.preview-phone{order:1;}}
 .preview-text .badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);}
 .preview-text .s-title{color:#fff;}
 .highlight-marker{position:relative;display:inline;color:white;z-index:1;padding:2px 5px;}
@@ -261,6 +274,8 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <img src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1600&q=75&auto=format&fit=crop&crop=center" alt="Hidden places in Italy" loading="eager">
   </div>
   <div class="hero-content">
+    <div class="hero-cols">
+    <div class="hero-col-left">
     <div class="hero-region-badge" style="display:none;">
       <span class="hero-region-dot"></span>
       Now available: Lazio, Italy · More regions coming
@@ -268,6 +283,13 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h1 class="hero-h1" data-t="hero-h1">I miei luoghi,<br><em>i miei viaggi</em></h1>
     <p class="hero-sub" data-t="hero-sub">Ciao, sono Mattia 👋 Wayterra è la mappa dei miei viaggi. Borghi nascosti, itinerari completi e posti autentici — tutto quello che ho esplorato, disponibile per te.</p>
 
+    <div class="hero-ctas">
+      <a class="hcta-primary" href="https://wayterra.it/app" data-t="hcta-ghost">Scegli la destinazione →</a>
+      <a class="hcta-ghost" href="https://wayterra.gumroad.com/l/wayterra" data-gumroad-single-product="true" data-t="hcta-primary" style="display:none;">Get full access — <span style="text-decoration:line-through;color:#9ca3af;font-size:.9em;">€29</span> <span style="color:#dc6b2f;font-weight:700;">€19</span></a>
+    </div>
+    <p class="hero-note" data-t="hero-note" style="display:none;">Free to explore · Unlock all places for €19 (instead of €29) · One-time payment</p>
+    </div><!-- end hero-col-left -->
+    <div class="hero-col-right">
     <!-- phone mockup -->
     <div class="phone-mock">
       <div class="phone-notch"></div>
@@ -325,12 +347,8 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
         </div>
       </div>
     </div>
-
-    <div class="hero-ctas">
-      <a class="hcta-primary" href="https://wayterra.it/app" data-t="hcta-ghost">Scegli la destinazione →</a>
-      <a class="hcta-ghost" href="https://wayterra.gumroad.com/l/wayterra" data-gumroad-single-product="true" data-t="hcta-primary" style="display:none;">Get full access — <span style="text-decoration:line-through;color:#9ca3af;font-size:.9em;">€29</span> <span style="color:#dc6b2f;font-weight:700;">€19</span></a>
-    </div>
-    <p class="hero-note" data-t="hero-note" style="display:none;">Free to explore · Unlock all places for €19 (instead of €29) · One-time payment</p>
+    </div><!-- end hero-col-right -->
+    </div><!-- end hero-cols -->
   </div>
 </section>
 
