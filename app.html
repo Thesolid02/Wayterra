@@ -3896,6 +3896,12 @@ function loadEsperienze(){
       } else {
         var _regionParam=_urlParams.get('region');
         if(_regionParam){
+          var _sp=document.getElementById('splash');
+          if(_sp&&_mapReady){
+            _sp.classList.remove('hide');_sp.style.display='';
+            startSplashRotation();
+            var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+          }
           var _rco2=document.getElementById('region-change-overlay');
           if(!_rco2){_rco2=document.createElement('div');_rco2.id='region-change-overlay';_rco2.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco2);}
           else{_rco2.style.display='block';}
