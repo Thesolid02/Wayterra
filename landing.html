@@ -264,7 +264,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
       <button id="lang-en" onclick="setLandingLang('en')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:var(--g900);color:#fff;transition:all .15s;">EN</button>
       <button id="lang-it" onclick="setLandingLang('it')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:none;color:var(--g500);transition:all .15s;">IT</button>
     </div>
-    <a class="nav-btn nav-btn-blue" href="app.html" id="nav-buy" data-t="nav-buy">Explore for free</a>
+    <a class="nav-btn nav-btn-blue" href="#destinazioni" id="nav-buy" data-t="nav-buy">Scegli la destinazione</a>
   </div>
 </nav>
 
@@ -284,7 +284,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <p class="hero-sub" data-t="hero-sub">Ciao, sono Mattia 👋 Wayterra è la mappa dei miei viaggi. Borghi nascosti, itinerari completi e posti autentici — tutto quello che ho esplorato, disponibile per te.</p>
 
     <div class="hero-ctas">
-      <a class="hcta-primary" href="https://wayterra.it/app" data-t="hcta-ghost">Scegli la destinazione →</a>
+      <a class="hcta-primary" href="#destinazioni" data-t="hcta-ghost">Scegli la destinazione →</a>
       <a class="hcta-ghost" href="https://wayterra.gumroad.com/l/wayterra" data-gumroad-single-product="true" data-t="hcta-primary" style="display:none;">Get full access — <span style="text-decoration:line-through;color:#9ca3af;font-size:.9em;">€29</span> <span style="color:#dc6b2f;font-weight:700;">€19</span></a>
     </div>
     <p class="hero-note" data-t="hero-note" style="display:none;">Free to explore · Unlock all places for €19 (instead of €29) · One-time payment</p>
@@ -502,12 +502,12 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <!-- DESTINAZIONI DISPONIBILI -->
 <section id="destinazioni" style="padding:60px 0;background:#111;">
   <div style="max-width:1200px;margin:0 auto;padding:0 24px;">
-    <p style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.06em;margin:0 0 8px">DESTINAZIONI DISPONIBILI</p>
-    <h2 style="font-size:28px;font-weight:500;color:#fff;margin:0 0 32px">Scegli dove esplorare</h2>
+    <p data-t="dest-section-label" style="font-size:11px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.06em;margin:0 0 8px">DESTINAZIONI DISPONIBILI</p>
+    <h2 data-t="dest-section-title" style="font-size:28px;font-weight:500;color:#fff;margin:0 0 32px">Scegli dove esplorare</h2>
     <div style="display:flex;gap:20px;overflow-x:auto;padding-bottom:16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
 
       <!-- Card Lazio -->
-      <a href="https://wayterra.it/app" style="text-decoration:none;flex-shrink:0;width:240px;">
+      <a href="https://v2-dev--glittery-pudding-104d72.netlify.app/app" style="text-decoration:none;flex-shrink:0;width:240px;">
         <div style="height:360px;border-radius:20px;overflow:hidden;position:relative;background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio.jpg');background-size:cover;background-position:center;">
           <div style="position:absolute;inset:0;background:linear-gradient(to bottom, transparent 35%, rgba(0,0,0,.85) 100%);"></div>
           <div style="position:absolute;top:14px;left:14px;">
@@ -515,19 +515,19 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
           </div>
           <div style="position:absolute;bottom:0;left:0;right:0;padding:20px;">
             <p style="font-size:22px;font-weight:500;color:#fff;margin:0 0 4px;">Lazio</p>
-            <p style="font-size:12px;color:rgba(255,255,255,.7);margin:0 0 12px;">96 luoghi · 5 itinerari</p>
+            <p data-t="lazio-places" style="font-size:12px;color:rgba(255,255,255,.7);margin:0 0 12px;">96 luoghi · 5 itinerari</p>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
               <div id="landing-reviews-lazio" style="display:flex;align-items:center;gap:6px;"></div>
             </div>
             <div style="padding:10px;background:#dc6b2f;border-radius:10px;text-align:center;">
-              <span style="font-size:13px;font-weight:500;color:#fff;">Esplora →</span>
+              <span data-t="dest-explore" style="font-size:13px;font-weight:500;color:#fff;">Esplora →</span>
             </div>
           </div>
         </div>
       </a>
 
       <!-- Card Cotswolds -->
-      <a href="https://wayterra.it/app?itinerario=8" style="text-decoration:none;flex-shrink:0;width:240px;">
+      <a href="https://v2-dev--glittery-pudding-104d72.netlify.app/app?itinerario=8" style="text-decoration:none;flex-shrink:0;width:240px;">
         <div style="height:360px;border-radius:20px;overflow:hidden;position:relative;background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cotswolds-cover.jpg');background-size:cover;background-position:center;">
           <div style="position:absolute;inset:0;background:linear-gradient(to bottom, transparent 35%, rgba(0,0,0,.85) 100%);"></div>
           <div style="position:absolute;top:14px;left:14px;">
@@ -535,12 +535,12 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
           </div>
           <div style="position:absolute;bottom:0;left:0;right:0;padding:20px;">
             <p style="font-size:22px;font-weight:500;color:#fff;margin:0 0 4px;">Cotswolds</p>
-            <p style="font-size:12px;color:rgba(255,255,255,.7);margin:0 0 12px;">48 luoghi · 1 itinerario</p>
+            <p data-t="cotswolds-places" style="font-size:12px;color:rgba(255,255,255,.7);margin:0 0 12px;">48 luoghi · 1 itinerario</p>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
               <div id="landing-reviews-cotswolds" style="display:flex;align-items:center;gap:6px;"></div>
             </div>
             <div style="padding:10px;background:#dc6b2f;border-radius:10px;text-align:center;">
-              <span style="font-size:13px;font-weight:500;color:#fff;">Esplora →</span>
+              <span data-t="dest-explore" style="font-size:13px;font-weight:500;color:#fff;">Esplora →</span>
             </div>
           </div>
         </div>
@@ -550,7 +550,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
       <div style="flex-shrink:0;width:240px;opacity:.35;">
         <div style="height:360px;border-radius:20px;background:#1e1e1e;border:0.5px solid rgba(255,255,255,.1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
           <i class="ti ti-lock" style="font-size:32px;color:rgba(255,255,255,.3);"></i>
-          <p style="font-size:14px;color:rgba(255,255,255,.4);margin:0;">Prossimamente</p>
+          <p data-t="dest-coming-soon" style="font-size:14px;color:rgba(255,255,255,.4);margin:0;">Prossimamente</p>
           <p style="font-size:12px;color:rgba(255,255,255,.3);margin:0;">Highlands · Toscana...</p>
         </div>
       </div>
@@ -560,12 +560,48 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 </section>
 
 <script>
+var _landingReviews={};
+function openLandingReviewsPopup(reviews,regionName){
+  var popup=document.getElementById('landing-reviews-popup');
+  popup.style.display='flex';
+  document.getElementById('lrp-title').textContent='Recensioni · '+regionName;
+  var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+  document.getElementById('lrp-rating').textContent='★ '+avg;
+  document.getElementById('lrp-count').textContent='('+reviews.length+' recensioni)';
+  var COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed'];
+  document.getElementById('lrp-list').innerHTML=reviews.map(function(r,i){
+    var name=(r.profiles&&r.profiles.full_name)?r.profiles.full_name:'?';
+    var parts=name.trim().split(' ');
+    var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0];
+    var ini=parts[0]?parts[0][0].toUpperCase()+(parts[1]?parts[1][0].toUpperCase():''):'?';
+    var avatarHtml=(r.profiles&&r.profiles.avatar_url)
+      ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
+    var stars='';
+    for(var s=1;s<=5;s++)stars+='<span style="color:'+(s<=r.rating?'#f59e0b':'#ddd')+';">★</span>';
+    var date=new Date(r.created_at).toLocaleDateString('it-IT',{month:'short',year:'numeric'});
+    return'<div style="padding:12px;background:#f9f9f9;border-radius:10px;">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+      +'<div style="width:32px;height:32px;border-radius:50%;background:'+COLORS[i%COLORS.length]+';display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'+avatarHtml+'</div>'
+      +'<div style="flex:1;"><p style="font-size:12px;font-weight:500;margin:0;">'+displayName+'</p>'
+      +'<div style="font-size:12px;">'+stars+'</div></div>'
+      +'<span style="font-size:11px;color:#999;">'+date+'</span>'
+      +'</div>'
+      +'<p style="font-size:13px;color:#555;margin:0;line-height:1.5;">'+(r.text||'')+'</p>'
+      +'</div>';
+  }).join('');
+}
+function closeLandingReviewsPopup(){
+  document.getElementById('landing-reviews-popup').style.display='none';
+}
+</script>
+<script>
 (function(){
   var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
   var COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed'];
   function loadReviews(expIds,elId){
-    fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,user_id,profiles!user_id(full_name,avatar_url)&experience_id=in.('+expIds.join(',')+')',{
+    fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,user_id,created_at,text,profiles!user_id(full_name,avatar_url)&experience_id=in.('+expIds.join(',')+')',{
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
     }).then(function(r){return r.json();}).then(function(reviews){
       if(!reviews||!reviews.length)return;
@@ -590,6 +626,9 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
         +'<svg width="13" height="13" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
         +'<span style="font-size:13px;font-weight:500;color:#fff;">'+avg+'</span>'
         +'</div>';
+      _landingReviews[elId]=reviews;
+      el.style.cursor='pointer';
+      el.onclick=function(e){e.stopPropagation();openLandingReviewsPopup(_landingReviews[elId],elId.includes('lazio')?'Lazio':'Cotswolds');};
     });
   }
   fetch(SB_URL+'/rest/v1/experiences?select=id&is_travel=eq.false',{
@@ -758,13 +797,13 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <script>
 var T={
   en:{
-    'nav-explore':'Explore free',
-    'nav-buy':'Explore for free',
+    'nav-explore':'Choose your destination',
+    'nav-buy':'Choose your destination',
     'hero-badge':'Now available: Lazio, Italy · More regions coming',
-    'hero-h1':'I miei luoghi,<br><em>i miei viaggi</em>',
-    'hero-sub':'Ciao, sono Mattia 👋 Wayterra è la mappa dei miei viaggi. Borghi nascosti, itinerari completi e posti autentici — tutto quello che ho esplorato, disponibile per te.',
+    'hero-h1':'My places,<br><em>my travels</em>',
+    'hero-sub':'Hi, I\'m Mattia 👋 Wayterra is the map of my travels. Hidden villages, complete itineraries and authentic places — everything I\'ve explored, available for you.',
     'hero-note':'Free to explore · Unlock all places for €19 (instead of €29) · One-time payment',
-    'hcta-ghost':'Scegli la destinazione →',
+    'hcta-ghost':'Choose your destination →',
     'hcta-primary':'Get full access — <span style="text-decoration:line-through;color:#9ca3af;font-size:.9em;">€29</span> <span style="color:#dc6b2f;font-weight:700;">€19</span>',
     'pm-search':'🔍 Where do you want to go?',
     'pm-card-cat':'🏘 Village',
@@ -777,9 +816,15 @@ var T={
     'prev-badge':'How it works',
     'prev-title':'Explore <span class=\'highlight-marker\'>hidden places</span> like a true local.',
     'prev-sub':'Save hours of searching on blogs, Instagram and TikTok. No algorithm. Only authentic hidden places, recommended by those who truly know the area.',
-    'step1-t':'Scegli la destinazione','step1-d':'Seleziona la regione che vuoi esplorare tra quelle disponibili',
-    'step2-t':'Esplora la mappa','step2-d':'Pin interattivi con luoghi nascosti, borghi segreti e consigli locali',
-    'step3-t':'Segui l\'itinerario','step3-d':'Giorno per giorno, con mappa, km totali, info utili e servizi per partire',
+    'step1-t':'Choose your destination','step1-d':'Select the region you want to explore from the available ones',
+    'step2-t':'Explore the map','step2-d':'Interactive pins with hidden places, secret villages and local tips',
+    'step3-t':'Follow the itinerary','step3-d':'Day by day, with map, total km, useful info and services to get started',
+    'dest-section-label':'AVAILABLE DESTINATIONS',
+    'dest-section-title':'Choose where to explore',
+    'lazio-places':'96 places · 5 itineraries',
+    'cotswolds-places':'48 places · 1 itinerary',
+    'dest-explore':'Explore →',
+    'dest-coming-soon':'Coming soon',
     'cats-badge':'Explore by type',
     'cats-title':'Every kind of<br>hidden place',
     'cat1-n':'Villages','cat1-d':'Forgotten towns, total silence. Zero tourists.',
@@ -846,8 +891,8 @@ var T={
     'how-popup-yes5':'Secrets only locals know'
   },
   it:{
-    'nav-explore':'Esplora gratis',
-    'nav-buy':'Esplora gratis',
+    'nav-explore':'Scegli la destinazione',
+    'nav-buy':'Scegli la destinazione',
     'hero-badge':'Disponibile ora: Lazio, Italia · Altre regioni in arrivo',
     'hero-h1':'I miei luoghi,<br><em>i miei viaggi</em>',
     'hero-sub':'Ciao, sono Mattia 👋 Wayterra è la mappa dei miei viaggi. Borghi nascosti, itinerari completi e posti autentici — tutto quello che ho esplorato, disponibile per te.',
@@ -868,6 +913,12 @@ var T={
     'step1-t':'Scegli la destinazione','step1-d':'Seleziona la regione che vuoi esplorare tra quelle disponibili',
     'step2-t':'Esplora la mappa','step2-d':'Pin interattivi con luoghi nascosti, borghi segreti e consigli locali',
     'step3-t':'Segui l\'itinerario','step3-d':'Giorno per giorno, con mappa, km totali, info utili e servizi per partire',
+    'dest-section-label':'DESTINAZIONI DISPONIBILI',
+    'dest-section-title':'Scegli dove esplorare',
+    'lazio-places':'96 luoghi · 5 itinerari',
+    'cotswolds-places':'48 luoghi · 1 itinerario',
+    'dest-explore':'Esplora →',
+    'dest-coming-soon':'Prossimamente',
     'cats-badge':'Esplora per tipo',
     'cats-title':'Ogni tipo di<br>luogo nascosto',
     'cat1-n':'Borghi','cat1-d':'Paesi dimenticati, silenzio totale. Zero turisti.',
@@ -1012,6 +1063,23 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- REVIEWS POPUP -->
+<div id="landing-reviews-popup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeLandingReviewsPopup()">
+  <div style="background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:80vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px);">
+    <div style="padding:16px 20px;border-bottom:0.5px solid #eee;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;">
+      <div>
+        <p style="font-size:1rem;font-weight:500;margin:0;" id="lrp-title">Recensioni</p>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+          <span id="lrp-rating" style="font-size:13px;font-weight:500;color:#f59e0b;"></span>
+          <span id="lrp-count" style="font-size:12px;color:#999;"></span>
+        </div>
+      </div>
+      <button onclick="closeLandingReviewsPopup()" style="background:none;border:none;cursor:pointer;font-size:24px;color:#999;line-height:1;">×</button>
+    </div>
+    <div id="lrp-list" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;"></div>
   </div>
 </div>
 </body>
