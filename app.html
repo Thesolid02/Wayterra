@@ -3890,10 +3890,12 @@ function loadEsperienze(){
         }
       } else {
         var _regionParam=_urlParams.get('region');
-        if(_regionParam==='lazio'){
-          selectRegion('lazio');
-        } else if(_regionParam){
-          selectTravelRegion(_regionParam,getRegionCenter(_regionParam),getRegionZoom(_regionParam));
+        if(_regionParam){
+          var _rco2=document.getElementById('region-change-overlay');
+          if(!_rco2){_rco2=document.createElement('div');_rco2.id='region-change-overlay';_rco2.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco2);}
+          else{_rco2.style.display='block';}
+          if(_regionParam==='lazio'){selectRegion('lazio');}
+          else{selectTravelRegion(_regionParam,getRegionCenter(_regionParam),getRegionZoom(_regionParam));}
         }
       }
     })
