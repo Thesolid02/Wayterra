@@ -3888,6 +3888,13 @@ function loadEsperienze(){
           if(_exp.isTravel){_travelContext=true;}
           openItinerario(parseInt(_itinerarioId));
         }
+      } else {
+        var _regionParam=_urlParams.get('region');
+        if(_regionParam==='lazio'){
+          selectRegion('lazio');
+        } else if(_regionParam){
+          selectTravelRegion(_regionParam,getRegionCenter(_regionParam),getRegionZoom(_regionParam));
+        }
       }
     })
     .catch(function(){DATA.experiences=[];});
@@ -5293,13 +5300,7 @@ function bootApp(d){
   stopSplashRotation();
   document.getElementById('splash').classList.add('hide');
   document.getElementById('splash').style.display='none';
-  var _urlParams=new URLSearchParams(window.location.search);
-  var _regionParam=_urlParams.get('region');
-  if(_regionParam==='lazio'){
-    selectRegion('lazio');
-  } else if(_regionParam){
-    selectTravelRegion(_regionParam,getRegionCenter(_regionParam),getRegionZoom(_regionParam));
-  } else {
+  if(!new URLSearchParams(window.location.search).get('region')){
     showRegionPage();
   }
   checkAuthSession();

@@ -628,7 +628,15 @@ function closeLandingReviewsPopup(){
         +'</div>';
       _landingReviews[elId]=reviews;
       el.style.cursor='pointer';
-      el.onclick=function(e){e.stopPropagation();openLandingReviewsPopup(_landingReviews[elId],elId.includes('lazio')?'Lazio':'Cotswolds');};
+      el.style.position='relative';
+      el.style.zIndex='10';
+      el.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        openLandingReviewsPopup(_landingReviews[elId],elId.includes('lazio')?'Lazio':'Cotswolds');
+        return false;
+      };
     });
   }
   fetch(SB_URL+'/rest/v1/experiences?select=id&is_travel=eq.false',{
