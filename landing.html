@@ -125,7 +125,7 @@ section{padding:80px 24px;}
 /* phone preview large */
 .preview-phone{width:260px;margin:0 auto;background:#0d1208;border-radius:38px;padding:9px;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.3);}
 .preview-phone-notch{width:60px;height:15px;background:#0d1208;border-radius:0 0 10px 10px;margin:0 auto 5px;}
-.preview-phone-screen{border-radius:30px;overflow:hidden;height:480px;background:#f0ede6;position:relative;}
+.preview-phone-screen{border-radius:30px;overflow-y:auto;height:480px;background:#f0ede6;position:relative;}
 .pp-topbar{background:rgba(255,255,255,.97);padding:9px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid rgba(0,0,0,.07);}
 .pp-brand{font-size:11px;font-weight:800;color:#111;letter-spacing:-.02em;}
 .pp-right{display:flex;align-items:center;gap:6px;}
@@ -1070,7 +1070,7 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
       <div class="preview-phone-screen" style="background:#f8f7f4;">
 
         <!-- SCHERMATA 0: Mappa interattiva -->
-        <div id="hp-screen-0">
+        <div id="hp-screen-0" style="height:100%;overflow-y:auto;">
           <div style="background:#fff;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #eee;">
             <div style="display:flex;align-items:center;gap:6px;">
               <div style="width:20px;height:20px;border-radius:5px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;"><i class="ti ti-map-2" style="font-size:11px;color:#fff;" aria-hidden="true"></i></div>
@@ -1118,7 +1118,7 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
         </div>
 
         <!-- SCHERMATA 1: Dettaglio luogo -->
-        <div id="hp-screen-1" style="display:none;">
+        <div id="hp-screen-1" style="display:none;height:100%;overflow-y:auto;">
           <div style="height:120px;background:linear-gradient(135deg,#7a8d9c,#8fa3b1);position:relative;">
             <div style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,.3);border-radius:16px;padding:4px 10px;display:flex;align-items:center;gap:4px;">
               <i class="ti ti-arrow-left" style="font-size:11px;color:#fff;" aria-hidden="true"></i>
@@ -1156,7 +1156,7 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
         </div>
 
         <!-- SCHERMATA 2: Itinerario -->
-        <div id="hp-screen-2" style="display:none;">
+        <div id="hp-screen-2" style="display:none;height:100%;overflow-y:auto;">
           <div style="height:80px;background:linear-gradient(135deg,#7a8d9c,#8fa3b1);display:flex;align-items:flex-end;padding:10px 14px;">
             <div>
               <div style="font-size:9px;color:rgba(255,255,255,.7);">4 GIORNI · UK</div>
