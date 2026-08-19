@@ -3676,10 +3676,10 @@ function selectRegion(regionId){
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
     stopSplashRotation();startSplashRotation();
+    var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
     setTimeout(function(){
       stopSplashRotation();sp.classList.add('hide');
       var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
-      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
       renderItdPill();
     },3000);
@@ -3731,10 +3731,10 @@ function selectTravelRegion(regionId,center,zoom){
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
     stopSplashRotation();startSplashRotation();
+    var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
     setTimeout(function(){
       stopSplashRotation();sp.classList.add('hide');
       var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
-      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
       renderItdPill();
     },3000);
