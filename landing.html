@@ -294,56 +294,119 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="phone-mock">
       <div class="phone-notch"></div>
       <div class="phone-screen">
-        <div class="pm-map">
-          <svg width="100%" height="100%" viewBox="0 0 210 300" xmlns="http://www.w3.org/2000/svg">
-            <rect width="210" height="300" fill="#e8e4d8"/>
+        <!-- MAPPA SVG -->
+        <div style="position:absolute;inset:0;background:#d4e0d0;">
+          <svg width="100%" height="100%" viewBox="0 0 242 460" xmlns="http://www.w3.org/2000/svg">
+            <rect width="242" height="460" fill="#d4e0d0"/>
             <!-- strade principali -->
-            <path d="M0 150 Q60 140 105 155 Q150 170 210 145" stroke="#d4cdb8" stroke-width="8" fill="none" stroke-linecap="round"/>
-            <path d="M105 0 Q110 80 105 155 Q100 220 108 300" stroke="#d4cdb8" stroke-width="6" fill="none" stroke-linecap="round"/>
-            <path d="M0 200 Q70 195 130 205 Q170 210 210 198" stroke="#d4cdb8" stroke-width="5" fill="none" stroke-linecap="round"/>
-            <path d="M30 0 Q45 60 40 120 Q35 180 42 300" stroke="#d4cdb8" stroke-width="4" fill="none" stroke-linecap="round"/>
-            <path d="M0 80 Q80 75 140 82 Q175 86 210 78" stroke="#d4cdb8" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M0 170 Q70 158 121 172 Q172 186 242 162" stroke="#beccb8" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <path d="M121 0 Q126 95 121 172 Q116 248 124 460" stroke="#beccb8" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <path d="M0 248 Q85 242 148 251 Q194 258 242 244" stroke="#beccb8" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M38 0 Q54 74 48 148 Q42 222 50 460" stroke="#beccb8" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M0 106 Q92 98 158 108 Q200 114 242 103" stroke="#beccb8" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <!-- strade secondarie -->
+            <path d="M0 296 Q62 293 104 298 Q146 304 188 296" stroke="#c5d4c0" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M164 0 Q167 56 162 112 Q157 168 164 224" stroke="#c5d4c0" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M0 60 Q50 58 88 62 Q126 66 164 60" stroke="#c5d4c0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
             <!-- aree verdi -->
-            <ellipse cx="160" cy="60" rx="30" ry="22" fill="#c8d9a8" opacity=".7"/>
-            <ellipse cx="25" cy="230" rx="22" ry="16" fill="#c8d9a8" opacity=".6"/>
-            <ellipse cx="145" cy="225" rx="28" ry="18" fill="#c8d9a8" opacity=".65"/>
-            <ellipse cx="75" cy="45" rx="18" ry="12" fill="#c8d9a8" opacity=".6"/>
+            <ellipse cx="184" cy="84" rx="36" ry="26" fill="#b4c8a0" opacity=".75"/>
+            <ellipse cx="28" cy="286" rx="26" ry="19" fill="#b4c8a0" opacity=".65"/>
+            <ellipse cx="172" cy="280" rx="33" ry="21" fill="#b4c8a0" opacity=".70"/>
+            <ellipse cx="84" cy="58" rx="21" ry="13" fill="#b4c8a0" opacity=".65"/>
+            <ellipse cx="210" cy="180" rx="16" ry="10" fill="#b4c8a0" opacity=".60"/>
             <!-- lago -->
-            <ellipse cx="168" cy="192" rx="16" ry="10" fill="#a8c4d8" opacity=".75"/>
+            <ellipse cx="196" cy="238" rx="19" ry="12" fill="#9eb4cc" opacity=".80"/>
             <!-- edifici -->
-            <rect x="55" y="95" width="10" height="8" rx="1.5" fill="#c4b8a0" opacity=".8"/>
-            <rect x="70" y="92" width="8" height="10" rx="1.5" fill="#c4b8a0" opacity=".7"/>
-            <rect x="120" y="100" width="12" height="9" rx="1.5" fill="#c4b8a0" opacity=".75"/>
-            <rect x="85" y="200" width="9" height="7" rx="1.5" fill="#c4b8a0" opacity=".7"/>
+            <rect x="64" y="122" width="13" height="11" rx="2" fill="#aaa08c" opacity=".72"/>
+            <rect x="82" y="117" width="11" height="13" rx="2" fill="#aaa08c" opacity=".68"/>
+            <rect x="140" y="128" width="15" height="12" rx="2" fill="#aaa08c" opacity=".70"/>
+            <rect x="98" y="254" width="12" height="10" rx="2" fill="#aaa08c" opacity=".65"/>
+            <rect x="56" y="252" width="10" height="8" rx="2" fill="#aaa08c" opacity=".60"/>
           </svg>
         </div>
-        <div class="pm-overlay"></div>
-        <div class="pm-topbar">
-          <span class="pm-brand">Wayterra</span>
-          <span style="font-size:9px;color:#9ca3af;">IT / EN</span>
+
+        <!-- TOPBAR -->
+        <div style="position:absolute;top:0;left:0;right:0;z-index:10;background:rgba(255,255,255,.97);border-bottom:0.5px solid rgba(0,0,0,.08);padding:7px 10px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:5px;">
+            <div style="width:18px;height:18px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ti ti-map-pin" style="font-size:9px;color:#fff;"></i>
+            </div>
+            <span style="font-size:10px;font-weight:800;color:#111;letter-spacing:-.02em;">Wayterra</span>
+            <div style="border:0.5px solid #d1d5db;border-radius:100px;padding:2px 7px;">
+              <span style="font-size:8px;color:#6b7280;font-weight:600;">Lazio ▾</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <div style="width:22px;height:22px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;"><i class="ti ti-search" style="font-size:9px;color:#6b7280;"></i></div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;"><i class="ti ti-adjustments-horizontal" style="font-size:9px;color:#6b7280;"></i></div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;"><i class="ti ti-user" style="font-size:9px;color:#6b7280;"></i></div>
+          </div>
         </div>
-      <div class="pm-search" id="pm-search" data-t="pm-search">🔍 Where do you want to go?</div>
-        <!-- pins -->
-        <div class="pm-pin" style="top:95px;left:60px;">
-          <div class="pm-pin-circle" style="background:#dc6b2f;"><i class="ti ti-building-castle" style="color:white;font-size:10px;"></i></div>
-          <div class="pm-pin-stem" style="background:#dc6b2f;"></div>
-          <div class="pm-pin-lbl">Civita</div>
+
+        <!-- PIN BORGO selezionato (arancione, grande) -->
+        <div style="position:absolute;top:128px;left:65px;display:flex;flex-direction:column;align-items:center;z-index:6;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 4px 14px rgba(220,107,47,.50),0 1px 4px rgba(0,0,0,.22);">
+            <i class="ti ti-building-castle" style="color:#fff;font-size:13px;"></i>
+          </div>
+          <div style="width:2px;height:6px;background:#dc6b2f;margin-top:-1px;"></div>
+          <div style="background:rgba(255,255,255,.96);border-radius:100px;padding:2px 7px;font-size:7.5px;font-weight:700;color:#111;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15);">Civita</div>
         </div>
-        <div class="pm-pin" style="top:110px;left:130px;">
-          <div class="pm-pin-circle pm-pin-lock"><i class="ti ti-lock" style="color:white;font-size:10px;"></i></div>
-          <div class="pm-pin-stem" style="background:#4b5563;"></div>
+        <!-- PIN natura (verde) -->
+        <div style="position:absolute;top:100px;left:148px;display:flex;flex-direction:column;align-items:center;z-index:5;">
+          <div style="width:30px;height:30px;border-radius:50%;background:#16a34a;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.18);">
+            <i class="ti ti-trees" style="color:#fff;font-size:10px;"></i>
+          </div>
+          <div style="width:1.5px;height:5px;background:#16a34a;margin-top:-1px;"></div>
         </div>
-        <div class="pm-pin" style="top:145px;left:90px;">
-          <div class="pm-pin-circle" style="background:#ca8a04;"><i class="ti ti-tools-kitchen-2" style="color:white;font-size:10px;"></i></div>
-          <div class="pm-pin-stem" style="background:#ca8a04;"></div>
-          <div class="pm-pin-lbl">Fraschetta</div>
+        <!-- PIN foto spot (viola) -->
+        <div style="position:absolute;top:182px;left:162px;display:flex;flex-direction:column;align-items:center;z-index:5;">
+          <div style="width:30px;height:30px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.18);">
+            <i class="ti ti-camera" style="color:#fff;font-size:10px;"></i>
+          </div>
+          <div style="width:1.5px;height:5px;background:#7c3aed;margin-top:-1px;"></div>
         </div>
-        <!-- card -->
-        <div class="pm-card">
-          <div class="pm-card-cat" style="color:#dc6b2f;" data-t="pm-card-cat">🏘 Village</div>
-          <div class="pm-card-name">Civita di Bagnoregio</div>
-          <div class="pm-card-score" data-t="pm-card-score">💎💎💎 Hidden gem</div>
-          <button class="pm-card-btn" data-t="pm-card-btn">Discover this place →</button>
+        <!-- PIN dormire (blu) -->
+        <div style="position:absolute;top:204px;left:74px;display:flex;flex-direction:column;align-items:center;z-index:5;">
+          <div style="width:30px;height:30px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.18);">
+            <i class="ti ti-bed" style="color:#fff;font-size:10px;"></i>
+          </div>
+          <div style="width:1.5px;height:5px;background:#2563eb;margin-top:-1px;"></div>
+        </div>
+        <!-- PIN ristorante (giallo) -->
+        <div style="position:absolute;top:158px;left:108px;display:flex;flex-direction:column;align-items:center;z-index:5;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#ca8a04;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.18);">
+            <i class="ti ti-tools-kitchen-2" style="color:#fff;font-size:9px;"></i>
+          </div>
+          <div style="width:1.5px;height:5px;background:#ca8a04;margin-top:-1px;"></div>
+        </div>
+
+        <!-- BOTTOM CARD -->
+        <div style="position:absolute;bottom:44px;left:0;right:0;background:#fff;border-radius:14px 14px 0 0;padding:11px 12px 12px;box-shadow:0 -4px 20px rgba(0,0,0,.12);z-index:8;">
+          <div style="display:flex;gap:0;">
+            <div style="width:66px;min-width:66px;height:66px;border-radius:10px 0 0 10px;overflow:hidden;background:linear-gradient(135deg,#8c6250,#c4913a);display:flex;align-items:center;justify-content:center;font-size:22px;">🏰</div>
+            <div style="padding:6px 10px;flex:1;min-width:0;">
+              <div style="font-size:8px;font-weight:700;color:#dc6b2f;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">🏰 BORGO</div>
+              <div style="font-size:11px;font-weight:700;color:#111;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Civita di Bagnoregio</div>
+              <div style="display:inline-flex;align-items:center;background:#fefce8;border:0.5px solid #fde68a;border-radius:5px;padding:2px 6px;font-size:8px;font-weight:600;color:#92400e;margin-bottom:6px;">💎💎💎 Gemma nascosta</div>
+              <button style="width:100%;padding:5px;background:#111827;border:none;border-radius:7px;font-size:8.5px;font-weight:600;color:#fff;font-family:inherit;cursor:pointer;">Scopri il luogo →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <div style="position:absolute;bottom:0;left:0;right:0;height:44px;background:#fff;border-top:0.5px solid rgba(0,0,0,.10);display:flex;align-items:center;z-index:9;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+            <i class="ti ti-map-2" style="font-size:14px;color:#dc6b2f;"></i>
+            <span style="font-size:7px;font-weight:700;color:#dc6b2f;">Mappa</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+            <i class="ti ti-route" style="font-size:14px;color:#9ca3af;"></i>
+            <span style="font-size:7px;font-weight:500;color:#9ca3af;">Itinerari</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+            <i class="ti ti-user" style="font-size:14px;color:#9ca3af;"></i>
+            <span style="font-size:7px;font-weight:500;color:#9ca3af;">Profilo</span>
+          </div>
         </div>
       </div>
     </div>
