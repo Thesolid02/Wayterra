@@ -778,6 +778,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 <script defer src="https://cloud.umami.is/script.js" data-website-id="8ac51bd2-99a5-4dbd-bf8e-9dd98d87d138"></script>
 </head>
 <body>
+<div id="initial-overlay" style="position:fixed;inset:0;z-index:9999;background:#fff;"></div>
 
 <div id="splash">
   <div id="splash-center">
@@ -3619,6 +3620,8 @@ function normalizeData(d){
 function showRegionPage(){
   var el=document.getElementById('region-page');
   if(!el)return;
+  var _io=document.getElementById('initial-overlay');
+  if(_io)_io.style.display='none';
   el.classList.remove('gone');
   el.classList.remove('fade-out');
   if(DATA.experiences&&DATA.experiences.length>0){
@@ -5304,6 +5307,9 @@ function bootApp(d){
   document.getElementById('splash').style.display='none';
   if(!new URLSearchParams(window.location.search).get('region')){
     showRegionPage();
+  } else {
+    var _io=document.getElementById('initial-overlay');
+    if(_io)_io.style.display='none';
   }
   checkAuthSession();
 }
