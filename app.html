@@ -5316,8 +5316,11 @@ function bootApp(d){
   var _urlParamsB=new URLSearchParams(window.location.search);
   var _accessParam=_urlParamsB.get('access');
   if(_accessParam==='lazio'){
-    showRegionPage();
-    setTimeout(function(){openAccessRequestModal();},500);
+    setTimeout(function(){
+      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+      showRegionPage();
+      openAccessRequestModal();
+    },500);
   } else if(!_urlParamsB.get('region')){
     showRegionPage();
   }
