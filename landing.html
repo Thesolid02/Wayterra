@@ -109,9 +109,8 @@ section{padding:80px 24px;}
 
 /* ── APP PREVIEW ── */
 .preview-sec{background:var(--g900);overflow:hidden;}
-.preview-inner{display:flex;flex-direction:column;gap:40px;}
-.preview-phones{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
-@media(max-width:767px){.preview-phones{flex-direction:column;align-items:center;}}
+.preview-inner{display:grid;grid-template-columns:1fr;gap:40px;align-items:center;}
+@media(min-width:768px){.preview-inner{grid-template-columns:1fr 1fr;gap:60px;}.preview-text{order:2;}.preview-phone{order:1;}}
 .preview-text .badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);}
 .preview-text .s-title{color:#fff;}
 .highlight-marker{position:relative;display:inline;color:white;z-index:1;padding:2px 5px;}
@@ -439,182 +438,64 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
       </div>
     </div>
 
-    <!-- Phone carousel -->
-    <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
-
-      <!-- Phone frame -->
-      <div style="background:#1a1a1a;border-radius:24px;border:2px solid #333;overflow:hidden;width:200px;">
-
-        <!-- Screen 0: Mappa interattiva -->
-        <div id="lp-screen-0">
-          <div style="background:#fff;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #eee;">
-            <div style="display:flex;align-items:center;gap:5px;">
-              <div style="width:16px;height:16px;border-radius:4px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;"><i class="ti ti-map-2" style="font-size:10px;color:#fff;" aria-hidden="true"></i></div>
-              <span style="font-size:9px;font-weight:500;">Wayterra</span>
-              <div style="font-size:8px;color:#666;border:0.5px solid #ddd;border-radius:10px;padding:1px 6px;">Cotswolds ▾</div>
+    <!-- large phone preview -->
+    <div class="preview-phone">
+      <div class="preview-phone-notch"></div>
+      <div class="preview-phone-screen" style="background:#f8f7f4;">
+        <div style="background:#dc6b2f;padding:12px 14px 10px;">
+          <div style="font-size:8px;color:rgba(255,255,255,.7);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;">Itinerario</div>
+          <div style="font-size:15px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:6px;">4 giorni alle Cotswolds</div>
+          <div style="display:flex;gap:12px;">
+            <span style="font-size:9px;color:rgba(255,255,255,.8);">🚗 320 km totali</span>
+            <span style="font-size:9px;color:rgba(255,255,255,.8);">📅 4 giorni</span>
+          </div>
+        </div>
+        <div style="overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <div style="font-size:8.5px;font-weight:700;color:#dc6b2f;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;">Giorno 1</div>
+            <div style="background:#fff;border-radius:8px;padding:9px 11px;margin-bottom:6px;border:0.5px solid #e5e7eb;display:flex;align-items:flex-start;gap:8px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:#dc6b2f;margin-top:4px;flex-shrink:0;"></div>
+              <div><div style="font-size:10px;font-weight:600;color:#111;margin-bottom:2px;">Bristol</div><div style="font-size:8px;color:#6b7280;line-height:1.4;">Arrivo e centro storico</div></div>
             </div>
-            <div style="display:flex;gap:4px;">
-              <div style="width:16px;height:16px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;"><i class="ti ti-search" style="font-size:8px;color:#666;" aria-hidden="true"></i></div>
-              <div style="width:16px;height:16px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;"><i class="ti ti-user" style="font-size:8px;color:#666;" aria-hidden="true"></i></div>
+            <div style="background:#fff;border-radius:8px;padding:9px 11px;border:0.5px solid #e5e7eb;display:flex;align-items:flex-start;gap:8px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:#dc6b2f;margin-top:4px;flex-shrink:0;"></div>
+              <div><div style="font-size:10px;font-weight:600;color:#111;margin-bottom:2px;">Castle Combe</div><div style="font-size:8px;color:#6b7280;line-height:1.4;">Il borgo più bello d'Inghilterra</div></div>
             </div>
           </div>
-          <div style="height:175px;background:#d4e0d0;position:relative;overflow:hidden;">
-            <svg width="100%" height="100%" viewBox="0 0 200 175" aria-hidden="true">
-              <line x1="30" y1="0" x2="30" y2="175" stroke="#c8d8c8" stroke-width="2"/>
-              <line x1="75" y1="0" x2="75" y2="175" stroke="#c8d8c8" stroke-width="2"/>
-              <line x1="125" y1="0" x2="125" y2="175" stroke="#c8d8c8" stroke-width="2"/>
-              <line x1="165" y1="0" x2="165" y2="175" stroke="#c8d8c8" stroke-width="2"/>
-              <line x1="0" y1="40" x2="200" y2="40" stroke="#c8d8c8" stroke-width="2"/>
-              <line x1="0" y1="95" x2="200" y2="95" stroke="#c8d8c8" stroke-width="2"/>
-              <line x1="0" y1="135" x2="200" y2="135" stroke="#c8d8c8" stroke-width="2"/>
-              <circle cx="62" cy="58" r="14" fill="#dc6b2f"/>
-              <text x="62" y="63" text-anchor="middle" fill="white" font-size="10">🏰</text>
-              <circle cx="112" cy="46" r="14" fill="#dc6b2f"/>
-              <text x="112" y="51" text-anchor="middle" fill="white" font-size="10">🏰</text>
-              <circle cx="94" cy="105" r="14" fill="#7c3aed"/>
-              <text x="94" y="110" text-anchor="middle" fill="white" font-size="10">📸</text>
-              <circle cx="144" cy="74" r="14" fill="#2563eb"/>
-              <text x="144" y="79" text-anchor="middle" fill="white" font-size="10">🛏</text>
-              <circle cx="42" cy="126" r="14" fill="#16a34a"/>
-              <text x="42" y="131" text-anchor="middle" fill="white" font-size="10">🌿</text>
+          <div>
+            <div style="font-size:8.5px;font-weight:700;color:#dc6b2f;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;">Giorno 2</div>
+            <div style="background:#fff;border-radius:8px;padding:9px 11px;border:0.5px solid #e5e7eb;display:flex;align-items:flex-start;gap:8px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:#dc6b2f;margin-top:4px;flex-shrink:0;"></div>
+              <div><div style="font-size:10px;font-weight:600;color:#111;margin-bottom:2px;">Bibury</div><div style="font-size:8px;color:#6b7280;line-height:1.4;">Arlington Row e il villaggio medievale</div></div>
+            </div>
+          </div>
+          <!-- mini mappa itinerario -->
+          <div style="border-radius:10px;overflow:hidden;border:0.5px solid #e5e7eb;">
+            <svg width="100%" viewBox="0 0 220 90" xmlns="http://www.w3.org/2000/svg">
+              <rect width="220" height="90" fill="#d4e0d0"/>
+              <!-- strade sfondo -->
+              <path d="M0 55 Q55 50 110 55 Q165 60 220 52" stroke="#b8ccb4" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path d="M110 0 Q112 40 110 55 Q108 70 112 90" stroke="#b8ccb4" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <!-- aree verdi -->
+              <ellipse cx="30" cy="25" rx="20" ry="12" fill="#b8d4b0" opacity=".7"/>
+              <ellipse cx="185" cy="30" rx="22" ry="13" fill="#b8d4b0" opacity=".65"/>
+              <ellipse cx="150" cy="70" rx="18" ry="10" fill="#b8d4b0" opacity=".6"/>
+              <!-- linea tratteggiata itinerario -->
+              <path d="M44 55 Q77 38 110 55 Q150 70 176 48" stroke="#dc6b2f" stroke-width="2" fill="none" stroke-dasharray="5 3" stroke-linecap="round"/>
+              <!-- pin 1 -->
+              <circle cx="44" cy="55" r="9" fill="#dc6b2f"/>
+              <text x="44" y="59" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">1</text>
+              <!-- pin 2 -->
+              <circle cx="110" cy="55" r="9" fill="#dc6b2f"/>
+              <text x="110" y="59" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">2</text>
+              <!-- pin 3 -->
+              <circle cx="176" cy="48" r="9" fill="#dc6b2f"/>
+              <text x="176" y="52" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">3</text>
             </svg>
           </div>
-          <div style="background:#fff;padding:8px 10px;border-top:0.5px solid #eee;">
-            <div style="font-size:8px;color:#dc6b2f;font-weight:600;margin-bottom:2px;">🏰 BORGO</div>
-            <div style="font-size:10px;font-weight:500;margin-bottom:1px;">Bibury</div>
-            <div style="font-size:8px;color:#666;margin-bottom:6px;">💎 Gemma nascosta</div>
-            <div style="background:#1a1a1a;border-radius:7px;padding:6px;text-align:center;"><span style="font-size:8px;color:#fff;font-weight:500;">Scopri il luogo →</span></div>
-          </div>
-          <div style="background:#fff;padding:6px 0;display:flex;border-top:0.5px solid #eee;">
-            <div style="flex:1;text-align:center;"><i class="ti ti-map-2" style="font-size:14px;color:#dc6b2f;" aria-hidden="true"></i><div style="font-size:7px;color:#dc6b2f;">Mappa</div></div>
-            <div style="flex:1;text-align:center;"><i class="ti ti-route" style="font-size:14px;color:#999;" aria-hidden="true"></i><div style="font-size:7px;color:#999;">Itinerari</div></div>
-            <div style="flex:1;text-align:center;"><i class="ti ti-user" style="font-size:14px;color:#999;" aria-hidden="true"></i><div style="font-size:7px;color:#999;">Profilo</div></div>
-          </div>
         </div>
-
-        <!-- Screen 1: Dettaglio luogo -->
-        <div id="lp-screen-1" style="display:none;">
-          <div style="height:90px;background:linear-gradient(135deg,#7a8d9c,#8fa3b1);position:relative;">
-            <div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,.3);border-radius:14px;padding:3px 8px;display:flex;align-items:center;gap:4px;">
-              <i class="ti ti-arrow-left" style="font-size:9px;color:#fff;" aria-hidden="true"></i>
-              <span style="font-size:8px;color:#fff;">Indietro</span>
-            </div>
-            <div style="position:absolute;top:8px;right:8px;"><i class="ti ti-bookmark" style="font-size:14px;color:#fff;" aria-hidden="true"></i></div>
-          </div>
-          <div style="background:#fff;padding:8px 10px;">
-            <div style="font-size:8px;color:#dc6b2f;font-weight:600;margin-bottom:2px;">🏰 BORGO</div>
-            <div style="font-size:11px;font-weight:500;margin-bottom:3px;">Bibury</div>
-            <div style="font-size:8px;color:#555;margin-bottom:8px;line-height:1.4;">Il villaggio più fotografato d'Inghilterra, con cottage in pietra color miele.</div>
-            <div style="font-size:8px;color:#999;font-weight:600;letter-spacing:.04em;margin-bottom:5px;">ATTIVITÀ</div>
-            <div style="display:flex;flex-direction:column;gap:4px;">
-              <div style="display:flex;align-items:center;gap:5px;padding:5px 7px;background:#f9f9f9;border-radius:5px;border:0.5px solid #eee;">
-                <div style="width:20px;height:20px;border-radius:4px;background:#fef3ec;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-tools-kitchen-2" style="font-size:11px;color:#dc6b2f;" aria-hidden="true"></i></div>
-                <div><div style="font-size:8px;font-weight:500;">The Catherine Wheel</div><div style="font-size:7px;color:#999;">Dove mangiare</div></div>
-              </div>
-              <div style="display:flex;align-items:center;gap:5px;padding:5px 7px;background:#f9f9f9;border-radius:5px;border:0.5px solid #eee;">
-                <div style="width:20px;height:20px;border-radius:4px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-bed" style="font-size:11px;color:#2563eb;" aria-hidden="true"></i></div>
-                <div><div style="font-size:8px;font-weight:500;">The Swan Hotel</div><div style="font-size:7px;color:#999;">Dove dormire</div></div>
-              </div>
-            </div>
-            <div style="display:flex;gap:5px;margin-top:8px;">
-              <div style="flex:1;padding:6px;background:#f5f5f5;border-radius:6px;text-align:center;"><span style="font-size:8px;font-weight:500;">Sono stato qui</span></div>
-              <div style="flex:1;padding:6px;background:#1a1a1a;border-radius:6px;text-align:center;"><span style="font-size:8px;color:#fff;font-weight:500;">Apri in Maps →</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Screen 2: Itinerario -->
-        <div id="lp-screen-2" style="display:none;">
-          <div style="height:60px;background:linear-gradient(135deg,#7a8d9c,#8fa3b1);display:flex;align-items:flex-end;padding:7px 10px;">
-            <div>
-              <div style="font-size:7px;color:rgba(255,255,255,.7);">4 GIORNI · UK</div>
-              <div style="font-size:10px;font-weight:500;color:#fff;">Estate alle Cotswolds</div>
-            </div>
-          </div>
-          <div style="background:#fff;padding:7px 9px;display:flex;flex-direction:column;gap:5px;">
-            <div style="background:#fff3ed;border:0.5px solid #dc6b2f;border-radius:6px;overflow:hidden;">
-              <div style="padding:4px 9px;border-bottom:0.5px solid #dc6b2f;display:flex;justify-content:space-between;">
-                <span style="font-size:8px;font-weight:500;color:#dc6b2f;">Giorno 1</span>
-                <span style="font-size:7px;color:#dc6b2f;">(2 tappe)</span>
-              </div>
-              <div style="padding:6px 9px;display:flex;flex-direction:column;gap:4px;">
-                <div style="display:flex;align-items:center;gap:5px;">
-                  <div style="width:15px;height:15px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-plane-departure" style="font-size:8px;color:#fff;" aria-hidden="true"></i></div>
-                  <span style="font-size:8px;font-weight:500;">Birmingham</span>
-                </div>
-                <div style="font-size:7px;color:#999;padding-left:20px;">↓ 1h 30min in auto</div>
-                <div style="display:flex;align-items:center;gap:5px;">
-                  <div style="width:15px;height:15px;border-radius:50%;background:#888;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:8px;color:#fff;font-weight:500;">1</span></div>
-                  <span style="font-size:8px;font-weight:500;">Bristol</span>
-                  <span style="font-size:7px;color:#dc6b2f;border:0.5px solid #dc6b2f;border-radius:6px;padding:0 3px;">opz.</span>
-                </div>
-              </div>
-            </div>
-            <div style="background:#fff3ed;border:0.5px solid #dc6b2f;border-radius:6px;overflow:hidden;">
-              <div style="padding:4px 9px;border-bottom:0.5px solid #dc6b2f;display:flex;justify-content:space-between;">
-                <span style="font-size:8px;font-weight:500;color:#dc6b2f;">Giorno 2</span>
-                <span style="font-size:7px;color:#dc6b2f;">(3 tappe)</span>
-              </div>
-              <div style="padding:6px 9px;display:flex;flex-direction:column;gap:4px;">
-                <div style="display:flex;align-items:center;gap:5px;">
-                  <div style="width:15px;height:15px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:8px;color:#fff;font-weight:500;">2</span></div>
-                  <span style="font-size:8px;font-weight:500;">Castle Combe</span>
-                </div>
-                <div style="font-size:7px;color:#999;padding-left:20px;">↓ 30min in auto</div>
-                <div style="display:flex;align-items:center;gap:5px;">
-                  <div style="width:15px;height:15px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:8px;color:#fff;font-weight:500;">3</span></div>
-                  <span style="font-size:8px;font-weight:500;">Bibury</span>
-                </div>
-              </div>
-            </div>
-            <div style="display:flex;gap:5px;">
-              <div style="flex:1;padding:6px;background:#f5f5f5;border-radius:6px;text-align:center;border:0.5px solid #eee;"><span style="font-size:7px;font-weight:500;">Mappa tappe</span></div>
-              <div style="flex:1;padding:6px;background:#dc6b2f;border-radius:6px;text-align:center;"><span style="font-size:7px;color:#fff;font-weight:500;">Apri su Google Maps</span></div>
-            </div>
-          </div>
-          <div style="background:#fff;padding:6px 0;display:flex;border-top:0.5px solid #eee;">
-            <div style="flex:1;text-align:center;"><i class="ti ti-map-2" style="font-size:14px;color:#999;" aria-hidden="true"></i><div style="font-size:7px;color:#999;">Mappa</div></div>
-            <div style="flex:1;text-align:center;"><i class="ti ti-route" style="font-size:14px;color:#dc6b2f;" aria-hidden="true"></i><div style="font-size:7px;color:#dc6b2f;">Itinerari</div></div>
-            <div style="flex:1;text-align:center;"><i class="ti ti-user" style="font-size:14px;color:#999;" aria-hidden="true"></i><div style="font-size:7px;color:#999;">Profilo</div></div>
-          </div>
-        </div>
-
       </div>
-
-      <!-- Carousel navigation -->
-      <div style="display:flex;align-items:center;gap:18px;">
-        <button onclick="lpPrev()" aria-label="Precedente" style="background:rgba(255,255,255,.12);border:none;border-radius:50%;width:36px;height:36px;font-size:16px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;">←</button>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <div id="lp-dot-0" onclick="lpShow(0)" style="width:9px;height:9px;border-radius:50%;background:#dc6b2f;cursor:pointer;transition:background .2s;"></div>
-          <div id="lp-dot-1" onclick="lpShow(1)" style="width:9px;height:9px;border-radius:50%;background:#555;cursor:pointer;transition:background .2s;"></div>
-          <div id="lp-dot-2" onclick="lpShow(2)" style="width:9px;height:9px;border-radius:50%;background:#555;cursor:pointer;transition:background .2s;"></div>
-        </div>
-        <button onclick="lpNext()" aria-label="Successivo" style="background:rgba(255,255,255,.12);border:none;border-radius:50%;width:36px;height:36px;font-size:16px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;">→</button>
-      </div>
-
-      <!-- Screen label -->
-      <div style="text-align:center;max-width:260px;">
-        <p id="lp-label" style="font-size:14px;font-weight:500;color:#fff;margin:0 0 4px;">1. Esplora la mappa</p>
-        <p id="lp-desc" style="font-size:12px;color:rgba(255,255,255,.5);margin:0;line-height:1.5;">Pin interattivi con luoghi nascosti e segreti locali</p>
-      </div>
-
     </div>
-    <script>
-    var lpCurrent=0;
-    var lpLabels=['1. Esplora la mappa','2. Scopri i luoghi','3. Segui l\'itinerario'];
-    var lpDescs=['Pin interattivi con luoghi nascosti e segreti locali','Dettaglio completo con attività, dove mangiare e dormire','Giorno per giorno, con tappe, km e info utili'];
-    function lpShow(n){
-      for(var i=0;i<3;i++){
-        document.getElementById('lp-screen-'+i).style.display=i===n?'block':'none';
-        document.getElementById('lp-dot-'+i).style.background=i===n?'#dc6b2f':'#555';
-      }
-      document.getElementById('lp-label').textContent=lpLabels[n];
-      document.getElementById('lp-desc').textContent=lpDescs[n];
-      lpCurrent=n;
-    }
-    function lpNext(){lpShow((lpCurrent+1)%3);}
-    function lpPrev(){lpShow((lpCurrent+2)%3);}
-    </script>
   </div>
 </section>
 
