@@ -3621,7 +3621,7 @@ function showRegionPage(){
   var el=document.getElementById('region-page');
   if(!el)return;
   var _io=document.getElementById('initial-overlay');
-  if(_io)_io.style.display='none';
+  if(_io)_io.remove();
   el.classList.remove('gone');
   el.classList.remove('fade-out');
   if(DATA.experiences&&DATA.experiences.length>0){
@@ -3679,6 +3679,7 @@ function selectRegion(regionId){
     setTimeout(function(){
       stopSplashRotation();sp.classList.add('hide');
       var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
+      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
       renderItdPill();
     },3000);
@@ -3733,6 +3734,7 @@ function selectTravelRegion(regionId,center,zoom){
     setTimeout(function(){
       stopSplashRotation();sp.classList.add('hide');
       var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
+      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
       renderItdPill();
     },3000);
@@ -5307,9 +5309,6 @@ function bootApp(d){
   document.getElementById('splash').style.display='none';
   if(!new URLSearchParams(window.location.search).get('region')){
     showRegionPage();
-  } else {
-    var _io=document.getElementById('initial-overlay');
-    if(_io)_io.style.display='none';
   }
   checkAuthSession();
 }
