@@ -261,7 +261,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <img src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1600&q=75&auto=format&fit=crop&crop=center" alt="Hidden places in Italy" loading="eager">
   </div>
   <div class="hero-content">
-    <div class="hero-region-badge">
+    <div class="hero-region-badge" style="display:none;">
       <span class="hero-region-dot"></span>
       Now available: Lazio, Italy · More regions coming
     </div>
@@ -327,7 +327,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     </div>
 
     <div class="hero-ctas">
-      <a class="hcta-primary" href="https://wayterra.it/app" data-t="hcta-ghost">Esplora gratis →</a>
+      <a class="hcta-primary" href="https://wayterra.it/app" data-t="hcta-ghost">Scegli la destinazione →</a>
       <a class="hcta-ghost" href="https://wayterra.gumroad.com/l/wayterra" data-gumroad-single-product="true" data-t="hcta-primary" style="display:none;">Get full access — <span style="text-decoration:line-through;color:#9ca3af;font-size:.9em;">€29</span> <span style="color:#dc6b2f;font-weight:700;">€19</span></a>
     </div>
     <p class="hero-note" data-t="hero-note" style="display:none;">Free to explore · Unlock all places for €19 (instead of €29) · One-time payment</p>
@@ -388,6 +388,30 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
               <div><div style="font-size:10px;font-weight:600;color:#111;margin-bottom:2px;">Bibury</div><div style="font-size:8px;color:#6b7280;line-height:1.4;">Arlington Row e il villaggio medievale</div></div>
             </div>
           </div>
+          <!-- mini mappa itinerario -->
+          <div style="border-radius:10px;overflow:hidden;border:0.5px solid #e5e7eb;">
+            <svg width="100%" viewBox="0 0 220 90" xmlns="http://www.w3.org/2000/svg">
+              <rect width="220" height="90" fill="#d4e0d0"/>
+              <!-- strade sfondo -->
+              <path d="M0 55 Q55 50 110 55 Q165 60 220 52" stroke="#b8ccb4" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path d="M110 0 Q112 40 110 55 Q108 70 112 90" stroke="#b8ccb4" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <!-- aree verdi -->
+              <ellipse cx="30" cy="25" rx="20" ry="12" fill="#b8d4b0" opacity=".7"/>
+              <ellipse cx="185" cy="30" rx="22" ry="13" fill="#b8d4b0" opacity=".65"/>
+              <ellipse cx="150" cy="70" rx="18" ry="10" fill="#b8d4b0" opacity=".6"/>
+              <!-- linea tratteggiata itinerario -->
+              <path d="M44 55 Q77 38 110 55 Q150 70 176 48" stroke="#dc6b2f" stroke-width="2" fill="none" stroke-dasharray="5 3" stroke-linecap="round"/>
+              <!-- pin 1 -->
+              <circle cx="44" cy="55" r="9" fill="#dc6b2f"/>
+              <text x="44" y="59" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">1</text>
+              <!-- pin 2 -->
+              <circle cx="110" cy="55" r="9" fill="#dc6b2f"/>
+              <text x="110" y="59" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">2</text>
+              <!-- pin 3 -->
+              <circle cx="176" cy="48" r="9" fill="#dc6b2f"/>
+              <text x="176" y="52" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">3</text>
+            </svg>
+          </div>
         </div>
       </div>
     </div>
@@ -403,7 +427,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 
       <!-- Card Lazio -->
       <a href="https://wayterra.it/app" style="text-decoration:none;flex-shrink:0;width:240px;">
-        <div style="height:360px;border-radius:20px;overflow:hidden;position:relative;background:linear-gradient(135deg,#5a4a3a,#8a7a5a);">
+        <div style="height:360px;border-radius:20px;overflow:hidden;position:relative;background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio.jpg');background-size:cover;background-position:center;">
           <div style="position:absolute;inset:0;background:linear-gradient(to bottom, transparent 35%, rgba(0,0,0,.85) 100%);"></div>
           <div style="position:absolute;top:14px;left:14px;">
             <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,.9);background:rgba(0,0,0,.4);padding:4px 10px;border-radius:20px;letter-spacing:.04em;">🇮🇹 ITALIA</span>
@@ -659,7 +683,7 @@ var T={
     'hero-h1':'Tu scegli la destinazione,<br><em>al resto ci pensiamo noi</em>',
     'hero-sub':'Mappe interattive e itinerari completi giorno per giorno.',
     'hero-note':'Free to explore · Unlock all places for €19 (instead of €29) · One-time payment',
-    'hcta-ghost':'Esplora gratis →',
+    'hcta-ghost':'Scegli la destinazione →',
     'hcta-primary':'Get full access — <span style="text-decoration:line-through;color:#9ca3af;font-size:.9em;">€29</span> <span style="color:#dc6b2f;font-weight:700;">€19</span>',
     'pm-search':'🔍 Where do you want to go?',
     'pm-card-cat':'🏘 Village',
@@ -747,7 +771,7 @@ var T={
     'hero-h1':'I luoghi che nessuno<br><em>ti mostrerà mai</em>',
     'hero-sub':'Una mappa interattiva di borghi nascosti, sentieri segreti e ristoranti autentici. Curata da chi il territorio lo conosce davvero.',
     'hero-note':'Esplora gratis · Sblocca tutti i luoghi per €19 (invece di €29) · Pagamento unico',
-    'hcta-ghost':'Esplora gratis →',
+    'hcta-ghost':'Scegli la destinazione →',
     'hcta-primary':'Accesso completo — <span style="text-decoration:line-through;color:#9ca3af;font-size:.9em;">€29</span> <span style="color:#dc6b2f;font-weight:700;">€19</span>',
     'pm-search':'🔍 Dove vorresti andare?',
     'pm-card-cat':'🏘 Borgo',
