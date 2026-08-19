@@ -5313,7 +5313,12 @@ function bootApp(d){
   stopSplashRotation();
   document.getElementById('splash').classList.add('hide');
   document.getElementById('splash').style.display='none';
-  if(!new URLSearchParams(window.location.search).get('region')){
+  var _urlParamsB=new URLSearchParams(window.location.search);
+  var _accessParam=_urlParamsB.get('access');
+  if(_accessParam==='lazio'){
+    showRegionPage();
+    setTimeout(function(){openAccessRequestModal();},500);
+  } else if(!_urlParamsB.get('region')){
     showRegionPage();
   }
   checkAuthSession();
