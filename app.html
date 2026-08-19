@@ -3663,6 +3663,12 @@ function selectRegion(regionId){
   hideRegionPage(null);
   _currentRegionCenter=[12.8,41.8];
   _currentRegionZoom=window.innerWidth<768?7:8;
+  if(new URLSearchParams(window.location.search).get('region')){
+    history.replaceState(null,'',window.location.pathname+window.location.search);
+    window.addEventListener('popstate',function(){
+      window.location.href=document.referrer||'https://v2-dev--glittery-pudding-104d72.netlify.app/landing.html';
+    },{once:true});
+  }
   if(_mapReady){
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
@@ -3711,6 +3717,12 @@ function selectTravelRegion(regionId,center,zoom){
   var z=window.innerWidth<768?zoom-1:zoom;
   _currentRegionCenter=center;
   _currentRegionZoom=z;
+  if(new URLSearchParams(window.location.search).get('region')){
+    history.replaceState(null,'',window.location.pathname+window.location.search);
+    window.addEventListener('popstate',function(){
+      window.location.href=document.referrer||'https://v2-dev--glittery-pudding-104d72.netlify.app/landing.html';
+    },{once:true});
+  }
   if(_mapReady){
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
@@ -4638,6 +4650,11 @@ function toggleSvcDesc(btn){
 function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').style.zIndex='510';
   document.getElementById('itinerario-detail').classList.remove('show');
+  if(_travelContext){
+    window.addEventListener('popstate',function(){
+      window.location.href=document.referrer||'https://v2-dev--glittery-pudding-104d72.netlify.app/landing.html';
+    },{once:true});
+  }
 }
 function openItinerarioPDF(){
   if(!_currentUser){openAuthPage(lang==='en'?'Sign in to download itineraries':'Accedi per scaricare gli itinerari',function(){openItinerarioPDF();});return;}
@@ -5276,7 +5293,15 @@ function bootApp(d){
   stopSplashRotation();
   document.getElementById('splash').classList.add('hide');
   document.getElementById('splash').style.display='none';
-  showRegionPage();
+  var _urlParams=new URLSearchParams(window.location.search);
+  var _regionParam=_urlParams.get('region');
+  if(_regionParam==='lazio'){
+    selectRegion('lazio');
+  } else if(_regionParam){
+    selectTravelRegion(_regionParam,getRegionCenter(_regionParam),getRegionZoom(_regionParam));
+  } else {
+    showRegionPage();
+  }
   checkAuthSession();
 }
 
