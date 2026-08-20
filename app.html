@@ -3326,6 +3326,7 @@ var _supaAuth=(function(){try{return supabase.createClient(SB_URL,SB_KEY);}catch
 var _authMode='login';
 var _currentUser=null;
 var _currentUserProfile=null;
+var _pendingAvatarUrl=null;
 var _authCallback=null;
 var completedItineraries=new Set();
 var visitedPlaces=new Set();
@@ -5874,8 +5875,8 @@ async function handleAvatarChange(input){
   var authRes=await _supaAuth.auth.updateUser({data:{avatar_url:url}});
   console.log('[avatar] auth update result:',authRes.error);
   if(_currentUserProfile)_currentUserProfile.avatar_url=url;
-  console.log('[avatar] _currentUserProfile dopo update:',_currentUserProfile?.avatar_url);
-  console.log('[avatar] url caricata:',url);
+  _pendingAvatarUrl=url;
+  setTimeout(function(){_pendingAvatarUrl=null;},5000);
   updateNavProfileAvatar();
 }
 function _compressImage(file,maxW,maxH,quality){
@@ -5896,7 +5897,6 @@ function _compressImage(file,maxW,maxH,quality){
   });
 }
 function updateNavProfileAvatar(){
-  console.log('[nav] avatar url usata:',_currentUserProfile?.avatar_url);
   var profile=_currentUserProfile;
   var avatarHtml;
   if(_currentUser&&profile){
@@ -5916,7 +5916,6 @@ function updateNavProfileAvatar(){
   if(desktopBtn)desktopBtn.innerHTML=avatarHtml;
 }
 async function renderProfilePage(){
-  console.log('[profile] render - _currentUserProfile avatar:',_currentUserProfile?.avatar_url);
   var isLoggedIn=!!_currentUser;
   var email=isLoggedIn?(_currentUser.email||''):'';
   var profileRow=null;
@@ -5949,6 +5948,7 @@ async function renderProfilePage(){
   if(langVal)langVal.textContent=lang==='it'?'Italiano':'English';
   switchProfileTab(_profileTab);
   if(profileRow)_currentUserProfile=profileRow;
+  if(_pendingAvatarUrl)_currentUserProfile.avatar_url=_pendingAvatarUrl;
   updateNavProfileAvatar();
 }
 function renderProfileSaved(){
