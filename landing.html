@@ -1049,13 +1049,19 @@ var hpDescsData={
   en:['Once you\'ve chosen your destination, explore all the places on the interactive map, organised by category.','Select a place and explore all its activities: where to sleep, where to eat, experiences to try and much more.','You can choose to follow my complete itinerary, made up of some of the places featured on the map.']
 };
 function hpShow(n){
+  var el0=document.getElementById('hp-screen-0');
+  if(!el0)return;
   for(var i=0;i<3;i++){
-    document.getElementById('hp-screen-'+i).style.display=i===n?'flex':'none';
-    document.getElementById('hp-dot-'+i).style.background=i===n?'#dc6b2f':'#ddd';
+    var el=document.getElementById('hp-screen-'+i);
+    if(el)el.style.display=i===n?'flex':'none';
+    var dot=document.getElementById('hp-dot-'+i);
+    if(dot)dot.style.background=i===n?'#dc6b2f':'#ddd';
   }
   var lang=typeof currentLang!=='undefined'?currentLang:'en';
-  document.getElementById('hp-label').textContent=(hpLabelsData[lang]||hpLabelsData.en)[n];
-  document.getElementById('hp-desc').textContent=(hpDescsData[lang]||hpDescsData.en)[n];
+  var label=document.getElementById('hp-label');
+  var desc=document.getElementById('hp-desc');
+  if(label)label.textContent=(hpLabelsData[lang]||hpLabelsData.en)[n];
+  if(desc)desc.textContent=(hpDescsData[lang]||hpDescsData.en)[n];
   hpCurrent=n;
 }
 function hpNext(){hpShow((hpCurrent+1)%3);}
