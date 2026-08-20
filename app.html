@@ -4586,8 +4586,12 @@ async function openReviewsPopup(expId){
   if(_currentUser){
     var myRev=reviews.find(function(r){return r.user_id===_currentUser.id;});
     if(myRev){
-      cta.innerHTML='<div style="padding:8px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);text-align:center;cursor:pointer;" onclick="openWriteReview('+expId+')">'
-        +'<span style="font-size:.8rem;color:var(--g500);">'+(lang==='en'?'Edit your review':'Modifica la tua recensione')+'</span></div>';
+      cta.innerHTML='<div style="display:flex;gap:8px;">'
+        +'<div onclick="openWriteReview('+expId+')" style="flex:1;padding:8px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);text-align:center;cursor:pointer;">'
+        +'<span style="font-size:12px;color:var(--g500);">'+(lang==='en'?'Edit':'Modifica')+'</span></div>'
+        +'<div onclick="deleteReview('+myRev.id+','+expId+')" style="flex:1;padding:8px;background:#fef2f2;border-radius:8px;border:0.5px solid #fecaca;text-align:center;cursor:pointer;">'
+        +'<span style="font-size:12px;color:#dc2626;">'+(lang==='en'?'Delete':'Elimina')+'</span></div>'
+        +'</div>';
     } else {
       cta.innerHTML='<div style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;" onclick="openWriteReview('+expId+')">'
         +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
@@ -4601,6 +4605,16 @@ async function openReviewsPopup(expId){
 function closeReviewsPopup(){
   document.getElementById('reviews-popup').style.display='none';
   _currentReviewsExpId=null;
+}
+async function deleteReview(reviewId,expId){
+  if(!confirm(lang==='en'?'Delete your review?':'Eliminare la tua recensione?'))return;
+  var res=await _supaAuth.from('itinerary_reviews').delete().eq('id',reviewId).eq('user_id',_currentUser.id);
+  if(res.error){toast(lang==='en'?'Error deleting review':'Errore durante l\'eliminazione');return;}
+  toast(lang==='en'?'Review deleted':'Recensione eliminata');
+  openReviewsPopup(expId);
+  if(document.getElementById('itinerari-page').classList.contains('show')){
+    renderItinerariPage(_currentTravelRegion||undefined);
+  }
 }
 function openWriteReview(expId){
   _writeReviewExpId=expId;
