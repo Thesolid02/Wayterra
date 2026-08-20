@@ -5176,7 +5176,15 @@ function bootApp(d){
       showRegionPage();
       openAccessRequestModal();
     },100);
-  } else if(!_urlParamsB.get('region')){
+  } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
+    var lastRegion=localStorage.getItem('WT_LAST_REGION');
+    if(lastRegion&&lastRegion!=='lazio'){
+      selectTravelRegion(lastRegion,getRegionCenter(lastRegion),getRegionZoom(lastRegion));
+      return;
+    } else if(lastRegion==='lazio'){
+      selectRegion('lazio');
+      return;
+    }
     showRegionPage();
   }
   checkAuthSession();
