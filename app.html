@@ -4332,11 +4332,17 @@ function openItinerario(id){
         _revHtml+='<div onclick="openReviewsPopup('+e.id+')" style="text-align:center;padding:8px;cursor:pointer;">'
           +'<span style="font-size:.8rem;color:#dc6b2f;font-weight:500;">'+(lang==='en'?'See all reviews':'Vedi tutte le recensioni')+' →</span></div>';
       }
+      var _loginBoxItd='<div style="padding:12px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;text-align:center;margin-top:8px;">'
+        +'<p style="font-size:.85rem;color:#dc6b2f;font-weight:500;margin:0 0 8px;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</p>'
+        +'<button onclick="openAuthPage(lang===\'en\'?\'Sign in to leave a review\':\'Accedi per lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
+        +'</div>';
       if(_currentUser){
         var _myRev=_revs.find(function(r){return r.user_id===_currentUser.id;});
         _revHtml+='<div onclick="openWriteReview('+e.id+')" style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:6px;">'
           +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
           +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?(_myRev?'Edit your review':'Leave a review'):(_myRev?'Modifica la tua recensione':'Lascia una recensione'))+'</span></div>';
+      } else {
+        _revHtml+=_loginBoxItd;
       }
       _revEl.innerHTML=_revHtml;
       _revEl.style.display='';
@@ -4347,7 +4353,11 @@ function openItinerario(id){
           +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
         _revEl.style.display='';
       } else {
-        _revEl.style.display='none';
+        _revEl.innerHTML='<div style="padding:12px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;text-align:center;margin-top:8px;">'
+          +'<p style="font-size:.85rem;color:#dc6b2f;font-weight:500;margin:0 0 8px;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</p>'
+          +'<button onclick="openAuthPage(lang===\'en\'?\'Sign in to leave a review\':\'Accedi per lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
+          +'</div>';
+        _revEl.style.display='';
       }
     }
   }
@@ -4460,8 +4470,10 @@ async function openReviewsPopup(expId){
         +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
     }
   } else {
-    cta.innerHTML='<div style="padding:8px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);text-align:center;cursor:pointer;" onclick="openAuthPage()">'
-      +'<span style="font-size:.8rem;color:#dc6b2f;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</span></div>';
+    cta.innerHTML='<div style="padding:12px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;text-align:center;margin-top:8px;">'
+      +'<p style="font-size:.85rem;color:#dc6b2f;font-weight:500;margin:0 0 8px;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</p>'
+      +'<button onclick="openAuthPage(lang===\'en\'?\'Sign in to leave a review\':\'Accedi per lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
+      +'</div>';
   }
 }
 function closeReviewsPopup(){
