@@ -769,7 +769,14 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 <script defer src="https://cloud.umami.is/script.js" data-website-id="8ac51bd2-99a5-4dbd-bf8e-9dd98d87d138"></script>
 </head>
 <body>
-<div id="initial-overlay" style="position:fixed;inset:0;z-index:9999;background:#fff;"></div>
+<div id="initial-overlay" style="position:fixed;inset:0;z-index:9999;background:#fff;display:flex;align-items:center;justify-content:center;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <div style="width:56px;height:56px;border-radius:16px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+    </div>
+    <p style="font-size:1.1rem;font-weight:500;color:#1a1a1a;margin:0;">Wayterra</p>
+  </div>
+</div>
 
 <div id="splash">
   <div id="splash-center">
@@ -3485,7 +3492,8 @@ function hideRegionPage(cb){
 }
 function selectRegion(regionId){
   var _rco=document.getElementById('region-change-overlay');
-  if(!_rco){_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco);}else{_rco.style.display='block';}
+  if(_rco){_rco.style.display='block';}else{_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:#fff;';document.body.appendChild(_rco);}
+  _rco.getBoundingClientRect();
   var _dp=document.getElementById('detail-page');
   if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');_dp.style.zIndex='';}
   var _itd=document.getElementById('itinerario-detail');
@@ -3538,7 +3546,8 @@ function selectRegion(regionId){
 }
 function selectTravelRegion(regionId,center,zoom){
   var _rco=document.getElementById('region-change-overlay');
-  if(!_rco){_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco);}else{_rco.style.display='block';}
+  if(_rco){_rco.style.display='block';}else{_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:#fff;';document.body.appendChild(_rco);}
+  _rco.getBoundingClientRect();
   var _dp=document.getElementById('detail-page');
   if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');_dp.style.zIndex='';}
   var _itd=document.getElementById('itinerario-detail');
