@@ -5505,6 +5505,10 @@ window.addEventListener('DOMContentLoaded',function(){
         <i class="ti ti-brand-google" style="font-size:18px;"></i>
         <span id="auth-google-label">Continua con Google</span>
       </button>
+      <button onclick="signInWithFacebook()" style="width:100%;padding:10px;background:var(--w);border:0.5px solid var(--g200);border-radius:8px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
+        <i class="ti ti-brand-facebook" style="font-size:18px;color:#1877f2;"></i>
+        <span id="auth-facebook-label">Continua con Facebook</span>
+      </button>
       <p style="text-align:center;font-size:.82rem;color:var(--g500);margin-top:16px;">
         <span id="auth-toggle-text">Non hai un account?</span>
         <span onclick="toggleAuthMode()" style="color:#dc6b2f;cursor:pointer;font-weight:500;" id="auth-toggle-btn"> Registrati</span>
@@ -5537,6 +5541,7 @@ function updateAuthMode(){
   document.getElementById('auth-toggle-text').textContent=isLogin?(lang==='en'?"Don't have an account?":'Non hai un account?'):(lang==='en'?'Already have an account?':'Hai già un account?');
   document.getElementById('auth-toggle-btn').textContent=isLogin?(lang==='en'?' Sign up':' Registrati'):(lang==='en'?' Sign in':' Accedi');
   document.getElementById('auth-google-label').textContent=lang==='en'?'Continue with Google':'Continua con Google';
+  document.getElementById('auth-facebook-label').textContent=lang==='en'?'Continue with Facebook':'Continua con Facebook';
   document.getElementById('auth-skip-label').textContent=lang==='en'?'Continue without account':'Continua senza account';
   var fpLink=document.getElementById('forgot-pw-link');
   if(fpLink){
@@ -5613,6 +5618,10 @@ async function submitAuth(){
 async function signInWithGoogle(){
   if(!_supaAuth)return;
   await _supaAuth.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+window.location.pathname}});
+}
+async function signInWithFacebook(){
+  if(!_supaAuth)return;
+  await _supaAuth.auth.signInWithOAuth({provider:'facebook',options:{redirectTo:window.location.origin+window.location.pathname}});
 }
 async function signOut(){
   if(!_supaAuth)return;
