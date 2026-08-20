@@ -3364,7 +3364,7 @@ async function loadRegionReviews(regionId,elementId){
     var parts=fullName.trim().split(' ');
     var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
     var avatarContent=r.profiles&&r.profiles.avatar_url
-      ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
       :'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span>';
     return'<div style="width:22px;height:22px;border-radius:50%;background:'+_REVIEW_COLORS[i%_REVIEW_COLORS.length]+';border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';overflow:hidden;">'+avatarContent+'</div>';
   }).join('');
@@ -3412,7 +3412,7 @@ function _buildReviewBarFromData(expId,reviews){
     var parts=fullName.trim().split(' ');
     var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
     var avatarContent=r.profiles&&r.profiles.avatar_url
-      ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
       :'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span>';
     return'<div style="width:22px;height:22px;border-radius:50%;background:'+colors[i%colors.length]+';border:2px solid var(--w);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';overflow:hidden;">'
       +avatarContent+'</div>';
@@ -4296,7 +4296,7 @@ function openItinerario(id){
         var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
         var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
         var avatarHtml=r.profiles&&r.profiles.avatar_url
-          ?'<img src="'+r.profiles.avatar_url+'" style="width:22px;height:22px;object-fit:cover;border-radius:50%;">'
+          ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:22px;height:22px;object-fit:cover;border-radius:50%;">'
           :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
         _revHtml+='<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);margin-bottom:8px;">'
           +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
@@ -4370,7 +4370,7 @@ async function openReviewsPopup(expId){
         var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
         var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
         var avatarContent=r.profiles&&r.profiles.avatar_url
-          ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+          ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
           :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
         return'<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);">'
           +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
@@ -4408,7 +4408,7 @@ async function openReviewsPopup(expId){
       var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
       var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
       var avatarContent=r.profiles&&r.profiles.avatar_url
-        ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+        ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
         :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
       return'<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);">'
         +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
@@ -5870,6 +5870,7 @@ async function handleAvatarChange(input){
   var pub=_supaAuth.storage.from('wayterra-images').getPublicUrl(path);
   var url=pub.data&&pub.data.publicUrl?pub.data.publicUrl:'';
   if(!url)return;
+  url=url+'?t='+Date.now();
   var profRes=await _supaAuth.from('profiles').update({avatar_url:url}).eq('id',_currentUser.id);
   console.log('[avatar] profile update result:',profRes.error);
   var authRes=await _supaAuth.auth.updateUser({data:{avatar_url:url}});
@@ -5896,12 +5897,18 @@ function _compressImage(file,maxW,maxH,quality){
     reader.readAsDataURL(file);
   });
 }
+function _avatarSrc(url,userId){
+  if(!url)return url;
+  if(!_currentUser||userId!==_currentUser.id)return url;
+  if(url.indexOf('?t=')>=0)return url;
+  return url+'?t='+Date.now();
+}
 function updateNavProfileAvatar(){
   var profile=_currentUserProfile;
   var avatarHtml;
   if(_currentUser&&profile){
     if(profile.avatar_url){
-      avatarHtml='<div style="width:24px;height:24px;border-radius:50%;overflow:hidden;border:1.5px solid #dc6b2f;"><img src="'+profile.avatar_url+'" style="width:100%;height:100%;object-fit:cover;"></div>';
+      avatarHtml='<div style="width:24px;height:24px;border-radius:50%;overflow:hidden;border:1.5px solid #dc6b2f;"><img src="'+_avatarSrc(profile.avatar_url,_currentUser.id)+'" style="width:100%;height:100%;object-fit:cover;"></div>';
     }else{
       var parts=(profile.full_name||'').trim().split(' ');
       var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
@@ -5928,7 +5935,7 @@ async function renderProfilePage(){
   var avatarUrl=(profileRow&&profileRow.avatar_url)?profileRow.avatar_url:(isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.avatar_url?_currentUser.user_metadata.avatar_url:'');
   var initials=_fn?(_fnParts[0].charAt(0).toUpperCase()+(_fnParts[1]?_fnParts[1].charAt(0).toUpperCase():'')):(email?email.charAt(0).toUpperCase():'');
   var avatarContent=avatarUrl
-    ?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">'
+    ?'<img src="'+_avatarSrc(avatarUrl,_currentUser&&_currentUser.id)+'" style="width:100%;height:100%;object-fit:cover;">'
     :(initials
       ?'<span style="font-size:1.4rem;font-weight:700;color:#fff;">'+initials+'</span>'
       :'<i class="ti ti-user" style="font-size:1.6rem;color:rgba(255,255,255,.85);"></i>');
