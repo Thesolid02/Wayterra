@@ -5854,10 +5854,15 @@ async function handleAvatarChange(input){
   if(!_supaAuth||!_currentUser)return;
   var path='avatars/'+_currentUser.id+'.jpg';
   var up=await _supaAuth.storage.from('wayterra-images').upload(path,blob,{upsert:true,contentType:'image/jpeg'});
+  console.log('[avatar] upload result:',up.error);
   if(up.error){console.warn('[avatar]',up.error.message);return;}
   var pub=_supaAuth.storage.from('wayterra-images').getPublicUrl(path);
   var url=pub.data&&pub.data.publicUrl?pub.data.publicUrl:'';
-  if(url)await _supaAuth.auth.updateUser({data:{avatar_url:url}});
+  if(!url)return;
+  var profRes=await _supaAuth.from('profiles').update({avatar_url:url}).eq('id',_currentUser.id);
+  console.log('[avatar] profile update result:',profRes.error);
+  var authRes=await _supaAuth.auth.updateUser({data:{avatar_url:url}});
+  console.log('[avatar] auth update result:',authRes.error);
 }
 function _compressImage(file,maxW,maxH,quality){
   return new Promise(function(resolve){
