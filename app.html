@@ -3477,6 +3477,8 @@ function hideRegionPage(cb){
   setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
 }
 function selectRegion(regionId){
+  console.log('[region] selectRegion chiamata');
+  console.log('[region] WT_LAST_REGION setItem lazio');
   var _rco=document.getElementById('region-change-overlay');
   if(!_rco){_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco);}else{_rco.style.display='block';}
   var _dp=document.getElementById('detail-page');
@@ -3559,6 +3561,7 @@ function selectTravelRegion(regionId,center,zoom){
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   localStorage.setItem('WT_LAST_REGION',regionId);
+  console.log('[region] WT_LAST_REGION dopo setItem:',localStorage.getItem('WT_LAST_REGION'));
   updateRegionPill(regionId);
   hideRegionPage(null);
   var z=window.innerWidth<768?zoom-1:zoom;
