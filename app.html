@@ -146,10 +146,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   width:46px;height:46px;border-radius:50%;border:0.5px solid var(--g200);background:var(--w);
   box-shadow:var(--sh-md);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;}
 #fab:active{transform:scale(.9);}
-/* MODE TOGGLE */
-#mode-toggle{position:fixed;bottom:100px;right:12px;display:none !important;flex-direction:column;gap:5px;z-index:400;}
 @media(max-width:767px){
-  #mode-toggle{bottom:160px;}
   #fab{bottom:calc(env(safe-area-inset-bottom,0px) + 22px + 56px);}
   #bottom-card{bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important;}
   #profile-btn-d{display:none;}
@@ -301,12 +298,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itd-svc-desc.expanded{display:block;}
 .itd-svc-toggle{font-size:.73rem;color:#dc6b2f;background:none;border:none;padding:0;cursor:pointer;font-family:var(--f);text-align:left;display:none;}
 .itd-service-btn{display:flex;align-items:center;justify-content:center;padding:6px;background:#dc6b2f;border-radius:7px;border:none;color:#fff;font-size:.75rem;font-weight:500;cursor:pointer;margin-top:auto;width:100%;font-family:var(--f);}
-.mode-sq-btn{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;box-sizing:border-box;transition:opacity .15s,border-color .15s;position:relative;padding:0;background:none;}
-#mode-btn-city.msq-active{border-color:#dc6b2f;opacity:1;}
-#mode-btn-city.msq-inactive{border-color:rgba(220,107,47,.4);opacity:.7;}
-#mode-btn-outside.msq-active{border-color:#16a34a;opacity:1;}
-#mode-btn-outside.msq-inactive{border-color:rgba(22,163,74,.4);opacity:.7;}
-
 
 /* ── L1 MARKERS ── */
 .mk1{display:flex;flex-direction:column;align-items:center;cursor:pointer;}
@@ -1022,19 +1013,6 @@ lottie.loadAnimation({
 
 <button id="fab" style="display:none" onclick="locateMe()"><i class="ti ti-location"></i></button>
 
-<div id="mode-toggle">
-  <button id="mode-btn-city" class="mode-sq-btn msq-inactive" onclick="setMapMode('city')" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/chris-czermak-7ybKmhDTcz0-unsplash.jpg');background-size:cover;background-position:center;">
-    <div style="position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;">
-      <span style="font-size:.5rem;font-weight:700;color:white;letter-spacing:.02em;">Roma</span>
-    </div>
-  </button>
-  <button id="mode-btn-outside" class="mode-sq-btn msq-active" onclick="setMapMode('outside')" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');background-size:cover;background-position:center 30%;">
-    <div style="position:absolute;inset:0;background:rgba(0,0,0,.2);display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;">
-      <span style="font-size:.5rem;font-weight:700;color:white;letter-spacing:.02em;text-align:center;line-height:1.2;">Fuori<br>porta</span>
-    </div>
-  </button>
-</div>
-
 
 <div id="act-popup">
   <div class="act-popup-sheet" id="act-popup-sheet">
@@ -1541,7 +1519,6 @@ var currentPlace=null;
 var currentLightboxIdx=0,currentLightboxGallery=[];
 var lang='it';
 var unlocked=false;
-var mapMode='outside';
 var splashPhrases={it:['🎒 Preparando il tuo viaggio...','🗺️ Caricamento luoghi nascosti...','✨ Scopri posti unici...','🧭 Il tuo itinerario ti aspetta...','🌿 Esplora come un locale...'],en:['🎒 Preparing your journey...','🗺️ Loading hidden places...','✨ Discover unique spots...','🧭 Your itinerary awaits...','🌿 Explore like a local...']};
 var _splashIdx=0;
 var _splashIv=null;
@@ -1675,29 +1652,20 @@ function doSearch(raw){
   var q=raw.trim().toLowerCase();
   if(q.length<2){res.innerHTML='';return;}
   var allPlaces=(DATA.places||[]).filter(function(p){return p.name.toLowerCase().indexOf(q)>=0;});
-  var allCity=(DATA.cityActivities||[]).filter(function(a){return a.name&&a.name.toLowerCase().indexOf(q)>=0;});
   var allPActs=[];
   (DATA.places||[]).forEach(function(p){
     (p.activities||[]).forEach(function(a){
       if(a.name&&a.name.toLowerCase().indexOf(q)>=0)allPActs.push({a:a,p:p});
     });
   });
-  // cap totals to 8 balanced
-  var nP=Math.min(allPlaces.length,3),nC=Math.min(allCity.length,3),nA=Math.min(allPActs.length,8-nP-nC);
-  var places=allPlaces.slice(0,nP),cityActs=allCity.slice(0,nC),placeActs=allPActs.slice(0,Math.max(0,nA));
+  var nP=Math.min(allPlaces.length,3),nA=Math.min(allPActs.length,8-nP);
+  var places=allPlaces.slice(0,nP),placeActs=allPActs.slice(0,Math.max(0,nA));
   var h='';
   if(places.length){
     h+='<div class="sr-section">'+t('places')+'</div>';
     places.forEach(function(p){
       var pt=placeTypeOf(p.placeTypeId);
       h+=srItem('searchGoPlace('+p.id+')',renderIcon(pt.icon,'#fff'),pt.color||'#374151',p.name,p.region||catName(pt));
-    });
-  }
-  if(cityActs.length){
-    h+='<div class="sr-section">'+t('activities')+' — Roma</div>';
-    cityActs.forEach(function(a){
-      var et=expTypeOf(a.experienceTypeId);
-      h+=srItem('searchGoCityAct('+a.id+')',renderIcon(et.icon||'ti-map-pin','#fff'),et.color||'#374151',a.name,lang==='en'&&et.nameEn?et.nameEn:(et.name||''));
     });
   }
   if(placeActs.length){
@@ -1707,7 +1675,7 @@ function doSearch(raw){
       h+=srItem('searchGoPlaceAct('+item.p.id+',\''+item.a.id+'\')',renderIcon(at.icon||'ti-map-pin','#fff'),at.color||'#374151',item.a.name,item.p.name);
     });
   }
-  if(!places.length&&!cityActs.length&&!placeActs.length){
+  if(!places.length&&!placeActs.length){
     h='<div class="sr-empty">'+t('no_results')+'</div>';
   }
   res.innerHTML=h;
@@ -1716,21 +1684,7 @@ function searchGoPlace(id){
   var p=(DATA.places||[]).find(function(x){return x.id===id;});
   if(!p)return;
   closeSearch();
-  var targetMode=p.mode||'outside';
-  var needSwitch=mapMode!==targetMode;
-  if(needSwitch)setMapMode(targetMode);
-  setTimeout(function(){handleL1Click(p);},needSwitch?900:50);
-}
-function searchGoCityAct(id){
-  var a=(DATA.cityActivities||[]).find(function(x){return x.id===id;});
-  if(!a)return;
-  closeSearch();
-  var needSwitch=mapMode!=='city';
-  if(needSwitch)setMapMode('city');
-  setTimeout(function(){
-    if(a.lat&&a.lng)map_o.flyTo({center:[a.lng,a.lat],zoom:14,duration:600});
-    setTimeout(function(){openCityActivityDetail(a);},a.lat&&a.lng?500:0);
-  },needSwitch?900:50);
+  setTimeout(function(){handleL1Click(p);},50);
 }
 function searchGoPlaceAct(placeId,actId){
   var p=(DATA.places||[]).find(function(x){return x.id===placeId;});
@@ -1738,9 +1692,6 @@ function searchGoPlaceAct(placeId,actId){
   var a=(p.activities||[]).find(function(x){return String(x.id)===String(actId);});
   if(!a)return;
   closeSearch();
-  var targetMode=p.mode||'outside';
-  var needSwitch=mapMode!==targetMode;
-  if(needSwitch)setMapMode(targetMode);
   setTimeout(function(){
     var lat=a.lat||p.lat,lng=a.lng||p.lng;
     if(lat&&lng)map_o.flyTo({center:[lng,lat],zoom:14,duration:600});
@@ -1748,7 +1699,7 @@ function searchGoPlaceAct(placeId,actId){
       if(window.innerWidth<768){showActBubbleBottomCard(a,placeId);}
       else{showActBubble(a,[lat,lng]);}
     },lat&&lng?500:0);
-  },needSwitch?900:50);
+  },50);
 }
 
 function toggleLang(){setLang(lang==='it'?'en':'it');}
@@ -1881,12 +1832,9 @@ function toggleActGroup(typeId){
 function closeActPopup(){
   document.getElementById('act-popup').style.zIndex='';
   document.getElementById('act-popup').classList.remove('show');
-  if(level===1)showModeToggle();
 }
 
 function openBooking(url){if(url.startsWith('tel:')){window.location.href=url;}else{window.open(url,'_blank');}}
-function hideModeToggle(){var el=document.getElementById('mode-toggle');if(el)el.style.display='none';}
-function showModeToggle(){var el=document.getElementById('mode-toggle');if(el)el.style.display='flex';}
 function isVideo(src){
   if(!src)return false;
   if(src.startsWith('video:'))return true;
@@ -2132,7 +2080,6 @@ function showCityActivityBottomCard(a){
   var card=document.getElementById('bottom-card');
   card.onclick=function(){closeBottomCard();openCityActivityDetail(a);};
   card.classList.add('show');
-  hideModeToggle();
 }
 var _cityActGallery=[];
 function openLightboxFromCityAct(idx){openLightbox(idx,{gallery:_cityActGallery});}
@@ -2171,7 +2118,6 @@ function openCityActivityDetail(a){
       +((a.maps||a.bookingUrl)?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;">'+(a.maps?'<a class="act-popup-maps-btn" href="'+a.maps+'" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;text-decoration:none;">'+t('maps')+'</a>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
     if(actDesc)renderExpandableText(actDesc,'act-popup-desc-el',200);
     document.getElementById('act-popup').classList.add('show');
-    hideModeToggle();
   } else {
     document.getElementById('amp-sheet').style.display='none';
     document.getElementById('amp-center').style.display='';
@@ -2239,7 +2185,6 @@ function openCityActivityDetail(a){
       } else bookBtnD.style.display='none';
     }
     document.getElementById('act-map-popup').classList.add('show');
-    hideModeToggle();
   }
 }
 function clearCityActivityMarkers(){
@@ -2421,12 +2366,10 @@ function showActBubble(a, latlng){
       :'';}
   }
   document.getElementById('act-map-popup').classList.add('show');
-  hideModeToggle();
 }
 function closeActMapPopup(){
   document.getElementById('act-map-popup').classList.remove('show');
   document.getElementById('act-map-popup').style.zIndex='';
-  if(level===1)showModeToggle();
 }
 
 
@@ -2471,60 +2414,14 @@ function buildFilterCats(){
     +'<div class="fp-cat-dot" style="background:var(--g400);"></div>'
     +'<div class="fp-cat-name">🗺 '+t('all_places')+'</div>'
     +'</button>';
-  if(mapMode==='city'){
-    var typeList=DATA.expTypes.length?DATA.expTypes:DATA.cats;
-    typeList.forEach(function(c){
-      var subs=(DATA.expSubtypes||[]).filter(function(s){return s.experienceTypeId===c.id;});
-      var cname=(lang==='en'&&c.nameEn?c.nameEn:c.name);
-      if(subs.length>0){
-        var parentSel=pendingFilter==c.id||subs.some(function(s){return s.id===pendingSubtype;});
-        h+='<div>'
-          +'<button class="fp-acc-header'+(parentSel?' selected':'')+'" onclick="selExpType(\''+c.id+'\')">'
-          +'<div class="fp-cat-dot" style="background:'+c.color+';flex-shrink:0;"></div>'
-          +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+cname+'</div>'
-          +'<i class="ti ti-chevron-down fp-acc-chevron" id="chev-'+c.id+'"></i>'
-          +'</button>'
-          +'<div class="fp-acc-body" id="acc-'+c.id+'">'
-          +subs.map(function(s){
-            var sname=lang==='en'&&s.nameEn?s.nameEn:s.name;
-            var sSel=pendingSubtype===s.id;
-            return'<button class="fp-subtype-pill'+(sSel?' selected':'')+'" '
-              +(sSel?'style="border-color:'+c.color+';color:'+c.color+';background:'+c.color+'22;"':'')+' '
-              +'onclick="selSubtype('+s.id+')">'+sname+'</button>';
-          }).join('')
-          +'</div></div>';
-      } else {
-        h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selExpType(\''+c.id+'\')">'
-          +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
-          +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+cname+'</div>'
-          +'</button>';
-      }
-    });
-  } else {
-    var typeList=DATA.placeTypes.length?DATA.placeTypes:DATA.cats;
-    typeList.forEach(function(c){
-      h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selCat(\''+c.id+'\')">'
-        +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
-        +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+(lang==='en'&&c.nameEn?c.nameEn:c.name)+'</div>'
-        +'</button>';
-    });
-  }
+  var typeList=DATA.placeTypes.length?DATA.placeTypes:DATA.cats;
+  typeList.forEach(function(c){
+    h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selCat(\''+c.id+'\')">'
+      +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
+      +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+(lang==='en'&&c.nameEn?c.nameEn:c.name)+'</div>'
+      +'</button>';
+  });
   el.innerHTML=h;
-  // auto-apri accordion dell'elemento attivo
-  if(mapMode==='city'){
-    var openId=null;
-    if(pendingSubtype!==null){
-      var sub=DATA.expSubtypes.find(function(s){return s.id===pendingSubtype;});
-      if(sub)openId='acc-'+sub.experienceTypeId;
-    } else if(pendingFilter!=='all'){
-      openId='acc-'+pendingFilter;
-    }
-    if(openId){
-      var body=document.getElementById(openId);
-      var chev=document.getElementById(openId.replace('acc-','chev-'));
-      if(body){body.classList.add('open');if(chev)chev.classList.add('open');}
-    }
-  }
 }
 function buildDD(){buildFilterCats();}
 function toggleAcc(id){
@@ -2546,7 +2443,7 @@ function selSubtype(id){
 }
 function updateFilterDot(){
   var dot=document.getElementById('filter-dot');
-  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||mapMode!=='outside'||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
+  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
 }
 function buildHiddenFilter(){
   var hf=pendingHiddenFilter;
@@ -2580,12 +2477,6 @@ function selHiddenFilter(lv){
 function openFilterPopup(){
   pendingFilter=activeFilter; pendingSubtype=activeSubtype;
   pendingHiddenFilter=activeHiddenFilter; pendingVibes=activeVibes.slice();
-  var fpFuori=document.getElementById('fp-btn-fuori');
-  var fpRoma=document.getElementById('fp-btn-roma');
-  if(fpFuori){
-    fpFuori.className='fp-mode-btn'+(mapMode==='outside'?' active-outside':'');
-    fpRoma.className='fp-mode-btn'+(mapMode==='city'?' active-city':'');
-  }
   buildFilterCats();
   buildHiddenFilter();
   refreshVibeButtons();
@@ -2634,48 +2525,8 @@ function selExpType(id){
   toggleAcc('acc-'+id);
   buildFilterCats();
 }
-function setMapModePopup(mode){
-  mapMode=mode;
-  activeFilter='all'; activeSubtype=null; activeHiddenFilter='all'; activeVibes=[];
-  pendingFilter='all'; pendingSubtype=null; pendingHiddenFilter='all'; pendingVibes=[];
-  var fpFuori=document.getElementById('fp-btn-fuori');
-  var fpRoma=document.getElementById('fp-btn-roma');
-  if(fpFuori){
-    fpFuori.className='fp-mode-btn'+(mode==='outside'?' active-outside':'');
-    fpRoma.className='fp-mode-btn'+(mode==='city'?' active-city':'');
-  }
-  updateFilterDot();
-  buildFilterCats();
-  var _mbCity=document.getElementById('mode-btn-city');
-  var _mbOut=document.getElementById('mode-btn-outside');
-  if(_mbCity&&_mbOut){
-    _mbCity.className='mode-sq-btn '+(mode==='city'?'msq-active':'msq-inactive');
-    _mbOut.className='mode-sq-btn '+(mode==='outside'?'msq-active':'msq-inactive');
-  }
-  if(mode==='city'){
-    if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:10,duration:800});
-  } else {
-    if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:800});
-  }
-  refreshL1();
-}
-function setMapMode(mode){
-  if(level===2)exitL2();
-  closeBubble();
-  document.getElementById('detail-page').classList.remove('show');
-  closeActPopup();
-  closeActMapPopup();
-  currentPlace=null;
-  activePId=null;
-  setMapModePopup(mode);
-  var _er=document.getElementById('exp-row');
-  if(_er)_er.style.display=(mode==='city')?'none':(_er.classList.contains('show')?'':'none');
-  renderItdPill();
-  if(window.umami)umami.track('mode_switch',{mode:mode});
-}
 function catMatchFn(p){
   if(activeFilter==='all')return true;
-  if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId===parseInt(activeFilter);});
   return p.placeTypeId==activeFilter;
 }
 function hiddenMatchFn(score){
@@ -2708,15 +2559,6 @@ function cityActMatchFn(a){
   return true;
 }
 function refreshL1(){
-  if(mapMode==='city'){
-    DATA.places.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
-    clearCityActivityMarkers();
-    (DATA.cityActivities||[]).forEach(function(a){
-      if(cityActMatchFn(a)&&hiddenMatchFn(a.hiddenScore)&&vibeMatchFn(a))addCityActivityMarker(a);
-    });
-    return;
-  }
-  clearCityActivityMarkers();
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
     var show=catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
@@ -2729,7 +2571,6 @@ function handleL1Click(place){
   currentPlace=place;
   activePId=place.id;
   level=2;
-  hideModeToggle();
   map_o.flyTo({center:[place.lng,place.lat],zoom:13,duration:600});
   document.getElementById('lv2-bar').style.display='flex';
   document.getElementById('lv2-label').textContent=place.premium&&!unlocked?t('premium_name'):place.name;
@@ -2747,7 +2588,6 @@ function exitL2(){
   }
   closeBubble();clearL2();restoreL1();
   document.getElementById('lv2-bar').style.display='none';
-  showModeToggle();
   var _er=document.getElementById('exp-row');
   if(_er&&_er.classList.contains('show'))_er.style.display='';
   renderItdPill();
@@ -3942,7 +3782,7 @@ function renderItdPill(){
   var wrap=document.getElementById('itd-pill-wrap');
   if(!wrap)return;
   if(!ITINERARI_LIVE){
-    if(level===2||mapMode==='city'){wrap.style.display='none';return;}
+    if(level===2){wrap.style.display='none';return;}
     wrap.style.display='';
     var btn=document.getElementById('itd-pill-btn');
     btn.classList.add('itd-cs');
@@ -3961,7 +3801,7 @@ function renderItdPill(){
   var featured=_travelContext
     ?DATA.experiences.filter(function(e){return e.isTravel&&e.region===_currentTravelRegion;})
     :DATA.experiences.filter(function(e){return e.featured&&!e.isTravel;});
-  if(level===2||mapMode==='city'||!featured.length){
+  if(level===2||!featured.length){
     wrap.style.display='none';
     return;
   }
