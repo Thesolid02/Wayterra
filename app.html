@@ -10,6 +10,7 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 <script src="https://gumroad.com/js/gumroad.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
@@ -31,12 +32,12 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #map{position:fixed;inset:0;z-index:0;height:100vh;height:100dvh;transition:right .3s ease;}
 
 /* ── TOP BAR ── */
-#topbar{position:fixed;top:0;left:0;right:0;z-index:300;
+#topbar{position:fixed;top:0;left:0;right:0;z-index:320;
   padding:0 14px;padding-top:calc(env(safe-area-inset-top,0px) + 10px);padding-bottom:10px;
   pointer-events:none;display:flex;flex-direction:column;gap:6px;}
 #topbar-row1{display:flex;align-items:center;justify-content:space-between;}
 .brand-pill{pointer-events:all;background:var(--w);border-radius:100px;box-shadow:var(--sh-md);
-  padding:7px 14px 7px 9px;display:flex;align-items:center;gap:7px;border:0.5px solid var(--g200);}
+  padding:7px 14px 7px 9px;display:flex;align-items:center;gap:7px;border:0.5px solid var(--g200);position:relative;}
 .brand-name{font-size:.88rem;font-weight:700;color:var(--g900);letter-spacing:-.02em;}
 .tb-right{pointer-events:all;display:flex;align-items:center;gap:7px;}
 /* language switch */
@@ -97,18 +98,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .fp-section-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
   color:var(--g400);padding:0 16px 10px;display:flex;align-items:center;gap:8px;}
 .fp-badge{font-size:.62rem;background:var(--g100);color:var(--g500);padding:1px 7px;border-radius:4px;font-weight:600;letter-spacing:0;}
-.fp-mode-row{display:flex;gap:8px;padding:0 16px 20px;}
-.fp-mode-btn{position:relative;flex:1;height:72px;border-radius:var(--r);border:2px solid transparent;
-  overflow:hidden;background-size:cover;background-position:center;cursor:pointer;
-  font-family:var(--f);font-size:.82rem;font-weight:700;color:#fff;text-align:center;
-  display:flex;align-items:center;justify-content:center;transition:border-color .15s;box-sizing:border-box;transform:translateZ(0);}
-#fp-btn-fuori{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');}
-#fp-btn-roma{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/chris-czermak-7ybKmhDTcz0-unsplash.jpg');}
-.fp-mode-ov{position:absolute;inset:0;background:rgba(0,0,0,.42);transition:opacity .2s;pointer-events:none;}
-.fp-mode-btn span{position:relative;z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.55);}
-.fp-mode-btn.active-outside{border-color:#16a34a;}
-.fp-mode-btn.active-city{border-color:#dc6b2f;}
-.fp-mode-btn.active-outside .fp-mode-ov,.fp-mode-btn.active-city .fp-mode-ov{opacity:0;}
 .fp-cats{display:flex;flex-direction:column;padding:0 8px 8px;}
 .fp-cat-btn{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);
   border:none;background:none;width:100%;text-align:left;font-family:var(--f);
@@ -157,13 +146,10 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   width:46px;height:46px;border-radius:50%;border:0.5px solid var(--g200);background:var(--w);
   box-shadow:var(--sh-md);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;}
 #fab:active{transform:scale(.9);}
-/* MODE TOGGLE */
-#mode-toggle{position:fixed;bottom:100px;right:12px;display:none !important;flex-direction:column;gap:5px;z-index:400;}
 @media(max-width:767px){
-  #mode-toggle{bottom:160px;}
   #fab{bottom:calc(env(safe-area-inset-bottom,0px) + 22px + 56px);}
   #bottom-card{bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important;}
-  #fav-btn{display:none;}
+  #profile-btn-d{display:none;}
 }
 /* ── BOTTOM NAV (mobile only) ── */
 #bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:310;
@@ -312,12 +298,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .itd-svc-desc.expanded{display:block;}
 .itd-svc-toggle{font-size:.73rem;color:#dc6b2f;background:none;border:none;padding:0;cursor:pointer;font-family:var(--f);text-align:left;display:none;}
 .itd-service-btn{display:flex;align-items:center;justify-content:center;padding:6px;background:#dc6b2f;border-radius:7px;border:none;color:#fff;font-size:.75rem;font-weight:500;cursor:pointer;margin-top:auto;width:100%;font-family:var(--f);}
-.mode-sq-btn{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;box-sizing:border-box;transition:opacity .15s,border-color .15s;position:relative;padding:0;background:none;}
-#mode-btn-city.msq-active{border-color:#dc6b2f;opacity:1;}
-#mode-btn-city.msq-inactive{border-color:rgba(220,107,47,.4);opacity:.7;}
-#mode-btn-outside.msq-active{border-color:#16a34a;opacity:1;}
-#mode-btn-outside.msq-inactive{border-color:rgba(22,163,74,.4);opacity:.7;}
-
 
 /* ── L1 MARKERS ── */
 .mk1{display:flex;flex-direction:column;align-items:center;cursor:pointer;}
@@ -556,6 +536,40 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 /* ── FAVORITES PAGE ── */
 #fav-page{position:fixed;inset:0;z-index:500;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #fav-page.show{display:flex;}
+/* ── PROFILE PAGE ── */
+#profile-page{position:fixed;inset:0;z-index:500;display:none;}
+#profile-page.show{display:flex;}
+.profile-inner{display:flex;flex-direction:column;width:100%;height:100%;background:var(--w);overflow:hidden;}
+#auth-page{background:var(--w);overflow-y:auto;}
+.auth-inner{position:relative;width:100%;min-height:100%;}
+@media(max-width:767px){
+  #profile-page.show{background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center;}
+  .profile-inner{width:100%;height:80vh;max-height:80vh;margin-top:auto;border-radius:20px 20px 0 0;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px);}
+  #profile-header{padding-top:16px;}
+}
+@media(min-width:768px){
+  #profile-page.show{background:rgba(0,0,0,.5);align-items:center;justify-content:center;}
+  .profile-inner{width:480px;max-width:100%;height:600px;max-height:80vh;border-radius:16px;overflow:hidden;}
+  #profile-body{overflow-y:auto;}
+  #auth-page{background:rgba(0,0,0,.5) !important;overflow-y:hidden;display:flex;align-items:center;justify-content:center;}
+  .auth-inner{max-width:400px;width:100%;min-height:0;background:var(--w);border-radius:16px;overflow:hidden;}
+}
+#profile-header{background:#dc6b2f;padding-top:calc(env(safe-area-inset-top,0px)+44px);display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.profile-tab{flex:1;text-align:center;padding:10px 0;font-size:.82rem;color:rgba(255,255,255,.7);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;}
+.profile-tab.active{color:#fff;border-bottom-color:#fff;font-weight:500;}
+.profile-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px 16px;}
+.profile-stat-card{background:var(--g50);border-radius:12px;padding:16px;text-align:center;}
+.profile-stat-num{font-size:1.8rem;font-weight:700;color:#dc6b2f;}
+.profile-stat-lbl{font-size:.72rem;color:var(--g500);margin-top:2px;}
+.profile-setting-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid var(--g100);cursor:pointer;}
+.profile-setting-row:active{background:var(--g50);}
+.profile-setting-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.profile-setting-label{flex:1;font-size:.88rem;font-weight:500;}
+.profile-setting-value{font-size:.8rem;color:var(--g400);}
+.profile-saved-filter{display:flex;gap:6px;padding:12px 16px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.profile-saved-filter::-webkit-scrollbar{display:none;}
+.psf-btn{padding:5px 12px;border-radius:100px;border:0.5px solid var(--g200);background:var(--w);font-size:.78rem;font-family:var(--f);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.psf-btn.active{background:#dc6b2f;border-color:#dc6b2f;color:#fff;}
 .fav-header{display:flex;align-items:center;gap:10px;padding:12px 16px;
   padding-top:calc(env(safe-area-inset-top,0px) + 12px);border-bottom:1px solid var(--g100);flex-shrink:0;}
 .fav-back{width:34px;height:34px;border-radius:50%;background:var(--g50);border:0.5px solid var(--g200);
@@ -620,8 +634,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 @media(min-width:768px){#splash-brand{padding-bottom:72px;}}
 @media(max-width:767px){.sp-n{font-size:1.2rem;}.sp-s{font-size:.52rem;}}
 
-#toast{position:fixed;z-index:800;top:calc(env(safe-area-inset-top,0px)+62px);left:50%;
-  transform:translateX(-50%) translateY(-12px);background:var(--g900);color:#fff;
+#toast{position:fixed;z-index:1100;bottom:calc(env(safe-area-inset-bottom,0px)+20px);left:50%;
+  transform:translateX(-50%) translateY(12px);background:var(--g900);color:#fff;
   font-size:.74rem;font-weight:600;padding:7px 17px;border-radius:100px;
   box-shadow:var(--sh-sm);white-space:normal;max-width:90vw;word-wrap:break-word;text-align:center;opacity:0;transition:all .22s;pointer-events:none;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -645,32 +659,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .bc-act-ico i{font-size:10px;color:white;}
 .bc-gems{font-size:.75rem;color:var(--g500);}
 
-/* ── ONBOARDING POPUP ── */
-#ob-overlay{display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.45);}
-#ob-overlay.show{display:block;}
-#ob-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);z-index:651;
-  background:var(--w);border-radius:var(--rxl);padding:28px 20px 24px;
-  width:320px;max-width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.22);
-  opacity:0;pointer-events:none;
-  transition:transform .25s cubic-bezier(.33,1,.68,1),opacity .25s;}
-#ob-popup.show{transform:translate(-50%,-50%);opacity:1;pointer-events:auto;}
-.ob-handle{display:none;}
-.ob-emoji{font-size:2rem;text-align:center;margin-bottom:10px;}
-.ob-title{font-size:1.05rem;font-weight:700;color:var(--g900);text-align:center;margin-bottom:8px;font-family:var(--f);}
-.ob-sub{font-size:.8rem;color:var(--g500);text-align:center;line-height:1.55;margin-bottom:24px;font-family:var(--f);}
-.ob-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:4px;}
-.ob-btn{position:relative;height:80px;border-radius:var(--r);border:none;overflow:hidden;
-  background-size:cover;background-position:center;cursor:pointer;font-family:var(--f);
-  width:100%;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.ob-btn-green{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');background-position:center 30%;}
-.ob-btn-orange{background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/chris-czermak-7ybKmhDTcz0-unsplash.jpg');}
-.ob-btn-ov{position:absolute;inset:0;background:rgba(0,0,0,.38);transition:opacity .2s;pointer-events:none;}
-.ob-btn:active .ob-btn-ov{opacity:0;}
-.ob-btn-lbl{position:relative;z-index:1;color:#fff;font-size:.9rem;font-weight:700;
-  text-shadow:0 1px 4px rgba(0,0,0,.55);font-family:var(--f);}
-@media(min-width:768px){
-  #ob-popup{width:380px;}
-}
 
 /* ── SEARCH ── */
 .search-btn{background:var(--w);border-radius:100px;box-shadow:var(--sh-sm);
@@ -728,16 +716,17 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 #region-page{position:fixed;inset:0;z-index:600;background:#fafaf8;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:opacity .35s;}
 #region-page.fade-out{opacity:0;pointer-events:none;}
 #region-page.gone{display:none;}
+.gone{display:none;}
 .rp-header{padding:calc(env(safe-area-inset-top,0px)+32px) 16px 20px;text-align:center;}
 .rp-title{font-size:1.4rem;font-weight:800;color:var(--g900);letter-spacing:-.02em;margin-bottom:6px;}
 .rp-sub{font-size:.86rem;color:var(--g500);line-height:1.5;}
 .rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px calc(env(safe-area-inset-bottom,0px)+36px);}
-.rp-card{position:relative;height:130px;border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+.rp-card{position:relative;min-height:130px;border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;display:flex;flex-direction:column;justify-content:flex-end;}
 .rp-card:active{transform:scale(.97);}
 .rp-card-main{grid-column:1/-1;}
 .rp-card-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
 .rp-card-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 60%);}
-.rp-card-body{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:14px 16px;}
+.rp-card-body{position:relative;z-index:1;display:flex;flex-direction:column;padding:14px 16px;}
 .rp-card-name{font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.01em;margin-bottom:4px;text-shadow:0 1px 6px rgba(0,0,0,.4);}
 .rp-card-sub{font-size:.72rem;color:rgba(255,255,255,.78);margin-bottom:10px;}
 .rp-card-btn{display:inline-flex;align-items:center;background:#dc6b2f;color:#fff;font-family:var(--f);font-size:.78rem;font-weight:700;padding:7px 14px;border-radius:100px;border:none;cursor:pointer;}
@@ -747,11 +736,9 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .rp-card-locked .rp-card-name{font-size:.9rem;}
 .rp-soon-badge{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.85);padding:2px 8px;border-radius:100px;}
 .rp-card-travels{border:2.5px solid #2563eb;box-sizing:border-box;}
-.rp-travels-globe{position:absolute;top:50%;left:50%;transform:translate(-50%,-65%);font-size:3rem;color:rgba(255,255,255,.18);pointer-events:none;}
-.rp-new-badge{display:inline-block;font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:#2563eb;border:1px solid #1d4ed8;color:#fff;padding:2px 7px;border-radius:100px;margin-left:6px;vertical-align:middle;}
 .rp-card-btn-blue{background:#2563eb;}
-.rp-sec-label{grid-column:1/-1;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);padding:2px 0 6px;}
-.rp-sec-label-sep{border-top:0.5px solid var(--g100);padding-top:14px;margin-top:4px;}
+.rp-sec-label{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding-bottom:10px;margin:24px 0 12px;border-bottom:1.5px solid var(--g200);}
+.rp-sec-label-sep{margin-top:8px;}
 #travels-page{position:fixed;inset:0;z-index:610;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #travels-page.show{display:flex;}
 .itp-card-locked{cursor:default;}
@@ -775,12 +762,21 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   .rp-content{max-width:560px;margin:0 auto;padding:0 24px;box-sizing:border-box;}
   .rp-header{padding-left:0;padding-right:0;}
   .rp-grid{padding-left:0;padding-right:0;gap:14px;}
-  .rp-card{height:160px;}
-  .rp-card-main{height:220px;}
+  .rp-card{min-height:160px;}
+  .rp-card-main{min-height:220px;}
 }</style>
+<script>if(localStorage.getItem('wayterra.dev')==='1')localStorage.setItem('umami.disabled','1');</script>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="8ac51bd2-99a5-4dbd-bf8e-9dd98d87d138"></script>
 </head>
 <body>
+<div id="initial-overlay" style="position:fixed;inset:0;z-index:9999;background:#fff;display:flex;align-items:center;justify-content:center;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <div style="width:56px;height:56px;border-radius:16px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+    </div>
+    <p style="font-size:1.1rem;font-weight:500;color:#1a1a1a;margin:0;">Wayterra</p>
+  </div>
+</div>
 
 <div id="splash">
   <div id="splash-center">
@@ -809,18 +805,23 @@ lottie.loadAnimation({
 <div id="region-page" class="gone">
   <div class="rp-content">
   <div class="rp-header" style="padding-left:16px;padding-right:16px;">
-    <div class="rp-title" data-t="rp_title">Scegli la regione</div>
+    <div class="rp-title" data-t="rp_title">Scegli la destinazione</div>
     <div class="rp-sub" data-t="rp_sub">Dove vuoi esplorare oggi?</div>
   </div>
   <div class="rp-grid" style="padding-left:16px!important;padding-right:16px!important;">
-    <div class="rp-sec-label" data-t="rp_sec_italia">Esplora l'Italia</div>
+    <!-- 🇮🇹 ITALIA -->
+    <div class="rp-sec-label">
+      <span style="font-size:24px;">🇮🇹</span>
+      <span style="font-size:13px;font-weight:600;color:var(--g400);letter-spacing:.06em;text-transform:uppercase;">ITALIA</span>
+    </div>
     <div class="rp-card rp-card-main" onclick="openAccessRequestModal()">
       <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio.jpg');background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
         <div class="rp-card-name">Lazio</div>
         <div class="rp-card-sub" id="rp-lazio-sub"></div>
-        <button class="rp-card-btn" id="rp-lazio-btn">Richiedi accesso →</button>
+        <div id="rp-lazio-reviews" style="margin:8px 0 4px;"></div>
+        <button class="rp-card-btn" id="rp-lazio-btn">Esplora →</button>
       </div>
     </div>
     <div class="rp-card rp-card-locked" onclick="showRegionToast()">
@@ -859,15 +860,28 @@ lottie.loadAnimation({
         <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
       </div>
     </div>
-    <div class="rp-sec-label rp-sec-label-sep" data-t="rp_sec_mondo">Nel mondo</div>
-    <div class="rp-card rp-card-main rp-card-travels" onclick="openTravelsPage()">
-      <div class="rp-card-bg" style="background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#3b82f6 100%);background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/travels3.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov" style="background:linear-gradient(to top,rgba(0,0,0,.45) 0%,transparent 60%);"></div>
-      <div class="rp-travels-globe"><i class="ti ti-world"></i></div>
+    <!-- 🇬🇧 UK -->
+    <div class="rp-sec-label rp-sec-label-sep">
+      <span style="font-size:24px;">🇬🇧</span>
+      <span style="font-size:13px;font-weight:600;color:var(--g400);letter-spacing:.06em;text-transform:uppercase;">UK</span>
+    </div>
+    <div class="rp-card rp-card-main rp-card-travels" onclick="selectTravelRegion('cotswolds',[-1.8,51.7],9)">
+      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cotswolds-cover.jpg');background-size:cover;background-position:center;"></div>
+      <div class="rp-card-ov"></div>
       <div class="rp-card-body">
-        <div class="rp-card-name">I miei viaggi all'estero <span class="rp-new-badge" data-t="rp_new">Nuovo</span></div>
-        <div class="rp-card-sub" id="rp-travels-sub"></div>
-        <button class="rp-card-btn rp-card-btn-blue" data-t="rp_explore_travels">Esplora →</button>
+        <div class="rp-card-name">Cotswolds</div>
+        <div class="rp-card-sub" id="rp-cotswolds-sub"></div>
+        <div id="rp-cotswolds-reviews" style="margin:8px 0 4px;"></div>
+        <button class="rp-card-btn rp-card-btn-blue">Esplora →</button>
+      </div>
+    </div>
+    <div class="rp-card rp-card-locked">
+      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/highlands.jpg');background-size:cover;background-position:center;"></div>
+      <div class="rp-card-ov"></div>
+      <div class="rp-card-body">
+        <div class="rp-lock-ico">🔒</div>
+        <div class="rp-card-name">Highlands</div>
+        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
       </div>
     </div>
   </div>
@@ -893,25 +907,32 @@ lottie.loadAnimation({
       </svg>
       <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0;">
         <span class="brand-name">Wayterra</span>
-        <span class="brand-rgn-mobile" id="brand-rgn-mobile" onclick="showRegionPage()">Lazio ▾</span>
+        <span class="brand-rgn-mobile" id="brand-rgn-mobile" onclick="if(_regionDropdownOpen){closeRegionDropdown();}else{openRegionDropdown();}">Lazio ▾</span>
       </div>
-      <div class="region-pill" id="region-pill" onclick="showRegionPage()">
+      <div class="region-pill" id="region-pill" onclick="if(_regionDropdownOpen){closeRegionDropdown();}else{openRegionDropdown();}">
         <span class="region-pill-name" id="region-pill-name">Lazio</span>
         <span class="region-pill-arrow">▾</span>
       </div>
+      <div id="region-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--w);border-radius:12px;overflow:hidden;border:0.5px solid var(--g100);box-shadow:var(--sh-lg);z-index:650;min-width:200px;">
+        <div id="region-dropdown-header" style="padding:8px 12px;border-bottom:0.5px solid var(--g100);">
+          <p style="font-size:.68rem;color:var(--g400);letter-spacing:.06em;margin:0;" id="rdd-country-label"></p>
+        </div>
+        <div id="region-dropdown-list"></div>
+        <div style="height:0.5px;background:var(--g100);"></div>
+        <div onclick="closeRegionDropdown();showRegionPage();" style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;">
+          <i class="ti ti-world" style="font-size:13px;color:var(--g400);"></i>
+          <span style="font-size:.8rem;color:var(--g500);" data-t="rdd_change_country">Cambia paese</span>
+        </div>
+      </div>
     </div>
     <div class="tb-right">
-      <div class="lang-sw">
-        <button class="lang-btn on" id="btn-it" onclick="setLang('it')">IT</button>
-        <button class="lang-btn off" id="btn-en" onclick="setLang('en')">EN</button>
-      </div>
       <button class="search-btn" id="search-btn" onclick="openSearch()"><i class="ti ti-search"></i></button>
       <button class="filter-btn" id="filter-btn" onclick="openFilterPopup()">
         <i class="ti ti-adjustments-horizontal"></i>
         <div class="filter-dot" id="filter-dot"></div>
       </button>
-      <button class="search-btn" id="itinerari-btn-d" onclick="openItinerariPage()" style="display:none;" title="Itinerari"><i class="ti ti-route"></i></button>
-      <button class="fav-btn" id="fav-btn" onclick="openFavPage()"><i class="ti ti-bookmark"></i></button>
+      <button class="search-btn" id="itinerari-btn-d" onclick="openItinerariPage(_travelContext?_currentTravelRegion:null)" style="display:none;" title="Itinerari"><i class="ti ti-route"></i></button>
+      <button class="fav-btn" id="profile-btn-d" onclick="openProfilePage()"><i class="ti ti-user" style="font-size:20px;"></i></button>
     </div>
   </div>
 </div>
@@ -923,17 +944,6 @@ lottie.loadAnimation({
   <div class="fp-header">
     <span class="fp-header-title" data-t="filters">Filtri</span>
     <button class="fp-close" onclick="closeFilterPopup()">✕</button>
-  </div>
-  <div class="fp-section-lbl" data-t="where_to_go">Dove vuoi andare?</div>
-  <div class="fp-mode-row">
-    <button class="fp-mode-btn active-outside" id="fp-btn-fuori" onclick="setMapMode('outside')">
-      <div class="fp-mode-ov"></div>
-      <span><span data-t="outside">Fuori porta</span></span>
-    </button>
-    <button class="fp-mode-btn" id="fp-btn-roma" onclick="setMapMode('city')">
-      <div class="fp-mode-ov"></div>
-      <span>Roma</span>
-    </button>
   </div>
   <div class="fp-section-lbl" data-t="categories">Categorie</div>
   <div class="fp-cats" id="fp-cats"></div>
@@ -961,22 +971,6 @@ lottie.loadAnimation({
 </div>
 
 <!-- ONBOARDING POPUP -->
-<div id="ob-overlay" onclick="closeOnboarding()"></div>
-<div id="ob-popup">
-  <div class="ob-emoji">🗺️</div>
-  <div class="ob-title" data-t="ob_title">Cosa vuoi fare oggi?</div>
-  <div class="ob-sub" data-t="ob_sub">Non è una scelta definitiva. Se decidi di cambiare posto basta selezionarlo dal filtro nella mappa</div>
-  <div class="ob-btns">
-    <button class="ob-btn ob-btn-green" onclick="chooseMode('outside')">
-      <div class="ob-btn-ov"></div>
-      <span class="ob-btn-lbl" data-t="ob_outside">Gitarella fuori porta</span>
-    </button>
-    <button class="ob-btn ob-btn-orange" onclick="chooseMode('city')">
-      <div class="ob-btn-ov"></div>
-      <span class="ob-btn-lbl" data-t="ob_city">Resto in città — Roma</span>
-    </button>
-  </div>
-</div>
 
 <!-- SEARCH PANEL -->
 <div id="search-bg" onclick="closeSearch()"></div>
@@ -1025,19 +1019,6 @@ lottie.loadAnimation({
 </div>
 
 <button id="fab" style="display:none" onclick="locateMe()"><i class="ti ti-location"></i></button>
-
-<div id="mode-toggle">
-  <button id="mode-btn-city" class="mode-sq-btn msq-inactive" onclick="setMapMode('city')" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/chris-czermak-7ybKmhDTcz0-unsplash.jpg');background-size:cover;background-position:center;">
-    <div style="position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;">
-      <span style="font-size:.5rem;font-weight:700;color:white;letter-spacing:.02em;">Roma</span>
-    </div>
-  </button>
-  <button id="mode-btn-outside" class="mode-sq-btn msq-active" onclick="setMapMode('outside')" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/vincenzo-inzone-5gkWpvo_2Uk-unsplash.jpg');background-size:cover;background-position:center 30%;">
-    <div style="position:absolute;inset:0;background:rgba(0,0,0,.2);display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;">
-      <span style="font-size:.5rem;font-weight:700;color:white;letter-spacing:.02em;text-align:center;line-height:1.2;">Fuori<br>porta</span>
-    </div>
-  </button>
-</div>
 
 
 <div id="act-popup">
@@ -1095,6 +1076,7 @@ lottie.loadAnimation({
     <button id="dp-act-map-btn" onclick="openPlaceActsPopup(currentPlace)" style="display:none;margin-top:8px;width:100%;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);">Esplora sulla mappa</button>
   </div>
   <div class="dp-cta">
+    <button id="dp-visited-btn" style="flex:1;padding:13px;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;background:#dc6b2f;color:#fff;"></button>
     <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
   </div>
 </div>
@@ -1103,7 +1085,7 @@ lottie.loadAnimation({
 <div id="itinerari-page">
   <div class="itp-header">
     <button class="itp-back" onclick="closeItinerariPage()">←</button>
-    <div class="itp-title">Itinerari</div>
+    <div class="itp-title" id="itp-title">Itinerari</div>
   </div>
   <div class="itp-scroll" id="itp-scroll"></div>
 </div>
@@ -1112,7 +1094,7 @@ lottie.loadAnimation({
 <div id="travels-page">
   <div class="itp-header">
     <button class="itp-back" onclick="closeTravelsPage()">←</button>
-    <div class="itp-title" data-t="trv_title">I miei viaggi all'estero</div>
+    <div class="itp-title" id="trv-title" data-t="trv_title">I miei viaggi all'estero</div>
   </div>
   <div class="itp-scroll" id="trv-scroll"></div>
 </div>
@@ -1122,8 +1104,8 @@ lottie.loadAnimation({
   <div class="itp-header">
     <button class="itp-back" onclick="closeItinerarioDetail()">←</button>
     <div class="itp-title" id="itd-title"></div>
-    <button id="itd-bookmark-btn" onclick="openFavPage('itinerario-detail')" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;"><i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i></button>
-    <button onclick="openItinerarioPDF()" style="background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;" title="Scarica PDF"><i class="ti ti-download" style="font-size:20px;color:var(--g500);"></i></button>
+    <button id="itd-bookmark-btn" onclick="toggleFavItinerary(_currentItdExp&&_currentItdExp.id)" style="background:#dc6b2f;border:none;border-radius:8px;padding:6px 8px;cursor:pointer;flex-shrink:0;"><i class="ti ti-bookmark" style="font-size:18px;color:#fff;"></i></button>
+    <button onclick="openItinerarioPDF()" style="background:#dc6b2f;border:none;border-radius:8px;padding:6px 8px;cursor:pointer;flex-shrink:0;" title="Scarica PDF"><i class="ti ti-download" style="font-size:18px;color:#fff;"></i></button>
   </div>
   <div class="itd-scroll">
     <div id="itd-cover-wrap"></div>
@@ -1137,7 +1119,45 @@ lottie.loadAnimation({
       <div id="itd-map-btns"></div>
       <div id="itd-stops"></div>
       <div id="itd-services"></div>
+      <div id="itd-suggested" style="display:none;margin-top:20px;">
+        <p style="font-size:.68rem;font-weight:600;color:var(--g400);letter-spacing:.06em;margin:0 0 10px;" id="itd-suggested-label">POTRESTI ANCHE VISITARE</p>
+        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;" id="itd-suggested-list"></div>
+      </div>
+      <div id="itd-reviews" style="display:none;margin-top:20px;"></div>
     </div>
+  </div>
+</div>
+
+<!-- REVIEWS POPUP -->
+<div id="reviews-popup" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center;">
+  <div style="background:var(--w);border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:80vh;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom,0px);">
+    <div style="padding:12px 16px;border-bottom:0.5px solid var(--g100);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--w);z-index:1;">
+      <div>
+        <p style="font-size:1rem;font-weight:500;margin:0;" id="reviews-popup-title">Recensioni</p>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+          <i class="ti ti-star" style="font-size:13px;color:#f59e0b;"></i>
+          <span style="font-size:13px;font-weight:500;" id="reviews-popup-rating"></span>
+          <span style="font-size:12px;color:var(--g400);" id="reviews-popup-count"></span>
+        </div>
+      </div>
+      <button onclick="closeReviewsPopup()" style="background:none;border:none;cursor:pointer;padding:4px;"><i class="ti ti-x" style="font-size:20px;color:var(--g400);"></i></button>
+    </div>
+    <div id="reviews-popup-list" style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;"></div>
+    <div style="padding:12px 16px;border-top:0.5px solid var(--g100);" id="reviews-popup-cta"></div>
+  </div>
+</div>
+
+<!-- WRITE REVIEW POPUP -->
+<div id="write-review-popup" style="display:none;position:fixed;inset:0;z-index:910;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:var(--w);border-radius:14px;padding:20px;max-width:400px;width:100%;display:flex;flex-direction:column;gap:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <p style="font-size:1rem;font-weight:500;margin:0;" id="write-review-title">Lascia una recensione</p>
+      <button onclick="closeWriteReview()" style="background:none;border:none;cursor:pointer;"><i class="ti ti-x" style="font-size:18px;color:var(--g400);"></i></button>
+    </div>
+    <div style="display:flex;gap:6px;" id="write-review-stars"></div>
+    <textarea id="write-review-text" placeholder="Racconta la tua esperienza..." style="width:100%;padding:10px;border-radius:8px;border:0.5px solid var(--g200);font-size:.85rem;min-height:80px;box-sizing:border-box;resize:none;font-family:inherit;"></textarea>
+    <div id="write-review-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>
+    <button onclick="submitReview()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.9rem;font-weight:500;cursor:pointer;" id="write-review-btn">Pubblica</button>
   </div>
 </div>
 
@@ -1270,7 +1290,7 @@ var T={
     ob_city:'Resto in città — Roma',
     search_cancel:'Chiudi',
     no_results:'Nessun risultato',
-    rp_title:'Scegli la regione',
+    rp_title:'Scegli la destinazione',
     rp_sub:'Dove vuoi esplorare oggi?',
     rp_explore:'Scopri →',
     rp_soon:'Prossimamente',
@@ -1281,10 +1301,26 @@ var T={
     rp_explore_travels:'Esplora →',
     trv_title:'I miei viaggi all\'estero',
     itd_soon_toast:'Presto disponibile! Stiamo preparando i primi itinerari 🗺️',
+    itd_info_title:'Info utili',
     itd_legend_main:'Principale',
     itd_legend_opt:'Opzionale',
     itd_legend_air:'Aeroporto',
-    itd_travel_times:'Tempi di spostamento'
+    itd_travel_times:'Tempi di spostamento',
+    rdd_change_country:'Cambia paese',
+    nav_itinerari:'Itinerari',
+    nav_profile:'Profilo',
+    profile_tab_saved:'Salvati',
+    profile_tab_stats:'Statistiche',
+    profile_tab_settings:'Impostazioni',
+    stat_saved_label:'Luoghi salvati',
+    stat_itineraries_label:'Itinerari fatti',
+    stat_countries_label:'Paesi visitati',
+    stat_places_label:'Luoghi visitati',
+    settings_language:'Lingua',
+    settings_logout:'Esci',
+    settings_login:'Accedi / Registrati',
+    no_saved:'Nessun luogo salvato',
+    stats_hint:'Le statistiche si aggiornano con le tue azioni'
   },
   en:{
     search_placeholder:'Where do you want to go?',
@@ -1339,8 +1375,8 @@ var T={
     ob_city:'Stay in the city — Rome',
     search_cancel:'Close',
     no_results:'No results',
-    rp_title:'Choose your region',
-    rp_sub:'Where do you want to explore?',
+    rp_title:'Choose your destination',
+    rp_sub:'Where do you want to explore today?',
     rp_explore:'Explore →',
     rp_soon:'Coming soon',
     rp_soon_toast:'Coming soon!',
@@ -1350,10 +1386,26 @@ var T={
     rp_explore_travels:'Explore →',
     trv_title:'My travels abroad',
     itd_soon_toast:'Coming soon! We\'re preparing our first itineraries 🗺️',
+    itd_info_title:'Useful info',
     itd_legend_main:'Main',
     itd_legend_opt:'Optional',
     itd_legend_air:'Airport',
-    itd_travel_times:'Travel times'
+    itd_travel_times:'Travel times',
+    rdd_change_country:'Change country',
+    nav_itinerari:'Itineraries',
+    nav_profile:'Profile',
+    profile_tab_saved:'Saved',
+    profile_tab_stats:'Statistics',
+    profile_tab_settings:'Settings',
+    stat_saved_label:'Places saved',
+    stat_itineraries_label:'Trips completed',
+    stat_countries_label:'Countries visited',
+    stat_places_label:'Places visited',
+    settings_language:'Language',
+    settings_logout:'Sign out',
+    settings_login:'Sign in / Register',
+    no_saved:'No saved places',
+    stats_hint:'Statistics update with your actions'
   }
 };
 
@@ -1474,8 +1526,7 @@ var currentPlace=null;
 var currentLightboxIdx=0,currentLightboxGallery=[];
 var lang='it';
 var unlocked=false;
-var mapMode='outside';
-var splashPhrases={it:['🎒 Preparo lo zaino...','🗺️ Scovo i sentieri nascosti...','✨ Sveglio le gemme del Lazio...','🧭 Calibro la bussola...'],en:['🎒 Packing the backpack...','🗺️ Scouting hidden trails...','✨ Waking up Lazio\'s hidden gems...','🧭 Calibrating the compass...']};
+var splashPhrases={it:['🎒 Preparando il tuo viaggio...','🗺️ Caricamento luoghi nascosti...','✨ Scopri posti unici...','🧭 Il tuo itinerario ti aspetta...','🌿 Esplora come un locale...'],en:['🎒 Preparing your journey...','🗺️ Loading hidden places...','✨ Discover unique spots...','🧭 Your itinerary awaits...','🌿 Explore like a local...']};
 var _splashIdx=0;
 var _splashIv=null;
 
@@ -1511,7 +1562,7 @@ function loadFavs(){if(!favs)favs=new Set();var f=localStorage.getItem(K.FAV);if
 function saveFavs(){localStorage.setItem(K.FAV,JSON.stringify(Array.from(favs)));}
 function loadFavActs(){if(!favActs)favActs=new Set();var f=localStorage.getItem('WT_FAV_ACTS');if(f){JSON.parse(f).forEach(function(id){favActs.add(id);});}}
 function saveFavActs(){localStorage.setItem('WT_FAV_ACTS',JSON.stringify(Array.from(favActs)));}
-function toggleFavAct(id){if(favActs.has(id)){favActs.delete(id);}else{favActs.add(id);toast(t('saved'));var a=(DATA.cityActivities||[]).find(function(x){return x.id===id;});if(a){if(window.umami)umami.track('bookmark_activity',{id:a.id,name:a.name});trackEvent({event_type:'bookmark_activity',activity_id:a.id,is_city_activity:true});}}saveFavActs();updFavBtn();if(document.getElementById('fav-page')&&document.getElementById('fav-page').classList.contains('show')){openFavPage();}
+function toggleFavAct(id){if(!favActs.has(id)&&!_currentUser){openAuthPage(lang==='en'?'Sign in to save places':'Accedi per salvare i luoghi',function(){toggleFavAct(id);});return;}if(favActs.has(id)){favActs.delete(id);}else{favActs.add(id);toast(t('saved'));var a=(DATA.cityActivities||[]).find(function(x){return x.id===id;});if(a){if(window.umami)umami.track('bookmark_activity',{id:a.id,name:a.name});trackEvent({event_type:'bookmark_activity',activity_id:a.id,is_city_activity:true});}}saveFavActs();updFavBtn();if(document.getElementById('fav-page')&&document.getElementById('fav-page').classList.contains('show')){openFavPage();}
 _updateCityActBkm(id);}
 function _updateCityActBkm(id){
   var bkm=document.getElementById('act-popup-bkm');
@@ -1572,20 +1623,6 @@ function _expExpand(el){
 
 /* ═══ LANGUAGE ═══ */
 /* ═══ ONBOARDING ═══ */
-function showOnboarding(){
-  if(localStorage.getItem('WT_MODE_CHOSEN'))return;
-  document.getElementById('ob-overlay').classList.add('show');
-  document.getElementById('ob-popup').classList.add('show');
-}
-function closeOnboarding(){
-  document.getElementById('ob-overlay').classList.remove('show');
-  document.getElementById('ob-popup').classList.remove('show');
-}
-function chooseMode(mode){
-  localStorage.setItem('WT_MODE_CHOSEN','1');
-  closeOnboarding();
-  setMapMode(mode);
-}
 
 /* ═══ SEARCH ═══ */
 function openSearch(){
@@ -1622,29 +1659,20 @@ function doSearch(raw){
   var q=raw.trim().toLowerCase();
   if(q.length<2){res.innerHTML='';return;}
   var allPlaces=(DATA.places||[]).filter(function(p){return p.name.toLowerCase().indexOf(q)>=0;});
-  var allCity=(DATA.cityActivities||[]).filter(function(a){return a.name&&a.name.toLowerCase().indexOf(q)>=0;});
   var allPActs=[];
   (DATA.places||[]).forEach(function(p){
     (p.activities||[]).forEach(function(a){
       if(a.name&&a.name.toLowerCase().indexOf(q)>=0)allPActs.push({a:a,p:p});
     });
   });
-  // cap totals to 8 balanced
-  var nP=Math.min(allPlaces.length,3),nC=Math.min(allCity.length,3),nA=Math.min(allPActs.length,8-nP-nC);
-  var places=allPlaces.slice(0,nP),cityActs=allCity.slice(0,nC),placeActs=allPActs.slice(0,Math.max(0,nA));
+  var nP=Math.min(allPlaces.length,3),nA=Math.min(allPActs.length,8-nP);
+  var places=allPlaces.slice(0,nP),placeActs=allPActs.slice(0,Math.max(0,nA));
   var h='';
   if(places.length){
     h+='<div class="sr-section">'+t('places')+'</div>';
     places.forEach(function(p){
       var pt=placeTypeOf(p.placeTypeId);
       h+=srItem('searchGoPlace('+p.id+')',renderIcon(pt.icon,'#fff'),pt.color||'#374151',p.name,p.region||catName(pt));
-    });
-  }
-  if(cityActs.length){
-    h+='<div class="sr-section">'+t('activities')+' — Roma</div>';
-    cityActs.forEach(function(a){
-      var et=expTypeOf(a.experienceTypeId);
-      h+=srItem('searchGoCityAct('+a.id+')',renderIcon(et.icon||'ti-map-pin','#fff'),et.color||'#374151',a.name,lang==='en'&&et.nameEn?et.nameEn:(et.name||''));
     });
   }
   if(placeActs.length){
@@ -1654,7 +1682,7 @@ function doSearch(raw){
       h+=srItem('searchGoPlaceAct('+item.p.id+',\''+item.a.id+'\')',renderIcon(at.icon||'ti-map-pin','#fff'),at.color||'#374151',item.a.name,item.p.name);
     });
   }
-  if(!places.length&&!cityActs.length&&!placeActs.length){
+  if(!places.length&&!placeActs.length){
     h='<div class="sr-empty">'+t('no_results')+'</div>';
   }
   res.innerHTML=h;
@@ -1663,21 +1691,7 @@ function searchGoPlace(id){
   var p=(DATA.places||[]).find(function(x){return x.id===id;});
   if(!p)return;
   closeSearch();
-  var targetMode=p.mode||'outside';
-  var needSwitch=mapMode!==targetMode;
-  if(needSwitch)setMapMode(targetMode);
-  setTimeout(function(){handleL1Click(p);},needSwitch?900:50);
-}
-function searchGoCityAct(id){
-  var a=(DATA.cityActivities||[]).find(function(x){return x.id===id;});
-  if(!a)return;
-  closeSearch();
-  var needSwitch=mapMode!=='city';
-  if(needSwitch)setMapMode('city');
-  setTimeout(function(){
-    if(a.lat&&a.lng)map_o.flyTo({center:[a.lng,a.lat],zoom:14,duration:600});
-    setTimeout(function(){openCityActivityDetail(a);},a.lat&&a.lng?500:0);
-  },needSwitch?900:50);
+  setTimeout(function(){handleL1Click(p);},50);
 }
 function searchGoPlaceAct(placeId,actId){
   var p=(DATA.places||[]).find(function(x){return x.id===placeId;});
@@ -1685,9 +1699,6 @@ function searchGoPlaceAct(placeId,actId){
   var a=(p.activities||[]).find(function(x){return String(x.id)===String(actId);});
   if(!a)return;
   closeSearch();
-  var targetMode=p.mode||'outside';
-  var needSwitch=mapMode!==targetMode;
-  if(needSwitch)setMapMode(targetMode);
   setTimeout(function(){
     var lat=a.lat||p.lat,lng=a.lng||p.lng;
     if(lat&&lng)map_o.flyTo({center:[lng,lat],zoom:14,duration:600});
@@ -1695,16 +1706,31 @@ function searchGoPlaceAct(placeId,actId){
       if(window.innerWidth<768){showActBubbleBottomCard(a,placeId);}
       else{showActBubble(a,[lat,lng]);}
     },lat&&lng?500:0);
-  },needSwitch?900:50);
+  },50);
 }
 
+function toggleLang(){setLang(lang==='it'?'en':'it');}
+function openLangPopup(){
+  document.getElementById('lang-popup').style.display='flex';
+  document.getElementById('lang-popup-title').textContent=lang==='it'?'Seleziona lingua':'Select language';
+  document.getElementById('lang-opt-it').style.background=lang==='it'?'#fff3ed':'';
+  document.getElementById('lang-opt-en').style.background=lang==='en'?'#fff3ed':'';
+  document.getElementById('lang-check-it').style.display=lang==='it'?'':'none';
+  document.getElementById('lang-check-en').style.display=lang==='en'?'':'none';
+}
+function closeLangPopup(){document.getElementById('lang-popup').style.display='none';}
+function selectLang(l){setLang(l);closeLangPopup();}
 function setLang(l){
   lang=l;
   localStorage.setItem(K.LANG,l);
-  document.getElementById('btn-it').className='lang-btn '+(l==='it'?'on':'off');
-  document.getElementById('btn-en').className='lang-btn '+(l==='en'?'on':'off');
+  var btnIt=document.getElementById('btn-it');
+  var btnEn=document.getElementById('btn-en');
+  if(btnIt)btnIt.className='lang-btn '+(l==='it'?'on':'off');
+  if(btnEn)btnEn.className='lang-btn '+(l==='en'?'on':'off');
   applyTranslations();
   buildDD();
+  var langVal=document.getElementById('settings-lang-value');
+  if(langVal)langVal.textContent=l==='it'?'Italiano':'English';
 }
 function applyTranslations(){
   document.getElementById('fav-title').textContent=t('favorites');
@@ -1813,12 +1839,9 @@ function toggleActGroup(typeId){
 function closeActPopup(){
   document.getElementById('act-popup').style.zIndex='';
   document.getElementById('act-popup').classList.remove('show');
-  if(level===1)showModeToggle();
 }
 
 function openBooking(url){if(url.startsWith('tel:')){window.location.href=url;}else{window.open(url,'_blank');}}
-function hideModeToggle(){var el=document.getElementById('mode-toggle');if(el)el.style.display='none';}
-function showModeToggle(){var el=document.getElementById('mode-toggle');if(el)el.style.display='flex';}
 function isVideo(src){
   if(!src)return false;
   if(src.startsWith('video:'))return true;
@@ -1884,43 +1907,33 @@ function expSubtypeOf(id){return DATA.expSubtypes.find(function(t){return t.id==
 
 function initMap(){
   var isMobile=window.innerWidth<600;
-  var romaPlaces=[];
-
+  var _initParams=new URLSearchParams(window.location.search);
+  var _initRegion=_initParams.get('region');
+  var initialCenter=[12.8,41.8];
+  var initialZoom=isMobile?7:8;
+  if(_initRegion&&_initRegion!=='lazio'){
+    initialCenter=getRegionCenter(_initRegion);
+    initialZoom=isMobile?getRegionZoom(_initRegion)-1:getRegionZoom(_initRegion);
+  }
   mapboxgl.accessToken='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
   map_o=new mapboxgl.Map({
     container:'map',
     style:'mapbox://styles/thesolid/cmpgyxqlp001v01se3u753n0n',
-    center:[12.8,41.8],
-    zoom:isMobile?7:8,
+    center:initialCenter,
+    zoom:initialZoom,
     attributionControl:false
   });
   map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
   map_o.on('style.load',function(){
-    romaPlaces=DATA.places.filter(function(p){
-      return (p.mode||'outside')==='city';
-    });
-
     DATA.places.forEach(function(p){addL1(p);});
     addCityLabels();
-
-
-    // initial state: zoom < 11, hide individual Roma markers
-    romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
+    _mapReady=true;
   });
   setTimeout(function(){map_o.resize();},300);
   window.addEventListener('resize',function(){map_o.resize();});
-  map_o.on('click',function(){if(_itineraryViewId!==null)return;closeBubble();closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();});
-  map_o.on('zoom',function(){
-    if(_itineraryViewId!==null)return;
-    if(mapMode==='city')return;
-    var z=map_o.getZoom();
-    if(z<11){
-      romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
-    }
-  });
+  map_o.on('click',function(){if(_itineraryViewId!==null)return;closeBubble();closeBottomCard();closeActMapPopup();if(filterOpen)closeFilterPopup();if(_regionDropdownOpen)closeRegionDropdown();});
   map_o.on('zoomend',function(){
     if(_itineraryViewId!==null)return;
-    if(mapMode==='city')return;
     var z=map_o.getZoom();
     if(window.innerWidth<768){
       DATA.places.forEach(function(p){
@@ -1929,11 +1942,7 @@ function initMap(){
         m.getElement().innerHTML=el.innerHTML;
       });
     }
-    if(z<11){
-      romaPlaces.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
-    } else {
-      if(activePId)dimL1(activePId);else restoreL1();
-    }
+    if(activePId)dimL1(activePId);else restoreL1();
   });
   setTimeout(function(){
     if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(pos){
@@ -1999,7 +2008,7 @@ function addL1(p){
   var el=createPinEl(p,false,false);
   var m=new mapboxgl.Marker({element:el,anchor:'center'})
     .setLngLat([p.lng,p.lat]);
-  if((p.mode||'outside')===mapMode)m.addTo(map_o);
+  m.addTo(map_o);
   m.getElement().style.zIndex='2';
   el.addEventListener('mouseenter',function(){el.style.zIndex='9999';});
   el.addEventListener('mouseleave',function(){el.style.zIndex='';});
@@ -2009,6 +2018,20 @@ function addL1(p){
     handleL1Click(p);
   });
   l1Mk[p.id]=m;
+}
+function _mkActPinEl(a){
+  var et=expTypeOf(a.experienceTypeId);
+  var est=a.experienceSubtypeId?expSubtypeOf(a.experienceSubtypeId):null;
+  var icon=(est&&est.icon)?est.icon:((et&&et.icon)?et.icon:'ti-map-pin');
+  var color=(est&&est.color)?est.color:((et&&et.color)?et.color:'#374151');
+  var el=document.createElement('div');
+  el.innerHTML='<div class="pin-hover-wrap" style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
+    +'<div class="pin-tooltip">'+(a.name||'')+'</div>'
+    +'<div style="width:22px;height:22px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px solid white;">'
+    +renderIcon(icon,'white')
+    +'</div>'
+    +'</div>';
+  return el;
 }
 function addCityActivityMarker(a){
   if(!a.lat||!a.lng)return;
@@ -2071,7 +2094,6 @@ function showCityActivityBottomCard(a){
   var card=document.getElementById('bottom-card');
   card.onclick=function(){closeBottomCard();openCityActivityDetail(a);};
   card.classList.add('show');
-  hideModeToggle();
 }
 var _cityActGallery=[];
 function openLightboxFromCityAct(idx){openLightbox(idx,{gallery:_cityActGallery});}
@@ -2110,7 +2132,6 @@ function openCityActivityDetail(a){
       +((a.maps||a.bookingUrl)?'<div style="border-top:0.5px solid #e5e7eb;margin:12px 0;"></div><div style="display:flex;gap:8px;">'+(a.maps?'<a class="act-popup-maps-btn" href="'+a.maps+'" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;text-decoration:none;">'+t('maps')+'</a>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
     if(actDesc)renderExpandableText(actDesc,'act-popup-desc-el',200);
     document.getElementById('act-popup').classList.add('show');
-    hideModeToggle();
   } else {
     document.getElementById('amp-sheet').style.display='none';
     document.getElementById('amp-center').style.display='';
@@ -2178,7 +2199,6 @@ function openCityActivityDetail(a){
       } else bookBtnD.style.display='none';
     }
     document.getElementById('act-map-popup').classList.add('show');
-    hideModeToggle();
   }
 }
 function clearCityActivityMarkers(){
@@ -2202,7 +2222,7 @@ function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
     m.getElement().innerHTML=createPinEl(p,false,false).innerHTML;
-    var show=(p.mode||'outside')===mapMode&&catMatchFn(p);
+    var show=catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
     if(show)m.addTo(map_o);else m.remove();
   });
 }
@@ -2360,12 +2380,10 @@ function showActBubble(a, latlng){
       :'';}
   }
   document.getElementById('act-map-popup').classList.add('show');
-  hideModeToggle();
 }
 function closeActMapPopup(){
   document.getElementById('act-map-popup').classList.remove('show');
   document.getElementById('act-map-popup').style.zIndex='';
-  if(level===1)showModeToggle();
 }
 
 
@@ -2410,60 +2428,14 @@ function buildFilterCats(){
     +'<div class="fp-cat-dot" style="background:var(--g400);"></div>'
     +'<div class="fp-cat-name">🗺 '+t('all_places')+'</div>'
     +'</button>';
-  if(mapMode==='city'){
-    var typeList=DATA.expTypes.length?DATA.expTypes:DATA.cats;
-    typeList.forEach(function(c){
-      var subs=(DATA.expSubtypes||[]).filter(function(s){return s.experienceTypeId===c.id;});
-      var cname=(lang==='en'&&c.nameEn?c.nameEn:c.name);
-      if(subs.length>0){
-        var parentSel=pendingFilter==c.id||subs.some(function(s){return s.id===pendingSubtype;});
-        h+='<div>'
-          +'<button class="fp-acc-header'+(parentSel?' selected':'')+'" onclick="selExpType(\''+c.id+'\')">'
-          +'<div class="fp-cat-dot" style="background:'+c.color+';flex-shrink:0;"></div>'
-          +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+cname+'</div>'
-          +'<i class="ti ti-chevron-down fp-acc-chevron" id="chev-'+c.id+'"></i>'
-          +'</button>'
-          +'<div class="fp-acc-body" id="acc-'+c.id+'">'
-          +subs.map(function(s){
-            var sname=lang==='en'&&s.nameEn?s.nameEn:s.name;
-            var sSel=pendingSubtype===s.id;
-            return'<button class="fp-subtype-pill'+(sSel?' selected':'')+'" '
-              +(sSel?'style="border-color:'+c.color+';color:'+c.color+';background:'+c.color+'22;"':'')+' '
-              +'onclick="selSubtype('+s.id+')">'+sname+'</button>';
-          }).join('')
-          +'</div></div>';
-      } else {
-        h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selExpType(\''+c.id+'\')">'
-          +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
-          +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+cname+'</div>'
-          +'</button>';
-      }
-    });
-  } else {
-    var typeList=DATA.placeTypes.length?DATA.placeTypes:DATA.cats;
-    typeList.forEach(function(c){
-      h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selCat(\''+c.id+'\')">'
-        +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
-        +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+(lang==='en'&&c.nameEn?c.nameEn:c.name)+'</div>'
-        +'</button>';
-    });
-  }
+  var typeList=DATA.placeTypes.length?DATA.placeTypes:DATA.cats;
+  typeList.forEach(function(c){
+    h+='<button class="fp-cat-btn'+(pendingFilter==c.id?' selected':'')+'" onclick="selCat(\''+c.id+'\')">'
+      +'<div class="fp-cat-dot" style="background:'+c.color+';"></div>'
+      +'<div class="fp-cat-name">'+renderIcon(c.icon,c.color||'#374151')+' '+(lang==='en'&&c.nameEn?c.nameEn:c.name)+'</div>'
+      +'</button>';
+  });
   el.innerHTML=h;
-  // auto-apri accordion dell'elemento attivo
-  if(mapMode==='city'){
-    var openId=null;
-    if(pendingSubtype!==null){
-      var sub=DATA.expSubtypes.find(function(s){return s.id===pendingSubtype;});
-      if(sub)openId='acc-'+sub.experienceTypeId;
-    } else if(pendingFilter!=='all'){
-      openId='acc-'+pendingFilter;
-    }
-    if(openId){
-      var body=document.getElementById(openId);
-      var chev=document.getElementById(openId.replace('acc-','chev-'));
-      if(body){body.classList.add('open');if(chev)chev.classList.add('open');}
-    }
-  }
 }
 function buildDD(){buildFilterCats();}
 function toggleAcc(id){
@@ -2485,7 +2457,7 @@ function selSubtype(id){
 }
 function updateFilterDot(){
   var dot=document.getElementById('filter-dot');
-  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||mapMode!=='outside'||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
+  if(dot)dot.className='filter-dot'+(activeFilter!=='all'||activeSubtype!==null||activeHiddenFilter!=='all'||activeVibes.length>0?' active':'');
 }
 function buildHiddenFilter(){
   var hf=pendingHiddenFilter;
@@ -2519,12 +2491,6 @@ function selHiddenFilter(lv){
 function openFilterPopup(){
   pendingFilter=activeFilter; pendingSubtype=activeSubtype;
   pendingHiddenFilter=activeHiddenFilter; pendingVibes=activeVibes.slice();
-  var fpFuori=document.getElementById('fp-btn-fuori');
-  var fpRoma=document.getElementById('fp-btn-roma');
-  if(fpFuori){
-    fpFuori.className='fp-mode-btn'+(mapMode==='outside'?' active-outside':'');
-    fpRoma.className='fp-mode-btn'+(mapMode==='city'?' active-city':'');
-  }
   buildFilterCats();
   buildHiddenFilter();
   refreshVibeButtons();
@@ -2573,48 +2539,8 @@ function selExpType(id){
   toggleAcc('acc-'+id);
   buildFilterCats();
 }
-function setMapModePopup(mode){
-  mapMode=mode;
-  activeFilter='all'; activeSubtype=null; activeHiddenFilter='all'; activeVibes=[];
-  pendingFilter='all'; pendingSubtype=null; pendingHiddenFilter='all'; pendingVibes=[];
-  var fpFuori=document.getElementById('fp-btn-fuori');
-  var fpRoma=document.getElementById('fp-btn-roma');
-  if(fpFuori){
-    fpFuori.className='fp-mode-btn'+(mode==='outside'?' active-outside':'');
-    fpRoma.className='fp-mode-btn'+(mode==='city'?' active-city':'');
-  }
-  updateFilterDot();
-  buildFilterCats();
-  var _mbCity=document.getElementById('mode-btn-city');
-  var _mbOut=document.getElementById('mode-btn-outside');
-  if(_mbCity&&_mbOut){
-    _mbCity.className='mode-sq-btn '+(mode==='city'?'msq-active':'msq-inactive');
-    _mbOut.className='mode-sq-btn '+(mode==='outside'?'msq-active':'msq-inactive');
-  }
-  if(mode==='city'){
-    if(map_o)map_o.flyTo({center:[12.4964,41.9028],zoom:10,duration:800});
-  } else {
-    if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:8,duration:800});
-  }
-  refreshL1();
-}
-function setMapMode(mode){
-  if(level===2)exitL2();
-  closeBubble();
-  document.getElementById('detail-page').classList.remove('show');
-  closeActPopup();
-  closeActMapPopup();
-  currentPlace=null;
-  activePId=null;
-  setMapModePopup(mode);
-  var _er=document.getElementById('exp-row');
-  if(_er)_er.style.display=(mode==='city')?'none':(_er.classList.contains('show')?'':'none');
-  renderItdPill();
-  if(window.umami)umami.track('mode_switch',{mode:mode});
-}
 function catMatchFn(p){
   if(activeFilter==='all')return true;
-  if(mapMode==='city')return (p.activities||[]).some(function(a){return a.experienceTypeId===parseInt(activeFilter);});
   return p.placeTypeId==activeFilter;
 }
 function hiddenMatchFn(score){
@@ -2647,18 +2573,9 @@ function cityActMatchFn(a){
   return true;
 }
 function refreshL1(){
-  if(mapMode==='city'){
-    DATA.places.forEach(function(p){var m=l1Mk[p.id];if(m)m.remove();});
-    clearCityActivityMarkers();
-    (DATA.cityActivities||[]).forEach(function(a){
-      if(cityActMatchFn(a)&&hiddenMatchFn(a.hiddenScore)&&vibeMatchFn(a))addCityActivityMarker(a);
-    });
-    return;
-  }
-  clearCityActivityMarkers();
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
-    var show=(p.mode||'outside')==='outside'&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
+    var show=catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
     if(show)m.addTo(map_o);else m.remove();
   });
 }
@@ -2668,7 +2585,6 @@ function handleL1Click(place){
   currentPlace=place;
   activePId=place.id;
   level=2;
-  hideModeToggle();
   map_o.flyTo({center:[place.lng,place.lat],zoom:13,duration:600});
   document.getElementById('lv2-bar').style.display='flex';
   document.getElementById('lv2-label').textContent=place.premium&&!unlocked?t('premium_name'):place.name;
@@ -2686,11 +2602,10 @@ function exitL2(){
   }
   closeBubble();clearL2();restoreL1();
   document.getElementById('lv2-bar').style.display='none';
-  showModeToggle();
   var _er=document.getElementById('exp-row');
   if(_er&&_er.classList.contains('show'))_er.style.display='';
   renderItdPill();
-  map_o.flyTo({center:[12.8,41.8],zoom:8,duration:700});
+  map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:700});
 }
 
 /* ═══ BUBBLE CARD ═══ */
@@ -3060,13 +2975,14 @@ function openDetail(){
     trackEvent({event_type:'place_maps_open',place_id:p.id});
   };
   setupDpSave(p.id);
+  setupDpVisited(p.id);
   // desktop: restringi mappa e chiudi bubble
   if(window.innerWidth>=768){
     closeBubble();
     document.getElementById('map').classList.add('panel-open');
     setTimeout(function(){map_o.resize();},320);
   }
-  document.getElementById('detail-page').classList.add('show');
+  var _dpEl=document.getElementById('detail-page');_dpEl.classList.remove('gone');_dpEl.classList.add('show');
   if(window.umami)umami.track('place_view',{name:p.name,type:c.name||''});
   trackEvent({event_type:'place_view',place_id:p.id});
 }
@@ -3094,12 +3010,25 @@ function setupDpSave(id){
   sv.innerHTML=favs.has(id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';
   sv.onclick=function(){toggleFav(id);sv.className='dp-save'+(favs.has(id)?' saved':'');sv.innerHTML=favs.has(id)?'<i class="ti ti-bookmark-filled"></i>':'<i class="ti ti-bookmark"></i>';};
 }
+function setupDpVisited(id){
+  var btn=document.getElementById('dp-visited-btn');
+  if(!btn)return;
+  var _v=visitedPlaces.has(id);
+  btn.style.background=_v?'#16a34a':'#dc6b2f';
+  btn.style.color='#fff';
+  btn.textContent=_v?(lang==='en'?'Visited ✓':'Visitato ✓'):(lang==='en'?'I\'ve been here':'Sono stato qui');
+  btn.onclick=function(){markPlaceVisited(id);};
+}
 
 /* ═══ FAVORITES ═══ */
-function toggleFav(id){
-  if(favs.has(id)){favs.delete(id);}
-  else{
+async function toggleFav(id){
+  if(!favs.has(id)&&!_currentUser){openAuthPage(lang==='en'?'Sign in to save places':'Accedi per salvare i luoghi',function(){toggleFav(id);});return;}
+  if(favs.has(id)){
+    favs.delete(id);
+    if(_currentUser&&_supaAuth)_supaAuth.from('user_favorites').delete().eq('user_id',_currentUser.id).eq('place_id',id).then(function(){});
+  }else{
     favs.add(id);toast(t('saved'));
+    if(_currentUser&&_supaAuth)_supaAuth.from('user_favorites').insert({user_id:_currentUser.id,place_id:id}).then(function(){});
     var p=(DATA.places||[]).find(function(x){return x.id===id;});
     if(p){
       if(window.umami)umami.track('bookmark_place',{id:p.id,name:p.name});
@@ -3114,16 +3043,31 @@ function updFavBtn(){
   var favsArr=favsRaw?JSON.parse(favsRaw):[];
   var favActsArr=favActsRaw?JSON.parse(favActsRaw):[];
   var hasAny=favsArr.length>0||favActsArr.length>0;
-  var btn=document.getElementById('fav-btn');
-  if(btn){
-    btn.innerHTML=hasAny?'<i class="ti ti-bookmark-filled" style="color:#2563eb;"></i>':'<i class="ti ti-bookmark"></i>';
+  var btn=document.getElementById('profile-btn-d');
+  if(btn&&!_currentUser){
+    btn.innerHTML=hasAny?'<i class="ti ti-user" style="font-size:20px;color:#dc6b2f;"></i>':'<i class="ti ti-user" style="font-size:20px;"></i>';
   }
 }
 function updateItdBookmarkBtn(){
   var btn=document.getElementById('itd-bookmark-btn');
   if(!btn)return;
-  var filled=favs.size>0;
-  btn.innerHTML=filled?'<i class="ti ti-bookmark-filled" style="font-size:20px;color:var(--g500);"></i>':'<i class="ti ti-bookmark" style="font-size:20px;color:var(--g500);"></i>';
+  var isSaved=_currentUser&&_currentItdExp&&favItineraries.has(_currentItdExp.id);
+  btn.innerHTML=isSaved?'<i class="ti ti-bookmark-filled" style="font-size:18px;color:#fff;"></i>':'<i class="ti ti-bookmark" style="font-size:18px;color:#fff;"></i>';
+}
+function toggleFavItinerary(expId){
+  if(!expId)return;
+  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to save itineraries':'Accedi per salvare gli itinerari',function(){toggleFavItinerary(expId);});return;}
+  if(favItineraries.has(expId)){
+    favItineraries.delete(expId);
+    if(_supaAuth)_supaAuth.from('user_favorite_itineraries').delete().eq('user_id',_currentUser.id).eq('experience_id',expId).then(function(){});
+  }else{
+    favItineraries.add(expId);
+    if(_supaAuth)_supaAuth.from('user_favorite_itineraries').insert({user_id:_currentUser.id,experience_id:expId}).then(function(){});
+    toast(lang==='en'?'Itinerary saved':'Itinerario salvato');
+  }
+  updateItdBookmarkBtn();
+  var _pp=document.getElementById('profile-page');
+  if(_pp&&_pp.classList.contains('show'))renderProfileSaved();
 }
 var _favFrom=null;
 function openFavPage(from){
@@ -3389,7 +3333,114 @@ document.addEventListener('keydown',function(e){
 /* ═══ SUPABASE CONFIG ═══ */
 var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
+var _pendingRecovery=false;
+var _initHash=window.location.hash;
+if(_initHash.includes('type=recovery')||_initHash.includes('type=magiclink')){_pendingRecovery=true;}
+var _supaAuth=(function(){try{return supabase.createClient(SB_URL,SB_KEY);}catch(e){return null;}})();
+var _authMode='login';
+var _currentUser=null;
+var _currentUserProfile=null;
+var _pendingAvatarUrl=null;
+var _authCallback=null;
+var completedItineraries=new Set();
+var visitedPlaces=new Set();
+var downloadedSet=new Map();
+var favItineraries=new Set();
+var _reviewsCache={};
+var _currentReviewsExpId=null;
+var _writeReviewRating=0;
+var _writeReviewExpId=null;
 
+var _REVIEW_COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
+function loadAllReviews(){
+  if(!_supaAuth)return;
+  _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,experience_id,profiles!user_id(full_name,avatar_url)')
+    .then(function(res){
+      _reviewsCache={};
+      if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
+    });
+}
+async function loadRegionReviews(regionId,elementId){
+  var el=document.getElementById(elementId);
+  if(!el||!_supaAuth||!DATA)return;
+  var ids=(DATA.experiences||[]).filter(function(e){
+    if(regionId==='lazio')return!e.isTravel;
+    return e.region===regionId;
+  }).map(function(e){return e.id;});
+  if(!ids.length){el.innerHTML='';return;}
+  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,profiles!user_id(full_name,avatar_url)').in('experience_id',ids);
+  var reviews=res.data||[];
+  if(!reviews.length){el.innerHTML='';return;}
+  var shown=reviews.slice(0,3);
+  var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+  var avatars=shown.map(function(r,i){
+    var fullName=(r.profiles&&r.profiles.full_name)||'';
+    var parts=fullName.trim().split(' ');
+    var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+    var avatarContent=r.profiles&&r.profiles.avatar_url
+      ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      :'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span>';
+    return'<div style="width:22px;height:22px;border-radius:50%;background:'+_REVIEW_COLORS[i%_REVIEW_COLORS.length]+';border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';overflow:hidden;">'+avatarContent+'</div>';
+  }).join('');
+  el.innerHTML='<div onclick="event.stopPropagation();openReviewsPopup(\'region_'+regionId+'\');" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">'
+    +'<div style="display:flex;align-items:center;gap:6px;">'
+    +'<div style="display:flex;padding-right:6px;">'+avatars+'</div>'
+    +'<span style="font-size:11px;color:rgba(255,255,255,0.85);">'+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+'</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:3px;">'
+    +'<i class="ti ti-star" style="font-size:13px;color:#f59e0b;"></i>'
+    +'<span style="font-size:12px;font-weight:600;color:#fff;">'+avg+'</span>'
+    +'</div></div>';
+}
+function _buildReviewBar(expId){
+  var reviews=_reviewsCache[expId];
+  if(!reviews||!reviews.length)return'';
+  var shown=reviews.slice(0,3);
+  var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+  var avatars=shown.map(function(r,i){
+    var ini=(r.user_id||'').substring(0,2).toUpperCase();
+    return'<div style="width:22px;height:22px;border-radius:50%;background:'+_REVIEW_COLORS[i%_REVIEW_COLORS.length]+';border:2px solid var(--w);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';">'
+      +'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span></div>';
+  }).join('');
+  return'<div onclick="event.stopPropagation();openReviewsPopup('+expId+');" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-top:8px;">'
+    +'<div style="display:flex;align-items:center;gap:6px;">'
+    +'<div style="display:flex;">'+avatars+'</div>'
+    +'<span style="font-size:11px;color:var(--g500);padding-left:8px;">+'+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+'</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:3px;">'
+    +'<i class="ti ti-star" style="font-size:13px;color:#f59e0b;"></i>'
+    +'<span style="font-size:12px;font-weight:500;">'+avg+'</span>'
+    +'</div></div>';
+}
+function _updateReviewBar(expId){
+  var el=document.getElementById('review-bar-'+expId);
+  if(el)el.innerHTML=_buildReviewBar(expId);
+}
+function _buildReviewBarFromData(expId,reviews){
+  if(!reviews||!reviews.length)return'';
+  var shown=reviews.slice(0,3);
+  var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+  var colors=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
+  var avatars=shown.map(function(r,i){
+    var fullName=(r.profiles&&r.profiles.full_name)||'';
+    var parts=fullName.trim().split(' ');
+    var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+    var avatarContent=r.profiles&&r.profiles.avatar_url
+      ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      :'<span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span>';
+    return'<div style="width:22px;height:22px;border-radius:50%;background:'+colors[i%colors.length]+';border:2px solid var(--w);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';overflow:hidden;">'
+      +avatarContent+'</div>';
+  }).join('');
+  return'<div onclick="event.stopPropagation();openReviewsPopup('+expId+');" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-top:8px;">'
+    +'<div style="display:flex;align-items:center;gap:6px;">'
+    +'<div style="display:flex;">'+avatars+'</div>'
+    +'<span style="font-size:11px;color:var(--g500);padding-left:8px;">+'+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+'</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:3px;">'
+    +'<i class="ti ti-star" style="font-size:13px;color:#f59e0b;"></i>'
+    +'<span style="font-size:12px;font-weight:500;">'+avg+'</span>'
+    +'</div></div>';
+}
 function sbFetch(path,opts){
   return fetch(SB_URL+'/rest/v1/'+path,Object.assign({
     headers:{
@@ -3424,8 +3475,14 @@ function normalizeData(d){
 function showRegionPage(){
   var el=document.getElementById('region-page');
   if(!el)return;
+  var _io=document.getElementById('initial-overlay');
+  if(_io)_io.remove();
   el.classList.remove('gone');
   el.classList.remove('fade-out');
+  if(DATA.experiences&&DATA.experiences.length>0){
+    loadRegionReviews('cotswolds','rp-cotswolds-reviews');
+    loadRegionReviews('lazio','rp-lazio-reviews');
+  }
 }
 function hideRegionPage(cb){
   var el=document.getElementById('region-page');
@@ -3434,21 +3491,189 @@ function hideRegionPage(cb){
   setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
 }
 function selectRegion(regionId){
+  var _rco=document.getElementById('region-change-overlay');
+  if(_rco){_rco.style.display='block';}else{_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:#fff;';document.body.appendChild(_rco);}
+  _rco.getBoundingClientRect();
+  var _dp=document.getElementById('detail-page');
+  if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');_dp.style.zIndex='';}
+  var _itd=document.getElementById('itinerario-detail');
+  if(_itd){_itd.classList.remove('show');_itd.classList.add('gone');}
+  var _itp=document.getElementById('itinerari-page');
+  if(_itp){_itp.classList.remove('show');_itp.classList.add('gone');}
+  var _fp=document.getElementById('fav-page');
+  if(_fp&&_fp.classList.contains('show'))closeFavPage();
+  var _pp=document.getElementById('profile-page');
+  if(_pp&&_pp.style.display!=='none')closeProfilePage();
+  var _apo=document.getElementById('act-map-popup');
+  if(_apo)_apo.style.zIndex='';
+  var _lv2=document.getElementById('lv2-bar');
+  if(_lv2)_lv2.style.display='none';
+  _detailFromItinerario=false;
+  level=1;activePId=null;currentPlace=null;
+  closeBubble();clearL2();closeInlineBubble();
+  if(window.innerWidth>=768){document.getElementById('map').classList.remove('panel-open');setTimeout(function(){if(map_o)map_o.resize();},320);}
+  restoreL1();
+  _travelContext=false;
+  _currentTravelRegion=null;
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
-  var sp=document.getElementById('splash');
-  sp.classList.remove('hide');
-  sp.style.display='';
-  stopSplashRotation();
-  startSplashRotation();
   hideRegionPage(null);
-  setTimeout(function(){
-    stopSplashRotation();
-    sp.classList.add('hide');
-    if(map_o)map_o.flyTo({center:[12.8,41.8],zoom:window.innerWidth<768?7:8,duration:600});
-    showOnboarding();
-  },3000);
+  _currentRegionCenter=[12.8,41.8];
+  _currentRegionZoom=window.innerWidth<768?7:8;
+  if(new URLSearchParams(window.location.search).get('region')){
+    history.replaceState(null,'',window.location.pathname+window.location.search);
+    window.addEventListener('popstate',function(){
+      window.location.href=document.referrer||'https://v2-dev--glittery-pudding-104d72.netlify.app/landing.html';
+    },{once:true});
+  }
+  if(_mapReady){
+    var sp=document.getElementById('splash');
+    sp.classList.remove('hide');sp.style.display='';
+    stopSplashRotation();startSplashRotation();
+    var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+    var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
+    map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:800});
+    var _splashFallback=setTimeout(function(){stopSplashRotation();sp.classList.add('hide');},4000);
+    map_o.once('moveend',function(){
+      clearTimeout(_splashFallback);
+      setTimeout(function(){stopSplashRotation();sp.classList.add('hide');renderItdPill();},300);
+    });
+  }else{
+    var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
+    if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:800});
+    renderItdPill();
+  }
+}
+function selectTravelRegion(regionId,center,zoom){
+  var _rco=document.getElementById('region-change-overlay');
+  if(_rco){_rco.style.display='block';}else{_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:#fff;';document.body.appendChild(_rco);}
+  _rco.getBoundingClientRect();
+  var _dp=document.getElementById('detail-page');
+  if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');_dp.style.zIndex='';}
+  var _itd=document.getElementById('itinerario-detail');
+  if(_itd){_itd.classList.remove('show');_itd.classList.add('gone');}
+  var _itp=document.getElementById('itinerari-page');
+  if(_itp){_itp.classList.remove('show');_itp.classList.add('gone');}
+  var _fp=document.getElementById('fav-page');
+  if(_fp&&_fp.classList.contains('show'))closeFavPage();
+  var _pp=document.getElementById('profile-page');
+  if(_pp&&_pp.style.display!=='none')closeProfilePage();
+  var _apo=document.getElementById('act-map-popup');
+  if(_apo)_apo.style.zIndex='';
+  var _lv2=document.getElementById('lv2-bar');
+  if(_lv2)_lv2.style.display='none';
+  _detailFromItinerario=false;
+  level=1;activePId=null;currentPlace=null;
+  closeBubble();clearL2();closeInlineBubble();
+  if(window.innerWidth>=768){document.getElementById('map').classList.remove('panel-open');setTimeout(function(){if(map_o)map_o.resize();},320);}
+  restoreL1();
+  _travelContext=true;
+  _currentTravelRegion=regionId;
+  if(_itineraryViewId!==null)closeItineraryMapView();
+  localStorage.setItem('WT_REGION',regionId);
+  updateRegionPill(regionId);
+  hideRegionPage(null);
+  var z=window.innerWidth<768?zoom-1:zoom;
+  _currentRegionCenter=center;
+  _currentRegionZoom=z;
+  if(new URLSearchParams(window.location.search).get('region')){
+    history.replaceState(null,'',window.location.pathname+window.location.search);
+    window.addEventListener('popstate',function(){
+      window.location.href=document.referrer||'https://v2-dev--glittery-pudding-104d72.netlify.app/landing.html';
+    },{once:true});
+  }
+  if(_mapReady){
+    var sp=document.getElementById('splash');
+    sp.classList.remove('hide');sp.style.display='';
+    stopSplashRotation();startSplashRotation();
+    var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+    var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
+    map_o.flyTo({center:center,zoom:z,duration:800});
+    var _splashFallback=setTimeout(function(){stopSplashRotation();sp.classList.add('hide');},4000);
+    map_o.once('moveend',function(){
+      clearTimeout(_splashFallback);
+      setTimeout(function(){stopSplashRotation();sp.classList.add('hide');renderItdPill();},300);
+    });
+  }else{
+    var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
+    if(map_o)map_o.flyTo({center:center,zoom:z,duration:800});
+    renderItdPill();
+  }
+}
+var _regionDropdownOpen=false;
+function openRegionDropdown(){
+  var dd=document.getElementById('region-dropdown');
+  var list=document.getElementById('region-dropdown-list');
+  var countryLabel=document.getElementById('rdd-country-label');
+  var currentRegion=_travelContext?_currentTravelRegion:'lazio';
+  var countries={
+    'lazio':{label:'ITALIA',regions:[
+      {id:'lazio',name:'Lazio',active:true},
+      {id:'toscana',name:'Toscana',active:false},
+      {id:'campania',name:'Campania',active:false},
+      {id:'umbria',name:'Umbria',active:false},
+      {id:'abruzzo',name:'Abruzzo',active:false}
+    ]},
+    'cotswolds':{label:'REGNO UNITO',regions:[
+      {id:'cotswolds',name:'Cotswolds',active:true},
+      {id:'highlands',name:'Highlands',active:false}
+    ]},
+    'highlands':{label:'REGNO UNITO',regions:[
+      {id:'cotswolds',name:'Cotswolds',active:true},
+      {id:'highlands',name:'Highlands',active:false}
+    ]}
+  };
+  var country=countries[currentRegion]||countries['lazio'];
+  countryLabel.textContent=country.label;
+  list.innerHTML=country.regions.map(function(r){
+    var isCurrent=r.id===currentRegion;
+    if(r.active){
+      return '<div onclick="selectRegionFromDropdown(\''+r.id+'\')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;background:'+(isCurrent?'#fff3ed':'')+';transition:background .12s;">'
+        +'<div style="width:6px;height:6px;border-radius:50%;background:'+(isCurrent?'#dc6b2f':'var(--g200)')+';flex-shrink:0;"></div>'
+        +'<span style="font-size:.8rem;font-weight:'+(isCurrent?'600':'400')+';color:'+(isCurrent?'#dc6b2f':'var(--g600)')+';flex:1;">'+r.name+'</span>'
+        +(isCurrent?'<i class="ti ti-check" style="font-size:13px;color:#dc6b2f;"></i>':'')
+        +'</div>';
+    }else{
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;opacity:.5;">'
+        +'<i class="ti ti-lock" style="font-size:12px;color:var(--g400);"></i>'
+        +'<span style="font-size:.8rem;color:var(--g500);flex:1;">'+r.name+'</span>'
+        +'<span style="font-size:.68rem;color:var(--g400);">'+(lang==='en'?'Soon':'Presto')+'</span>'
+        +'</div>';
+    }
+  }).join('');
+  dd.style.display='block';
+  _regionDropdownOpen=true;
+}
+function closeRegionDropdown(){
+  document.getElementById('region-dropdown').style.display='none';
+  _regionDropdownOpen=false;
+}
+function selectRegionFromDropdown(regionId){
+  closeRegionDropdown();
+  var _dp=document.getElementById('detail-page');
+  if(_dp){_dp.classList.remove('show');_dp.classList.add('gone');}
+  var _itd=document.getElementById('itinerario-detail');
+  if(_itd){_itd.classList.remove('show');_itd.classList.add('gone');}
+  var _itp=document.getElementById('itinerari-page');
+  if(_itp){_itp.classList.remove('show');_itp.classList.add('gone');}
+  var _fp=document.getElementById('fav-page');
+  if(_fp&&_fp.classList.contains('show'))closeFavPage();
+  if(regionId==='lazio'){
+    _travelContext=false;
+    _currentTravelRegion=null;
+    selectRegion('lazio');
+  }else{
+    selectTravelRegion(regionId,getRegionCenter(regionId),getRegionZoom(regionId));
+  }
+}
+function getRegionCenter(regionId){
+  var centers={cotswolds:[-1.8,51.7],highlands:[-4.2,57.0]};
+  return centers[regionId]||[-1.8,51.7];
+}
+function getRegionZoom(regionId){
+  var zooms={cotswolds:9,highlands:8};
+  return zooms[regionId]||9;
 }
 function updateRegionPill(regionId){
   var names={lazio:'Lazio',toscana:'Toscana',campania:'Campania',umbria:'Umbria',abruzzo:'Abruzzo'};
@@ -3464,13 +3689,15 @@ function showRegionToast(){
 function updateRegionPageLang(){
   var lazioSub=document.getElementById('rp-lazio-sub');
   if(lazioSub){
-    var n=(DATA&&DATA.places)?DATA.places.length:0;
-    lazioSub.textContent=n+(lang==='en'?' places to discover':' luoghi da scoprire');
+    var n=(DATA&&DATA.places)?DATA.places.filter(function(p){return !p.region||p.region==='lazio'||p.region.indexOf('lazio')>=0;}).length:0;
+    var ni=(DATA&&DATA.experiences)?DATA.experiences.filter(function(e){return !e.isTravel;}).length:0;
+    lazioSub.textContent=n+(lang==='en'?' places':' luoghi')+(ni?' · '+ni+(lang==='en'?' itineraries':' itinerari'):'');
   }
-  var travelsSub=document.getElementById('rp-travels-sub');
-  if(travelsSub){
-    var nt=(DATA&&DATA.experiences)?DATA.experiences.filter(function(e){return e.isTravel;}).length:0;
-    travelsSub.textContent=nt+(lang==='en'?' itineraries abroad':' itinerari all\'estero');
+  var cotswoldsSub=document.getElementById('rp-cotswolds-sub');
+  if(cotswoldsSub){
+    var np=(DATA&&DATA.places)?DATA.places.filter(function(p){return p.region==='cotswolds';}).length:0;
+    var ni=(DATA&&DATA.experiences)?DATA.experiences.filter(function(e){return e.region==='cotswolds';}).length:0;
+    cotswoldsSub.textContent=np+(lang==='en'?' places':' luoghi')+(ni?' · '+ni+(lang==='en'?' itineraries':' itinerari'):'');
   }
 }
 
@@ -3483,7 +3710,12 @@ function setBottomNav(name){
 function goToMap(){
   document.getElementById('itinerari-page').classList.remove('show');
   var fp=document.getElementById('fav-page');if(fp)fp.classList.remove('show');
+  var pp=document.getElementById('profile-page');if(pp)pp.classList.remove('show');
   setBottomNav('mappa');
+}
+function openItinerariNav(){
+  if(_itineraryViewId!==null)closeItineraryMapView();
+  else openItinerariPage(_travelContext?_currentTravelRegion:null);
 }
 
 // ── ITINERARI ──
@@ -3501,11 +3733,15 @@ function loadEsperienze(){
                myMaps:r.my_maps_url||'',
                transport:r.transport||'',clothing:r.clothing||'',
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
-               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||''};
+               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',totalKm:r.total_km||'',totalDriveTime:r.total_drive_time||'',clothingEn:r.clothing_en||'',region:r.region?r.region.toLowerCase():''};
       });
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
       updateRegionPageLang();
+      setTimeout(function(){
+        loadRegionReviews('cotswolds','rp-cotswolds-reviews');
+        loadRegionReviews('lazio','rp-lazio-reviews');
+      },300);
       var _urlParams=new URLSearchParams(window.location.search);
       var _itinerarioId=_urlParams.get('itinerario');
       if(_itinerarioId){
@@ -3513,6 +3749,21 @@ function loadEsperienze(){
         if(_exp){
           if(_exp.isTravel){_travelContext=true;}
           openItinerario(parseInt(_itinerarioId));
+        }
+      } else {
+        var _regionParam=_urlParams.get('region');
+        if(_regionParam){
+          var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
+          var _sp=document.getElementById('splash');
+          if(_sp&&_mapReady){
+            _sp.classList.remove('hide');_sp.style.display='';
+            startSplashRotation();
+          }
+          var _rco2=document.getElementById('region-change-overlay');
+          if(!_rco2){_rco2=document.createElement('div');_rco2.id='region-change-overlay';_rco2.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco2);}
+          else{_rco2.style.display='block';}
+          if(_regionParam==='lazio'){selectRegion('lazio');}
+          else{selectTravelRegion(_regionParam,getRegionCenter(_regionParam),getRegionZoom(_regionParam));}
         }
       }
     })
@@ -3548,7 +3799,7 @@ function renderItdPill(){
   var wrap=document.getElementById('itd-pill-wrap');
   if(!wrap)return;
   if(!ITINERARI_LIVE){
-    if(level===2||mapMode==='city'){wrap.style.display='none';return;}
+    if(level===2){wrap.style.display='none';return;}
     wrap.style.display='';
     var btn=document.getElementById('itd-pill-btn');
     btn.classList.add('itd-cs');
@@ -3564,8 +3815,10 @@ function renderItdPill(){
     if(hint)hint.style.display='none';
     return;
   }
-  var featured=DATA.experiences.filter(function(e){return e.featured&&!e.isTravel;});
-  if(level===2||mapMode==='city'||!featured.length){
+  var featured=_travelContext
+    ?DATA.experiences.filter(function(e){return e.isTravel&&e.region===_currentTravelRegion;})
+    :DATA.experiences.filter(function(e){return e.featured&&!e.isTravel;});
+  if(level===2||!featured.length){
     wrap.style.display='none';
     return;
   }
@@ -3629,39 +3882,89 @@ function updateExpCarousel(){
   if(p)p.style.opacity=expCardIndex<=0?'.3':'1';
   if(n)n.style.opacity=expCardIndex>=max?'.3':'1';
 }
-function openItinerariPage(){
+function openItinerariPage(region){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
-  renderItinerariPage();
-  document.getElementById('itinerari-page').classList.add('show');
+  region=region||null;
+  renderItinerariPage(region);
+  var regionNames={cotswolds:'Cotswolds',highlands:'Highlands'};
+  var titleEl=document.getElementById('itp-title');
+  if(titleEl)titleEl.textContent=region&&regionNames[region]?regionNames[region]:(lang==='en'?'Itineraries':'Itinerari');
+  var page=document.getElementById('itinerari-page');
+  page.style.zIndex=region?'610':'';
+  page.classList.remove('gone');page.classList.add('show');
   setBottomNav('itinerari');
 }
 function closeItinerariPage(){
-  document.getElementById('itinerari-page').classList.remove('show');
+  var page=document.getElementById('itinerari-page');
+  page.classList.remove('show');
+  page.style.zIndex='';
   setBottomNav('mappa');
 }
-function renderItinerariPage(){
+async function renderItinerariPage(region){
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
-  var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
-  if(!lazioExp.length){
-    scroll.innerHTML='<div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div>';
-    return;
-  }
-  var cards=lazioExp.map(function(e){
-    var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
-    var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
-    var img=e.coverPhoto
-      ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
-      :'<div class="itp-card-img-ph">🗺</div>';
-    var _sc=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
-    var stops=_sc?'<span class="itp-stop-badge">'+_sc+' tappe</span>':'';
-    return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
-      +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
-      +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
-      +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+  var reviewsByExp={};
+  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles!user_id(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
+  if(region){
+    var travels=DATA.experiences.filter(function(e){return e.isTravel&&e.region===region;});
+    var activeHtml=travels.length?travels.map(function(e){
+
+      var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+      var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+      var _done=completedItineraries.has(e.id);
+      var _chkBg=_done?'#16a34a':'rgba(0,0,0,0.35)';
+      var _chkClr=_done?'#fff':'rgba(255,255,255,0.7)';
+      var _chk='<div onclick="event.stopPropagation();markItineraryDone('+e.id+');" id="itinerary-check-'+e.id+'" style="position:absolute;bottom:10px;right:10px;width:30px;height:30px;border-radius:50%;background:'+_chkBg+';display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><i class="ti ti-check" style="font-size:15px;color:'+_chkClr+';"></i></div>';
+      var img=e.coverPhoto
+        ?'<div style="position:relative;"><img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'+_chk+'</div>'
+        :'<div class="itp-card-img-ph" style="position:relative;">🌍'+_chk+'</div>';
+      var stopsCount=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
+      var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
+      return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
+        +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
+        +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
+        +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+        +'<div id="review-bar-'+e.id+'">'+_buildReviewBarFromData(e.id,reviewsByExp[e.id]||[])+'</div>'
+        +'</div></div>';
+    }).join(''):'';
+    var soonLabel=lang==='en'?'Coming soon':'In arrivo';
+    var soonBadge=lang==='en'?'Coming soon':'Prossimamente';
+    var fakeHtml='<div class="itp-card itp-card-locked">'
+      +'<div class="itp-card-img-ph itp-locked-ph"><i class="ti ti-lock" style="font-size:1.6rem;color:var(--g300);"></i></div>'
+      +'<div class="itp-card-body"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">'
+      +'<div class="itp-card-title" style="color:var(--g500);">'+(lang==='en'?'New itinerary':'Nuovo itinerario')+'</div>'
+      +'<span class="itp-soon-badge">'+soonBadge+'</span>'
+      +'</div>'
+      +'<div class="itp-card-dur">'+(lang==='en'?'Coming soon...':'In preparazione...')+'</div>'
       +'</div></div>';
-  }).join('');
-  scroll.innerHTML=cards;
+    scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
+  } else {
+    var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
+    if(!lazioExp.length){
+      scroll.innerHTML='<div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div>';
+      return;
+    }
+    var cards=lazioExp.map(function(e){
+      var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
+      var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+      var _done=completedItineraries.has(e.id);
+      var _chkBg=_done?'#16a34a':'rgba(0,0,0,0.35)';
+      var _chkClr=_done?'#fff':'rgba(255,255,255,0.7)';
+      var _chk='<div onclick="event.stopPropagation();markItineraryDone('+e.id+');" id="itinerary-check-'+e.id+'" style="position:absolute;bottom:10px;right:10px;width:30px;height:30px;border-radius:50%;background:'+_chkBg+';display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><i class="ti ti-check" style="font-size:15px;color:'+_chkClr+';"></i></div>';
+      var img=e.coverPhoto
+        ?'<div style="position:relative;"><img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'+_chk+'</div>'
+        :'<div class="itp-card-img-ph" style="position:relative;">🗺'+_chk+'</div>';
+      var _sc=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
+      var stops=_sc?'<span class="itp-stop-badge">'+_sc+' tappe</span>':'';
+      return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
+        +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
+        +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
+        +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+        +'<div id="review-bar-'+e.id+'">'+_buildReviewBarFromData(e.id,reviewsByExp[e.id]||[])+'</div>'
+        +'</div></div>';
+    }).join('');
+    scroll.innerHTML=cards;
+  }
 }
 function openItinerario(id){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
@@ -3678,29 +3981,35 @@ function openItinerario(id){
   renderExpandableText(desc||'','itd-desc',280);
   var infoEl=document.getElementById('itd-info-utili');
   var _notesText=lang==='en'?(e.notesEn||e.notes):e.notes;
+  var _clothingText=lang==='en'?(e.clothingEn||e.clothing):e.clothing;
   var _TRANSPORT_EN={'Auto':'Car','Treno':'Train','Aereo':'Plane','Bus':'Bus','Misto':'Mixed','A piedi':'On foot'};
   var _transportDisplay=e.transport?(lang==='en'?(_TRANSPORT_EN[e.transport]||e.transport):e.transport):'';
   var _climateText=lang==='en'?(e.climateEn||e.climate):e.climate;
-  var hasInfo=_transportDisplay||(e.clothing)||(e.seasons&&e.seasons.length)||(e.tripTypes&&e.tripTypes.length)||(e.budget)||e.intensity||_climateText||_notesText;
+  var hasInfo=_transportDisplay||(e.clothing)||(e.seasons&&e.seasons.length)||(e.tripTypes&&e.tripTypes.length)||(e.budget)||e.intensity||_climateText||_notesText||e.totalKm||e.totalDriveTime;
   if(hasInfo){
     var _SEASON_ICON={'Primavera':'🌸','Estate':'☀️','Autunno':'🍂','Inverno':'❄️'};
-    var infoHtml='<div class="itd-info-utili">';
-    if(_transportDisplay) infoHtml+='<div class="itd-info-row"><i class="ti ti-car"></i><span><span class="itd-info-badge">'+_transportDisplay+'</span></span></div>';
+    var _INTENSITY_LABEL={'rilassato':lang==='en'?'Easy':'Rilassato','moderato':lang==='en'?'Moderate':'Moderato','intenso':lang==='en'?'Intense':'Intenso'};
+    var _INTENSITY_BARS={
+      'rilassato':'<div style="display:flex;align-items:flex-end;gap:3px;height:14px;flex-shrink:0;"><div style="width:5px;height:60%;background:#16a34a;border-radius:2px;"></div><div style="width:5px;height:80%;background:var(--g200);border-radius:2px;"></div><div style="width:5px;height:100%;background:var(--g200);border-radius:2px;"></div></div>',
+      'moderato':'<div style="display:flex;align-items:flex-end;gap:3px;height:14px;flex-shrink:0;"><div style="width:5px;height:60%;background:#f59e0b;border-radius:2px;"></div><div style="width:5px;height:80%;background:#f59e0b;border-radius:2px;"></div><div style="width:5px;height:100%;background:var(--g200);border-radius:2px;"></div></div>',
+      'intenso':'<div style="display:flex;align-items:flex-end;gap:3px;height:14px;flex-shrink:0;"><div style="width:5px;height:60%;background:#dc6b2f;border-radius:2px;"></div><div style="width:5px;height:80%;background:#dc6b2f;border-radius:2px;"></div><div style="width:5px;height:100%;background:#dc6b2f;border-radius:2px;"></div></div>'
+    };
+    // campi sempre visibili
+    var _always='';
+    if(_transportDisplay) _always+='<div class="itd-info-row"><i class="ti ti-car"></i><span><span class="itd-info-badge">'+_transportDisplay+'</span></span></div>';
     if(e.intensity){
-      var _INTENSITY_LABEL={'rilassato':lang==='en'?'Easy':'Rilassato','moderato':lang==='en'?'Moderate':'Moderato','intenso':lang==='en'?'Intense':'Intenso'};
-      var _INTENSITY_BARS={
-        'rilassato':'<div style="display:flex;align-items:flex-end;gap:3px;height:18px;"><div style="width:6px;height:60%;background:#16a34a;border-radius:2px;"></div><div style="width:6px;height:80%;background:var(--g200);border-radius:2px;"></div><div style="width:6px;height:100%;background:var(--g200);border-radius:2px;"></div></div>',
-        'moderato':'<div style="display:flex;align-items:flex-end;gap:3px;height:18px;"><div style="width:6px;height:60%;background:#f59e0b;border-radius:2px;"></div><div style="width:6px;height:80%;background:#f59e0b;border-radius:2px;"></div><div style="width:6px;height:100%;background:var(--g200);border-radius:2px;"></div></div>',
-        'intenso':'<div style="display:flex;align-items:flex-end;gap:3px;height:18px;"><div style="width:6px;height:60%;background:#dc6b2f;border-radius:2px;"></div><div style="width:6px;height:80%;background:#dc6b2f;border-radius:2px;"></div><div style="width:6px;height:100%;background:#dc6b2f;border-radius:2px;"></div></div>'
-      };
       var _intLabel=_INTENSITY_LABEL[e.intensity]||e.intensity;
       var _intBars=_INTENSITY_BARS[e.intensity]||'';
-      infoHtml+='<div class="itd-info-row"><i class="ti ti-activity"></i><span><span class="itd-info-badge" style="display:inline-flex;align-items:center;gap:6px;">'+_intBars+_intLabel+'</span></span></div>';
+      _always+='<div class="itd-info-row"><i class="ti ti-activity"></i><span><span class="itd-info-badge" style="display:inline-flex;align-items:center;gap:6px;">'+_intBars+_intLabel+'</span></span></div>';
     }
-    if(e.clothing) infoHtml+='<div class="itd-info-row"><i class="ti ti-shirt"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.clothing+'</span></span></div>';
-    if(e.seasons&&e.seasons.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+e.seasons.map(function(s){return'<span class="itd-info-badge">'+(_SEASON_ICON[s]||'')+' '+s+'</span>';}).join('')+'</span></div>';
-    if(e.tripTypes&&e.tripTypes.length) infoHtml+='<div class="itd-info-row"><i class="ti ti-map"></i><span>'+e.tripTypes.map(function(t){return'<span class="itd-info-badge">'+t+'</span>';}).join('')+'</span></div>';
-    if(e.budget) infoHtml+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.budget+'</span></span></div>';
+    if(e.seasons&&e.seasons.length) _always+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+e.seasons.map(function(s){return'<span class="itd-info-badge">'+(_SEASON_ICON[s]||'')+' '+s+'</span>';}).join('')+'</span></div>';
+    if(e.tripTypes&&e.tripTypes.length) _always+='<div class="itd-info-row"><i class="ti ti-map"></i><span>'+e.tripTypes.map(function(tt){return'<span class="itd-info-badge">'+tt+'</span>';}).join('')+'</span></div>';
+    // campi extra (nascosti di default)
+    var _extra='';
+    if(_clothingText) _extra+='<div class="itd-info-row"><i class="ti ti-shirt"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+_clothingText+'</span></span></div>';
+    if(e.budget) _extra+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.budget+'</span></span></div>';
+    if(e.totalKm) _extra+='<div class="itd-info-row"><i class="ti ti-road"></i><span><span class="itd-info-badge">'+e.totalKm+' km</span><span style="font-size:.72rem;color:var(--g400);margin-left:6px;">'+(lang==='en'?'Total km':'Totale km')+'</span></span></div>';
+    if(e.totalDriveTime) _extra+='<div class="itd-info-row"><i class="ti ti-steering-wheel"></i><span><span class="itd-info-badge">'+e.totalDriveTime+'</span><span style="font-size:.72rem;color:var(--g400);margin-left:6px;">'+(lang==='en'?'Total drive time':'Totale ore guida')+'</span></span></div>';
     if(_climateText){
       var _climateLines=_climateText.split('\n').filter(function(l){return l.trim();});
       var _climateHtml=_climateLines.map(function(l){
@@ -3713,10 +4022,16 @@ function openItinerario(id){
           :'<span style="color:#dc6b2f;font-size:.7rem;">•</span>';
         return'<div style="display:flex;align-items:baseline;gap:5px;font-size:.78rem;color:var(--g500);line-height:1.4;">'+bullet+' '+t+'</div>';
       }).join('');
-      infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-cloud" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Climate':'Clima')+'</span><div style="display:flex;flex-direction:column;gap:4px;">'+_climateHtml+'</div></span></div>';
+      _extra+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-cloud" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Climate':'Clima')+'</span><div style="display:flex;flex-direction:column;gap:4px;">'+_climateHtml+'</div></span></div>';
     }
-    if(_notesText) infoHtml+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:400;color:var(--g500);"></div></span></div>';
-    infoHtml+='</div>';
+    if(_notesText) _extra+='<div class="itd-info-row" style="align-items:flex-start;"><i class="ti ti-info-circle" style="margin-top:2px;"></i><span style="display:block;flex:1;background:var(--g100);border:0.5px solid var(--g200);border-radius:8px;padding:6px 10px;"><span style="display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px;">'+(lang==='en'?'Good to know':'Da sapere')+'</span><div id="itd-notes-el" style="font-size:.82rem;font-weight:400;color:var(--g500);"></div></span></div>';
+    var _toggleBtn=_extra?'<div onclick="toggleInfoUtili()" id="itd-info-toggle" style="margin-top:8px;text-align:center;cursor:pointer;"><span id="itd-info-toggle-label" style="font-size:.8rem;color:#dc6b2f;font-weight:500;">'+(lang==='en'?'See all ↓':'Vedi tutto ↓')+'</span></div>':'';
+    var infoHtml='<div class="itd-info-utili">'
+      +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;"><i class="ti ti-info-circle" style="font-size:16px;color:#dc6b2f;"></i><span style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);">'+(lang==='en'?t('itd_info_title'):'Info utili')+'</span></div>'
+      +_always
+      +(_extra?'<div id="itd-info-extra" style="display:none;flex-direction:column;gap:6px;">'+_extra+'</div>':'')
+      +_toggleBtn
+      +'</div>';
     infoEl.innerHTML=infoHtml;
     if(_notesText) renderExpandableText(_notesText,'itd-notes-el',120);
   }else{
@@ -3906,11 +4221,11 @@ function openItinerario(id){
   } else {
     _mapWrap.style.display='none';
   }
-  var _btnStyle='flex:1;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
+  var _btnStyle='flex:1;padding:9px 12px;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
   var _eid2=e.id;
-  var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:var(--g100);color:var(--g900);">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
+  var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:#dc6b2f;color:#fff;border:none;">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
   if(_itdMapCoords.length>=2){
-    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:#dc6b2f;color:#fff;">'+(lang==='en'?'Open route':'Apri percorso')+'</button>';
+    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:var(--g100);color:var(--g900);border:none;">'+(lang==='en'?'Open in Google Maps':'Apri su Google Maps')+'</button>';
   }
 
   _btnsEl.innerHTML=_btnsHtml;
@@ -3949,9 +4264,268 @@ function openItinerario(id){
         }
       });
     }).catch(function(){_svcEl.innerHTML='';});
-  document.getElementById('itinerario-detail').style.zIndex=_travelContext?'620':'510';
-  document.getElementById('itinerario-detail').classList.add('show');
+  var _suggestedEl=document.getElementById('itd-suggested');
+  var _suggestedList=document.getElementById('itd-suggested-list');
+  var _suggestedLabel=document.getElementById('itd-suggested-label');
+  if(_suggestedEl&&_suggestedList){
+    var _usedIds=(e.stops||[]).map(function(s){return s.id;});
+    var _suggested=(DATA.places||[]).filter(function(p){
+      return p.region&&e.region&&p.region.toLowerCase()===e.region.toLowerCase()&&!_usedIds.includes(p.id);
+    }).slice(0,6);
+    if(_suggested.length){
+      if(_suggestedLabel) _suggestedLabel.textContent=lang==='en'?'YOU MIGHT ALSO VISIT':'POTRESTI ANCHE VISITARE';
+      _suggestedList.innerHTML=_suggested.map(function(p){
+        var _pName=(lang==='en'&&p.nameEn)?p.nameEn:p.name;
+        var _pType=p.catName||p.type||'';
+        var _thumb=p.coverPhoto
+          ?'<img src="'+p.coverPhoto+'" style="width:130px;height:90px;border-radius:10px;object-fit:cover;display:block;">'
+          :'<div style="width:130px;height:90px;border-radius:10px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📍</div>';
+        return '<div onclick="openStopFromItinerario(\'place\','+p.id+')" style="width:130px;flex-shrink:0;cursor:pointer;">'
+          +_thumb
+          +'<div style="font-size:.78rem;font-weight:500;color:var(--g900);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+_pName+'</div>'
+          +(_pType?'<div style="font-size:.72rem;color:var(--g400);">'+_pType+'</div>':'')
+          +'</div>';
+      }).join('');
+      _suggestedEl.style.display='';
+    } else {
+      _suggestedEl.style.display='none';
+    }
+  }
+  var _revEl=document.getElementById('itd-reviews');
+  if(_revEl){
+    var _revs=_reviewsCache[e.id];
+    if(_revs&&_revs.length){
+      var _avg=Math.round(_revs.reduce(function(s,r){return s+r.rating;},0)/_revs.length*10)/10;
+      var _revHtml='<div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:10px;display:flex;align-items:center;gap:6px;">'
+        +'<i class="ti ti-star" style="font-size:14px;color:#f59e0b;"></i>'+(lang==='en'?'REVIEWS':'RECENSIONI')+'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
+        +'<span style="font-size:1.4rem;font-weight:700;">'+_avg+'</span>'
+        +'<div><div style="display:flex;gap:2px;">'
+        +[1,2,3,4,5].map(function(s){return'<i class="ti ti-star'+(s<=Math.round(_avg)?'':'-filled')+'" style="font-size:13px;color:'+(s<=Math.round(_avg)?'#f59e0b':'var(--g200)')+'"></i>';}).join('')
+        +'</div><span style="font-size:.75rem;color:var(--g400);">'+_revs.length+' '+(lang==='en'?'reviews':'recensioni')+'</span></div></div>';
+      _revs.slice(0,2).forEach(function(r){
+        var fullName=(r.profiles&&r.profiles.full_name)||'';
+        var parts=fullName.trim().split(' ');
+        var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0]||'?';
+        var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+        var color=_REVIEW_COLORS[_revs.indexOf(r)%_REVIEW_COLORS.length];
+        var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
+        var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
+        var avatarHtml=r.profiles&&r.profiles.avatar_url
+          ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:22px;height:22px;object-fit:cover;border-radius:50%;">'
+          :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
+        _revHtml+='<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);margin-bottom:8px;">'
+          +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+          +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'
+          +avatarHtml+'</div>'
+          +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+displayName+'</p><div style="display:flex;gap:2px;">'+stars+'</div></div>'
+          +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
+          +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
+          +'</div>';
+      });
+      if(_revs.length>2){
+        _revHtml+='<div onclick="openReviewsPopup('+e.id+')" style="text-align:center;padding:8px;cursor:pointer;">'
+          +'<span style="font-size:.8rem;color:#dc6b2f;font-weight:500;">'+(lang==='en'?'See all reviews':'Vedi tutte le recensioni')+' →</span></div>';
+      }
+      if(_currentUser){
+        var _myRev=_revs.find(function(r){return r.user_id===_currentUser.id;});
+        _revHtml+='<div onclick="openWriteReview('+e.id+')" style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:6px;">'
+          +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
+          +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?(_myRev?'Edit your review':'Leave a review'):(_myRev?'Modifica la tua recensione':'Lascia una recensione'))+'</span></div>';
+      }
+      _revEl.innerHTML=_revHtml;
+      _revEl.style.display='';
+    } else {
+      if(_currentUser){
+        _revEl.innerHTML='<div onclick="openWriteReview('+e.id+')" style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;">'
+          +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
+          +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
+        _revEl.style.display='';
+      } else {
+        _revEl.style.display='none';
+      }
+    }
+  }
+  var _itdEl=document.getElementById('itinerario-detail');_itdEl.style.zIndex=_travelContext?'620':'510';_itdEl.classList.remove('gone');_itdEl.classList.add('show');
   updateItdBookmarkBtn();
+}
+async function openReviewsPopup(expId){
+  _currentReviewsExpId=expId;
+  var popup=document.getElementById('reviews-popup');
+  popup.style.display='flex';
+  var list=document.getElementById('reviews-popup-list');
+  // Handle region aggregate popup
+  if(typeof expId==='string'&&expId.startsWith('region_')){
+    var regionId=expId.replace('region_','');
+    var regionNames={cotswolds:'Cotswolds',highlands:'Highlands',lazio:'Lazio'};
+    document.getElementById('reviews-popup-title').textContent=regionNames[regionId]||(regionId.charAt(0).toUpperCase()+regionId.slice(1));
+    list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">Caricamento...</p>';
+    var ids=(DATA.experiences||[]).filter(function(e){
+      if(regionId==='lazio')return!e.isTravel;
+      return e.region===regionId;
+    }).map(function(e){return e.id;});
+    var rRevs=[];
+    if(ids.length){
+      var rRes=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)').in('experience_id',ids).order('created_at',{ascending:false});
+      rRevs=rRes.data||[];
+    }
+    if(!rRevs.length){
+      list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">'+(lang==='en'?'No reviews yet':'Nessuna recensione ancora')+'</p>';
+      document.getElementById('reviews-popup-rating').textContent='';
+      document.getElementById('reviews-popup-count').textContent='';
+    }else{
+      var rAvg=Math.round(rRevs.reduce(function(s,r){return s+r.rating;},0)/rRevs.length*10)/10;
+      document.getElementById('reviews-popup-rating').textContent=rAvg;
+      document.getElementById('reviews-popup-count').textContent='('+rRevs.length+' '+(lang==='en'?'reviews':'recensioni')+')';
+      list.innerHTML=rRevs.map(function(r,i){
+        var fullName=(r.profiles&&r.profiles.full_name)||'';
+        var parts=fullName.trim().split(' ');
+        var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0]||'?';
+        var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+        var color=_REVIEW_COLORS[i%_REVIEW_COLORS.length];
+        var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
+        var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
+        var avatarContent=r.profiles&&r.profiles.avatar_url
+          ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+          :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
+        return'<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);">'
+          +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+          +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'
+          +avatarContent+'</div>'
+          +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+displayName+'</p>'
+          +'<div style="display:flex;gap:2px;margin-top:1px;">'+stars+'</div></div>'
+          +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
+          +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
+          +'</div>';
+      }).join('');
+    }
+    document.getElementById('reviews-popup-cta').innerHTML='';
+    return;
+  }
+  var e=(DATA.experiences||[]).find(function(x){return x.id===expId;});
+  document.getElementById('reviews-popup-title').textContent=e?(lang==='en'?e.titleEn||e.titleIt:e.titleIt):'Recensioni';
+  list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">Caricamento...</p>';
+  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)').eq('experience_id',expId).order('created_at',{ascending:false});
+  var reviews=res.data||[];
+  if(!reviews.length){
+    list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">'+(lang==='en'?'No reviews yet':'Nessuna recensione ancora')+'</p>';
+    document.getElementById('reviews-popup-rating').textContent='';
+    document.getElementById('reviews-popup-count').textContent='';
+  } else {
+    var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+    document.getElementById('reviews-popup-rating').textContent=avg;
+    document.getElementById('reviews-popup-count').textContent='('+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+')';
+    list.innerHTML=reviews.map(function(r,i){
+      var fullName=(r.profiles&&r.profiles.full_name)||'';
+      var parts=fullName.trim().split(' ');
+      var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0]||'?';
+      var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+      var color=_REVIEW_COLORS[i%_REVIEW_COLORS.length];
+      var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
+      var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
+      var avatarContent=r.profiles&&r.profiles.avatar_url
+        ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+        :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
+      return'<div style="padding:10px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+        +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'
+        +avatarContent+'</div>'
+        +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+displayName+'</p>'
+        +'<div style="display:flex;gap:2px;margin-top:1px;">'+stars+'</div></div>'
+        +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
+        +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
+        +'</div>';
+    }).join('');
+  }
+  // refresh cache
+  _reviewsCache[expId]=reviews;
+  var cta=document.getElementById('reviews-popup-cta');
+  if(_currentUser){
+    var myRev=reviews.find(function(r){return r.user_id===_currentUser.id;});
+    if(myRev){
+      cta.innerHTML='<div style="display:flex;gap:8px;">'
+        +'<div onclick="openWriteReview('+expId+')" style="flex:1;padding:8px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);text-align:center;cursor:pointer;">'
+        +'<span style="font-size:12px;color:var(--g500);">'+(lang==='en'?'Edit':'Modifica')+'</span></div>'
+        +'<div onclick="deleteReview('+myRev.id+','+expId+')" style="flex:1;padding:8px;background:#fef2f2;border-radius:8px;border:0.5px solid #fecaca;text-align:center;cursor:pointer;">'
+        +'<span style="font-size:12px;color:#dc2626;">'+(lang==='en'?'Delete':'Elimina')+'</span></div>'
+        +'</div>';
+    } else {
+      cta.innerHTML='<div style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;" onclick="openWriteReview('+expId+')">'
+        +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
+        +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
+    }
+  } else {
+    cta.innerHTML='<div style="padding:8px;background:var(--g50);border-radius:8px;border:0.5px solid var(--g100);text-align:center;cursor:pointer;" onclick="openAuthPage()">'
+      +'<span style="font-size:.8rem;color:#dc6b2f;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</span></div>';
+  }
+}
+function closeReviewsPopup(){
+  document.getElementById('reviews-popup').style.display='none';
+  _currentReviewsExpId=null;
+}
+async function deleteReview(reviewId,expId){
+  if(!confirm(lang==='en'?'Delete your review?':'Eliminare la tua recensione?'))return;
+  var res=await _supaAuth.from('itinerary_reviews').delete().eq('id',reviewId).eq('user_id',_currentUser.id);
+  if(res.error){toast(lang==='en'?'Error deleting review':'Errore durante l\'eliminazione');return;}
+  toast(lang==='en'?'Review deleted':'Recensione eliminata');
+  openReviewsPopup(expId);
+  if(document.getElementById('itinerari-page').classList.contains('show')){
+    renderItinerariPage(_currentTravelRegion||undefined);
+  }
+}
+function openWriteReview(expId){
+  _writeReviewExpId=expId;
+  _writeReviewRating=0;
+  document.getElementById('write-review-title').textContent=lang==='en'?'Leave a review':'Lascia una recensione';
+  document.getElementById('write-review-btn').textContent=lang==='en'?'Publish':'Pubblica';
+  document.getElementById('write-review-text').value='';
+  document.getElementById('write-review-error').style.display='none';
+  renderWriteReviewStars(0);
+  document.getElementById('write-review-popup').style.display='flex';
+}
+function closeWriteReview(){
+  document.getElementById('write-review-popup').style.display='none';
+}
+function renderWriteReviewStars(selected){
+  var container=document.getElementById('write-review-stars');
+  container.innerHTML='';
+  for(var s=1;s<=5;s++){
+    var star=document.createElement('i');
+    star.className='ti ti-star';
+    star.style.cssText='font-size:28px;cursor:pointer;color:'+(s<=selected?'#f59e0b':'var(--g200)')+';';
+    star.dataset.val=s;
+    star.onclick=(function(val){return function(){_writeReviewRating=val;renderWriteReviewStars(val);};})(s);
+    container.appendChild(star);
+  }
+}
+async function submitReview(){
+  var text=document.getElementById('write-review-text').value.trim();
+  var errEl=document.getElementById('write-review-error');
+  errEl.style.display='none';
+  if(_writeReviewRating===0){errEl.textContent=lang==='en'?'Select a rating':'Seleziona un voto';errEl.style.display='block';return;}
+  if(!text){errEl.textContent=lang==='en'?'Write your review':'Scrivi la tua recensione';errEl.style.display='block';return;}
+  var {data:existing,error:existingError}=await _supaAuth.from('itinerary_reviews').select('id').eq('user_id',_currentUser.id).eq('experience_id',_writeReviewExpId).maybeSingle();
+  var error;
+  if(existing){
+    var res=await _supaAuth.from('itinerary_reviews').update({rating:_writeReviewRating,text:text}).eq('id',existing.id);
+    error=res.error;
+  }else{
+    var res=await _supaAuth.from('itinerary_reviews').insert({user_id:_currentUser.id,experience_id:_writeReviewExpId,rating:_writeReviewRating,text:text});
+    error=res.error;
+  }
+  if(error){errEl.textContent=error.message;errEl.style.display='block';return;}
+  closeWriteReview();
+  toast(lang==='en'?'Review published!':'Recensione pubblicata!');
+  await openReviewsPopup(_writeReviewExpId);
+  _updateReviewBar(_writeReviewExpId);
+}
+function toggleInfoUtili(){
+  var extra=document.getElementById('itd-info-extra');
+  var label=document.getElementById('itd-info-toggle-label');
+  if(!extra||!label)return;
+  var isOpen=extra.style.display!=='none';
+  extra.style.display=isOpen?'none':'flex';
+  label.textContent=isOpen?(lang==='en'?'See all ↓':'Vedi tutto ↓'):(lang==='en'?'See less ↑':'Vedi meno ↑');
 }
 function openTravelSvc(url){
   if(!url)return;
@@ -3967,8 +4541,14 @@ function toggleSvcDesc(btn){
 function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').style.zIndex='510';
   document.getElementById('itinerario-detail').classList.remove('show');
+  if(_travelContext){
+    window.addEventListener('popstate',function(){
+      window.location.href=document.referrer||'https://v2-dev--glittery-pudding-104d72.netlify.app/landing.html';
+    },{once:true});
+  }
 }
 function openItinerarioPDF(){
+  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to download itineraries':'Accedi per scaricare gli itinerari',function(){openItinerarioPDF();});return;}
   var e=_currentItdExp;
   if(!e)return;
   var isEN=lang==='en';
@@ -4110,17 +4690,33 @@ function openItinerarioPDF(){
     +infoHtml+stopsHtml
     +'<div class="pdf-footer">wayterra.it · '+(isEN?'Links open Google Maps':'I link aprono Google Maps')+'</div>'
     +'</body></html>';
-  var win=window.open('','_blank');
-  if(!win)return;
-  win.document.write(html);
-  win.document.close();
-  setTimeout(function(){win.print();},500);
+  var blob=new Blob([html],{type:'text/html'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.target='_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+  if(_currentUser&&_supaAuth){
+    var _dlExpId=e.id;
+    _supaAuth.from('user_downloaded_itineraries').insert({user_id:_currentUser.id,experience_id:_dlExpId}).then(function(){
+      downloadedSet.set(_dlExpId,new Date().toISOString());
+      var _pp=document.getElementById('profile-page');
+      if(_pp&&_pp.classList.contains('show'))renderProfileSaved();
+    });
+  }
 }
 function openItinerarioDetail(id){openItinerario(id);}
 
 var _travelContext=false;
 var _currentItdExp=null;
 var _itineraryViewId=null,_itineraryViewFromTravel=false,_itinTempMarkers=[],_itineraryViewFromDetail=false;
+var _currentTravelRegion=null;
+var _currentRegionCenter=[12.8,41.8];
+var _currentRegionZoom=8;
+var _mapReady=false;
 
 function openItineraryMapView(id,fromDetail){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
@@ -4290,7 +4886,7 @@ function openItinMapPopup(id){
   var hasTravelTimes=!!(e.stops||[]).some(function(s){return !!s.travel_time;});
   var footerHtml='';
   if(_itdMapCoords.length>=2){
-    footerHtml='<button onclick="closeMapPopup();openItinerarioGMaps(_itdMapCoords)" style="'+_btnSt+'background:#dc6b2f;color:#fff;">'+(lang==='en'?'Open route':'Apri percorso')+'</button>';
+    footerHtml='<button onclick="closeMapPopup();openItinerarioGMaps(_itdMapCoords)" style="'+_btnSt+'background:#dc6b2f;color:#fff;">'+(lang==='en'?'Open in Google Maps':'Apri su Google Maps')+'</button>';
   }
   if(hasTravelTimes){
     footerHtml+='<button onclick="openMapPopupTimes()" style="'+_btnSt+'background:var(--g100);color:var(--g900);">'+(lang==='en'?'Travel times':'Tempi tappe')+'</button>';
@@ -4396,14 +4992,10 @@ function closeMapPopupTimes(){
 function openPlaceActsPopup(p){
   if(!p)return;
   openMapPopup(p.name,'',function(mp){
-    var _PMETA={'1':{col:'#16a34a',ic:'ti-tools-kitchen-2'},'2':{col:'#dc6b2f',ic:'ti-route'},'3':{col:'#dc6b2f',ic:'ti-camera'},'4':{col:'#2563eb',ic:'ti-bed'},'5':{col:'#dc6b2f',ic:'ti-star'},'9':{col:'#888',ic:'ti-parking'},'11':{col:'#888',ic:'ti-plane-departure'}};
     var actsWithCoords=(p.activities||[]).filter(function(a){return a.lat&&a.lng;});
     var b=new mapboxgl.LngLatBounds();
     actsWithCoords.forEach(function(a){
-      var _pm=_PMETA[String(a.experienceTypeId)]||{col:'#dc6b2f',ic:'ti-map-pin'};
-      var el=document.createElement('div');
-      el.style.cssText='width:28px;height:28px;border-radius:50%;background:'+_pm.col+';display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);cursor:pointer;';
-      el.innerHTML='<i class="ti '+_pm.ic+'" style="font-size:13px;color:white;"></i>';
+      var el=_mkActPinEl(a);
       el.addEventListener('click',function(ev){
         ev.stopPropagation();
         if(window.innerWidth>=768){document.getElementById('act-map-popup').style.zIndex='750';showActBubble(a,[a.lat,a.lng]);}
@@ -4415,43 +5007,50 @@ function openPlaceActsPopup(p){
     if(!b.isEmpty())mp.fitBounds(b,{padding:60,maxZoom:14,duration:700});
   });
 }
-function openTravelsPage(){
-  renderTravelsPage();
-  _travelContext=true;
-  document.getElementById('travels-page').classList.add('show');
+function openTravelsPage(region){
+  openItinerariPage(region||_currentTravelRegion);
 }
 function closeTravelsPage(){
-  _travelContext=false;
-  document.getElementById('travels-page').classList.remove('show');
+  closeItinerariPage();
 }
-function renderTravelsPage(){
+async function renderTravelsPage(){
   var scroll=document.getElementById('trv-scroll');
   if(!scroll)return;
-  var travels=DATA.experiences.filter(function(e){return e.isTravel;});
+  var reviewsByExp={};
+  try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles!user_id(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
+  var travels=DATA.experiences.filter(function(e){
+    return e.isTravel&&(_currentTravelRegion?e.region===_currentTravelRegion:true);
+  });
   var activeHtml=travels.length?travels.map(function(e){
     var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
     var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
+    var _done=completedItineraries.has(e.id);
+    var _chkBg=_done?'#16a34a':'rgba(0,0,0,0.35)';
+    var _chkClr=_done?'#fff':'rgba(255,255,255,0.7)';
+    var _chk='<div onclick="event.stopPropagation();markItineraryDone('+e.id+');" id="itinerary-check-'+e.id+'" style="position:absolute;bottom:10px;right:10px;width:30px;height:30px;border-radius:50%;background:'+_chkBg+';display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><i class="ti ti-check" style="font-size:15px;color:'+_chkClr+';"></i></div>';
     var img=e.coverPhoto
-      ?'<img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'
-      :'<div class="itp-card-img-ph">🌍</div>';
+      ?'<div style="position:relative;"><img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'+_chk+'</div>'
+      :'<div class="itp-card-img-ph" style="position:relative;">🌍'+_chk+'</div>';
     var stopsCount=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
     var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
     return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
       +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
       +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
       +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
+      +'<div id="review-bar-'+e.id+'">'+_buildReviewBarFromData(e.id,reviewsByExp[e.id]||[])+'</div>'
       +'</div></div>';
   }).join(''):'';
   var soonLabel=lang==='en'?'Coming soon':'In arrivo';
   var soonBadge=lang==='en'?'Coming soon':'Prossimamente';
-  var fakes=[
+  var fakes=_currentTravelRegion?[
+    {title:lang==='en'?'New itinerary':'Nuovo itinerario',region:lang==='en'?'Coming soon...':'In preparazione...',img:null}
+  ]:[
     {title:'1 settimana tra le Highlands',region:'Scozia',img:'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/highlands.jpg'},
     {title:'6 giorni nella Romantische Straße',region:'Germania',img:'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/romantic.jpg'},
     {title:lang==='en'?'New itinerary':'Nuovo itinerario',region:lang==='en'?'Coming soon...':'In preparazione...',img:null}
   ];
   var fakeHtml=fakes.map(function(f){
     if(f.img){
-      // card con immagine: tutto il contenuto dentro l'overlay sull'immagine (body bianco non usato)
       return '<div class="itp-card itp-card-locked">'
         +'<div style="position:relative;height:160px;background-image:url(\''+f.img+'\');background-size:cover;background-position:center;">'
         +'<div style="position:absolute;inset:0;background:rgba(0,0,0,.5);"></div>'
@@ -4581,23 +5180,38 @@ function bootApp(d){
   var savedRegion=localStorage.getItem('WT_REGION');
   if(savedRegion)updateRegionPill(savedRegion);
   loadEsperienze();
+  loadAllReviews();
   stopSplashRotation();
   document.getElementById('splash').classList.add('hide');
   document.getElementById('splash').style.display='none';
-  showRegionPage();
+  var _urlParamsB=new URLSearchParams(window.location.search);
+  var _accessParam=_urlParamsB.get('access');
+  if(_accessParam==='lazio'){
+    setTimeout(function(){
+      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+      showRegionPage();
+      openAccessRequestModal();
+    },100);
+  } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
+    window.location.href='/landing.html';
+    return;
+  }
+  checkAuthSession();
 }
 
 function startSplashRotation(){
   var el=document.getElementById('sp-sub');
   if(!el)return;
-  _splashIdx=Math.floor(Math.random()*4);
   var l=localStorage.getItem(K.LANG)||'it';
+  var _splashLen=splashPhrases[l].length;
+  _splashIdx=Math.floor(Math.random()*_splashLen);
   el.textContent=splashPhrases[l][_splashIdx];
   _splashIv=setInterval(function(){
     var l2=lang||localStorage.getItem(K.LANG)||'it';
+    var _len=splashPhrases[l2].length;
     el.style.opacity='0';
     setTimeout(function(){
-      _splashIdx=(_splashIdx+1)%4;
+      _splashIdx=(_splashIdx+1)%_len;
       el.textContent=splashPhrases[l2][_splashIdx];
       el.style.opacity='1';
     },400);
@@ -4659,7 +5273,7 @@ window.addEventListener('DOMContentLoaded',function(){
       return{
         id:row.id,cat:row.cat,placeTypeId:row.place_types_id||null,
         mode:row.mode||'outside',city:row.city||'',
-        name:row.name,region:row.region||'',
+        name:row.name,region:row.region?row.region.toLowerCase():'',
         lat:row.lat,lng:row.lng,
         tagline:row.tagline||'',taglineEn:row.tagline_en||'',
         desc:row.description||'',descEn:row.description_en||'',
@@ -4674,7 +5288,7 @@ window.addEventListener('DOMContentLoaded',function(){
 
     var cityActivities_=(actRows||[]).filter(function(a){return a.place_id===null||a.place_id===undefined;}).map(function(a){
       return{id:a.id,type:a.type,name:a.name,lat:a.lat||null,lng:a.lng||null,
-             region:a.region||'',premium:a.premium||false,
+             region:a.region?a.region.toLowerCase():'',premium:a.premium||false,
              desc:a.description||'',descEn:a.description_en||'',
              secret:a.secret||'',secretEn:a.secret_en||'',specs:a.specs||[],
              coverPhoto:a.cover_photo||'',maps:a.maps_url||'',
@@ -4737,7 +5351,7 @@ window.addEventListener('DOMContentLoaded',function(){
       <button class="itd-pill-close" onclick="closeItdPill()">✕</button>
     </div>
     <div id="itd-pill-list"></div>
-    <div class="itd-pill-footer" onclick="openItinerariPage();closeItdPill();">Vedi tutti gli itinerari →</div>
+    <div class="itd-pill-footer" onclick="openItinerariPage(_travelContext?_currentTravelRegion:null);closeItdPill();">Vedi tutti gli itinerari →</div>
   </div>
 </div>
 
@@ -4762,13 +5376,13 @@ window.addEventListener('DOMContentLoaded',function(){
     <i class="ti ti-map-2"></i>
     <span>Mappa</span>
   </button>
-  <button class="bn-item" data-nav="itinerari" onclick="_travelContext?openTravelsPage():(_itineraryViewId!==null?closeItineraryMapView():openItinerariPage())">
+  <button class="bn-item" data-nav="itinerari" onclick="openItinerariNav()">
     <i class="ti ti-route"></i>
-    <span>Itinerari</span>
+    <span data-t="nav_itinerari">Itinerari</span>
   </button>
-  <button class="bn-item" data-nav="salvati" onclick="openFavPage()">
-    <i class="ti ti-bookmark"></i>
-    <span data-t="nav_saved">Diario</span>
+  <button class="bn-item" data-nav="profilo" onclick="openProfilePage()">
+    <span id="nav-profile-ico"><i class="ti ti-user"></i></span>
+    <span data-t="nav_profile">Profilo</span>
   </button>
 </div>
 <div id="access-request-modal" onclick="if(event.target===this)closeAccessRequestModal()">
@@ -4820,6 +5434,686 @@ window.addEventListener('DOMContentLoaded',function(){
         <div id="map-popup-times-body" style="overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:12px;"></div>
       </div>
     </div>
+  </div>
+</div>
+<!-- PROFILE PAGE -->
+<div id="profile-page">
+  <div class="profile-inner">
+    <div id="profile-header" style="position:relative;">
+      <div style="width:32px;height:3px;background:rgba(255,255,255,0.5);border-radius:2px;margin:0 auto 12px;"></div>
+      <button onclick="closeProfilePage()" style="position:absolute;top:12px;right:14px;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="ti ti-x" style="font-size:16px;color:#fff;"></i></button>
+      <div id="profile-avatar-wrap" onclick="triggerAvatarUpload()" style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;margin-bottom:10px;cursor:pointer;overflow:hidden;"></div>
+      <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarChange(this)">
+      <div id="profile-name-el" style="font-size:1rem;font-weight:600;color:#fff;margin-bottom:2px;min-height:1.2em;"></div>
+      <div id="profile-email-el" style="font-size:.78rem;color:rgba(255,255,255,.75);margin-bottom:0;min-height:1em;"></div>
+      <div style="width:100%;display:flex;justify-content:space-around;padding:12px 0;border-top:0.5px solid rgba(255,255,255,0.3);margin-top:4px;">
+        <div style="text-align:center;">
+          <p style="font-size:1.25rem;font-weight:500;color:#fff;margin:0;" id="stat-itineraries">0</p>
+          <p style="font-size:.72rem;color:rgba(255,255,255,.75);margin:3px 0 0;" data-t="stat_itineraries_label">Itinerari fatti</p>
+        </div>
+        <div style="width:0.5px;background:rgba(255,255,255,0.3);"></div>
+        <div style="text-align:center;">
+          <p style="font-size:1.25rem;font-weight:500;color:#fff;margin:0;" id="stat-places">0</p>
+          <p style="font-size:.72rem;color:rgba(255,255,255,.75);margin:3px 0 0;" data-t="stat_places_label">Luoghi visitati</p>
+        </div>
+      </div>
+      <div style="display:flex;width:100%;border-top:0.5px solid rgba(255,255,255,.2);">
+        <div class="profile-tab active" data-ptab="saved" id="ptab-saved" onclick="switchProfileTab('saved')">Salvati</div>
+        <div class="profile-tab" data-ptab="settings" id="ptab-settings" onclick="switchProfileTab('settings')">Impostazioni</div>
+      </div>
+    </div>
+    <div id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+      <div id="ptab-content-saved"></div>
+      <div id="ptab-content-settings" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LANG POPUP -->
+<div id="lang-popup" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+  <div style="background:var(--w);border-radius:14px;overflow:hidden;width:260px;">
+    <div style="padding:12px 16px;border-bottom:0.5px solid var(--g100);display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:.9rem;font-weight:500;" id="lang-popup-title">Seleziona lingua</span>
+      <button onclick="closeLangPopup()" style="background:none;border:none;cursor:pointer;padding:4px;">
+        <i class="ti ti-x" style="font-size:16px;color:var(--g400);"></i>
+      </button>
+    </div>
+    <div style="padding:8px;">
+      <div onclick="selectLang('it')" id="lang-opt-it" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;">
+        <span style="font-size:16px;">🇮🇹</span>
+        <span style="flex:1;font-size:.9rem;">Italiano</span>
+        <i class="ti ti-check" id="lang-check-it" style="font-size:14px;color:#dc6b2f;display:none;"></i>
+      </div>
+      <div onclick="selectLang('en')" id="lang-opt-en" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;margin-top:4px;">
+        <span style="font-size:16px;">🇬🇧</span>
+        <span style="flex:1;font-size:.9rem;">English</span>
+        <i class="ti ti-check" id="lang-check-en" style="font-size:14px;color:#dc6b2f;display:none;"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH PAGE -->
+<div id="auth-page" style="display:none;position:fixed;inset:0;z-index:800;">
+  <div class="auth-inner">
+    <button onclick="closeAuthPage()" style="position:absolute;top:16px;right:16px;background:var(--g50);border:0.5px solid var(--g200);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1;"><i class="ti ti-x" style="font-size:16px;color:var(--g500);"></i></button>
+    <div style="max-width:400px;margin:0 auto;padding:40px 24px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="width:56px;height:56px;border-radius:16px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+          <i class="ti ti-map-2" style="font-size:28px;color:#fff;"></i>
+        </div>
+        <p style="font-size:1.2rem;font-weight:500;margin:0 0 4px;">Wayterra</p>
+        <p style="font-size:.85rem;color:var(--g500);margin:0;" id="auth-subtitle">Accedi per salvare i tuoi luoghi preferiti</p>
+      </div>
+      <div id="auth-form" style="display:flex;flex-direction:column;gap:12px;">
+        <input type="text" id="auth-firstname" placeholder="Nome" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;display:none;">
+        <input type="text" id="auth-lastname" placeholder="Cognome" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;display:none;">
+        <input type="email" id="auth-email" placeholder="Email" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
+        <input type="password" id="auth-password" placeholder="Password" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.9rem;box-sizing:border-box;">
+        <p onclick="openPwForgotModal()" id="forgot-pw-link" style="font-size:.78rem;color:#dc6b2f;cursor:pointer;text-align:right;margin:-4px 0 4px;">Password dimenticata?</p>
+        <div id="auth-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>
+        <button onclick="submitAuth()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.9rem;font-weight:500;cursor:pointer;" id="auth-submit-btn">Accedi</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin:16px 0;">
+        <div style="flex:1;height:0.5px;background:var(--g100);"></div>
+        <span style="font-size:.78rem;color:var(--g400);">oppure</span>
+        <div style="flex:1;height:0.5px;background:var(--g100);"></div>
+      </div>
+      <button onclick="signInWithGoogle()" style="width:100%;padding:10px;background:var(--w);border:0.5px solid var(--g200);border-radius:8px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
+        <i class="ti ti-brand-google" style="font-size:18px;"></i>
+        <span id="auth-google-label">Continua con Google</span>
+      </button>
+      <button onclick="signInWithFacebook()" style="width:100%;padding:10px;background:var(--w);border:0.5px solid var(--g200);border-radius:8px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
+        <i class="ti ti-brand-facebook" style="font-size:18px;color:#1877f2;"></i>
+        <span id="auth-facebook-label">Continua con Facebook</span>
+      </button>
+      <p style="text-align:center;font-size:.82rem;color:var(--g500);margin-top:16px;">
+        <span id="auth-toggle-text">Non hai un account?</span>
+        <span onclick="toggleAuthMode()" style="color:#dc6b2f;cursor:pointer;font-weight:500;" id="auth-toggle-btn"> Registrati</span>
+      </p>
+      <p onclick="closeAuthPage()" style="text-align:center;font-size:.78rem;color:var(--g400);cursor:pointer;margin-top:8px;" id="auth-skip-label">Continua senza account</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function openAuthPage(subtitle,callback){
+  _authCallback=callback||null;
+  document.getElementById('auth-subtitle').textContent=subtitle||(lang==='en'?'Sign in to save your favourite places':'Accedi per salvare i tuoi luoghi preferiti');
+  document.getElementById('auth-firstname').value='';
+  document.getElementById('auth-lastname').value='';
+  document.getElementById('auth-email').value='';
+  document.getElementById('auth-password').value='';
+  document.getElementById('auth-error').style.display='none';
+  document.getElementById('auth-page').style.display=window.innerWidth>=768?'flex':'block';
+  _authMode='login';
+  updateAuthMode();
+}
+function closeAuthPage(){
+  document.getElementById('auth-page').style.display='none';
+  _authCallback=null;
+}
+function updateAuthMode(){
+  var isLogin=_authMode==='login';
+  document.getElementById('auth-submit-btn').textContent=isLogin?(lang==='en'?'Sign in':'Accedi'):(lang==='en'?'Sign up':'Registrati');
+  document.getElementById('auth-toggle-text').textContent=isLogin?(lang==='en'?"Don't have an account?":'Non hai un account?'):(lang==='en'?'Already have an account?':'Hai già un account?');
+  document.getElementById('auth-toggle-btn').textContent=isLogin?(lang==='en'?' Sign up':' Registrati'):(lang==='en'?' Sign in':' Accedi');
+  document.getElementById('auth-google-label').textContent=lang==='en'?'Continue with Google':'Continua con Google';
+  document.getElementById('auth-facebook-label').textContent=lang==='en'?'Continue with Facebook':'Continua con Facebook';
+  document.getElementById('auth-skip-label').textContent=lang==='en'?'Continue without account':'Continua senza account';
+  var fpLink=document.getElementById('forgot-pw-link');
+  if(fpLink){
+    fpLink.style.display=isLogin?'':'none';
+    fpLink.textContent=lang==='en'?'Forgot password?':'Password dimenticata?';
+  }
+  var fn=document.getElementById('auth-firstname');var ln=document.getElementById('auth-lastname');
+  if(fn){fn.style.display=isLogin?'none':'';fn.placeholder=lang==='en'?'First name':'Nome';}
+  if(ln){ln.style.display=isLogin?'none':'';ln.placeholder=lang==='en'?'Last name':'Cognome';}
+}
+function openPwForgotModal(){
+  var m=document.getElementById('pw-forgot-modal');
+  document.getElementById('pw-forgot-title').textContent=lang==='en'?'Reset password':'Recupera password';
+  document.getElementById('pw-forgot-subtitle').textContent=lang==='en'?'Enter your email and we\'ll send you a link to reset your password.':'Inserisci la tua email e ti invieremo un link per reimpostare la password.';
+  document.getElementById('pw-forgot-btn').textContent=lang==='en'?'Send link':'Invia link';
+  document.getElementById('pw-forgot-email').value=document.getElementById('auth-email')?.value||'';
+  document.getElementById('pw-forgot-error').style.display='none';
+  m.style.display='flex';
+}
+function closePwForgotModal(){
+  document.getElementById('pw-forgot-modal').style.display='none';
+}
+function translateAuthError(message,lang){
+  var errors={
+    'email rate limit exceeded':{it:'Troppi tentativi. Riprova tra qualche minuto.',en:'Too many attempts. Please try again in a few minutes.'},
+    'invalid login credentials':{it:'Email o password non corretti.',en:'Incorrect email or password.'},
+    'email not confirmed':{it:'Email non confermata. Controlla la tua casella.',en:'Email not confirmed. Check your inbox.'},
+    'user already registered':{it:'Questa email è già registrata.',en:'This email is already registered.'},
+    'password should be at least 6 characters':{it:'La password deve avere almeno 6 caratteri.',en:'Password must be at least 6 characters.'}
+  };
+  var key=(message||'').toLowerCase();
+  for(var k in errors){if(key.includes(k))return errors[k][lang]||message;}
+  return message;
+}
+async function submitPwForgot(){
+  var email=document.getElementById('pw-forgot-email').value.trim();
+  var errEl=document.getElementById('pw-forgot-error');
+  if(!email){errEl.textContent=lang==='en'?'Please enter your email':'Inserisci la tua email';errEl.style.display='block';return;}
+  var res=await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:'https://v2-dev--glittery-pudding-104d72.netlify.app/app'});
+  if(res.error){errEl.textContent=translateAuthError(res.error.message,lang);errEl.style.display='block';return;}
+  closePwForgotModal();
+  toast(lang==='en'?'Email sent! Check your inbox':'Email inviata! Controlla la tua casella');
+}
+function toggleAuthMode(){
+  _authMode=_authMode==='login'?'signup':'login';
+  updateAuthMode();
+}
+async function submitAuth(){
+  if(!_supaAuth)return;
+  var email=document.getElementById('auth-email').value.trim();
+  var password=document.getElementById('auth-password').value;
+  var errEl=document.getElementById('auth-error');
+  errEl.style.display='none';
+  if(!email||!password){errEl.textContent=lang==='en'?'Please fill in all fields':'Compila tutti i campi';errEl.style.display='block';return;}
+  var result;
+  if(_authMode==='signup'){
+    var firstName=document.getElementById('auth-firstname').value.trim();
+    var lastName=document.getElementById('auth-lastname').value.trim();
+    if(!firstName||!lastName){errEl.textContent=lang==='en'?'Enter your name and surname':'Inserisci nome e cognome';errEl.style.display='block';return;}
+    var fullName=firstName+' '+lastName;
+    result=await _supaAuth.auth.signUp({email:email,password:password,options:{data:{full_name:fullName}}});
+    if(!result.error&&result.data&&result.data.user){
+      _supaAuth.from('profiles').upsert({id:result.data.user.id,full_name:fullName,avatar_url:null},{onConflict:'id'});
+    }
+  }else{
+    result=await _supaAuth.auth.signInWithPassword({email:email,password:password});
+  }
+  if(result.error){errEl.textContent=translateAuthError(result.error.message,lang);errEl.style.display='block';return;}
+  _currentUser=result.data.user;
+  closeAuthPage();
+  updateProfileUI();
+  if(_authCallback){_authCallback();_authCallback=null;}
+}
+async function signInWithGoogle(){
+  if(!_supaAuth)return;
+  await _supaAuth.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+window.location.pathname}});
+}
+async function signInWithFacebook(){
+  if(!_supaAuth)return;
+  await _supaAuth.auth.signInWithOAuth({provider:'facebook',options:{redirectTo:window.location.origin+window.location.pathname}});
+}
+async function signOut(){
+  if(!_supaAuth)return;
+  await _supaAuth.auth.signOut();
+  _currentUser=null;
+  _currentUserProfile=null;
+  completedItineraries.clear();
+  visitedPlaces.clear();
+  favs.clear();
+  downloadedSet.clear();
+  favItineraries.clear();
+  saveFavs();
+  localStorage.removeItem('WT_FAVS_v2');
+  closeProfilePage();
+  updateNavProfileAvatar();
+  toast(lang==='en'?'Signed out':'Disconnesso');
+}
+async function checkAuthSession(){
+  if(!_supaAuth)return;
+  _supaAuth.auth.onAuthStateChange(async function(event,session){
+    console.log('[auth] evento:',event,'session:',!!session,'user:',session?.user?.email);
+    console.log('[auth] URL al momento evento:',window.location.href);
+    if(event==='PASSWORD_RECOVERY'){
+      setTimeout(function(){openPasswordResetForm();},100);
+      return;
+    }
+    if(event==='USER_UPDATED'){
+      if(session&&session.user){
+        var {data:updatedProfile}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
+        if(updatedProfile)_currentUserProfile=updatedProfile;
+        updateNavProfileAvatar();
+        var _pp=document.getElementById('profile-page');
+        if(_pp&&_pp.style.display!=='none')renderProfilePage();
+      }
+      return;
+    }
+    if(event==='SIGNED_IN'){
+      _currentUser=session.user;
+      completedItineraries.clear();visitedPlaces.clear();favs.clear();favItineraries.clear();downloadedSet.clear();
+      var favRes=await _supaAuth.from('user_favorites').select('place_id').eq('user_id',session.user.id);
+      if(favRes.data)favRes.data.forEach(function(r){if(r.place_id)favs.add(r.place_id);});
+      saveFavs();
+      var compRes=await _supaAuth.from('user_completed_itineraries').select('experience_id').eq('user_id',session.user.id);
+      if(compRes.data)compRes.data.forEach(function(r){if(r.experience_id)completedItineraries.add(r.experience_id);});
+      var visRes=await _supaAuth.from('user_visited_places').select('place_id').eq('user_id',session.user.id);
+      if(visRes.data)visRes.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
+      var favItRes=await _supaAuth.from('user_favorite_itineraries').select('experience_id').eq('user_id',session.user.id);
+      if(favItRes.data)favItRes.data.forEach(function(r){if(r.experience_id)favItineraries.add(r.experience_id);});
+      var dlRes=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',session.user.id);
+      if(dlRes.data)dlRes.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
+      _supaAuth.from('profiles').upsert({id:session.user.id,full_name:(session.user.user_metadata&&session.user.user_metadata.full_name)?session.user.user_metadata.full_name:session.user.email.split('@')[0],avatar_url:(session.user.user_metadata&&session.user.user_metadata.avatar_url)||null},{onConflict:'id'});
+      var {data:profileData}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
+      if(profileData)_currentUserProfile=profileData;
+      updateProfileUI();
+      updateNavProfileAvatar();
+      _refreshItineraryChecks();
+      var _pp=document.getElementById('profile-page');
+      if(_pp&&_pp.style.display!=='none')renderProfilePage();
+      loadAllReviews();
+      loadRegionReviews('cotswolds','rp-cotswolds-reviews');
+      loadRegionReviews('lazio','rp-lazio-reviews');
+      if(_authCallback){_authCallback();_authCallback=null;}
+    }
+    if(event==='SIGNED_OUT'){
+      _currentUser=null;
+      updateProfileUI();
+    }
+  });
+  if(_pendingRecovery){
+    window.location.hash='';
+    _pendingRecovery=false;
+    var recRes=await _supaAuth.auth.getSession();
+    if(recRes.data&&recRes.data.session){
+      showRegionPage();
+      setTimeout(function(){
+        openAuthPage(lang==='en'?'Update your password':'Aggiorna la tua password');
+        setTimeout(function(){openPasswordResetForm();},200);
+      },300);
+      return;
+    }
+  }
+  var sesRes=await _supaAuth.auth.getSession();
+  if(sesRes.data&&sesRes.data.session&&sesRes.data.session.user){
+    _currentUser=sesRes.data.session.user;
+    var {data:sesProfile}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
+    if(sesProfile)_currentUserProfile=sesProfile;
+    updateProfileUI();
+    updateNavProfileAvatar();
+    _loadFavsFromSupabase(_currentUser.id);
+    _loadGamificationFromSupabase(_currentUser.id);
+  }
+}
+function openPasswordResetForm(){
+  if(document.getElementById('pw-reset-modal'))return;
+  var modal=document.createElement('div');
+  modal.id='pw-reset-modal';
+  modal.style.cssText='position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML='<div style="background:var(--w);border-radius:14px;padding:24px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px;">'
+    +'<p style="font-size:1rem;font-weight:500;margin:0;">'+(lang==='en'?'Set new password':'Imposta nuova password')+'</p>'
+    +'<input type="password" id="pw-reset-input" placeholder="'+(lang==='en'?'New password':'Nuova password')+'" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-family:var(--f);font-size:.9rem;box-sizing:border-box;">'
+    +'<div id="pw-reset-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>'
+    +'<button onclick="submitPasswordReset()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-family:var(--f);font-size:.9rem;font-weight:500;cursor:pointer;">'+(lang==='en'?'Update password':'Aggiorna password')+'</button>'
+    +'</div>';
+  document.body.appendChild(modal);
+}
+async function submitPasswordReset(){
+  var newPassword=document.getElementById('pw-reset-input').value;
+  var errEl=document.getElementById('pw-reset-error');
+  if(!newPassword||newPassword.length<6){
+    errEl.textContent=lang==='en'?'Password must be at least 6 characters':'La password deve avere almeno 6 caratteri';
+    errEl.style.display='block';
+    return;
+  }
+  var res=await _supaAuth.auth.updateUser({password:newPassword});
+  if(res.error){
+    errEl.textContent=translateAuthError(res.error.message,lang);
+    errEl.style.display='block';
+    return;
+  }
+  document.getElementById('pw-reset-modal').remove();
+  var _subtitleEl=document.getElementById('auth-subtitle');
+  if(_subtitleEl)_subtitleEl.textContent=lang==='en'?'Password updated! Sign in with your new password.':'Password aggiornata! Accedi con la nuova password.';
+  toast(lang==='en'?'Password updated successfully':'Password aggiornata con successo');
+}
+async function _loadFavsFromSupabase(userId){
+  if(!_supaAuth)return;
+  var res=await _supaAuth.from('user_favorites').select('place_id').eq('user_id',userId);
+  if(res.data){res.data.forEach(function(r){if(r.place_id)favs.add(r.place_id);});saveFavs();updFavBtn();}
+}
+async function _loadGamificationFromSupabase(userId){
+  if(!_supaAuth)return;
+  var r1=await _supaAuth.from('user_completed_itineraries').select('experience_id').eq('user_id',userId);
+  if(r1.data)r1.data.forEach(function(r){if(r.experience_id)completedItineraries.add(r.experience_id);});
+  var r2=await _supaAuth.from('user_visited_places').select('place_id').eq('user_id',userId);
+  if(r2.data)r2.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
+  var r3=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',userId);
+  if(r3.data)r3.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
+  var r4=await _supaAuth.from('user_favorite_itineraries').select('experience_id').eq('user_id',userId);
+  if(r4.data)r4.data.forEach(function(r){if(r.experience_id)favItineraries.add(r.experience_id);});
+  _refreshItineraryChecks();
+  var _pp=document.getElementById('profile-page');
+  if(_pp&&_pp.classList.contains('show'))renderProfilePage();
+}
+function _refreshItineraryChecks(){
+  completedItineraries.forEach(function(id){
+    var el=document.getElementById('itinerary-check-'+id);
+    if(!el)return;
+    el.style.background='#16a34a';
+    var icon=el.querySelector('i');
+    if(icon)icon.style.color='#fff';
+  });
+}
+async function markItineraryDone(expId){
+  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to track your trips':'Accedi per tracciare i tuoi itinerari',function(){markItineraryDone(expId);});return;}
+  var _isDone=completedItineraries.has(expId);
+  if(_isDone){
+    completedItineraries.delete(expId);
+    if(_supaAuth)_supaAuth.from('user_completed_itineraries').delete().eq('user_id',_currentUser.id).eq('experience_id',expId).then(function(){});
+  }else{
+    completedItineraries.add(expId);
+    if(_supaAuth)_supaAuth.from('user_completed_itineraries').insert({user_id:_currentUser.id,experience_id:expId}).then(function(){});
+    showCompletionModal('itinerary',expId);
+  }
+  var _nowDone=completedItineraries.has(expId);
+  var checkEl=document.getElementById('itinerary-check-'+expId);
+  if(checkEl){
+    checkEl.style.background=_nowDone?'#16a34a':'rgba(0,0,0,0.35)';
+    checkEl.querySelector('i').style.color=_nowDone?'#fff':'rgba(255,255,255,0.7)';
+  }
+  if(document.getElementById('profile-page').classList.contains('show'))renderProfileStats();
+}
+async function markPlaceVisited(placeId){
+  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to track visited places':'Accedi per tracciare i luoghi visitati',function(){markPlaceVisited(placeId);});return;}
+  var _isV=visitedPlaces.has(placeId);
+  if(_isV){
+    visitedPlaces.delete(placeId);
+    if(_supaAuth)_supaAuth.from('user_visited_places').delete().eq('user_id',_currentUser.id).eq('place_id',placeId).then(function(){});
+  }else{
+    visitedPlaces.add(placeId);
+    if(_supaAuth)_supaAuth.from('user_visited_places').insert({user_id:_currentUser.id,place_id:placeId}).then(function(){});
+    showCompletionModal('place',placeId);
+  }
+  var _vBtn=document.getElementById('dp-visited-btn');
+  if(_vBtn){
+    var _nowV=visitedPlaces.has(placeId);
+    _vBtn.style.background=_nowV?'#16a34a':'#dc6b2f';
+    _vBtn.textContent=_nowV?(lang==='en'?'Visited ✓':'Visitato ✓'):(lang==='en'?'I\'ve been here':'Sono stato qui');
+  }
+  if(document.getElementById('profile-page').classList.contains('show'))renderProfileStats();
+}
+function showCompletionModal(type,id){
+  var msg='';
+  if(type==='itinerary'){
+    var e=DATA.experiences.find(function(x){return x.id==id;});
+    var title=e?(lang==='en'&&e.titleEn?e.titleEn:e.titleIt):'';
+    msg=lang==='en'?'Trip completed! 🎉':'Itinerario completato! 🎉';
+    if(title)msg+=' — '+title.replace(/<[^>]*>/g,'');
+  }else{
+    var p=DATA.places.find(function(x){return x.id==id;});
+    msg=lang==='en'?'Place visited! 📍':'Luogo visitato! 📍';
+    if(p&&p.name)msg+=' — '+p.name.replace(/<[^>]*>/g,'');
+  }
+  toast(msg);
+}
+function updateProfileUI(){
+  var pp=document.getElementById('profile-page');
+  if(pp&&pp.classList.contains('show'))renderProfilePage();
+}
+
+/* ── PROFILE PAGE ── */
+var _profileTab='saved';
+function openProfilePage(){
+  renderProfilePage();
+  document.getElementById('profile-page').classList.add('show');
+  setBottomNav('profilo');
+}
+function closeProfilePage(){
+  document.getElementById('profile-page').classList.remove('show');
+  setBottomNav('mappa');
+}
+function switchProfileTab(tab){
+  _profileTab=tab;
+  document.querySelectorAll('.profile-tab').forEach(function(el){
+    el.classList.toggle('active',el.getAttribute('data-ptab')===tab);
+  });
+  document.getElementById('ptab-content-saved').style.display=tab==='saved'?'block':'none';
+  document.getElementById('ptab-content-settings').style.display=tab==='settings'?'block':'none';
+}
+function triggerAvatarUpload(){
+  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to set a profile photo':'Accedi per aggiungere una foto profilo',null);return;}
+  document.getElementById('avatar-file-input').click();
+}
+async function handleAvatarChange(input){
+  if(!input.files||!input.files[0])return;
+  var file=input.files[0];
+  var blob=await _compressImage(file,320,320,0.82);
+  var avatarEl=document.getElementById('profile-avatar-wrap');
+  var localUrl=URL.createObjectURL(blob);
+  avatarEl.innerHTML='<img src="'+localUrl+'" style="width:100%;height:100%;object-fit:cover;">';
+  if(!_supaAuth||!_currentUser)return;
+  var path='avatars/'+_currentUser.id+'.jpg';
+  var up=await _supaAuth.storage.from('wayterra-images').upload(path,blob,{upsert:true,contentType:'image/jpeg'});
+  console.log('[avatar] upload result:',up.error);
+  if(up.error){console.warn('[avatar]',up.error.message);return;}
+  var pub=_supaAuth.storage.from('wayterra-images').getPublicUrl(path);
+  var url=pub.data&&pub.data.publicUrl?pub.data.publicUrl:'';
+  if(!url)return;
+  url=url+'?t='+Date.now();
+  var profRes=await _supaAuth.from('profiles').update({avatar_url:url}).eq('id',_currentUser.id);
+  console.log('[avatar] profile update result:',profRes.error);
+  var authRes=await _supaAuth.auth.updateUser({data:{avatar_url:url}});
+  console.log('[avatar] auth update result:',authRes.error);
+  if(_currentUserProfile)_currentUserProfile.avatar_url=url;
+  _pendingAvatarUrl=url;
+  setTimeout(function(){_pendingAvatarUrl=null;},5000);
+  updateNavProfileAvatar();
+}
+function _compressImage(file,maxW,maxH,quality){
+  return new Promise(function(resolve){
+    var img=new Image();
+    var reader=new FileReader();
+    reader.onload=function(e){
+      img.onload=function(){
+        var w=img.width,h=img.height,scale=Math.min(maxW/w,maxH/h,1);
+        var canvas=document.createElement('canvas');
+        canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        canvas.toBlob(function(b){resolve(b);},'image/jpeg',quality);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function _avatarSrc(url,userId){
+  if(!url)return url;
+  if(!_currentUser||userId!==_currentUser.id)return url;
+  if(url.indexOf('?t=')>=0)return url;
+  return url+'?t='+Date.now();
+}
+function updateNavProfileAvatar(){
+  var profile=_currentUserProfile;
+  var avatarHtml;
+  if(_currentUser&&profile){
+    if(profile.avatar_url){
+      avatarHtml='<div style="width:24px;height:24px;border-radius:50%;overflow:hidden;border:1.5px solid #dc6b2f;"><img src="'+_avatarSrc(profile.avatar_url,_currentUser.id)+'" style="width:100%;height:100%;object-fit:cover;"></div>';
+    }else{
+      var parts=(profile.full_name||'').trim().split(' ');
+      var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+      avatarHtml='<div style="width:24px;height:24px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;"><span style="font-size:9px;color:#fff;font-weight:500;">'+ini+'</span></div>';
+    }
+  }else{
+    avatarHtml='<i class="ti ti-user" style="font-size:18px;"></i>';
+  }
+  var ico=document.getElementById('nav-profile-ico');
+  if(ico)ico.innerHTML=avatarHtml;
+  var desktopBtn=document.getElementById('profile-btn-d');
+  if(desktopBtn)desktopBtn.innerHTML=avatarHtml;
+}
+async function renderProfilePage(){
+  var isLoggedIn=!!_currentUser;
+  var email=isLoggedIn?(_currentUser.email||''):'';
+  var profileRow=null;
+  if(isLoggedIn&&_supaAuth){
+    var {data:_pr}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
+    profileRow=_pr||null;
+  }
+  var _fn=(profileRow&&profileRow.full_name)?profileRow.full_name:((isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.full_name)?_currentUser.user_metadata.full_name:'');
+  var _fnParts=_fn.trim().split(' ');
+  var avatarUrl=(profileRow&&profileRow.avatar_url)?profileRow.avatar_url:(isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.avatar_url?_currentUser.user_metadata.avatar_url:'');
+  var initials=_fn?(_fnParts[0].charAt(0).toUpperCase()+(_fnParts[1]?_fnParts[1].charAt(0).toUpperCase():'')):(email?email.charAt(0).toUpperCase():'');
+  var avatarContent=avatarUrl
+    ?'<img src="'+_avatarSrc(avatarUrl,_currentUser&&_currentUser.id)+'" style="width:100%;height:100%;object-fit:cover;">'
+    :(initials
+      ?'<span style="font-size:1.4rem;font-weight:700;color:#fff;">'+initials+'</span>'
+      :'<i class="ti ti-user" style="font-size:1.6rem;color:rgba(255,255,255,.85);"></i>');
+  document.getElementById('profile-avatar-wrap').innerHTML=avatarContent;
+  var profileDisplayName=_fn?(_fnParts.length>1?_fnParts[0]+' '+_fnParts[_fnParts.length-1].charAt(0)+'.':_fnParts[0]):(email.split('@')[0]||'');
+  document.getElementById('profile-name-el').textContent=isLoggedIn?profileDisplayName:'';
+  document.getElementById('profile-email-el').textContent=email;
+  document.getElementById('ptab-saved').textContent=t('profile_tab_saved');
+  document.getElementById('ptab-settings').textContent=t('profile_tab_settings');
+  var _itEl=document.getElementById('stat-itineraries');
+  var _plEl=document.getElementById('stat-places');
+  if(_itEl)_itEl.textContent=completedItineraries.size;
+  if(_plEl)_plEl.textContent=visitedPlaces.size;
+  renderProfileSaved();
+  renderProfileSettings();
+  var langVal=document.getElementById('settings-lang-value');
+  if(langVal)langVal.textContent=lang==='it'?'Italiano':'English';
+  switchProfileTab(_profileTab);
+  if(profileRow)_currentUserProfile=profileRow;
+  if(_pendingAvatarUrl)_currentUserProfile.avatar_url=_pendingAvatarUrl;
+  updateNavProfileAvatar();
+}
+function renderProfileSaved(){
+  var container=document.getElementById('ptab-content-saved');
+  var favList=DATA.places.filter(function(p){return favs.has(p.id);});
+  var savedHtml='';
+  if(!favList.length){
+    savedHtml='<div style="text-align:center;padding:32px 24px 0;color:var(--g400);font-size:.88rem;">'+t('no_saved')+'</div>';
+  }else{
+    var regions=[...new Set(favList.map(function(p){return p.region||'lazio';}))]
+      .map(function(r){return{id:r,label:r.charAt(0).toUpperCase()+r.slice(1)};});
+    var filterHtml='<div class="profile-saved-filter">'
+      +'<button class="psf-btn active" data-region="all" onclick="filterProfileSaved(\'all\',this)">'+(lang==='en'?'All':'Tutti')+'</button>'
+      +regions.map(function(r){return '<button class="psf-btn" data-region="'+r.id+'" onclick="filterProfileSaved(\''+r.id+'\',this)">'+r.label+'</button>';}).join('')
+      +'</div>';
+    var listHtml='<div id="profile-saved-list" style="padding:8px 16px 0;">'
+      +favList.map(function(p){
+        var c=placeTypeOf(p.placeTypeId);
+        var imgHtml=p.coverPhoto
+          ?'<img src="'+p.coverPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
+          :'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:'+p.gradient+';border-radius:10px;">'+renderIcon(c.icon)+'</div>';
+        return '<div class="fav-item" data-region="'+(p.region||'lazio')+'" style="cursor:pointer;" onclick="goToFavProfile('+p.id+')">'
+          +'<div class="fav-item-img">'+imgHtml+'</div>'
+          +'<div class="fav-item-body">'
+          +'<div class="fav-item-cat" style="color:'+c.color+';">'+renderIcon(c.icon)+' '+catName(c)+'</div>'
+          +'<div class="fav-item-name">'+p.name+'</div>'
+          +'<div style="font-size:.72rem;color:var(--g400);margin-top:2px;">'+(p.region?p.region.charAt(0).toUpperCase()+p.region.slice(1):'')+'</div>'
+          +'</div>'
+          +'<button onclick="event.stopPropagation();toggleFav('+p.id+')" style="background:none;border:none;cursor:pointer;padding:8px;color:#dc6b2f;font-size:1.1rem;flex-shrink:0;"><i class="ti ti-bookmark-filled"></i></button>'
+          +'</div>';
+      }).join('')
+      +'</div>';
+    savedHtml=filterHtml+listHtml;
+  }
+  var itLabel=lang==='en'?'SAVED ITINERARIES':'ITINERARI SALVATI';
+  var itHtml='<p style="font-size:.68rem;font-weight:500;color:var(--g400);letter-spacing:.06em;margin:16px 16px 8px;">'+itLabel+'</p>'
+    +'<div id="profile-favit-list">';
+  if(!favItineraries.size){
+    itHtml+='<div style="text-align:center;padding:16px 24px;color:var(--g400);font-size:.82rem;">'+(lang==='en'?'No saved itineraries':'Nessun itinerario salvato')+'</div>';
+  }else{
+    favItineraries.forEach(function(expId){
+      var exp=DATA.experiences.find(function(x){return x.id===expId;});
+      if(!exp)return;
+      var title=lang==='en'&&exp.titleEn?exp.titleEn:exp.titleIt;
+      var dur=lang==='en'&&exp.durationEn?exp.durationEn:exp.durationIt;
+      var img=exp.coverPhoto
+        ?'<img src="'+exp.coverPhoto+'" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
+        :'<div style="width:52px;height:52px;border-radius:8px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🗺</div>';
+      itHtml+='<div onclick="closeProfilePage();openItinerario('+expId+')" style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:0.5px solid var(--g100);cursor:pointer;">'
+        +img
+        +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:.82rem;font-weight:600;color:var(--g900);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">'+title+'</div>'
+        +(dur?'<div style="font-size:.7rem;color:var(--g400);margin-top:2px;">'+dur+'</div>':'')
+        +'</div>'
+        +'<button onclick="event.stopPropagation();toggleFavItinerary('+expId+')" style="background:none;border:none;cursor:pointer;padding:8px;color:#dc6b2f;font-size:1.1rem;flex-shrink:0;"><i class="ti ti-bookmark-filled"></i></button>'
+        +'</div>';
+    });
+  }
+  itHtml+='</div>';
+  var dlLabel=lang==='en'?'DOWNLOADED ITINERARIES':'ITINERARI SCARICATI';
+  var dlHtml='<p style="font-size:.68rem;font-weight:500;color:var(--g400);letter-spacing:.06em;margin:16px 16px 8px;">'+dlLabel+'</p>'
+    +'<div id="profile-downloads-list">';
+  if(!downloadedSet.size){
+    dlHtml+='<div style="text-align:center;padding:16px 24px;color:var(--g400);font-size:.82rem;">'+(lang==='en'?'No downloaded itineraries':'Nessun itinerario scaricato')+'</div>';
+  }else{
+    downloadedSet.forEach(function(downloadedAt,expId){
+      var exp=DATA.experiences.find(function(x){return x.id===expId;});
+      if(!exp)return;
+      var title=lang==='en'&&exp.titleEn?exp.titleEn:exp.titleIt;
+      var dateStr='';
+      if(downloadedAt){var d=new Date(downloadedAt);dateStr=d.toLocaleDateString(lang==='en'?'en-GB':'it-IT',{day:'2-digit',month:'short',year:'numeric'});}
+      var img=exp.coverPhoto
+        ?'<img src="'+exp.coverPhoto+'" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
+        :'<div style="width:52px;height:52px;border-radius:8px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🗺</div>';
+      dlHtml+='<div onclick="closeProfilePage();var _dle=(DATA.experiences||[]).find(function(x){return x.id==='+expId+';});if(_dle){_currentItdExp=_dle;openItinerarioPDF();}" style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:0.5px solid var(--g100);cursor:pointer;">'
+        +img
+        +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:.82rem;font-weight:600;color:var(--g900);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">'+title+'</div>'
+        +(dateStr?'<div style="font-size:.7rem;color:var(--g400);margin-top:2px;">'+dateStr+'</div>':'')
+        +'</div>'
+        +'<i class="ti ti-file-type-pdf" style="font-size:18px;color:#dc6b2f;flex-shrink:0;"></i>'
+        +'</div>';
+    });
+  }
+  dlHtml+='</div><div style="height:80px;"></div>';
+  container.innerHTML=savedHtml+itHtml+dlHtml;
+}
+function filterProfileSaved(region,btn){
+  document.querySelectorAll('.psf-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.querySelectorAll('#profile-saved-list .fav-item').forEach(function(el){
+    el.style.display=(region==='all'||el.getAttribute('data-region')===region)?'':'none';
+  });
+}
+function goToFavProfile(id){
+  closeProfilePage();
+  var p=DATA.places.find(function(x){return x.id===id;});
+  if(!p)return;
+  if(p.premium&&!unlocked){showPW();return;}
+  currentPlace=p;
+  openDetail();
+}
+function renderProfileStats(){
+  var _itEl=document.getElementById('stat-itineraries');
+  var _plEl=document.getElementById('stat-places');
+  if(_itEl)_itEl.textContent=completedItineraries.size;
+  if(_plEl)_plEl.textContent=visitedPlaces.size;
+}
+function renderProfileSettings(){
+  var isLoggedIn=!!_currentUser;
+  var langLabel=lang==='it'?'Italiano':'English';
+  var html='<div style="padding-top:8px;">'
+    +'<div class="profile-setting-row" onclick="openLangPopup()">'
+    +'<div class="profile-setting-icon" style="background:#f0f9ff;"><i class="ti ti-language" style="color:#0284c7;font-size:16px;"></i></div>'
+    +'<div class="profile-setting-label">'+t('settings_language')+'</div>'
+    +'<div class="profile-setting-value" id="settings-lang-value">'+langLabel+'</div>'
+    +'<i class="ti ti-chevron-right" style="font-size:14px;color:var(--g400);flex-shrink:0;margin-left:8px;"></i>'
+    +'</div>';
+  if(isLoggedIn){
+    html+='<div class="profile-setting-row" onclick="signOut()">'
+    +'<div class="profile-setting-icon" style="background:#fef2f2;"><i class="ti ti-logout" style="color:#dc2626;font-size:16px;"></i></div>'
+    +'<div class="profile-setting-label" style="color:#dc2626;">'+t('settings_logout')+'</div>'
+    +'</div>';
+  }else{
+    html+='<div class="profile-setting-row" onclick="openAuthPage(null,null)">'
+    +'<div class="profile-setting-icon" style="background:#fff7ed;"><i class="ti ti-login" style="color:#dc6b2f;font-size:16px;"></i></div>'
+    +'<div class="profile-setting-label" style="color:#dc6b2f;">'+t('settings_login')+'</div>'
+    +'</div>';
+  }
+  html+='</div>';
+  document.getElementById('ptab-content-settings').innerHTML=html;
+}
+</script>
+<div id="pw-forgot-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--w);border-radius:14px;padding:24px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px;position:relative;">
+    <button onclick="closePwForgotModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;"><i class="ti ti-x" style="font-size:18px;color:var(--g400);"></i></button>
+    <p style="font-size:1rem;font-weight:500;margin:0;" id="pw-forgot-title">Recupera password</p>
+    <p style="font-size:.82rem;color:var(--g500);margin:0;" id="pw-forgot-subtitle">Inserisci la tua email e ti invieremo un link per reimpostare la password.</p>
+    <input type="email" id="pw-forgot-email" placeholder="Email" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-family:var(--f);font-size:.9rem;box-sizing:border-box;">
+    <div id="pw-forgot-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>
+    <button onclick="submitPwForgot()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-family:var(--f);font-size:.9rem;font-weight:500;cursor:pointer;" id="pw-forgot-btn">Invia link</button>
   </div>
 </div>
 </body>
