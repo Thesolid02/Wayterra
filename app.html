@@ -5652,11 +5652,11 @@ async function submitAuth(){
 }
 async function signInWithGoogle(){
   if(!_supaAuth)return;
-  await _supaAuth.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+window.location.pathname}});
+  await _supaAuth.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/app'}});
 }
 async function signInWithFacebook(){
   if(!_supaAuth)return;
-  await _supaAuth.auth.signInWithOAuth({provider:'facebook',options:{redirectTo:window.location.origin+window.location.pathname}});
+  await _supaAuth.auth.signInWithOAuth({provider:'facebook',options:{redirectTo:'https://wayterra.it/app'}});
 }
 async function signOut(){
   if(!_supaAuth)return;
@@ -5707,7 +5707,8 @@ async function checkAuthSession(){
       if(favItRes.data)favItRes.data.forEach(function(r){if(r.experience_id)favItineraries.add(r.experience_id);});
       var dlRes=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',session.user.id);
       if(dlRes.data)dlRes.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
-      _supaAuth.from('profiles').upsert({id:session.user.id,full_name:(session.user.user_metadata&&session.user.user_metadata.full_name)?session.user.user_metadata.full_name:session.user.email.split('@')[0],avatar_url:(session.user.user_metadata&&session.user.user_metadata.avatar_url)||null},{onConflict:'id'});
+      var _meta=session.user.user_metadata||{};
+      _supaAuth.from('profiles').upsert({id:session.user.id,full_name:_meta.full_name||_meta.name||(session.user.email?session.user.email.split('@')[0]:''),avatar_url:_meta.avatar_url||_meta.picture||null},{onConflict:'id'});
       var {data:profileData}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
       if(profileData)_currentUserProfile=profileData;
       updateProfileUI();
@@ -5966,7 +5967,8 @@ async function renderProfilePage(){
   }
   var _fn=(profileRow&&profileRow.full_name)?profileRow.full_name:((isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.full_name)?_currentUser.user_metadata.full_name:'');
   var _fnParts=_fn.trim().split(' ');
-  var avatarUrl=(profileRow&&profileRow.avatar_url)?profileRow.avatar_url:(isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.avatar_url?_currentUser.user_metadata.avatar_url:'');
+  var _umeta=isLoggedIn&&_currentUser.user_metadata?_currentUser.user_metadata:{};
+  var avatarUrl=(profileRow&&profileRow.avatar_url)?profileRow.avatar_url:(_umeta.avatar_url||_umeta.picture||'');
   var initials=_fn?(_fnParts[0].charAt(0).toUpperCase()+(_fnParts[1]?_fnParts[1].charAt(0).toUpperCase():'')):(email?email.charAt(0).toUpperCase():'');
   var avatarContent=avatarUrl
     ?'<img src="'+_avatarSrc(avatarUrl,_currentUser&&_currentUser.id)+'" style="width:100%;height:100%;object-fit:cover;">'
