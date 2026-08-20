@@ -5648,6 +5648,16 @@ async function checkAuthSession(){
       setTimeout(function(){openPasswordResetForm();},100);
       return;
     }
+    if(event==='USER_UPDATED'){
+      if(session&&session.user){
+        var {data:updatedProfile}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
+        if(updatedProfile)_currentUserProfile=updatedProfile;
+        updateNavProfileAvatar();
+        var _pp=document.getElementById('profile-page');
+        if(_pp&&_pp.style.display!=='none')renderProfilePage();
+      }
+      return;
+    }
     if(event==='SIGNED_IN'){
       _currentUser=session.user;
       completedItineraries.clear();visitedPlaces.clear();favs.clear();favItineraries.clear();downloadedSet.clear();
@@ -5863,6 +5873,8 @@ async function handleAvatarChange(input){
   console.log('[avatar] profile update result:',profRes.error);
   var authRes=await _supaAuth.auth.updateUser({data:{avatar_url:url}});
   console.log('[avatar] auth update result:',authRes.error);
+  if(_currentUserProfile)_currentUserProfile.avatar_url=url;
+  updateNavProfileAvatar();
 }
 function _compressImage(file,maxW,maxH,quality){
   return new Promise(function(resolve){
