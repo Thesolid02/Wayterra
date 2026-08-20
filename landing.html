@@ -1021,6 +1021,8 @@ function setLandingLang(l){
       else{el.innerHTML=t[key];}
     }
   });
+  // aggiorna label carosello popup
+  if(typeof hpShow==='function')hpShow(hpCurrent||0);
 }
 
 function handlePurchase(){
@@ -1031,15 +1033,22 @@ function toggleHowPopup(){
   p.style.display=p.style.display==='flex'?'none':'flex';
 }
 var hpCurrent=0;
-var hpLabels=['1. Esplora la mappa','2. Scopri i luoghi','3. Segui l\'itinerario'];
-var hpDescs=['Pin interattivi con luoghi nascosti e segreti locali','Dettaglio completo con attività, dove mangiare e dormire','Giorno per giorno, con tappe, km e info utili'];
+var hpLabelsData={
+  it:['1. Esplora la mappa','2. Scopri i luoghi','3. Segui l\'itinerario'],
+  en:['1. Explore the map','2. Discover places','3. Follow the itinerary']
+};
+var hpDescsData={
+  it:['Selezionata la destinazione, esplora tutti i luoghi presenti nella mappa interattiva, suddivisi per categoria.','Seleziona un luogo ed esplora tutte le sue attività: dove dormire, dove mangiare, esperienze da fare e molto altro.','Puoi decidere di seguire il mio itinerario completo, composto in parte da tutti i luoghi che compongono la mappa.'],
+  en:['Once you\'ve chosen your destination, explore all the places on the interactive map, organised by category.','Select a place and explore all its activities: where to sleep, where to eat, experiences to try and much more.','You can choose to follow my complete itinerary, made up of some of the places featured on the map.']
+};
 function hpShow(n){
   for(var i=0;i<3;i++){
     document.getElementById('hp-screen-'+i).style.display=i===n?'block':'none';
     document.getElementById('hp-dot-'+i).style.background=i===n?'#dc6b2f':'#ddd';
   }
-  document.getElementById('hp-label').textContent=hpLabels[n];
-  document.getElementById('hp-desc').textContent=hpDescs[n];
+  var lang=typeof currentLang!=='undefined'?currentLang:'en';
+  document.getElementById('hp-label').textContent=(hpLabelsData[lang]||hpLabelsData.en)[n];
+  document.getElementById('hp-desc').textContent=(hpDescsData[lang]||hpDescsData.en)[n];
   hpCurrent=n;
 }
 function hpNext(){hpShow((hpCurrent+1)%3);}
