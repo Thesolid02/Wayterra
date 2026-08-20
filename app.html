@@ -3532,15 +3532,16 @@ function selectRegion(regionId){
     sp.classList.remove('hide');sp.style.display='';
     stopSplashRotation();startSplashRotation();
     var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
-    setTimeout(function(){
-      stopSplashRotation();sp.classList.add('hide');
-      var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
-      if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
-      renderItdPill();
-    },3000);
+    var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
+    map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:800});
+    var _splashFallback=setTimeout(function(){stopSplashRotation();sp.classList.add('hide');},4000);
+    map_o.once('moveend',function(){
+      clearTimeout(_splashFallback);
+      setTimeout(function(){stopSplashRotation();sp.classList.add('hide');renderItdPill();},300);
+    });
   }else{
     var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
-    if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:600});
+    if(map_o)map_o.flyTo({center:_currentRegionCenter,zoom:_currentRegionZoom,duration:800});
     renderItdPill();
   }
 }
@@ -3587,15 +3588,16 @@ function selectTravelRegion(regionId,center,zoom){
     sp.classList.remove('hide');sp.style.display='';
     stopSplashRotation();startSplashRotation();
     var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
-    setTimeout(function(){
-      stopSplashRotation();sp.classList.add('hide');
-      var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
-      if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
-      renderItdPill();
-    },800);
+    var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
+    map_o.flyTo({center:center,zoom:z,duration:800});
+    var _splashFallback=setTimeout(function(){stopSplashRotation();sp.classList.add('hide');},4000);
+    map_o.once('moveend',function(){
+      clearTimeout(_splashFallback);
+      setTimeout(function(){stopSplashRotation();sp.classList.add('hide');renderItdPill();},300);
+    });
   }else{
     var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
-    if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
+    if(map_o)map_o.flyTo({center:center,zoom:z,duration:800});
     renderItdPill();
   }
 }
