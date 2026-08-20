@@ -5708,7 +5708,15 @@ async function checkAuthSession(){
       var dlRes=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',session.user.id);
       if(dlRes.data)dlRes.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
       var _meta=session.user.user_metadata||{};
-      _supaAuth.from('profiles').upsert({id:session.user.id,full_name:_meta.full_name||_meta.name||(session.user.email?session.user.email.split('@')[0]:''),avatar_url:_meta.avatar_url||_meta.picture||null},{onConflict:'id'});
+      var _oauthName=_meta.full_name||_meta.name||(session.user.email?session.user.email.split('@')[0]:'');
+      var _oauthAvatar=_meta.avatar_url||_meta.picture||null;
+      var {data:existingProfile}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
+      if(!existingProfile?.avatar_url&&_oauthAvatar){
+        await _supaAuth.from('profiles').upsert({id:session.user.id,full_name:existingProfile?.full_name||_oauthName,avatar_url:_oauthAvatar},{onConflict:'id'});
+        if(_currentUserProfile)_currentUserProfile.avatar_url=_oauthAvatar;
+      } else if(!existingProfile){
+        await _supaAuth.from('profiles').upsert({id:session.user.id,full_name:_oauthName,avatar_url:_oauthAvatar},{onConflict:'id'});
+      }
       var {data:profileData}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
       if(profileData)_currentUserProfile=profileData;
       updateProfileUI();
