@@ -3524,7 +3524,7 @@ function selectRegion(regionId){
   if(new URLSearchParams(window.location.search).get('region')){
     history.replaceState(null,'',window.location.pathname+window.location.search);
     window.addEventListener('popstate',function(){
-      window.location.href=document.referrer||'https://v2-dev--glittery-pudding-104d72.netlify.app/landing.html';
+      window.location.href=document.referrer||'https://wayterra.it/landing.html';
     },{once:true});
   }
   if(_mapReady){
@@ -3580,7 +3580,7 @@ function selectTravelRegion(regionId,center,zoom){
   if(new URLSearchParams(window.location.search).get('region')){
     history.replaceState(null,'',window.location.pathname+window.location.search);
     window.addEventListener('popstate',function(){
-      window.location.href=document.referrer||'https://v2-dev--glittery-pudding-104d72.netlify.app/landing.html';
+      window.location.href=document.referrer||'https://wayterra.it/landing.html';
     },{once:true});
   }
   if(_mapReady){
@@ -4543,7 +4543,7 @@ function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').classList.remove('show');
   if(_travelContext){
     window.addEventListener('popstate',function(){
-      window.location.href=document.referrer||'https://v2-dev--glittery-pudding-104d72.netlify.app/landing.html';
+      window.location.href=document.referrer||'https://wayterra.it/landing.html';
     },{once:true});
   }
 }
@@ -5598,7 +5598,7 @@ async function submitPwForgot(){
   var email=document.getElementById('pw-forgot-email').value.trim();
   var errEl=document.getElementById('pw-forgot-error');
   if(!email){errEl.textContent=lang==='en'?'Please enter your email':'Inserisci la tua email';errEl.style.display='block';return;}
-  var res=await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:'https://v2-dev--glittery-pudding-104d72.netlify.app/app'});
+  var res=await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/app'});
   if(res.error){errEl.textContent=translateAuthError(res.error.message,lang);errEl.style.display='block';return;}
   closePwForgotModal();
   toast(lang==='en'?'Email sent! Check your inbox':'Email inviata! Controlla la tua casella');
