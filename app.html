@@ -1900,13 +1900,20 @@ function expSubtypeOf(id){return DATA.expSubtypes.find(function(t){return t.id==
 
 function initMap(){
   var isMobile=window.innerWidth<600;
-
+  var _initParams=new URLSearchParams(window.location.search);
+  var _initRegion=_initParams.get('region');
+  var initialCenter=[12.8,41.8];
+  var initialZoom=isMobile?7:8;
+  if(_initRegion&&_initRegion!=='lazio'){
+    initialCenter=getRegionCenter(_initRegion);
+    initialZoom=isMobile?getRegionZoom(_initRegion)-1:getRegionZoom(_initRegion);
+  }
   mapboxgl.accessToken='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
   map_o=new mapboxgl.Map({
     container:'map',
     style:'mapbox://styles/thesolid/cmpgyxqlp001v01se3u753n0n',
-    center:[12.8,41.8],
-    zoom:isMobile?7:8,
+    center:initialCenter,
+    zoom:initialZoom,
     attributionControl:false
   });
   map_o.addControl(new mapboxgl.AttributionControl({compact:true}));
@@ -3576,7 +3583,7 @@ function selectTravelRegion(regionId,center,zoom){
       var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
       if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
       renderItdPill();
-    },3000);
+    },800);
   }else{
     var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
     if(map_o)map_o.flyTo({center:center,zoom:z,duration:600});
@@ -3735,11 +3742,11 @@ function loadEsperienze(){
       } else {
         var _regionParam=_urlParams.get('region');
         if(_regionParam){
+          var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
           var _sp=document.getElementById('splash');
           if(_sp&&_mapReady){
             _sp.classList.remove('hide');_sp.style.display='';
             startSplashRotation();
-            var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
           }
           var _rco2=document.getElementById('region-change-overlay');
           if(!_rco2){_rco2=document.createElement('div');_rco2.id='region-change-overlay';_rco2.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco2);}
