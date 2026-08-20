@@ -125,7 +125,7 @@ section{padding:80px 24px;}
 /* phone preview large */
 .preview-phone{width:260px;margin:0 auto;background:#0d1208;border-radius:38px;padding:9px;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.3);}
 .preview-phone-notch{width:60px;height:15px;background:#0d1208;border-radius:0 0 10px 10px;margin:0 auto 5px;}
-.preview-phone-screen{border-radius:30px;overflow-y:auto;height:480px;background:#f0ede6;position:relative;}
+.preview-phone-screen{border-radius:30px;overflow:hidden;height:480px;background:#f0ede6;position:relative;}
 .pp-topbar{background:rgba(255,255,255,.97);padding:9px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid rgba(0,0,0,.07);}
 .pp-brand{font-size:11px;font-weight:800;color:#111;letter-spacing:-.02em;}
 .pp-right{display:flex;align-items:center;gap:6px;}
@@ -1061,7 +1061,7 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
 
 <!-- HOW POPUP -->
 <div id="how-popup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)toggleHowPopup()">
-  <div style="background:#fff;border-radius:12px;padding:28px;max-width:340px;width:100%;position:relative;">
+  <div style="background:#fff;border-radius:12px;padding:28px;max-width:340px;width:100%;position:relative;overflow:hidden;">
     <button onclick="toggleHowPopup()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:20px;cursor:pointer;color:#999;">✕</button>
 
     <!-- Telefono identico a .preview-phone -->
@@ -1229,8 +1229,8 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
           <i class="ti ti-chevron-right" style="font-size:18px;color:#666;" aria-hidden="true"></i>
         </button>
       </div>
-      <div id="hp-label" style="font-size:14px;font-weight:500;color:#1a1a1a;text-align:center;">1. Esplora la mappa</div>
-      <div id="hp-desc" style="font-size:12px;color:#666;text-align:center;line-height:1.5;max-width:280px;">Pin interattivi con luoghi nascosti e segreti locali</div>
+      <div id="hp-label" style="font-size:14px;font-weight:500;color:#1a1a1a;text-align:center;min-height:20px;">1. Esplora la mappa</div>
+      <div id="hp-desc" style="font-size:12px;color:#666;text-align:center;line-height:1.5;max-width:260px;min-height:36px;">Pin interattivi con luoghi nascosti e segreti locali</div>
     </div>
 
   </div>
