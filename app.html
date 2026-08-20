@@ -5874,6 +5874,8 @@ async function handleAvatarChange(input){
   var authRes=await _supaAuth.auth.updateUser({data:{avatar_url:url}});
   console.log('[avatar] auth update result:',authRes.error);
   if(_currentUserProfile)_currentUserProfile.avatar_url=url;
+  console.log('[avatar] _currentUserProfile dopo update:',_currentUserProfile?.avatar_url);
+  console.log('[avatar] url caricata:',url);
   updateNavProfileAvatar();
 }
 function _compressImage(file,maxW,maxH,quality){
@@ -5894,6 +5896,7 @@ function _compressImage(file,maxW,maxH,quality){
   });
 }
 function updateNavProfileAvatar(){
+  console.log('[nav] avatar url usata:',_currentUserProfile?.avatar_url);
   var profile=_currentUserProfile;
   var avatarHtml;
   if(_currentUser&&profile){
@@ -5913,6 +5916,7 @@ function updateNavProfileAvatar(){
   if(desktopBtn)desktopBtn.innerHTML=avatarHtml;
 }
 async function renderProfilePage(){
+  console.log('[profile] render - _currentUserProfile avatar:',_currentUserProfile?.avatar_url);
   var isLoggedIn=!!_currentUser;
   var email=isLoggedIn?(_currentUser.email||''):'';
   var profileRow=null;
