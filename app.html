@@ -3747,8 +3747,13 @@ function loadEsperienze(){
       if(_itinerarioId){
         var _exp=(DATA.experiences||[]).find(function(e){return String(e.id)===String(_itinerarioId);});
         if(_exp){
-          if(_exp.isTravel){_travelContext=true;}
-          openItinerario(parseInt(_itinerarioId));
+          var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
+          if(_exp.isTravel&&_exp.region){
+            selectTravelRegion(_exp.region,getRegionCenter(_exp.region),getRegionZoom(_exp.region));
+          }else{
+            selectRegion('lazio');
+          }
+          map_o.once('moveend',function(){openItinerario(parseInt(_itinerarioId));});
         }
       } else {
         var _regionParam=_urlParams.get('region');
