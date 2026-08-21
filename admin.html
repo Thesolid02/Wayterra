@@ -446,6 +446,11 @@ textarea.ft{resize:vertical;line-height:1.65;}
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.83rem;font-weight:500;margin-top:10px;">
           <input type="checkbox" id="esp-travel"> Viaggio all'estero (is_travel)
         </label>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+          <label style="font-size:.85rem;font-weight:500;">Pubblicato</label>
+          <input type="checkbox" id="exp-published" checked style="width:18px;height:18px;cursor:pointer;">
+          <span style="font-size:.8rem;color:#666;">Se disattivato, l'itinerario non sarà visibile nell'app</span>
+        </div>
       </div>
       <div class="fg"><label>Sort order</label><input type="number" id="esp-sort" value="0" min="0"></div>
     </div>
@@ -582,6 +587,11 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <span style="font-size:.83rem;font-weight:500;">Luogo autentico al 100%</span>
     </div>
     <input type="hidden" id="p-verified" value="false">
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+      <label style="font-size:.85rem;font-weight:500;">Pubblicato</label>
+      <input type="checkbox" id="place-published" checked style="width:18px;height:18px;cursor:pointer;">
+      <span style="font-size:.8rem;color:#666;">Se disattivato, il luogo non sarà visibile nell'app</span>
+    </div>
     <div class="sdiv">Foto <span style="font-weight:400;font-size:.68rem;color:var(--g400);">(compresse automaticamente)</span></div>
     <div class="fg">
       <label>Foto copertina</label>
@@ -1007,6 +1017,7 @@ function rowToPlace(row, acts){
     hiddenScore: row.hidden_score||0,
     premium: row.premium||false,
     verified: row.verified||false,
+    published: row.published!==false,
     activities: (acts||[]).filter(function(a){return a.place_id===row.id;}).map(actRowToAct)
   };
 }
@@ -1067,6 +1078,7 @@ function placeToRow(p){
     hidden_score: p.hiddenScore||0,
     premium: p.premium||false,
     verified: p.verified||false,
+    published: p.published!==false,
     vibe: p.vibe||[]
   };
 }
@@ -1596,6 +1608,7 @@ function clearPForm(){
   document.getElementById('p-score').value=50; updScore();
   document.getElementById('p-free').checked=true;
   setVerified(false);
+  document.getElementById('place-published').checked=true;
   document.getElementById('ggrid').innerHTML='';
   document.getElementById('arows').innerHTML='';
   ['romantico','cinematografico','avventura','relax'].forEach(function(v){var el=document.getElementById('p-vibe-'+v);if(el)el.checked=false;});
@@ -1626,6 +1639,7 @@ function fillPForm(p){
   if(p.premium){document.getElementById('p-prem').checked=true;}
   else{document.getElementById('p-free').checked=true;}
   setVerified(p.verified||false);
+  document.getElementById('place-published').checked=p.published!==false;
   var hx=(p.gradient||'').match(/#[0-9a-fA-F]{3,6}/g)||[];
   document.getElementById('p-c1').value=hx[0]||'';
   document.getElementById('p-c2').value=hx[1]||'';
@@ -1988,6 +2002,7 @@ function savePlace(){
     hiddenScore:parseInt(document.getElementById('p-score').value)||0,
     premium:document.querySelector('input[name="p-premium"]:checked')&&document.querySelector('input[name="p-premium"]:checked').value==='true',
     verified:document.getElementById('p-verified').value==='true',
+    published:document.getElementById('place-published').checked,
     secret:document.getElementById('p-secret').value.trim(),
     secretEn:document.getElementById('p-secret-en').value.trim(),
     taglineEn:taglineEn,
@@ -2878,7 +2893,8 @@ function rowToEsperienza(row){
     notes: row.notes||'',
     notesEn: row.notes_en||'',
     totalKm: row.total_km||'',
-    totalDriveTime: row.total_drive_time||''
+    totalDriveTime: row.total_drive_time||'',
+    published: row.published!==false
   };
 }
 
@@ -2921,6 +2937,7 @@ function openAddEsperienza(){
   document.getElementById('esp-dur-en').value='';
   document.getElementById('esp-featured').checked=false;
   document.getElementById('esp-travel').checked=false;
+  document.getElementById('exp-published').checked=true;
   document.getElementById('esp-sort').value='0';
   document.getElementById('esp-cover-prev').style.display='none';
   document.getElementById('esp-cover-img').src='';
@@ -2957,6 +2974,7 @@ function openEditEsperienza(id){
   document.getElementById('esp-dur-en').value=e.durationEn||'';
   document.getElementById('esp-featured').checked=!!e.featured;
   document.getElementById('esp-travel').checked=!!e.isTravel;
+  document.getElementById('exp-published').checked=e.published!==false;
   document.getElementById('esp-sort').value=e.sortOrder||0;
   if(espCoverData){
     document.getElementById('esp-cover-img').src=espCoverData;
@@ -3213,6 +3231,7 @@ function saveEsperienza(){
     cover_photo: espCoverData||'',
     featured: document.getElementById('esp-featured').checked,
     is_travel: document.getElementById('esp-travel').checked,
+    published: document.getElementById('exp-published').checked,
     sort_order: parseInt(document.getElementById('esp-sort').value)||0,
     stops: collectEspStops(),
     my_maps_url: document.getElementById('esp-my-maps').value.trim()||null,

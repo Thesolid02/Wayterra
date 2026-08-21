@@ -3733,8 +3733,9 @@ function loadEsperienze(){
                myMaps:r.my_maps_url||'',
                transport:r.transport||'',clothing:r.clothing||'',
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
-               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',totalKm:r.total_km||'',totalDriveTime:r.total_drive_time||'',clothingEn:r.clothing_en||'',region:r.region?r.region.toLowerCase():''};
+               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',totalKm:r.total_km||'',totalDriveTime:r.total_drive_time||'',clothingEn:r.clothing_en||'',region:r.region?r.region.toLowerCase():'',published:r.published!==false};
       });
+      DATA.experiences=DATA.experiences.filter(function(e){return e.published!==false;});
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
       updateRegionPageLang();
@@ -5248,7 +5249,7 @@ window.addEventListener('DOMContentLoaded',function(){
   },8000);
 
   Promise.all([
-    fetch(SB_URL+'/rest/v1/places?select=id,cat,place_types_id,mode,city,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,pills_en,gradient,maps_url,cover_photo,gallery,hidden_score,premium,vibe&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
+    fetch(SB_URL+'/rest/v1/places?select=id,cat,place_types_id,mode,city,name,region,lat,lng,tagline,tagline_en,description,description_en,secret,secret_en,pills,pills_en,gradient,maps_url,cover_photo,gallery,hidden_score,premium,vibe,published&order=id',{headers:h}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),
     fetch(SB_URL+'/rest/v1/categories?select=*&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activity_types?select=*&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/activities?select=*&order=place_id,sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
@@ -5298,10 +5299,11 @@ window.addEventListener('DOMContentLoaded',function(){
         pills:row.pills||[],pillsEn:Array.isArray(row.pills_en)?row.pills_en:[],gradient:row.gradient||'linear-gradient(135deg,#888,#555)',
         maps:row.maps_url||'',coverPhoto:row.cover_photo||'',gallery:row.gallery||[],
         hiddenScore:row.hidden_score||0,premium:row.premium||false,
-        vibe:row.vibe||[],
+        vibe:row.vibe||[],published:row.published!==false,
         activities:acts
       };
     });
+    places_=places_.filter(function(p){return p.published!==false;});
 
     var cityActivities_=(actRows||[]).filter(function(a){return a.place_id===null||a.place_id===undefined;}).map(function(a){
       return{id:a.id,type:a.type,name:a.name,lat:a.lat||null,lng:a.lng||null,
