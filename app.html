@@ -2983,8 +2983,7 @@ function openDetail(){
     setTimeout(function(){map_o.resize();},320);
   }
   var _dpEl=document.getElementById('detail-page');_dpEl.classList.remove('gone');_dpEl.classList.add('show');
-  if(window.umami)umami.track('place_view',{name:p.name,type:c.name||''});
-  trackEvent({event_type:'place_view',place_id:p.id});
+  trackEvent('view_place',{place_id:p.id,place_name:p.name,region:p.region});
 }
 function closeDetail(){
   document.getElementById('detail-page').classList.remove('show');
@@ -3031,8 +3030,7 @@ async function toggleFav(id){
     if(_currentUser&&_supaAuth)_supaAuth.from('user_favorites').insert({user_id:_currentUser.id,place_id:id}).then(function(){});
     var p=(DATA.places||[]).find(function(x){return x.id===id;});
     if(p){
-      if(window.umami)umami.track('bookmark_place',{id:p.id,name:p.name});
-      trackEvent({event_type:'bookmark_place',place_id:p.id});
+      trackEvent('save_place',{place_id:id,region:_currentTravelRegion||'lazio'});
     }
   }
   saveFavs();updFavBtn();updateItdBookmarkBtn();
@@ -3064,6 +3062,7 @@ function toggleFavItinerary(expId){
     favItineraries.add(expId);
     if(_supaAuth)_supaAuth.from('user_favorite_itineraries').insert({user_id:_currentUser.id,experience_id:expId}).then(function(){});
     toast(lang==='en'?'Itinerary saved':'Itinerario salvato');
+    trackEvent('save_itinerary',{experience_id:expId});
   }
   updateItdBookmarkBtn();
   var _pp=document.getElementById('profile-page');
@@ -3451,13 +3450,22 @@ function sbFetch(path,opts){
     }
   },opts||{}));
 }
-function trackEvent(payload){
+function trackEvent(eventType,data){
   if(localStorage.getItem('wayterra.dev')==='1') return;
-  fetch(SB_URL+'/rest/v1/analytics_events',{
-    method:'POST',
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify(payload)
-  }).catch(function(){});
+  if(typeof eventType==='object'){
+    var _p=eventType;
+    if(window.umami&&_p.event_type)umami.track(_p.event_type,_p);
+    if(_supaAuth){_supaAuth.from('user_events').insert({event_type:_p.event_type||'unknown',user_id:_currentUser?_currentUser.id:null,region:_currentTravelRegion||'lazio',metadata:_p}).then(function(){});}
+    return;
+  }
+  data=data||{};
+  if(window.umami)umami.track(eventType,data);
+  if(_supaAuth){
+    var _payload={event_type:eventType,user_id:_currentUser?_currentUser.id:null,region:data.region||_currentTravelRegion||'lazio',metadata:data};
+    if(data.place_id)_payload.place_id=data.place_id;
+    if(data.experience_id)_payload.experience_id=data.experience_id;
+    _supaAuth.from('user_events').insert(_payload).then(function(){});
+  }
 }
 
 function normalizeData(d){
@@ -3492,6 +3500,7 @@ function hideRegionPage(cb){
 }
 function selectRegion(regionId){
   localStorage.setItem('WT_LAST_REGION','lazio');
+  trackEvent('select_region',{region:regionId});
   var _rco=document.getElementById('region-change-overlay');
   if(_rco){_rco.style.display='block';}else{_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:#fff;';document.body.appendChild(_rco);}
   _rco.getBoundingClientRect();
@@ -3548,6 +3557,7 @@ function selectRegion(regionId){
 }
 function selectTravelRegion(regionId,center,zoom){
   localStorage.setItem('WT_LAST_REGION',regionId);
+  trackEvent('select_region',{region:regionId});
   var _rco=document.getElementById('region-change-overlay');
   if(_rco){_rco.style.display='block';}else{_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:#fff;';document.body.appendChild(_rco);}
   _rco.getBoundingClientRect();
@@ -3979,8 +3989,7 @@ function openItinerario(id){
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
   _currentItdExp=e;
-  if(window.umami)umami.track('itinerary_view',{id:e.id,title:e.titleIt});
-  trackEvent({event_type:'itinerary_view',experience_id:e.id});
+  trackEvent('view_itinerary',{experience_id:e.id,title:e.titleIt,region:e.region});
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
   var desc=(lang==='en'&&e.descEn)?e.descEn:e.descIt;
   var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
@@ -4573,6 +4582,7 @@ function openItinerarioPDF(){
   if(!e)return;
   var isEN=lang==='en';
   var title=isEN&&e.titleEn?e.titleEn:e.titleIt;
+  trackEvent('download_pdf',{experience_id:e.id,title:title});
   var dur=isEN&&e.durationEn?e.durationEn:e.durationIt;
   var stops=e.stops||[];
   var nonAirport=stops.filter(function(s){return !s.is_airport;}).length;
@@ -5652,6 +5662,7 @@ async function submitAuth(){
     result=await _supaAuth.auth.signUp({email:email,password:password,options:{data:{full_name:fullName}}});
     if(!result.error&&result.data&&result.data.user){
       _supaAuth.from('profiles').upsert({id:result.data.user.id,full_name:fullName,avatar_url:null},{onConflict:'id'});
+      trackEvent('signup',{method:'email'});
     }
   }else{
     result=await _supaAuth.auth.signInWithPassword({email:email,password:password});
@@ -5707,6 +5718,7 @@ async function checkAuthSession(){
     }
     if(event==='SIGNED_IN'){
       _currentUser=session.user;
+      trackEvent('login',{method:(session.user.app_metadata&&session.user.app_metadata.provider)||'email'});
       completedItineraries.clear();visitedPlaces.clear();favs.clear();favItineraries.clear();downloadedSet.clear();
       var favRes=await _supaAuth.from('user_favorites').select('place_id').eq('user_id',session.user.id);
       if(favRes.data)favRes.data.forEach(function(r){if(r.place_id)favs.add(r.place_id);});
@@ -5839,6 +5851,7 @@ async function markItineraryDone(expId){
   }else{
     completedItineraries.add(expId);
     if(_supaAuth)_supaAuth.from('user_completed_itineraries').insert({user_id:_currentUser.id,experience_id:expId}).then(function(){});
+    trackEvent('complete_itinerary',{experience_id:expId});
     showCompletionModal('itinerary',expId);
   }
   var _nowDone=completedItineraries.has(expId);
@@ -5858,6 +5871,7 @@ async function markPlaceVisited(placeId){
   }else{
     visitedPlaces.add(placeId);
     if(_supaAuth)_supaAuth.from('user_visited_places').insert({user_id:_currentUser.id,place_id:placeId}).then(function(){});
+    trackEvent('visit_place',{place_id:placeId});
     showCompletionModal('place',placeId);
   }
   var _vBtn=document.getElementById('dp-visited-btn');

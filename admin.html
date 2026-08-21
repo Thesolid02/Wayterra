@@ -403,6 +403,28 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div id="an-gallery"><div class="an-loading">Caricamento…</div></div>
     </div>
   </div>
+  <hr class="an-divider">
+  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:0 0 16px;">User Events (ultimi 30 giorni)</div>
+  <div class="an-top-grid">
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Ultimi 20 eventi</div>
+      <div id="ue-feed"><div class="an-loading">Caricamento…</div></div>
+    </div>
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Conteggio per tipo</div>
+      <div id="ue-by-type"><div class="an-loading">Caricamento…</div></div>
+    </div>
+  </div>
+  <div class="an-top-grid" style="margin-top:16px;">
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Luoghi più visualizzati</div>
+      <div id="ue-top-places"><div class="an-loading">Caricamento…</div></div>
+    </div>
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Itinerari più visualizzati</div>
+      <div id="ue-top-itineraries"><div class="an-loading">Caricamento…</div></div>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -1406,7 +1428,7 @@ function switchTab(t,btn){
   if(t==='placetypes') renderPlaceTypes();
   if(t==='experience') renderExpTypes();
   if(t==='esperienze') renderEsperienze();
-  if(t==='analytics'){renderAnalytics();startAnLive();}
+  if(t==='analytics'){renderAnalytics();startAnLive();renderUserEvents();}
 }
 
 // ═══ HELPERS ═══
@@ -3372,6 +3394,76 @@ var anBmPlacesData=null;
 var anBmActivitiesData=null;
 var anItinerariesData=null;
 var anGalleryData=null;
+
+function renderUserEvents(){
+  var since=new Date(Date.now()-30*86400000).toISOString();
+  var h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+  document.getElementById('ue-feed').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('ue-by-type').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('ue-top-places').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('ue-top-itineraries').innerHTML='<div class="an-loading">Caricamento…</div>';
+
+  // Ultimi 20 eventi
+  fetch(SB_URL+'/rest/v1/user_events?select=event_type,region,metadata,created_at&order=created_at.desc&limit=20',{headers:h})
+  .then(function(r){return r.json();})
+  .then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){document.getElementById('ue-feed').innerHTML='<div class="an-empty">Nessun evento</div>';return;}
+    document.getElementById('ue-feed').innerHTML=rows.map(function(e){
+      var icon={'view_place':'📍','view_itinerary':'🗺️','save_place':'❤️','save_itinerary':'📌','download_pdf':'📄','signup':'🎉','login':'🔑','complete_itinerary':'✅','visit_place':'📍','select_region':'🌍'}[e.event_type]||'•';
+      var name=(e.metadata&&(e.metadata.place_name||e.metadata.title||e.metadata.method||e.metadata.region))||e.event_type;
+      return'<div class="an-live-row"><span class="an-live-icon">'+icon+'</span><span class="an-live-name">'+e.event_type+' — '+name+'</span><span class="an-live-time">'+timeAgo(e.created_at)+'</span></div>';
+    }).join('');
+  }).catch(function(){document.getElementById('ue-feed').innerHTML='<div class="an-empty">Errore</div>';});
+
+  // Conteggio per tipo (30 giorni)
+  fetch(SB_URL+'/rest/v1/user_events?select=event_type&created_at=gte.'+encodeURIComponent(since),{headers:h})
+  .then(function(r){return r.json();})
+  .then(function(rows){
+    if(!Array.isArray(rows)){document.getElementById('ue-by-type').innerHTML='<div class="an-empty">Nessun dato</div>';return;}
+    var counts={};
+    rows.forEach(function(r){counts[r.event_type]=(counts[r.event_type]||0)+1;});
+    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];});
+    document.getElementById('ue-by-type').innerHTML=sorted.map(function(k){
+      return'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--g100);font-size:.82rem;"><span>'+k+'</span><strong>'+counts[k]+'</strong></div>';
+    }).join('');
+  }).catch(function(){document.getElementById('ue-by-type').innerHTML='<div class="an-empty">Errore</div>';});
+
+  // Luoghi più visualizzati
+  fetch(SB_URL+'/rest/v1/user_events?select=place_id&event_type=eq.view_place&created_at=gte.'+encodeURIComponent(since)+'&place_id=not.is.null',{headers:h})
+  .then(function(r){return r.json();})
+  .then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){document.getElementById('ue-top-places').innerHTML='<div class="an-empty">Nessun dato</div>';return;}
+    var counts={};
+    rows.forEach(function(r){if(r.place_id)counts[r.place_id]=(counts[r.place_id]||0)+1;});
+    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+    fetch(SB_URL+'/rest/v1/places?select=id,name&id=in.('+sorted.join(',')+')',{headers:h})
+    .then(function(r){return r.json();})
+    .then(function(places){
+      document.getElementById('ue-top-places').innerHTML=sorted.map(function(id,i){
+        var p=places.find(function(x){return String(x.id)===String(id);});
+        return'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--g100);font-size:.82rem;"><span>'+(i+1)+'. '+(p?p.name:'#'+id)+'</span><strong>'+counts[id]+'</strong></div>';
+      }).join('');
+    });
+  }).catch(function(){document.getElementById('ue-top-places').innerHTML='<div class="an-empty">Errore</div>';});
+
+  // Itinerari più visualizzati
+  fetch(SB_URL+'/rest/v1/user_events?select=experience_id&event_type=eq.view_itinerary&created_at=gte.'+encodeURIComponent(since)+'&experience_id=not.is.null',{headers:h})
+  .then(function(r){return r.json();})
+  .then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){document.getElementById('ue-top-itineraries').innerHTML='<div class="an-empty">Nessun dato</div>';return;}
+    var counts={};
+    rows.forEach(function(r){if(r.experience_id)counts[r.experience_id]=(counts[r.experience_id]||0)+1;});
+    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+    fetch(SB_URL+'/rest/v1/experiences?select=id,title&id=in.('+sorted.join(',')+')',{headers:h})
+    .then(function(r){return r.json();})
+    .then(function(exps){
+      document.getElementById('ue-top-itineraries').innerHTML=sorted.map(function(id,i){
+        var e=exps.find(function(x){return String(x.id)===String(id);});
+        return'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--g100);font-size:.82rem;"><span>'+(i+1)+'. '+(e?e.title:'#'+id)+'</span><strong>'+counts[id]+'</strong></div>';
+      }).join('');
+    });
+  }).catch(function(){document.getElementById('ue-top-itineraries').innerHTML='<div class="an-empty">Errore</div>';});
+}
 
 function timeAgo(isoStr){
   var sec=Math.floor((Date.now()-new Date(isoStr).getTime())/1000);
