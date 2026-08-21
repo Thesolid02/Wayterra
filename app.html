@@ -5175,6 +5175,9 @@ function applyItinerariState(){
   }
 }
 function bootApp(d){
+  console.log('[boot] URL completo:',window.location.href);
+  console.log('[boot] hash:',window.location.hash);
+  console.log('[boot] search:',window.location.search);
   DATA=d;
   lang=localStorage.getItem(K.LANG)||'it';
   if(!localStorage.getItem(K.LANG)){
