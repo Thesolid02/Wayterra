@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<script>if(window.location.hash&&window.location.hash.includes('access_token')){sessionStorage.setItem('_oauth_pending','1');}</script>
+<script>if(window.location.hash&&window.location.hash.includes('access_token')){localStorage.setItem('_oauth_pending','1');}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -5214,8 +5214,8 @@ function bootApp(d){
       openAccessRequestModal();
     },100);
   } else {
-    var _hasOAuth=sessionStorage.getItem('_oauth_pending')==='1';
-    sessionStorage.removeItem('_oauth_pending');
+    var _hasOAuth=localStorage.getItem('_oauth_pending')==='1';
+    localStorage.removeItem('_oauth_pending');
     if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
       if(!_hasOAuth){
         window.location.href='/landing.html';
