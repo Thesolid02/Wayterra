@@ -803,7 +803,7 @@ lottie.loadAnimation({
 
 <!-- REGION PAGE -->
 <div id="region-page" class="gone">
-  <button onclick="openProfilePage()" id="rp-profile-btn" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
+  <button onclick="openProfilePage()" id="rp-profile-btn" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
   <div class="rp-content">
   <div class="rp-header" style="padding-left:16px;padding-right:16px;">
     <div class="rp-title" data-t="rp_title">Scegli la destinazione</div>
@@ -4323,7 +4323,26 @@ function openItinerario(id){
     if(_revs&&_revs.length){
       var _avg=Math.round(_revs.reduce(function(s,r){return s+r.rating;},0)/_revs.length*10)/10;
       var _crEl=document.getElementById('itd-cover-rating');
-      if(_crEl){_crEl.style.display='flex';_crEl.innerHTML='<i class="ti ti-star" style="font-size:12px;color:#f59e0b;"></i><span style="font-size:12px;font-weight:500;color:#fff;">'+_avg+'</span><span style="font-size:11px;color:rgba(255,255,255,.8);">('+_revs.length+')</span>';}
+      if(_crEl){
+        var _crColors=['#dc6b2f','#2563eb','#16a34a','#7c3aed'];
+        var _crAvatars=_revs.slice(0,3).map(function(r,i){
+          var _n=(r.profiles&&r.profiles.full_name)?r.profiles.full_name:'?';
+          var _pts=_n.trim().split(' ');
+          var _ini=_pts[0]?_pts[0][0].toUpperCase()+(_pts[1]?_pts[1][0].toUpperCase():''):'?';
+          var _ac=(r.profiles&&r.profiles.avatar_url)
+            ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+            :'<span style="font-size:8px;color:#fff;font-weight:500;">'+_ini+'</span>';
+          return'<div style="width:22px;height:22px;border-radius:50%;background:'+_crColors[i%_crColors.length]+';border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;margin-right:-6px;z-index:'+(3-i)+';overflow:hidden;flex-shrink:0;">'+_ac+'</div>';
+        }).join('');
+        _crEl.style.display='flex';
+        _crEl.innerHTML='<div onclick="document.getElementById(\'itd-reviews\').scrollIntoView({behavior:\'smooth\'})" style="display:flex;align-items:center;gap:8px;cursor:pointer;">'
+          +'<div style="display:flex;">'+_crAvatars+'</div>'
+          +'<span style="font-size:11px;color:rgba(255,255,255,.9);padding-left:8px;">+'+_revs.length+' '+(lang==='en'?'reviews':'recensioni')+'</span>'
+          +'<div style="display:flex;align-items:center;gap:3px;margin-left:4px;">'
+          +'<i class="ti ti-star" style="font-size:12px;color:#f59e0b;"></i>'
+          +'<span style="font-size:12px;font-weight:500;color:#fff;">'+_avg+'</span>'
+          +'</div></div>';
+      }
       var _revHtml='<div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g400);margin-bottom:10px;display:flex;align-items:center;gap:6px;">'
         +'<i class="ti ti-star" style="font-size:14px;color:#f59e0b;"></i>'+(lang==='en'?'REVIEWS':'RECENSIONI')+'</div>'
         +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
@@ -5939,10 +5958,15 @@ function switchProfileTab(tab){
   document.getElementById('ptab-content-settings').style.display=tab==='settings'?'block':'none';
   if(tab==='guides')renderProfileGuides();
 }
-function renderProfileGuides(){
+async function renderProfileGuides(){
   var el=document.getElementById('ptab-content-guides');
   if(!el)return;
   if(!_currentUser){el.innerHTML='<div style="padding:24px;text-align:center;color:var(--g400);font-size:.85rem;">'+(lang==='en'?'Sign in to see your guides':'Accedi per vedere le tue guide')+'</div>';return;}
+  el.innerHTML='<div style="padding:24px;text-align:center;color:var(--g400);font-size:.85rem;">…</div>';
+  if(_supaAuth){
+    var _rg=await _supaAuth.from('user_regions').select('region,first_access').eq('user_id',_currentUser.id);
+    _userRegions=_rg.data||[];
+  }
   if(!_userRegions||!_userRegions.length){el.innerHTML='<div style="padding:24px;text-align:center;color:var(--g400);font-size:.85rem;">'+t('no_guides')+'</div>';return;}
   el.innerHTML='<div style="padding:16px;">'+_userRegions.map(function(r){
     var meta=REGION_META[r.region]||{name:r.region,flag:'🌍',country:''};
