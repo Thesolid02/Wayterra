@@ -713,7 +713,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 }
 
 /* ── REGION PAGE ── */
-#region-page{position:fixed;inset:0;z-index:600;background:#fafaf8;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:opacity .35s;}
+#region-page{position:fixed;inset:0;z-index:600;background:#fafaf8;display:flex;flex-direction:column;transition:opacity .35s;}
+#rp-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 #region-page.fade-out{opacity:0;pointer-events:none;}
 #region-page.gone{display:none;}
 .gone{display:none;}
@@ -804,6 +805,7 @@ lottie.loadAnimation({
 <!-- REGION PAGE -->
 <div id="region-page" class="gone">
   <button onclick="openProfilePage()" id="rp-profile-btn" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
+  <div id="rp-scroll">
   <div class="rp-content">
   <div class="rp-header" style="padding-left:16px;padding-right:16px;">
     <div class="rp-title" data-t="rp_title">Scegli la destinazione</div>
@@ -885,6 +887,7 @@ lottie.loadAnimation({
         <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
       </div>
     </div>
+  </div>
   </div>
   </div>
 </div>
