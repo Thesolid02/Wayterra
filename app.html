@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<script>if(window.location.hash&&window.location.hash.includes('access_token')){localStorage.setItem('_oauth_pending','1');}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -5213,29 +5212,21 @@ function bootApp(d){
       showRegionPage();
       openAccessRequestModal();
     },100);
-  } else {
-    var _hasOAuth=localStorage.getItem('_oauth_pending')==='1';
-    localStorage.removeItem('_oauth_pending');
-    if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
-      if(!_hasOAuth){
-        window.location.href='/landing.html';
-        return;
-      }
-      checkAuthSession();
-      var _lastR=localStorage.getItem('WT_LAST_REGION');
-      var _io=document.getElementById('initial-overlay');
-      if(_lastR&&_lastR!=='lazio'){
-        if(_io)_io.remove();
-        selectTravelRegion(_lastR,getRegionCenter(_lastR),getRegionZoom(_lastR));
-      } else if(_lastR==='lazio'){
-        if(_io)_io.remove();
-        selectRegion('lazio');
-      } else {
-        if(_io)_io.remove();
-        showRegionPage();
-      }
+  } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
+    var _lastR=localStorage.getItem('WT_LAST_REGION');
+    var _io=document.getElementById('initial-overlay');
+    if(_lastR&&_lastR!=='lazio'){
+      if(_io)_io.remove();
+      selectTravelRegion(_lastR,getRegionCenter(_lastR),getRegionZoom(_lastR));
+    } else if(_lastR==='lazio'){
+      if(_io)_io.remove();
+      selectRegion('lazio');
+    } else {
+      window.location.href='/landing.html';
       return;
     }
+    checkAuthSession();
+    return;
   }
   checkAuthSession();
 }
