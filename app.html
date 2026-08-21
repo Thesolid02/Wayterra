@@ -5468,7 +5468,10 @@ window.addEventListener('DOMContentLoaded',function(){
     <div id="profile-header" style="position:relative;">
       <div style="width:32px;height:3px;background:rgba(255,255,255,0.5);border-radius:2px;margin:0 auto 12px;"></div>
       <button onclick="closeProfilePage()" style="position:absolute;top:12px;right:14px;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="ti ti-x" style="font-size:16px;color:#fff;"></i></button>
-      <div id="profile-avatar-wrap" onclick="triggerAvatarUpload()" style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;margin-bottom:10px;cursor:pointer;overflow:hidden;"></div>
+      <div style="position:relative;display:inline-block;margin-bottom:10px;cursor:pointer;" onclick="triggerAvatarUpload()">
+        <div id="profile-avatar-wrap" style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.2);border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;overflow:hidden;pointer-events:none;"></div>
+        <div style="position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;border:2px solid #fff;pointer-events:none;"><i class="ti ti-camera" style="font-size:11px;color:#fff;"></i></div>
+      </div>
       <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarChange(this)">
       <div id="profile-name-el" style="font-size:1rem;font-weight:600;color:#fff;margin-bottom:2px;min-height:1.2em;"></div>
       <div id="profile-email-el" style="font-size:.78rem;color:rgba(255,255,255,.75);margin-bottom:0;min-height:1em;"></div>
