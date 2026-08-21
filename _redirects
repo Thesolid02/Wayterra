@@ -2,4 +2,4 @@
 /app        /app.html        200
 /app/*      /app.html        200
 /privacy    /privacy.html    200
-/*          /landing.html    200
+/admin      /admin.html      200
