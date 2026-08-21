@@ -5956,15 +5956,21 @@ function updateProfileUI(){
 /* ── PROFILE PAGE ── */
 var _profileTab='saved';
 var _profileOpenedFromRegionPage=false;
+var _profileOpenedFromItinerari=false;
 var _userRegions=[];
 var REGION_META={'lazio':{name:'Lazio',flag:'🇮🇹',country:'Italia'},'cotswolds':{name:'Cotswolds',flag:'🇬🇧',country:'UK'},'highlands':{name:'Highlands',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',country:'UK'}};
 function openProfilePage(){
-  renderProfilePage();
   var _pp=document.getElementById('profile-page');
-  if(_profileOpenedFromRegionPage){
+  var _itpShow=document.getElementById('itinerari-page').classList.contains('show');
+  var _itdShow=document.getElementById('itinerario-detail').classList.contains('show');
+  _profileOpenedFromItinerari=_itpShow||_itdShow;
+  if(_profileOpenedFromItinerari||_profileOpenedFromRegionPage){
     _pp.style.zIndex='700';
-    var _rpb=document.getElementById('rp-profile-btn');if(_rpb)_rpb.style.display='none';
-  }else{_pp.style.zIndex='';}
+    if(_profileOpenedFromRegionPage){var _rpb=document.getElementById('rp-profile-btn');if(_rpb)_rpb.style.display='none';}
+  }else{
+    _pp.style.zIndex='';
+  }
+  renderProfilePage();
   _pp.classList.add('show');
   setBottomNav('profilo');
 }
@@ -5975,6 +5981,9 @@ function closeProfilePage(){
   if(_profileOpenedFromRegionPage){
     _profileOpenedFromRegionPage=false;
     var _rpb=document.getElementById('rp-profile-btn');if(_rpb)_rpb.style.display='flex';
+  } else if(_profileOpenedFromItinerari){
+    _profileOpenedFromItinerari=false;
+    setBottomNav('itinerari');
   } else {
     setBottomNav('mappa');
   }
