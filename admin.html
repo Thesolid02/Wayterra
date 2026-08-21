@@ -403,6 +403,13 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div id="an-gallery"><div class="an-loading">Caricamento…</div></div>
     </div>
   </div>
+  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Guide PDF</div>
+  <div class="an-top-grid">
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Guide PDF scaricate (top 10)</div>
+      <div id="an-pdf"><div class="an-loading">Caricamento…</div></div>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -3471,6 +3478,7 @@ function renderAnalytics(){
   document.getElementById('an-bm-activities').innerHTML='<div class="an-loading">Caricamento…</div>';
   document.getElementById('an-itineraries').innerHTML='<div class="an-loading">Caricamento…</div>';
   document.getElementById('an-gallery').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-pdf').innerHTML='<div class="an-loading">Caricamento…</div>';
   fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.asc',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
@@ -3483,6 +3491,7 @@ function renderAnalytics(){
     renderAnBmActivities(events);
     renderAnItineraries(events);
     renderAnGallery(events);
+    renderAnPdf(events);
   })
   .catch(function(e){
     console.error('analytics fetch error',e);
@@ -3729,6 +3738,59 @@ function renderAnGallery(events){
     document.getElementById('an-gallery').innerHTML=html;
   })
   .catch(function(){document.getElementById('an-gallery').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
+function renderAnPdf(events){
+  var pEvents=events.filter(function(e){return e.event_type==='pdf_download'&&e.experience_id;});
+  var counts={};
+  pEvents.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){
+    document.getElementById('an-pdf').innerHTML='<div class="an-empty">Nessun download nel periodo</div>';
+    return;
+  }
+  fetch(SB_URL+'/rest/v1/experiences?select=id,title&id=in.('+sorted.join(',')+')',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  })
+  .then(function(r){return r.json();})
+  .then(function(exps){
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
+      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
+      return '<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +'<div class="an-thumb-ph"></div>'
+        +'<span class="an-name">'+ex.title+'</span>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAllPdf()">Vedi tutti ('+sorted.length+')</button>';}
+    document.getElementById('an-pdf').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-pdf').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
+function openAnAllPdf(){
+  var since=new Date(Date.now()-_anDays*86400000).toISOString();
+  var h={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+  fetch(SB_URL+'/rest/v1/analytics_events?select=experience_id&event_type=eq.pdf_download&created_at=gte.'+encodeURIComponent(since)+'&experience_id=not.is.null',{headers:h})
+  .then(function(r){return r.json();})
+  .then(function(rows){
+    var counts={};
+    rows.forEach(function(r){if(r.experience_id)counts[r.experience_id]=(counts[r.experience_id]||0)+1;});
+    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];});
+    fetch(SB_URL+'/rest/v1/experiences?select=id,title&id=in.('+sorted.join(',')+')',{headers:h})
+    .then(function(r){return r.json();})
+    .then(function(exps){
+      var html=sorted.map(function(id,i){
+        var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
+        return '<div class="an-row"><span class="an-rank">'+(i+1)+'</span><div class="an-thumb-ph"></div><span class="an-name">'+ex.title+'</span><span class="an-count">'+counts[id]+'</span></div>';
+      }).join('');
+      document.getElementById('an-all-title').textContent='Guide PDF scaricate (top '+sorted.length+')';
+      document.getElementById('an-all-body').innerHTML=html;
+      document.getElementById('an-all-modal').classList.add('show');
+    });
+  });
 }
 
 function openAnAll(type){

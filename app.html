@@ -4615,7 +4615,6 @@ function openItinerarioPDF(){
   if(!e)return;
   var isEN=lang==='en';
   var title=isEN&&e.titleEn?e.titleEn:e.titleIt;
-  trackEvent('download_pdf',{experience_id:e.id,title:title});
   var dur=isEN&&e.durationEn?e.durationEn:e.durationIt;
   var stops=e.stops||[];
   var nonAirport=stops.filter(function(s){return !s.is_airport;}).length;
@@ -4760,6 +4759,7 @@ function openItinerarioPDF(){
   a.target='_blank';
   document.body.appendChild(a);
   a.click();
+  trackEvent({event_type:'pdf_download',experience_id:e.id});
   document.body.removeChild(a);
   setTimeout(function(){URL.revokeObjectURL(url);},1000);
   if(_currentUser&&_supaAuth){
