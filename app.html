@@ -3736,6 +3736,7 @@ function setBottomNav(name){
   });
 }
 function goToMap(){
+  var _itd=document.getElementById('itinerario-detail');if(_itd){_itd.classList.remove('show');_itd.style.zIndex='510';}
   document.getElementById('itinerari-page').classList.remove('show');
   var fp=document.getElementById('fav-page');if(fp)fp.classList.remove('show');
   var pp=document.getElementById('profile-page');if(pp)pp.classList.remove('show');
@@ -3928,7 +3929,7 @@ function openItinerariPage(region){
   page.style.zIndex=region?'610':'';
   page.classList.remove('gone');page.classList.add('show');
   setBottomNav('itinerari');
-  if(!region){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex='520';}
+  var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex=region?'630':'520';
 }
 function closeItinerariPage(){
   var page=document.getElementById('itinerari-page');
@@ -4416,7 +4417,7 @@ function openItinerario(id){
     }
   }
   var _itdEl=document.getElementById('itinerario-detail');_itdEl.style.zIndex=_travelContext?'620':'510';_itdEl.classList.remove('gone');_itdEl.classList.add('show');
-  if(!_travelContext){setBottomNav('itinerari');var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex='530';}
+  setBottomNav('itinerari');var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex=_travelContext?'640':'530';
   updateItdBookmarkBtn();
 }
 async function openReviewsPopup(expId){
@@ -4613,7 +4614,9 @@ function toggleSvcDesc(btn){
 function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').style.zIndex='510';
   document.getElementById('itinerario-detail').classList.remove('show');
-  if(!_travelContext){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex=document.getElementById('itinerari-page').classList.contains('show')?'520':'';}
+  var _itpShowing=document.getElementById('itinerari-page').classList.contains('show');
+  var _bn2=document.getElementById('bottom-nav');
+  if(_bn2)_bn2.style.zIndex=_itpShowing?(_travelContext?'630':'520'):'';
   if(_travelContext){
     window.addEventListener('popstate',function(){
       window.location.href=document.referrer||'https://wayterra.it/landing.html';
