@@ -2988,7 +2988,7 @@ function openDetail(){
     setTimeout(function(){map_o.resize();},320);
   }
   var _dpEl=document.getElementById('detail-page');_dpEl.classList.remove('gone');_dpEl.classList.add('show');
-  trackEvent('view_place',{place_id:p.id,place_name:p.name,region:p.region});
+  trackEvent({event_type:'place_view',place_id:p.id,place_name:p.name,region:p.region});
 }
 function closeDetail(){
   document.getElementById('detail-page').classList.remove('show');
@@ -3035,7 +3035,7 @@ async function toggleFav(id){
     if(_currentUser&&_supaAuth)_supaAuth.from('user_favorites').insert({user_id:_currentUser.id,place_id:id}).then(function(){});
     var p=(DATA.places||[]).find(function(x){return x.id===id;});
     if(p){
-      trackEvent('save_place',{place_id:id,region:_currentTravelRegion||'lazio'});
+      trackEvent({event_type:'bookmark_place',place_id:id,region:_currentTravelRegion||'lazio'});
     }
   }
   saveFavs();updFavBtn();updateItdBookmarkBtn();
@@ -3460,6 +3460,7 @@ function trackEvent(eventType,data){
   if(typeof eventType==='object'){
     var _p=eventType;
     if(window.umami&&_p.event_type)umami.track(_p.event_type,_p);
+    fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(_p)}).catch(function(){});
     if(_supaAuth){_supaAuth.from('user_events').insert({event_type:_p.event_type||'unknown',user_id:_currentUser?_currentUser.id:null,region:_currentTravelRegion||'lazio',metadata:_p}).then(function(){});}
     return;
   }
@@ -3996,7 +3997,7 @@ function openItinerario(id){
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
   _currentItdExp=e;
-  trackEvent('view_itinerary',{experience_id:e.id,title:e.titleIt,region:e.region});
+  trackEvent({event_type:'itinerary_view',experience_id:e.id,title:e.titleIt,region:e.region});
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
   var desc=(lang==='en'&&e.descEn)?e.descEn:e.descIt;
   var dur=(lang==='en'&&e.durationEn)?e.durationEn:e.durationIt;
