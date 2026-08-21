@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+<script>if(window.location.hash&&window.location.hash.includes('access_token')){sessionStorage.setItem('_oauth_pending','1');}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -5175,9 +5176,6 @@ function applyItinerariState(){
   }
 }
 function bootApp(d){
-  console.log('[boot] URL completo:',window.location.href);
-  console.log('[boot] hash:',window.location.hash);
-  console.log('[boot] search:',window.location.search);
   DATA=d;
   lang=localStorage.getItem(K.LANG)||'it';
   if(!localStorage.getItem(K.LANG)){
@@ -5213,9 +5211,13 @@ function bootApp(d){
       showRegionPage();
       openAccessRequestModal();
     },100);
-  } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')&&!window.location.hash.includes('access_token')&&!window.location.hash.includes('error')){
-    window.location.href='/landing.html';
-    return;
+  } else {
+    var _hasOAuth=sessionStorage.getItem('_oauth_pending')==='1';
+    sessionStorage.removeItem('_oauth_pending');
+    if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')&&!_hasOAuth){
+      window.location.href='/landing.html';
+      return;
+    }
   }
   checkAuthSession();
 }
