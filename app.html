@@ -5214,24 +5214,24 @@ function bootApp(d){
   } else {
     var _hasOAuth=sessionStorage.getItem('_oauth_pending')==='1';
     sessionStorage.removeItem('_oauth_pending');
-    if(_hasOAuth&&!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
+    if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
+      if(!_hasOAuth){
+        window.location.href='/landing.html';
+        return;
+      }
+      checkAuthSession();
       var _lastR=localStorage.getItem('WT_LAST_REGION');
       var _io=document.getElementById('initial-overlay');
       if(_lastR&&_lastR!=='lazio'){
         if(_io)_io.remove();
         selectTravelRegion(_lastR,getRegionCenter(_lastR),getRegionZoom(_lastR));
-        return;
       } else if(_lastR==='lazio'){
         if(_io)_io.remove();
         selectRegion('lazio');
-        return;
       } else {
         if(_io)_io.remove();
         showRegionPage();
-        return;
       }
-    } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')&&!_hasOAuth){
-      window.location.href='/landing.html';
       return;
     }
   }
