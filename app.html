@@ -5210,7 +5210,7 @@ function bootApp(d){
       showRegionPage();
       openAccessRequestModal();
     },100);
-  } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
+  } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')&&!window.location.hash.includes('access_token')&&!window.location.hash.includes('error')){
     window.location.href='/landing.html';
     return;
   }
