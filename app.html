@@ -5226,7 +5226,8 @@ function bootApp(d){
         selectRegion('lazio');
         return;
       } else {
-        window.location.href='/landing.html';
+        if(_io)_io.remove();
+        showRegionPage();
         return;
       }
     } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')&&!_hasOAuth){
