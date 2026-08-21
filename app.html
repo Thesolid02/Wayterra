@@ -257,8 +257,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 /* ── ITINERARIO DETAIL ── */
 #itinerario-detail{position:fixed;inset:0;z-index:510;background:var(--w);display:none;flex-direction:column;overflow:hidden;}
 #itinerario-detail.show{display:flex;}
-.itd-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:16px;padding-left:16px;padding-right:16px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);}
-@media(min-width:768px){.itd-scroll{width:100%;padding-top:16px;padding-left:32px;padding-right:32px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);max-width:800px;margin:0 auto;}}
+.itd-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:16px;padding-left:16px;padding-right:16px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 72px);}
+@media(min-width:768px){.itd-scroll{width:100%;padding-top:16px;padding-left:32px;padding-right:32px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 72px);max-width:800px;margin:0 auto;}}
 .itd-cover{width:100%;height:220px;object-fit:cover;display:block;background:var(--g100);border-radius:12px;margin-bottom:14px;}
 .itd-cover-ph{width:100%;height:220px;background:linear-gradient(135deg,#f0ebe3,#d4c9b8);display:flex;align-items:center;justify-content:center;font-size:3.5rem;border-radius:12px;margin-bottom:14px;}
 .itd-body{padding:0;}
@@ -3739,6 +3739,7 @@ function goToMap(){
   document.getElementById('itinerari-page').classList.remove('show');
   var fp=document.getElementById('fav-page');if(fp)fp.classList.remove('show');
   var pp=document.getElementById('profile-page');if(pp)pp.classList.remove('show');
+  var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex='';
   setBottomNav('mappa');
 }
 function openItinerariNav(){
@@ -3927,11 +3928,13 @@ function openItinerariPage(region){
   page.style.zIndex=region?'610':'';
   page.classList.remove('gone');page.classList.add('show');
   setBottomNav('itinerari');
+  if(!region){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex='520';}
 }
 function closeItinerariPage(){
   var page=document.getElementById('itinerari-page');
   page.classList.remove('show');
   page.style.zIndex='';
+  var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex='';
   setBottomNav('mappa');
 }
 async function renderItinerariPage(region){
@@ -4413,6 +4416,7 @@ function openItinerario(id){
     }
   }
   var _itdEl=document.getElementById('itinerario-detail');_itdEl.style.zIndex=_travelContext?'620':'510';_itdEl.classList.remove('gone');_itdEl.classList.add('show');
+  if(!_travelContext){setBottomNav('itinerari');var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex='530';}
   updateItdBookmarkBtn();
 }
 async function openReviewsPopup(expId){
@@ -4609,6 +4613,7 @@ function toggleSvcDesc(btn){
 function closeItinerarioDetail(){
   document.getElementById('itinerario-detail').style.zIndex='510';
   document.getElementById('itinerario-detail').classList.remove('show');
+  if(!_travelContext){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex=document.getElementById('itinerari-page').classList.contains('show')?'520':'';}
   if(_travelContext){
     window.addEventListener('popstate',function(){
       window.location.href=document.referrer||'https://wayterra.it/landing.html';
