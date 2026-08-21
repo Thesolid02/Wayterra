@@ -5217,6 +5217,10 @@ function bootApp(d){
     var _io=document.getElementById('initial-overlay');
     if(_lastR&&_lastR!=='lazio'){
       if(_io)_io.remove();
+      var _rcoB=document.getElementById('region-change-overlay');
+      if(!_rcoB){_rcoB=document.createElement('div');_rcoB.id='region-change-overlay';_rcoB.style.cssText='position:fixed;inset:0;z-index:599;background:#fff;';document.body.appendChild(_rcoB);}
+      else{_rcoB.style.display='block';}
+      _rcoB.getBoundingClientRect();
       selectTravelRegion(_lastR,getRegionCenter(_lastR),getRegionZoom(_lastR));
     } else if(_lastR==='lazio'){
       if(_io)_io.remove();
@@ -5225,8 +5229,6 @@ function bootApp(d){
       window.location.href='/landing.html';
       return;
     }
-    checkAuthSession();
-    return;
   }
   checkAuthSession();
 }
