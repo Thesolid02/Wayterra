@@ -804,7 +804,6 @@ lottie.loadAnimation({
 
 <!-- REGION PAGE -->
 <div id="region-page" class="gone">
-  <button onclick="_profileOpenedFromRegionPage=true;openProfilePage();" id="rp-profile-btn" style="position:fixed;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:650;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
   <div id="rp-scroll">
   <div class="rp-content">
   <div class="rp-header" style="padding-left:16px;padding-right:16px;">
@@ -3498,6 +3497,8 @@ function showRegionPage(){
   if(_io)_io.remove();
   el.classList.remove('gone');
   el.classList.remove('fade-out');
+  var _rpb=document.getElementById('rp-profile-btn');
+  if(_rpb)_rpb.style.display='flex';
   if(DATA.experiences&&DATA.experiences.length>0){
     loadRegionReviews('cotswolds','rp-cotswolds-reviews');
     loadRegionReviews('lazio','rp-lazio-reviews');
@@ -3507,6 +3508,8 @@ function hideRegionPage(cb){
   var el=document.getElementById('region-page');
   if(!el){if(cb)cb();return;}
   el.classList.add('fade-out');
+  var _rpb=document.getElementById('rp-profile-btn');
+  if(_rpb)_rpb.style.display='none';
   setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
 }
 function selectRegion(regionId){
@@ -4797,6 +4800,7 @@ function openItineraryMapView(id,fromDetail){
     closeTravelsPage();
     var _rp=document.getElementById('region-page');
     if(_rp)_rp.classList.add('gone');
+    var _rpb=document.getElementById('rp-profile-btn');if(_rpb)_rpb.style.display='none';
     updateRegionPill(e.region||'mondo');
   } else {closeItinerariPage();}
   closeBubble();closeBottomCard();clearL2();
@@ -5949,7 +5953,10 @@ var REGION_META={'lazio':{name:'Lazio',flag:'🇮🇹',country:'Italia'},'cotswo
 function openProfilePage(){
   renderProfilePage();
   var _pp=document.getElementById('profile-page');
-  if(_profileOpenedFromRegionPage){_pp.style.zIndex='700';}else{_pp.style.zIndex='';}
+  if(_profileOpenedFromRegionPage){
+    _pp.style.zIndex='700';
+    var _rpb=document.getElementById('rp-profile-btn');if(_rpb)_rpb.style.display='none';
+  }else{_pp.style.zIndex='';}
   _pp.classList.add('show');
   setBottomNav('profilo');
 }
@@ -5959,6 +5966,7 @@ function closeProfilePage(){
   _pp.style.zIndex='';
   if(_profileOpenedFromRegionPage){
     _profileOpenedFromRegionPage=false;
+    var _rpb=document.getElementById('rp-profile-btn');if(_rpb)_rpb.style.display='flex';
   } else {
     setBottomNav('mappa');
   }
@@ -6253,5 +6261,6 @@ function renderProfileSettings(){
     <button onclick="submitPwForgot()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-family:var(--f);font-size:.9rem;font-weight:500;cursor:pointer;" id="pw-forgot-btn">Invia link</button>
   </div>
 </div>
+<button onclick="_profileOpenedFromRegionPage=true;openProfilePage();" id="rp-profile-btn" style="display:none;position:fixed;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;align-items:center;justify-content:center;z-index:650;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
 </body>
 </html>
