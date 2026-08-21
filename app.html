@@ -804,7 +804,7 @@ lottie.loadAnimation({
 
 <!-- REGION PAGE -->
 <div id="region-page" class="gone">
-  <button onclick="_profileOpenedFromRegionPage=true;document.getElementById('region-page').classList.add('gone');openProfilePage();" id="rp-profile-btn" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
+  <button onclick="_profileOpenedFromRegionPage=true;openProfilePage();" id="rp-profile-btn" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
   <div id="rp-scroll">
   <div class="rp-content">
   <div class="rp-header" style="padding-left:16px;padding-right:16px;">
@@ -5948,14 +5948,17 @@ var _userRegions=[];
 var REGION_META={'lazio':{name:'Lazio',flag:'🇮🇹',country:'Italia'},'cotswolds':{name:'Cotswolds',flag:'🇬🇧',country:'UK'},'highlands':{name:'Highlands',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',country:'UK'}};
 function openProfilePage(){
   renderProfilePage();
-  document.getElementById('profile-page').classList.add('show');
+  var _pp=document.getElementById('profile-page');
+  if(_profileOpenedFromRegionPage){_pp.style.zIndex='700';}else{_pp.style.zIndex='';}
+  _pp.classList.add('show');
   setBottomNav('profilo');
 }
 function closeProfilePage(){
-  document.getElementById('profile-page').classList.remove('show');
+  var _pp=document.getElementById('profile-page');
+  _pp.classList.remove('show');
+  _pp.style.zIndex='';
   if(_profileOpenedFromRegionPage){
     _profileOpenedFromRegionPage=false;
-    document.getElementById('region-page').classList.remove('gone');
   } else {
     setBottomNav('mappa');
   }
