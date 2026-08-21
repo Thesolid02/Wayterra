@@ -3492,6 +3492,7 @@ function hideRegionPage(cb){
   setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
 }
 function selectRegion(regionId){
+  localStorage.setItem('WT_LAST_REGION','lazio');
   var _rco=document.getElementById('region-change-overlay');
   if(_rco){_rco.style.display='block';}else{_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:#fff;';document.body.appendChild(_rco);}
   _rco.getBoundingClientRect();
@@ -3547,6 +3548,7 @@ function selectRegion(regionId){
   }
 }
 function selectTravelRegion(regionId,center,zoom){
+  localStorage.setItem('WT_LAST_REGION',regionId);
   var _rco=document.getElementById('region-change-overlay');
   if(_rco){_rco.style.display='block';}else{_rco=document.createElement('div');_rco.id='region-change-overlay';_rco.style.cssText='position:fixed;inset:0;z-index:599;background:#fff;';document.body.appendChild(_rco);}
   _rco.getBoundingClientRect();
