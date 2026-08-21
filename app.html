@@ -3456,11 +3456,13 @@ function sbFetch(path,opts){
   },opts||{}));
 }
 function trackEvent(eventType,data){
+  console.log('[track] chiamata con:',typeof eventType,typeof eventType==='object'?eventType.event_type:eventType);
   if(localStorage.getItem('wayterra.dev')==='1') return;
   if(typeof eventType==='object'){
     var _p=eventType;
     if(window.umami&&_p.event_type)umami.track(_p.event_type,_p);
-    fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(_p)}).catch(function(){});
+    console.log('[track] invio a analytics_events:',JSON.stringify(_p));
+    fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(_p)}).then(function(r){console.log('[track] analytics_events status:',r.status);return r.text();}).then(function(t){console.log('[track] analytics_events body:',t);}).catch(function(e){console.log('[track] analytics_events error:',e);});
     if(_supaAuth){_supaAuth.from('user_events').insert({event_type:_p.event_type||'unknown',user_id:_currentUser?_currentUser.id:null,region:_currentTravelRegion||'lazio',metadata:_p}).then(function(){});}
     return;
   }
