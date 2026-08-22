@@ -2608,7 +2608,6 @@ function refreshL1(){
 
 /* ═══ LEVEL TRANSITIONS ═══ */
 function handleL1Click(place){
-  console.log('[track] handleL1Click - innerWidth:',window.innerWidth,'place:',place.name);
   currentPlace=place;
   activePId=place.id;
   level=2;
@@ -2616,7 +2615,6 @@ function handleL1Click(place){
   document.getElementById('lv2-bar').style.display='flex';
   document.getElementById('lv2-label').textContent=place.premium&&!unlocked?t('premium_name'):place.name;
   setTimeout(function(){
-    console.log('[track] handleL1Click setTimeout - innerWidth:',window.innerWidth);
     if(window.innerWidth<768){showBottomCard(place);}else{openDetail(place);}
     showL2(place);
   },500);
@@ -2742,8 +2740,7 @@ function positionBubble(p){
 }
 function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
 function showBottomCard(p){
-  console.log('[track] showBottomCard chiamata per:',p.name,p.id);
-  trackEvent({event_type:'place_view',place_id:p.id,place_name:p.name,region:p.region});
+  trackEvent({event_type:'place_view',place_id:p.id,region:p.region});
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
   var imgWrap=document.getElementById('bc-img-wrap');
@@ -3013,7 +3010,7 @@ function openDetail(){
     setTimeout(function(){map_o.resize();},320);
   }
   var _dpEl=document.getElementById('detail-page');_dpEl.classList.remove('gone');_dpEl.classList.add('show');
-  trackEvent({event_type:'place_view',place_id:p.id,place_name:p.name,region:p.region});
+  trackEvent({event_type:'place_view',place_id:p.id,region:p.region});
 }
 function closeDetail(){
   document.getElementById('detail-page').classList.remove('show');
@@ -3483,15 +3480,16 @@ function sbFetch(path,opts){
   },opts||{}));
 }
 function trackEvent(eventType,data){
-  console.log('[track] chiamata con:',typeof eventType,typeof eventType==='object'?eventType.event_type:eventType);
   if(localStorage.getItem('wayterra.dev')==='1') return;
   if(typeof eventType==='object'){
-    console.log('[track] object branch - event_type:',eventType.event_type);
-    console.log('[track] wayterra.dev flag:',localStorage.getItem('wayterra.dev'));
     var _p=eventType;
     if(window.umami&&_p.event_type)umami.track(_p.event_type,_p);
-    console.log('[track] invio a analytics_events:',JSON.stringify(_p));
-    fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(_p)}).then(function(r){console.log('[track] analytics_events status:',r.status);return r.text();}).then(function(t){console.log('[track] analytics_events body:',t);}).catch(function(e){console.log('[track] analytics_events error:',e);});
+    var _ap={event_type:_p.event_type};
+    if(_p.place_id)_ap.place_id=_p.place_id;
+    if(_p.experience_id)_ap.experience_id=_p.experience_id;
+    if(_p.activity_id)_ap.activity_id=_p.activity_id;
+    if(_p.is_city_activity!==undefined)_ap.is_city_activity=_p.is_city_activity;
+    fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(_ap)}).catch(function(){});
     if(_supaAuth){_supaAuth.from('user_events').insert({event_type:_p.event_type||'unknown',user_id:_currentUser?_currentUser.id:null,region:_currentTravelRegion||'lazio',metadata:_p}).then(function(){});}
     return;
   }
