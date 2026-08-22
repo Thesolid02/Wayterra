@@ -3616,9 +3616,9 @@ function selectTravelRegion(regionId,center,zoom){
   level=1;activePId=null;currentPlace=null;
   closeBubble();clearL2();closeInlineBubble();
   if(window.innerWidth>=768){document.getElementById('map').classList.remove('panel-open');setTimeout(function(){if(map_o)map_o.resize();},320);}
-  restoreL1();
   _travelContext=true;
   _currentTravelRegion=regionId;
+  restoreL1();
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
@@ -3642,7 +3642,7 @@ function selectTravelRegion(regionId,center,zoom){
     var _splashFallback=setTimeout(function(){stopSplashRotation();sp.classList.add('hide');},4000);
     map_o.once('moveend',function(){
       clearTimeout(_splashFallback);
-      setTimeout(function(){stopSplashRotation();sp.classList.add('hide');renderItdPill();},300);
+      setTimeout(function(){stopSplashRotation();sp.classList.add('hide');renderItdPill();restoreL1();},300);
     });
   }else{
     var ov=document.getElementById('region-change-overlay');if(ov)ov.style.display='none';
