@@ -387,6 +387,10 @@ textarea.ft{resize:vertical;line-height:1.65;}
       </select>
       <select id="an-filter-period" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;">
         <option value="1">Oggi</option>
+        <option value="7">7 giorni</option>
+        <option value="30" selected>30 giorni</option>
+        <option value="90">90 giorni</option>
+        <option value="0">Tutto</option>
       </select>
       <button onclick="renderAnChart()" style="padding:6px 14px;border-radius:8px;border:0.5px solid #ddd;background:#dc6b2f;color:#fff;font-size:13px;cursor:pointer;">Aggiorna</button>
     </div>
@@ -3523,32 +3527,42 @@ async function renderAnChart(){
   var region=document.getElementById('an-filter-region').value;
   var tipo=document.getElementById('an-filter-tipo').value;
   var metrica=document.getElementById('an-filter-metrica').value;
+  var period=parseInt(document.getElementById('an-filter-period').value||'30',10);
+  var since=null;
+  if(period===1){var _td=new Date();_td.setHours(0,0,0,0);since=_td.toISOString();}
+  else if(period>1){since=new Date(Date.now()-period*86400000).toISOString();}
   var viewMap={
-    'luoghi_visto':{view:'analytics_place_views',idField:'place_id',valField:'views',nameTable:'places'},
-    'luoghi_salvato':{view:'analytics_place_saves',idField:'place_id',valField:'saves',nameTable:'places'},
-    'luoghi_maps':{view:'analytics_place_saves',idField:'place_id',valField:'saves',nameTable:'places'},
-    'attivita_visto':{view:'analytics_activity_views',idField:'activity_id',valField:'views',nameTable:'activities'},
-    'attivita_salvato':{view:'analytics_activity_saves',idField:'activity_id',valField:'saves',nameTable:'activities'},
-    'itinerari_visto':{view:'analytics_itinerary_views',idField:'experience_id',valField:'views',nameTable:'experiences'},
-    'itinerari_salvato':{view:'analytics_itinerary_saves',idField:'experience_id',valField:'saves',nameTable:'experiences'},
-    'pdf_visto':{view:'analytics_pdf_downloads',idField:'experience_id',valField:'downloads',nameTable:'experiences'},
-    'gallerie_visto':{view:'analytics_gallery_views',idField:'place_id',valField:'views',nameTable:'places'}
+    'luoghi_visto':    {view:'analytics_place_views',    evType:'place_view',          idField:'place_id',     valField:'views',     nameTable:'places'},
+    'luoghi_salvato':  {view:'analytics_place_saves',    evType:'place_save',          idField:'place_id',     valField:'saves',     nameTable:'places'},
+    'luoghi_maps':     {view:'analytics_place_saves',    evType:'place_save',          idField:'place_id',     valField:'saves',     nameTable:'places'},
+    'attivita_visto':  {view:'analytics_activity_views', evType:'activity_view',       idField:'activity_id',  valField:'views',     nameTable:'activities'},
+    'attivita_salvato':{view:'analytics_activity_saves', evType:'activity_save',       idField:'activity_id',  valField:'saves',     nameTable:'activities'},
+    'itinerari_visto': {view:'analytics_itinerary_views',evType:'itinerary_view',      idField:'experience_id',valField:'views',     nameTable:'experiences'},
+    'itinerari_salvato':{view:'analytics_itinerary_saves',evType:'save_itinerary',     idField:'experience_id',valField:'saves',     nameTable:'experiences'},
+    'pdf_visto':       {view:'analytics_pdf_downloads',  evType:'pdf_download',        idField:'experience_id',valField:'downloads', nameTable:'experiences'},
+    'gallerie_visto':  {view:'analytics_gallery_views',  evType:'place_gallery_open',  idField:'place_id',     valField:'views',     nameTable:'places'}
   };
   var key=tipo+'_'+metrica;
   var cfg=viewMap[key]||viewMap[tipo+'_visto'];
   if(!cfg)return;
-  var url=SB_URL+'/rest/v1/'+cfg.view+'?select='+cfg.idField+','+cfg.valField+'&order='+cfg.valField+'.desc&limit=10';
-  if(region)url+='&region=eq.'+region;
-  var period=parseInt((document.getElementById('an-filter-period')||{}).value||'0',10);
-  var since=null;
-  if(period===1){var _td=new Date();_td.setHours(0,0,0,0);since=_td.toISOString();}
-  if(since)url+='&created_at=gte.'+encodeURIComponent(since);
-  var r=await fetch(url,{headers:_anH});
-  var rows=await r.json();
-  if(!rows||!rows.length){
-    if(window._anMainChart){window._anMainChart.destroy();window._anMainChart=null;}
-    return;
+  var rows;
+  if(!since){
+    var url=SB_URL+'/rest/v1/'+cfg.view+'?select='+cfg.idField+','+cfg.valField+'&order='+cfg.valField+'.desc&limit=10';
+    if(region)url+='&region=eq.'+region;
+    var r=await fetch(url,{headers:_anH});
+    rows=await r.json();
+  } else {
+    var evUrl=SB_URL+'/rest/v1/analytics_events?select='+cfg.idField+'&event_type=eq.'+cfg.evType+'&'+cfg.idField+'=not.is.null&created_at=gte.'+encodeURIComponent(since);
+    if(region)evUrl+='&region=eq.'+region;
+    var er=await fetch(evUrl,{headers:_anH});
+    var evs=await er.json();
+    if(!Array.isArray(evs)||!evs.length){if(window._anMainChart){window._anMainChart.destroy();window._anMainChart=null;}return;}
+    var counts={};
+    evs.forEach(function(e){var id=e[cfg.idField];if(id)counts[id]=(counts[id]||0)+1;});
+    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+    rows=sorted.map(function(id){var row={};row[cfg.idField]=id;row[cfg.valField]=counts[id];return row;});
   }
+  if(!rows||!rows.length){if(window._anMainChart){window._anMainChart.destroy();window._anMainChart=null;}return;}
   var ids=rows.map(function(r){return r[cfg.idField];}).filter(Boolean);
   var nameField=cfg.nameTable==='experiences'?'title':'name';
   var nr=await fetch(SB_URL+'/rest/v1/'+cfg.nameTable+'?select=id,'+nameField+'&id=in.('+ids.join(',')+')',{headers:_anH});
