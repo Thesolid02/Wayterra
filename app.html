@@ -4361,7 +4361,7 @@ function openItinerario(id){
         +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
         +'<span style="font-size:1.4rem;font-weight:700;">'+_avg+'</span>'
         +'<div><div style="display:flex;gap:2px;">'
-        +[1,2,3,4,5].map(function(s){return'<i class="ti ti-star'+(s<=Math.round(_avg)?'':'-filled')+'" style="font-size:13px;color:'+(s<=Math.round(_avg)?'#f59e0b':'var(--g200)')+'"></i>';}).join('')
+        +renderStars(Math.round(_avg),13)
         +'</div><span style="font-size:.75rem;color:var(--g400);">'+_revs.length+' '+(lang==='en'?'reviews':'recensioni')+'</span></div></div>';
       _revs.slice(0,2).forEach(function(r){
         var fullName=(r.profiles&&r.profiles.full_name)||'';
@@ -4370,7 +4370,7 @@ function openItinerario(id){
         var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
         var color=_REVIEW_COLORS[_revs.indexOf(r)%_REVIEW_COLORS.length];
         var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
-        var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
+        var stars=renderStars(r.rating,10);
         var avatarHtml=r.profiles&&r.profiles.avatar_url
           ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:22px;height:22px;object-fit:cover;border-radius:50%;">'
           :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
@@ -4455,7 +4455,7 @@ async function openReviewsPopup(expId){
         var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
         var color=_REVIEW_COLORS[i%_REVIEW_COLORS.length];
         var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
-        var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
+        var stars=renderStars(r.rating,10);
         var avatarContent=r.profiles&&r.profiles.avatar_url
           ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
           :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
@@ -4493,7 +4493,7 @@ async function openReviewsPopup(expId){
       var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
       var color=_REVIEW_COLORS[i%_REVIEW_COLORS.length];
       var date=new Date(r.created_at).toLocaleDateString(lang==='it'?'it-IT':'en-GB',{month:'short',year:'numeric'});
-      var stars=[1,2,3,4,5].map(function(s){return'<i class="ti ti-star" style="font-size:10px;color:'+(s<=r.rating?'#f59e0b':'var(--g200)')+'"></i>';}).join('');
+      var stars=renderStars(r.rating,10);
       var avatarContent=r.profiles&&r.profiles.avatar_url
         ?'<img src="'+_avatarSrc(r.profiles.avatar_url,r.user_id)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
         :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
@@ -4559,13 +4559,21 @@ function openWriteReview(expId){
 function closeWriteReview(){
   document.getElementById('write-review-popup').style.display='none';
 }
+function renderStars(rating,size){
+  var sz=(size||14)+'px';
+  var html='';
+  for(var i=1;i<=5;i++){
+    html+='<i class="ti ti-star'+(i<=rating?'-filled':'')+'" style="font-size:'+sz+';color:#dc6b2f;"></i>';
+  }
+  return html;
+}
 function renderWriteReviewStars(selected){
   var container=document.getElementById('write-review-stars');
   container.innerHTML='';
   for(var s=1;s<=5;s++){
     var star=document.createElement('i');
-    star.className='ti ti-star';
-    star.style.cssText='font-size:28px;cursor:pointer;color:'+(s<=selected?'#f59e0b':'var(--g200)')+';';
+    star.className='ti ti-star'+(s<=selected?'-filled':'');
+    star.style.cssText='font-size:28px;cursor:pointer;color:#dc6b2f;';
     star.dataset.val=s;
     star.onclick=(function(val){return function(){_writeReviewRating=val;renderWriteReviewStars(val);};})(s);
     container.appendChild(star);
