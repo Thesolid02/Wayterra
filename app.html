@@ -891,7 +891,7 @@ lottie.loadAnimation({
       <span style="font-size:24px;">🇩🇪</span>
       <span style="font-size:13px;font-weight:600;color:var(--g400);letter-spacing:.06em;text-transform:uppercase;">GERMANIA</span>
     </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
+    <div class="rp-card rp-card-locked" onclick="if(_isAdmin)selectTravelRegion('germania',getRegionCenter('germania'),getRegionZoom('germania'));else showRegionToast();">
       <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/germania-cover.jpg');background-size:cover;background-position:center;background-color:#c8d8c0;"></div>
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
