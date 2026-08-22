@@ -2740,6 +2740,7 @@ function positionBubble(p){
 }
 function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
 function showBottomCard(p){
+  console.log('[track] showBottomCard chiamata per:',p.name,p.id);
   trackEvent({event_type:'place_view',place_id:p.id,place_name:p.name,region:p.region});
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
@@ -3483,6 +3484,8 @@ function trackEvent(eventType,data){
   console.log('[track] chiamata con:',typeof eventType,typeof eventType==='object'?eventType.event_type:eventType);
   if(localStorage.getItem('wayterra.dev')==='1') return;
   if(typeof eventType==='object'){
+    console.log('[track] object branch - event_type:',eventType.event_type);
+    console.log('[track] wayterra.dev flag:',localStorage.getItem('wayterra.dev'));
     var _p=eventType;
     if(window.umami&&_p.event_type)umami.track(_p.event_type,_p);
     console.log('[track] invio a analytics_events:',JSON.stringify(_p));
