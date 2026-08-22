@@ -4181,10 +4181,21 @@ function openItinerario(id){
       var isOpt=e.isTravel&&!!s.optional;
       var _sDur=lang==='en'?(s.duration_en||s.duration):s.duration;
       var durHtml=_sDur?'<div style="display:flex;align-items:center;gap:3px;font-size:.72rem;color:var(--g400);margin-top:1px;"><i class="ti ti-clock" style="font-size:.72rem;"></i><span>'+_sDur+'</span></div>':'';
-      var numBg=r.isAirport?'#2563eb':(isOpt?'#888':'#dc6b2f');
-      var numInner=r.isAirport?'<i class="ti ti-plane-departure" style="font-size:.82rem;color:white;line-height:1;"></i>':displayNum;
+      var _isAlsoDest=!!(r.isAirport&&s.is_also_destination&&displayNum!=='');
+      var numCell;
+      if(_isAlsoDest){
+        numCell='<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">'
+          +'<div style="width:18px;height:18px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;"><i class="ti ti-plane-departure" style="font-size:9px;color:#fff;"></i></div>'
+          +'<span style="font-size:9px;color:#999;">+</span>'
+          +'<div style="width:18px;height:18px;border-radius:50%;background:#888;display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:#fff;font-weight:500;">'+displayNum+'</span></div>'
+          +'</div>';
+      }else{
+        var numBg=r.isAirport?'#2563eb':(isOpt?'#888':'#dc6b2f');
+        var numInner=r.isAirport?'<i class="ti ti-plane-departure" style="font-size:.82rem;color:white;line-height:1;"></i>':displayNum;
+        numCell='<div class="itd-stop-num" style="background:'+numBg+';">'+numInner+'</div>';
+      }
       return '<div class="itd-stop-card"'+r.onclick+'>'
-        +'<div class="itd-stop-num" style="background:'+numBg+';">'+numInner+'</div>'
+        +numCell
         +r.thumb
         +'<div class="itd-stop-body"><div class="itd-stop-name">'+name+(isOpt?'<span class="itd-stop-opt-badge">'+(lang==='en'?'optional':'opzionale')+'</span>':'')+'</div>'
         +durHtml
@@ -4202,7 +4213,7 @@ function openItinerario(id){
       var _dc=0;
       html+=e.stops.map(function(s,i){
         var r=resolveStop(s);
-        var dn=r.isAirport?'':++_dc;
+        var dn=(r.isAirport&&!s.is_also_destination)?'':++_dc;
         var card=renderStopCard(s,i,r,dn);
         var _sTt0=lang==='en'?(s.travel_time_en||s.travel_time):s.travel_time;
         if(_sTt0&&i<totalStops-1) card+='<div class="itd-travel-time"><i class="ti ti-arrow-down"></i><span>'+_sTt0+'</span></div>';
@@ -4219,7 +4230,7 @@ function openItinerario(id){
       // numeri univoci per tappa: la stessa tappa in giorni diversi mantiene lo stesso numero
       var stopNumbers={},_snCount=0;
       e.stops.forEach(function(s){
-        if(s.is_airport)return;
+        if(s.is_airport&&!s.is_also_destination)return;
         var key=(s.type||'')+'_'+s.id;
         if(key&&!stopNumbers[key])stopNumbers[key]=++_snCount;
       });
@@ -4230,8 +4241,8 @@ function openItinerario(id){
         dayStops.forEach(function(s){
           var r=resolveStop(s);
           var key=(s.type||'')+'_'+s.id;
-          var dn=r.isAirport?'':(stopNumbers[key]||'');
-          if(!r.isAirport) dayNonAirport++;
+          var dn=(r.isAirport&&!s.is_also_destination)?'':(stopNumbers[key]||'');
+          if(!r.isAirport||s.is_also_destination) dayNonAirport++;
           bodyHtml+=renderStopCard(s,globalIdx,r,dn);
           var _sTt1=lang==='en'?(s.travel_time_en||s.travel_time):s.travel_time;
           if(_sTt1&&globalIdx<totalStops-1) bodyHtml+='<div class="itd-travel-time"><i class="ti ti-arrow-down"></i><span>'+_sTt1+'</span></div>';
@@ -5035,7 +5046,7 @@ function openItinMapPopup(id){
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
       if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);name=_fa.name||(_fp&&_fp.name)||'';}
     }
-    if(lat&&lng)_itdStops.push({lng:+lng,lat:+lat,optional:!!s.optional,name:name,travelTime:s.travel_time||null,travelTimeEn:s.travel_time_en||null,isAirport:_isAirport});
+    if(lat&&lng)_itdStops.push({lng:+lng,lat:+lat,optional:!!s.optional,name:name,travelTime:s.travel_time||null,travelTimeEn:s.travel_time_en||null,isAirport:_isAirport,isAlsoDest:!!s.is_also_destination});
   });
   var _leg=document.getElementById('map-popup-legend');
   if(_leg)_leg.style.display='flex';
@@ -5046,14 +5057,26 @@ function openItinMapPopup(id){
       mp.addSource('mp-route',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:coords.map(function(c){return[c[0],c[1]];})}}});
       mp.addLayer({id:'mp-route-line',type:'line',source:'mp-route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#dc6b2f','line-width':2,'line-dasharray':[4,3]}});
     }
+    var _mpDc=0,_mpNums=[];
+    _itdStops.forEach(function(st){_mpNums.push((st.isAirport&&!st.isAlsoDest)?0:++_mpDc);});
     _itdStops.forEach(function(st,i){
-      var col=st.isAirport?'#2563eb':st.optional?'#888':'#dc6b2f';
-      var sz=st.isAirport?'28px':'24px';
-      var inner=st.isAirport?'<i class="ti ti-plane-departure" style="font-size:12px;color:white;"></i>':(i+1);
+      var dn=_mpNums[i];
       var el=document.createElement('div');
       el.style.cssText='display:flex;flex-direction:column;align-items:center;gap:2px;cursor:default;';
-      el.innerHTML='<div style="width:'+sz+';height:'+sz+';border-radius:50%;background:'+col+';color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);">'+inner+'</div>'
-        +'<div style="background:rgba(255,255,255,0.9);border-radius:4px;padding:1px 5px;font-size:9px;font-weight:500;white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis;font-family:var(--f);">'+st.name+'</div>';
+      var pinHtml;
+      if(st.isAirport&&st.isAlsoDest&&dn){
+        pinHtml='<div style="display:flex;align-items:center;gap:3px;">'
+          +'<div style="width:22px;height:22px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);"><i class="ti ti-plane-departure" style="font-size:10px;color:white;"></i></div>'
+          +'<span style="font-size:9px;color:#666;">+</span>'
+          +'<div style="width:22px;height:22px;border-radius:50%;background:#888;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);font-size:11px;font-weight:500;color:white;">'+dn+'</div>'
+          +'</div>';
+      }else if(st.isAirport){
+        pinHtml='<div style="width:28px;height:28px;border-radius:50%;background:#2563eb;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);"><i class="ti ti-plane-departure" style="font-size:12px;color:white;"></i></div>';
+      }else{
+        var col=st.optional?'#888':'#dc6b2f';
+        pinHtml='<div style="width:24px;height:24px;border-radius:50%;background:'+col+';color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);">'+dn+'</div>';
+      }
+      el.innerHTML=pinHtml+'<div style="background:rgba(255,255,255,0.9);border-radius:4px;padding:1px 5px;font-size:9px;font-weight:500;white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis;font-family:var(--f);">'+st.name+'</div>';
       _mapPopupMks.push(new mapboxgl.Marker({element:el,anchor:'center'}).setLngLat([st.lng,st.lat]).addTo(mp));
     });
     if(coords.length>=2){
@@ -5068,7 +5091,7 @@ function openItinMapPopup(id){
 function openMapPopupTimes(){
   var stops=_mapPopupStops;
   var displayNums=[],_dc=0;
-  for(var k=0;k<stops.length;k++){displayNums.push(stops[k].isAirport?'':++_dc);}
+  for(var k=0;k<stops.length;k++){displayNums.push((stops[k].isAirport&&!stops[k].isAlsoDest)?'':++_dc);}
   var html='';
   var lastIdx=-1;
   for(var i=0;i<stops.length-1;i++){
@@ -5094,12 +5117,19 @@ function openMapPopupTimes(){
   document.getElementById('map-popup-times').style.display='flex';
 }
 function _renderTimesStop(st,displayNum){
-  var col=st.isAirport?'#2563eb':st.optional?'#888':'#dc6b2f';
-  var inner=st.isAirport?'<i class="ti ti-plane-departure" style="font-size:11px;color:white;line-height:1;"></i>':displayNum;
-  return '<div style="display:flex;align-items:center;gap:10px;">'
-    +'<div style="width:24px;height:24px;border-radius:50%;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;">'+inner+'</div>'
-    +'<span style="font-size:.82rem;font-weight:500;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+st.name+'</span>'
-    +'</div>';
+  var numCell;
+  if(st.isAirport&&st.isAlsoDest&&displayNum){
+    numCell='<div style="display:flex;align-items:center;gap:3px;flex-shrink:0;">'
+      +'<div style="width:18px;height:18px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;"><i class="ti ti-plane-departure" style="font-size:9px;color:#fff;"></i></div>'
+      +'<span style="font-size:9px;color:#999;">+</span>'
+      +'<div style="width:18px;height:18px;border-radius:50%;background:#888;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;">'+displayNum+'</div>'
+      +'</div>';
+  }else{
+    var col=st.isAirport?'#2563eb':st.optional?'#888':'#dc6b2f';
+    var inner=st.isAirport?'<i class="ti ti-plane-departure" style="font-size:11px;color:white;line-height:1;"></i>':displayNum;
+    numCell='<div style="width:24px;height:24px;border-radius:50%;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;">'+inner+'</div>';
+  }
+  return '<div style="display:flex;align-items:center;gap:10px;">'+numCell+'<span style="font-size:.82rem;font-weight:500;color:var(--g900);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+st.name+'</span></div>';
 }
 function closeMapPopupTimes(){
   document.getElementById('map-popup-times').style.display='none';
