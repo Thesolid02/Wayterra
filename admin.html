@@ -3533,26 +3533,30 @@ function setAnPeriod(days,btn){
   renderAnalytics();
 }
 
+function _anSet(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;else console.warn('[analytics] elemento mancante:',id);}
 function renderAnalytics(){
   console.log('[analytics] renderAnalytics chiamata');
   var since=new Date(Date.now()-anPeriod*86400000).toISOString();
-  document.getElementById('an-places').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-activities').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-bm-places').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-bm-activities').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-itineraries').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-gallery').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-pdf').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-pin-clicks').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-saved-itineraries').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-itinerary-maps').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-reviews-views').innerHTML='<div class="an-loading">Caricamento…</div>';
-  document.getElementById('an-counters').innerHTML='<div class="an-loading">Caricamento…</div>';
+  console.log('[analytics] setting loading states...');
+  _anSet('an-places','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-activities','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-bm-places','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-bm-activities','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-itineraries','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-gallery','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-pdf','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-pin-clicks','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-saved-itineraries','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-itinerary-maps','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-reviews-views','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-counters','<div class="an-loading">Caricamento…</div>');
+  console.log('[analytics] fetch analytics_events...');
   fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.asc',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
-  .then(function(r){return r.json();})
+  .then(function(r){console.log('[analytics] analytics_events status:',r.status);return r.json();})
   .then(function(events){
+    console.log('[analytics] events ricevuti:',Array.isArray(events)?events.length:'non-array',events&&events.error?events.error:null);
     renderAnChart(events);
     renderAnPlaces(events);
     renderAnActivities(events);
@@ -3568,18 +3572,8 @@ function renderAnalytics(){
     renderAnCounters(events);
   })
   .catch(function(e){
-    console.error('analytics fetch error',e);
-    document.getElementById('an-places').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-activities').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-bm-places').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-itineraries').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-gallery').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-pin-clicks').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-saved-itineraries').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-itinerary-maps').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-reviews-views').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
-    document.getElementById('an-counters').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    console.error('[analytics] fetch error:',e);
+    ['an-places','an-activities','an-bm-places','an-bm-activities','an-itineraries','an-gallery','an-pin-clicks','an-saved-itineraries','an-itinerary-maps','an-reviews-views','an-counters'].forEach(function(id){_anSet(id,'<div class="an-empty">Errore caricamento dati</div>');});
   });
 }
 
