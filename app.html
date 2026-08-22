@@ -4216,13 +4216,21 @@ function openItinerario(id){
         if(!dayMap[d]){dayMap[d]=[];dayGroups.push(d);}
         dayMap[d].push(s);
       });
-      var globalIdx=0,_dc=0;
+      // numeri univoci per tappa: la stessa tappa in giorni diversi mantiene lo stesso numero
+      var stopNumbers={},_snCount=0;
+      e.stops.forEach(function(s){
+        if(s.is_airport)return;
+        var key=(s.type||'')+'_'+s.id;
+        if(key&&!stopNumbers[key])stopNumbers[key]=++_snCount;
+      });
+      var globalIdx=0;
       dayGroups.forEach(function(d){
         var dayStops=dayMap[d];
         var bodyHtml='',dayNonAirport=0;
         dayStops.forEach(function(s){
           var r=resolveStop(s);
-          var dn=r.isAirport?'':(++_dc);
+          var key=(s.type||'')+'_'+s.id;
+          var dn=r.isAirport?'':(stopNumbers[key]||'');
           if(!r.isAirport) dayNonAirport++;
           bodyHtml+=renderStopCard(s,globalIdx,r,dn);
           var _sTt1=lang==='en'?(s.travel_time_en||s.travel_time):s.travel_time;
