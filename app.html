@@ -5841,6 +5841,12 @@ async function signOut(){
   updateNavProfileAvatar();
   toast(lang==='en'?'Signed out':'Disconnesso');
 }
+var _tgToken='8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM';
+var _tgChat='5194988248';
+function notifyTelegram(msg){
+  if(localStorage.getItem('wayterra.dev')==='1')return;
+  fetch('https://api.telegram.org/bot'+_tgToken+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:_tgChat,text:msg,parse_mode:'HTML'})}).catch(function(){});
+}
 async function checkAuthSession(){
   if(!_supaAuth)return;
   _supaAuth.auth.onAuthStateChange(async function(event,session){
@@ -5889,6 +5895,9 @@ async function checkAuthSession(){
       }
       var {data:profileData}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
       if(profileData)_currentUserProfile=profileData;
+      var _tgName=(_currentUserProfile&&_currentUserProfile.full_name)||session.user.email||'Utente';
+      var _tgProvider=(session.user.app_metadata&&session.user.app_metadata.provider)||'email';
+      notifyTelegram('🟢 <b>Nuovo accesso Wayterra</b>\n👤 '+_tgName+'\n📧 '+session.user.email+'\n🔑 '+_tgProvider+'\n🌍 '+(_currentTravelRegion||'lazio'));
       updateProfileUI();
       updateNavProfileAvatar();
       _refreshItineraryChecks();
