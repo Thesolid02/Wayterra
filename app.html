@@ -1998,10 +1998,11 @@ function l1Html(p,dim,showName){
       +'</div>';
   }
   var nameHtml=showName?'<div style="margin-top:4px;background:rgba(17,24,39,.85);color:#fff;font-size:.7rem;font-weight:600;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;">'+p.name+'</div>':'';
-  var draftBadge=(_isAdmin&&!p.published)?'<div style="position:absolute;top:-6px;right:-6px;background:#6b7280;color:#fff;font-size:.45rem;font-weight:700;padding:1px 3px;border-radius:3px;letter-spacing:.04em;pointer-events:none;">BOZZA</div>':'';
+  var _isDraft=_isAdmin&&p.published===false;
+  var draftBadge=_isDraft?'<div style="position:absolute;top:-6px;right:-6px;background:#6b7280;color:#fff;font-size:.45rem;font-weight:700;padding:1px 3px;border-radius:3px;letter-spacing:.04em;pointer-events:none;">BOZZA</div>':'';
   return '<div class="pin-hover-wrap" style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
     +'<div class="pin-tooltip">'+p.name+'</div>'
-    +'<div style="position:relative;width:22px;height:22px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px dashed '+((_isAdmin&&!p.published)?'#6b7280':'white')+';'+dimStyle+'">'
+    +'<div style="position:relative;width:22px;height:22px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px dashed '+(_isDraft?'#6b7280':'white')+';'+dimStyle+'">'
     +renderIcon(c.icon,'white')+draftBadge+'</div>'
     +nameHtml
     +'</div>';
@@ -2013,7 +2014,7 @@ function createPinEl(p, dim, showName){
 }
 
 function addL1(p){
-  if(!p.published&&!_isAdmin)return;
+  if(p.published===false&&!_isAdmin)return;
   var el=createPinEl(p,false,false);
   var m=new mapboxgl.Marker({element:el,anchor:'center'})
     .setLngLat([p.lng,p.lat]);
