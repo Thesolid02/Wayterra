@@ -1320,8 +1320,10 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
 <script>
 (function(){
   if(localStorage.getItem('wayterra.dev')==='1')return;
+  var _su='https://vfglfrtzbvnkwpuwyguf.supabase.co';
+  var _sk='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
   console.log('[landing] tracking view');
-  fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({event_type:'landing_view'})}).then(function(r){console.log('[landing] status:',r.status);}).catch(function(){});
+  fetch(_su+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':_sk,'Authorization':'Bearer '+_sk,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({event_type:'landing_view'})}).then(function(r){console.log('[landing] status:',r.status);}).catch(function(e){console.log('[landing] error:',e);});
 })();
 </script>
 </body>
