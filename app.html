@@ -2740,7 +2740,7 @@ function positionBubble(p){
 }
 function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
 function showBottomCard(p){
-  trackEvent({event_type:'place_view',place_id:p.id,region:p.region});
+  trackEvent({event_type:'place_pin_click',place_id:p.id});
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
   var imgWrap=document.getElementById('bc-img-wrap');
@@ -3516,6 +3516,7 @@ function normalizeData(d){
 
 /* ═══ REGION PAGE ═══ */
 function showRegionPage(){
+  trackEvent({event_type:'region_page_view'});
   var el=document.getElementById('region-page');
   if(!el)return;
   var _io=document.getElementById('initial-overlay');
@@ -3568,6 +3569,7 @@ function selectRegion(regionId){
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
+  trackEvent({event_type:'map_view',region:regionId});
   hideRegionPage(null);
   _currentRegionCenter=[12.8,41.8];
   _currentRegionZoom=window.innerWidth<768?7:8;
@@ -3626,6 +3628,7 @@ function selectTravelRegion(regionId,center,zoom){
   if(_itineraryViewId!==null)closeItineraryMapView();
   localStorage.setItem('WT_REGION',regionId);
   updateRegionPill(regionId);
+  trackEvent({event_type:'map_view',region:regionId});
   hideRegionPage(null);
   var z=window.innerWidth<768?zoom-1:zoom;
   _currentRegionCenter=center;

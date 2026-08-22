@@ -3413,7 +3413,7 @@ function fetchAnLive(){
     }
     var placeIds=[],actIds=[];
     events.forEach(function(e){
-      if((e.event_type==='place_view'||e.event_type==='place_gallery_open')&&e.place_id)placeIds.push(e.place_id);
+      if((e.event_type==='place_view'||e.event_type==='place_gallery_open'||e.event_type==='place_pin_click')&&e.place_id)placeIds.push(e.place_id);
       if(e.event_type==='activity_view'&&e.activity_id)actIds.push(e.activity_id);
     });
     var uniqP=[...new Set(placeIds)];
@@ -3450,6 +3450,19 @@ function fetchAnLive(){
         }else if(e.event_type==='itinerary_gmaps_open'){
           icon='🧭';
           name='Percorso aperto';
+        }else if(e.event_type==='map_view'){
+          icon='🌍';
+          name='Mappa aperta';
+        }else if(e.event_type==='region_page_view'){
+          icon='📋';
+          name='Elenco paesi';
+        }else if(e.event_type==='place_pin_click'){
+          icon='📌';
+          var pp=places.find(function(x){return String(x.id)===String(e.place_id);});
+          name='Pin cliccato'+(pp?' — '+pp.name:'');
+        }else if(e.event_type==='landing_view'){
+          icon='🏠';
+          name='Landing visitata';
         }else{
           icon='🎯';
           name=e.event_type;

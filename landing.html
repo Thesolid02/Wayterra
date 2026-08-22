@@ -1317,5 +1317,11 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
     <div id="lrp-list" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;"></div>
   </div>
 </div>
+<script>
+(function(){
+  if(localStorage.getItem('wayterra.dev')==='1')return;
+  fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({event_type:'landing_view'})}).catch(function(){});
+})();
+</script>
 </body>
 </html>
