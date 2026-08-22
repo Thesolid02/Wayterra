@@ -385,9 +385,6 @@ textarea.ft{resize:vertical;line-height:1.65;}
         <option value="salvato">Salvato</option>
         <option value="maps">Click Google Maps</option>
       </select>
-      <select id="an-filter-period" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;">
-        <option value="1">Oggi</option>
-      </select>
       <button onclick="renderAnChart()" style="padding:6px 14px;border-radius:8px;border:0.5px solid #ddd;background:#dc6b2f;color:#fff;font-size:13px;cursor:pointer;">Aggiorna</button>
     </div>
     <div style="position:relative;height:400px;">
@@ -3534,15 +3531,11 @@ async function renderAnChart(){
     'pdf_visto':{view:'analytics_pdf_downloads',idField:'experience_id',valField:'downloads',nameTable:'experiences'},
     'gallerie_visto':{view:'analytics_gallery_views',idField:'place_id',valField:'views',nameTable:'places'}
   };
-  var period=parseInt((document.getElementById('an-filter-period')||{}).value||'0',10);
-  var since=null;
-  if(period===1){var _td=new Date();_td.setHours(0,0,0,0);since=_td.toISOString();}
   var key=tipo+'_'+metrica;
   var cfg=viewMap[key]||viewMap[tipo+'_visto'];
   if(!cfg)return;
   var url=SB_URL+'/rest/v1/'+cfg.view+'?select='+cfg.idField+','+cfg.valField+'&order='+cfg.valField+'.desc&limit=10';
   if(region)url+='&region=eq.'+region;
-  if(since)url+='&created_at=gte.'+encodeURIComponent(since);
   var r=await fetch(url,{headers:_anH});
   var rows=await r.json();
   if(!rows||!rows.length){
