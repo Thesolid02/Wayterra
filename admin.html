@@ -3534,426 +3534,256 @@ function setAnPeriod(days,btn){
 }
 
 function _anSet(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;}
+var _anH={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
 function renderAnalytics(){
+  var ids=['an-places','an-activities','an-bm-places','an-bm-activities','an-itineraries','an-gallery','an-pdf','an-pin-clicks','an-saved-itineraries','an-itinerary-maps','an-reviews-views','an-counters'];
+  ids.forEach(function(id){_anSet(id,'<div class="an-loading">Caricamento…</div>');});
+  renderAnChart();
+  renderAnPlaces();
+  renderAnActivities();
+  renderAnBmPlaces();
+  renderAnBmActivities();
+  renderAnItineraries();
+  renderAnGallery();
+  renderAnPdf();
+  renderAnPinClicks();
+  renderAnSavedItineraries();
+  renderAnItineraryMaps();
+  renderAnReviewsViews();
+  renderAnCounters();
+}
+
+function renderAnChart(){
   var since=new Date(Date.now()-anPeriod*86400000).toISOString();
-  _anSet('an-places','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-activities','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-bm-places','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-bm-activities','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-itineraries','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-gallery','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-pdf','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-pin-clicks','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-saved-itineraries','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-itinerary-maps','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-reviews-views','<div class="an-loading">Caricamento…</div>');
-  _anSet('an-counters','<div class="an-loading">Caricamento…</div>');
-  fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.desc&limit=10000',{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  })
+  fetch(SB_URL+'/rest/v1/analytics_events?select=event_type,created_at&event_type=in.(place_view,activity_view)&created_at=gte.'+encodeURIComponent(since),{headers:_anH})
   .then(function(r){return r.json();})
   .then(function(events){
-    renderAnChart(events);
-    renderAnPlaces(events);
-    renderAnActivities(events);
-    renderAnBmPlaces(events);
-    renderAnBmActivities(events);
-    renderAnItineraries(events);
-    renderAnGallery(events);
-    renderAnPdf(events);
-    renderAnPinClicks(events);
-    renderAnSavedItineraries(events);
-    renderAnItineraryMaps(events);
-    renderAnReviewsViews(events);
-    renderAnCounters(events);
-  })
-  .catch(function(e){
-    console.error('analytics fetch error',e);
-    ['an-places','an-activities','an-bm-places','an-bm-activities','an-itineraries','an-gallery','an-pin-clicks','an-saved-itineraries','an-itinerary-maps','an-reviews-views','an-counters'].forEach(function(id){_anSet(id,'<div class="an-empty">Errore caricamento dati</div>');});
-  });
-}
-
-function renderAnChart(events){
-  var byDay={};
-  events.forEach(function(ev){
-    var d=ev.created_at.slice(0,10);
-    if(!byDay[d])byDay[d]={place_view:0,activity_view:0};
-    if(byDay[d][ev.event_type]!==undefined)byDay[d][ev.event_type]++;
-  });
-  var labels=[],pvData=[],avData=[];
-  for(var i=anPeriod-1;i>=0;i--){
-    var d=new Date(Date.now()-i*86400000).toISOString().slice(0,10);
-    labels.push(d.slice(5));
-    pvData.push((byDay[d]||{}).place_view||0);
-    avData.push((byDay[d]||{}).activity_view||0);
-  }
-  var ctx=document.getElementById('an-chart').getContext('2d');
-  if(anChartInst){anChartInst.destroy();anChartInst=null;}
-  anChartInst=new Chart(ctx,{
-    type:'bar',
-    data:{
-      labels:labels,
-      datasets:[
+    if(!Array.isArray(events))return;
+    var byDay={};
+    events.forEach(function(ev){
+      var d=ev.created_at.slice(0,10);
+      if(!byDay[d])byDay[d]={place_view:0,activity_view:0};
+      if(byDay[d][ev.event_type]!==undefined)byDay[d][ev.event_type]++;
+    });
+    var labels=[],pvData=[],avData=[];
+    for(var i=anPeriod-1;i>=0;i--){
+      var d=new Date(Date.now()-i*86400000).toISOString().slice(0,10);
+      labels.push(d.slice(5));
+      pvData.push((byDay[d]||{}).place_view||0);
+      avData.push((byDay[d]||{}).activity_view||0);
+    }
+    var ctx=document.getElementById('an-chart').getContext('2d');
+    if(anChartInst){anChartInst.destroy();anChartInst=null;}
+    anChartInst=new Chart(ctx,{
+      type:'bar',
+      data:{labels:labels,datasets:[
         {label:'Luoghi visti',data:pvData,backgroundColor:'#dc6b2f',borderRadius:3,borderSkipped:false},
         {label:'Attività viste',data:avData,backgroundColor:'#2563eb',borderRadius:3,borderSkipped:false}
-      ]
-    },
-    options:{
-      responsive:true,
-      plugins:{legend:{position:'top',labels:{font:{family:'Geist,system-ui,sans-serif',size:12},boxWidth:12,padding:16}}},
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:11},maxRotation:45}},
-        y:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}},grid:{color:'#f3f4f6'}}
-      }
-    }
-  });
+      ]},
+      options:{responsive:true,plugins:{legend:{position:'top',labels:{font:{family:'Geist,system-ui,sans-serif',size:12},boxWidth:12,padding:16}}},scales:{x:{grid:{display:false},ticks:{font:{size:11},maxRotation:45}},y:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}},grid:{color:'#f3f4f6'}}}}
+    });
+  }).catch(function(){});
 }
 
-function renderAnPlaces(events){
-  var pvEvents=events.filter(function(e){return e.event_type==='place_view'&&e.place_id;});
-  var counts={};
-  pvEvents.forEach(function(e){counts[e.place_id]=(counts[e.place_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){
-    document.getElementById('an-places').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
-    return;
-  }
-  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+sorted.join(',')+')',{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  })
+function _anRenderPlaces(divId,rows,countField,btnFn){
+  if(!Array.isArray(rows)||!rows.length){_anSet(divId,'<div class="an-empty">Nessun dato nel periodo</div>');return;}
+  var ids=rows.map(function(r){return r.place_id;});
+  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+ids.join(',')+')',{headers:_anH})
   .then(function(r){return r.json();})
   .then(function(places){
-    anPlacesData={sorted:sorted,counts:counts,items:places};
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
-      return '<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+p.name+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
+    var html=rows.slice(0,5).map(function(row,i){
+      var p=places.find(function(x){return String(x.id)===String(row.place_id);})||{name:'ID '+row.place_id};
+      return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span>'+(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')+'<span class="an-name">'+p.name+'</span><span class="an-count">'+row[countField]+'</span></div>';
     }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'places\')">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-places').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-places').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+    if(rows.length>5&&btnFn)html+='<button class="an-see-all" onclick="'+btnFn+'">Vedi tutti ('+rows.length+')</button>';
+    _anSet(divId,html);
+  }).catch(function(){_anSet(divId,'<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnActivities(events){
-  var avEvents=events.filter(function(e){return e.event_type==='activity_view'&&e.activity_id;});
-  var counts={};
-  var isCityMap={};
-  avEvents.forEach(function(e){
-    counts[e.activity_id]=(counts[e.activity_id]||0)+1;
-    isCityMap[e.activity_id]=e.is_city_activity;
-  });
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){
-    document.getElementById('an-activities').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
-    return;
-  }
-  fetch(SB_URL+'/rest/v1/activities?select=id,name,place_id&id=in.('+sorted.join(',')+')',{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  })
-  .then(function(r){return r.json();})
-  .then(function(acts){
-    anActivitiesData={sorted:sorted,counts:counts,isCityMap:isCityMap,items:acts};
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var a=acts.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
-      var tag=isCityMap[id]?'Attività Roma':'Luogo';
-      return '<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +'<div style="flex:1;min-width:0;">'
-        +'<div class="an-name">'+a.name+'</div>'
-        +'<div class="an-sub">'+tag+'</div>'
-        +'</div>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'activities\')">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-activities').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-activities').innerHTML='<div class="an-empty">Errore caricamento</div>';});
-}
-
-function renderAnItineraries(events){
-  var itEvents=events.filter(function(e){return e.event_type==='itinerary_view'&&e.experience_id;});
-  var counts={};
-  itEvents.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){
-    document.getElementById('an-itineraries').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
-    return;
-  }
-  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+sorted.join(',')+')',{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  })
+function _anRenderExps(divId,rows,countField,btnFn){
+  if(!Array.isArray(rows)||!rows.length){_anSet(divId,'<div class="an-empty">Nessun dato nel periodo</div>');return;}
+  var ids=rows.map(function(r){return r.experience_id;});
+  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+ids.join(',')+')',{headers:_anH})
   .then(function(r){return r.json();})
   .then(function(exps){
-    anItinerariesData={sorted:sorted,counts:counts,items:exps};
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
-      return '<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
+    anItinerariesData={sorted:ids,counts:{},items:exps};
+    ids.forEach(function(id,i){anItinerariesData.counts[id]=rows[i][countField];});
+    var html=rows.slice(0,5).map(function(row,i){
+      var ex=exps.find(function(x){return String(x.id)===String(row.experience_id);})||{title:'ID '+row.experience_id};
+      return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span>'+(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')+'<span class="an-name">'+(ex.title||'ID '+row.experience_id)+'</span><span class="an-count">'+row[countField]+'</span></div>';
     }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'itineraries\')">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-itineraries').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-itineraries').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+    if(rows.length>5&&btnFn)html+='<button class="an-see-all" onclick="'+btnFn+'">Vedi tutti ('+rows.length+')</button>';
+    _anSet(divId,html);
+  }).catch(function(){_anSet(divId,'<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnBmPlaces(events){
-  var bmEvents=events.filter(function(e){return e.event_type==='bookmark_place'&&e.place_id;});
-  var counts={};
-  bmEvents.forEach(function(e){counts[e.place_id]=(counts[e.place_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){
-    document.getElementById('an-bm-places').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
-    return;
-  }
-  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+sorted.join(',')+')',{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  })
+function renderAnPlaces(){
+  fetch(SB_URL+'/rest/v1/analytics_place_views?select=place_id,views&limit=10',{headers:_anH})
   .then(function(r){return r.json();})
-  .then(function(places){
-    anBmPlacesData={sorted:sorted,counts:counts,items:places};
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
-      return '<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+p.name+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'bookmark_places\')">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-bm-places').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-bm-places').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+  .then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){_anSet('an-places','<div class="an-empty">Nessun dato nel periodo</div>');return;}
+    var ids=rows.map(function(r){return r.place_id;});
+    fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+ids.join(',')+')',{headers:_anH})
+    .then(function(r){return r.json();})
+    .then(function(places){
+      anPlacesData={sorted:ids,counts:{},items:places};
+      ids.forEach(function(id,i){anPlacesData.counts[id]=rows[i].views;});
+      var html=rows.slice(0,5).map(function(row,i){
+        var p=places.find(function(x){return String(x.id)===String(row.place_id);})||{name:'ID '+row.place_id};
+        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span>'+(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')+'<span class="an-name">'+p.name+'</span><span class="an-count">'+row.views+'</span></div>';
+      }).join('');
+      if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAll(\'places\')">Vedi tutti ('+rows.length+')</button>';
+      _anSet('an-places',html);
+    });
+  }).catch(function(){_anSet('an-places','<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnBmActivities(events){
-  var bmEvents=events.filter(function(e){return e.event_type==='bookmark_activity'&&e.activity_id;});
-  var counts={};
-  var isCityMap={};
-  bmEvents.forEach(function(e){
-    counts[e.activity_id]=(counts[e.activity_id]||0)+1;
-    isCityMap[e.activity_id]=e.is_city_activity;
-  });
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){
-    document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
-    return;
-  }
-  fetch(SB_URL+'/rest/v1/activities?select=id,name,place_id&id=in.('+sorted.join(',')+')',{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  })
+function renderAnActivities(){
+  fetch(SB_URL+'/rest/v1/analytics_activity_views?select=activity_id,views&limit=10',{headers:_anH})
   .then(function(r){return r.json();})
-  .then(function(acts){
-    anBmActivitiesData={sorted:sorted,counts:counts,isCityMap:isCityMap,items:acts};
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var a=acts.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
-      var tag=isCityMap[id]?'Attività Roma':'Luogo';
-      return '<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +'<div style="flex:1;min-width:0;">'
-        +'<div class="an-name">'+a.name+'</div>'
-        +'<div class="an-sub">'+tag+'</div>'
-        +'</div>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'bookmark_activities\')">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-bm-activities').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+  .then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){_anSet('an-activities','<div class="an-empty">Nessun dato nel periodo</div>');return;}
+    var ids=rows.map(function(r){return r.activity_id;});
+    fetch(SB_URL+'/rest/v1/activities?select=id,name,is_city_activity&id=in.('+ids.join(',')+')',{headers:_anH})
+    .then(function(r){return r.json();})
+    .then(function(acts){
+      anActivitiesData={sorted:ids,counts:{},isCityMap:{},items:acts};
+      ids.forEach(function(id,i){anActivitiesData.counts[id]=rows[i].views;});
+      acts.forEach(function(a){anActivitiesData.isCityMap[a.id]=a.is_city_activity;});
+      var html=rows.slice(0,5).map(function(row,i){
+        var a=acts.find(function(x){return String(x.id)===String(row.activity_id);})||{name:'ID '+row.activity_id};
+        var tag=a.is_city_activity?'Attività Roma':'Luogo';
+        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><div style="flex:1;min-width:0;"><div class="an-name">'+a.name+'</div><div class="an-sub">'+tag+'</div></div><span class="an-count">'+row.views+'</span></div>';
+      }).join('');
+      if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAll(\'activities\')">Vedi tutti ('+rows.length+')</button>';
+      _anSet('an-activities',html);
+    });
+  }).catch(function(){_anSet('an-activities','<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnGallery(events){
-  var gEvents=events.filter(function(e){return e.event_type==='place_gallery_open'&&e.place_id;});
-  var counts={};
-  gEvents.forEach(function(e){counts[e.place_id]=(counts[e.place_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){
-    document.getElementById('an-gallery').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';
-    return;
-  }
-  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+sorted.join(',')+')',{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  })
+function renderAnItineraries(){
+  fetch(SB_URL+'/rest/v1/analytics_itinerary_views?select=experience_id,views&limit=10',{headers:_anH})
   .then(function(r){return r.json();})
-  .then(function(places){
-    anGalleryData={sorted:sorted,counts:counts,items:places};
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
-      return '<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+p.name+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAll(\'gallery\')">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-gallery').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-gallery').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+  .then(function(rows){_anRenderExps('an-itineraries',rows,'views',"openAnAll('itineraries')");})
+  .catch(function(){_anSet('an-itineraries','<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnPdf(events){
-  var pEvents=events.filter(function(e){return e.event_type==='pdf_download'&&e.experience_id;});
-  var counts={};
-  pEvents.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){
-    document.getElementById('an-pdf').innerHTML='<div class="an-empty">Nessun download nel periodo</div>';
-    return;
-  }
-  fetch(SB_URL+'/rest/v1/experiences?select=id,title&id=in.('+sorted.join(',')+')',{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  })
+function renderAnBmPlaces(){
+  fetch(SB_URL+'/rest/v1/analytics_place_saves?select=place_id,saves&limit=10',{headers:_anH})
   .then(function(r){return r.json();})
-  .then(function(exps){
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
-      return '<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +'<div class="an-thumb-ph"></div>'
-        +'<span class="an-name">'+ex.title+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all" onclick="openAnAllPdf()">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-pdf').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-pdf').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+  .then(function(rows){_anRenderPlaces('an-bm-places',rows,'saves',"openAnAll('bookmark_places')");})
+  .catch(function(){_anSet('an-bm-places','<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnPinClicks(events){
-  var evs=events.filter(function(e){return e.event_type==='place_pin_click'&&e.place_id;});
-  var counts={};
-  evs.forEach(function(e){counts[e.place_id]=(counts[e.place_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){document.getElementById('an-pin-clicks').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';return;}
-  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+sorted.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+function renderAnBmActivities(){
+  fetch(SB_URL+'/rest/v1/analytics_activity_saves?select=activity_id,saves&limit=10',{headers:_anH})
   .then(function(r){return r.json();})
-  .then(function(places){
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
-      return'<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+p.name+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-pin-clicks').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-pin-clicks').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+  .then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){_anSet('an-bm-activities','<div class="an-empty">Nessun dato nel periodo</div>');return;}
+    var ids=rows.map(function(r){return r.activity_id;});
+    fetch(SB_URL+'/rest/v1/activities?select=id,name,is_city_activity&id=in.('+ids.join(',')+')',{headers:_anH})
+    .then(function(r){return r.json();})
+    .then(function(acts){
+      anBmActivitiesData={sorted:ids,counts:{},isCityMap:{},items:acts};
+      ids.forEach(function(id,i){anBmActivitiesData.counts[id]=rows[i].saves;});
+      acts.forEach(function(a){anBmActivitiesData.isCityMap[a.id]=a.is_city_activity;});
+      var html=rows.slice(0,5).map(function(row,i){
+        var a=acts.find(function(x){return String(x.id)===String(row.activity_id);})||{name:'ID '+row.activity_id};
+        var tag=a.is_city_activity?'Attività Roma':'Luogo';
+        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><div style="flex:1;min-width:0;"><div class="an-name">'+a.name+'</div><div class="an-sub">'+tag+'</div></div><span class="an-count">'+row.saves+'</span></div>';
+      }).join('');
+      if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAll(\'bookmark_activities\')">Vedi tutti ('+rows.length+')</button>';
+      _anSet('an-bm-activities',html);
+    });
+  }).catch(function(){_anSet('an-bm-activities','<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnSavedItineraries(events){
-  var evs=events.filter(function(e){return e.event_type==='save_itinerary'&&e.experience_id;});
-  var counts={};
-  evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){document.getElementById('an-saved-itineraries').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';return;}
-  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+sorted.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+function renderAnGallery(){
+  fetch(SB_URL+'/rest/v1/analytics_gallery_views?select=place_id,views&limit=10',{headers:_anH})
   .then(function(r){return r.json();})
-  .then(function(exps){
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
-      return'<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-saved-itineraries').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-saved-itineraries').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+  .then(function(rows){_anRenderPlaces('an-gallery',rows,'views',"openAnAll('gallery')");})
+  .catch(function(){_anSet('an-gallery','<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnItineraryMaps(events){
-  var evs=events.filter(function(e){return e.event_type==='itinerary_map_view'&&e.experience_id;});
-  var counts={};
-  evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){document.getElementById('an-itinerary-maps').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';return;}
-  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+sorted.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+function renderAnPdf(){
+  fetch(SB_URL+'/rest/v1/analytics_pdf_downloads?select=experience_id,downloads&limit=10',{headers:_anH})
   .then(function(r){return r.json();})
-  .then(function(exps){
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
-      return'<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-itinerary-maps').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-itinerary-maps').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+  .then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){_anSet('an-pdf','<div class="an-empty">Nessun download nel periodo</div>');return;}
+    var ids=rows.map(function(r){return r.experience_id;});
+    fetch(SB_URL+'/rest/v1/experiences?select=id,title&id=in.('+ids.join(',')+')',{headers:_anH})
+    .then(function(r){return r.json();})
+    .then(function(exps){
+      var html=rows.slice(0,5).map(function(row,i){
+        var ex=exps.find(function(x){return String(x.id)===String(row.experience_id);})||{title:'ID '+row.experience_id};
+        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><div class="an-thumb-ph"></div><span class="an-name">'+ex.title+'</span><span class="an-count">'+row.downloads+'</span></div>';
+      }).join('');
+      if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAllPdf()">Vedi tutti ('+rows.length+')</button>';
+      _anSet('an-pdf',html);
+    });
+  }).catch(function(){_anSet('an-pdf','<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnReviewsViews(events){
-  var evs=events.filter(function(e){return e.event_type==='reviews_view'&&e.experience_id;});
-  var counts={};
-  evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
-  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-  if(!sorted.length){document.getElementById('an-reviews-views').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';return;}
-  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+sorted.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+function renderAnPinClicks(){
+  fetch(SB_URL+'/rest/v1/analytics_pin_clicks?select=place_id,clicks&limit=10',{headers:_anH})
   .then(function(r){return r.json();})
-  .then(function(exps){
-    var preview=sorted.slice(0,5);
-    var html=preview.map(function(id,i){
-      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
-      return'<div class="an-row">'
-        +'<span class="an-rank">'+(i+1)+'</span>'
-        +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
-        +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
-        +'<span class="an-count">'+counts[id]+'</span>'
-        +'</div>';
-    }).join('');
-    if(sorted.length>5){html+='<button class="an-see-all">Vedi tutti ('+sorted.length+')</button>';}
-    document.getElementById('an-reviews-views').innerHTML=html;
-  })
-  .catch(function(){document.getElementById('an-reviews-views').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+  .then(function(rows){_anRenderPlaces('an-pin-clicks',rows,'clicks',null);})
+  .catch(function(){_anSet('an-pin-clicks','<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnCounters(events){
-  var types=['map_view','region_page_view','profile_view','landing_view'];
-  var labels={'map_view':'Visite mappa','region_page_view':'Elenco paesi','profile_view':'Visite profilo','landing_view':'Visite landing'};
-  var counts={};
-  types.forEach(function(t){counts[t]=0;});
-  events.forEach(function(e){if(counts[e.event_type]!==undefined)counts[e.event_type]++;});
-  var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">'
-    +types.map(function(t){
-      return'<div style="text-align:center;padding:16px 8px;background:var(--g50);border-radius:var(--r);">'
-        +'<div style="font-size:1.6rem;font-weight:700;color:var(--g900);">'+counts[t]+'</div>'
-        +'<div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+labels[t]+'</div>'
-        +'</div>';
-    }).join('')
-    +'</div>';
-  document.getElementById('an-counters').innerHTML=html;
+function renderAnSavedItineraries(){
+  fetch(SB_URL+'/rest/v1/analytics_itinerary_saves?select=experience_id,saves&limit=10',{headers:_anH})
+  .then(function(r){return r.json();})
+  .then(function(rows){_anRenderExps('an-saved-itineraries',rows,'saves',null);})
+  .catch(function(){_anSet('an-saved-itineraries','<div class="an-empty">Errore caricamento</div>');});
+}
+
+function renderAnItineraryMaps(){
+  var since=new Date(Date.now()-anPeriod*86400000).toISOString();
+  fetch(SB_URL+'/rest/v1/analytics_events?select=experience_id&event_type=eq.itinerary_map_view&experience_id=not.is.null&created_at=gte.'+encodeURIComponent(since),{headers:_anH})
+  .then(function(r){return r.json();})
+  .then(function(evs){
+    if(!Array.isArray(evs)||!evs.length){_anSet('an-itinerary-maps','<div class="an-empty">Nessun dato nel periodo</div>');return;}
+    var counts={};
+    evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
+    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+    var rows=sorted.map(function(id){return{experience_id:id,views:counts[id]};});
+    _anRenderExps('an-itinerary-maps',rows,'views',null);
+  }).catch(function(){_anSet('an-itinerary-maps','<div class="an-empty">Errore caricamento</div>');});
+}
+
+function renderAnReviewsViews(){
+  var since=new Date(Date.now()-anPeriod*86400000).toISOString();
+  fetch(SB_URL+'/rest/v1/analytics_events?select=experience_id&event_type=eq.reviews_view&experience_id=not.is.null&created_at=gte.'+encodeURIComponent(since),{headers:_anH})
+  .then(function(r){return r.json();})
+  .then(function(evs){
+    if(!Array.isArray(evs)||!evs.length){_anSet('an-reviews-views','<div class="an-empty">Nessun dato nel periodo</div>');return;}
+    var counts={};
+    evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
+    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+    var rows=sorted.map(function(id){return{experience_id:id,views:counts[id]};});
+    _anRenderExps('an-reviews-views',rows,'views',null);
+  }).catch(function(){_anSet('an-reviews-views','<div class="an-empty">Errore caricamento</div>');});
+}
+
+function renderAnCounters(){
+  fetch(SB_URL+'/rest/v1/analytics_totals?select=*',{headers:_anH})
+  .then(function(r){return r.json();})
+  .then(function(rows){
+    var row=(Array.isArray(rows)&&rows[0])||{};
+    var items=[
+      {label:'Visite mappa',val:row.map_view||0},
+      {label:'Elenco paesi',val:row.region_page_view||0},
+      {label:'Visite profilo',val:row.profile_view||0},
+      {label:'Visite landing',val:row.landing_view||0}
+    ];
+    var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">'
+      +items.map(function(it){
+        return'<div style="text-align:center;padding:16px 8px;background:var(--g50);border-radius:var(--r);"><div style="font-size:1.6rem;font-weight:700;color:var(--g900);">'+it.val+'</div><div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+it.label+'</div></div>';
+      }).join('')+'</div>';
+    _anSet('an-counters',html);
+  }).catch(function(){_anSet('an-counters','<div class="an-empty">Errore caricamento</div>');});
 }
 
 function openAnAllPdf(){
