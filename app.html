@@ -2028,11 +2028,10 @@ function createPinEl(p, dim, showName){
 }
 
 function addL1(p){
-  if(p.published===false&&!_isAdmin)return;
   var el=createPinEl(p,false,false);
   var m=new mapboxgl.Marker({element:el,anchor:'center'})
     .setLngLat([p.lng,p.lat]);
-  m.addTo(map_o);
+  if(p.published!==false||_isAdmin)m.addTo(map_o);
   m.getElement().style.zIndex='2';
   el.addEventListener('mouseenter',function(){el.style.zIndex='9999';});
   el.addEventListener('mouseleave',function(){el.style.zIndex='';});
@@ -2246,7 +2245,7 @@ function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
     m.getElement().innerHTML=createPinEl(p,false,false).innerHTML;
-    var show=catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
+    var show=(p.published!==false||_isAdmin)&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
     if(show)m.addTo(map_o);else m.remove();
   });
 }
@@ -5799,6 +5798,7 @@ async function checkAuthSession(){
     if(event==='SIGNED_IN'){
       _currentUser=session.user;
       _isAdmin=_currentUser.id===ADMIN_USER_ID;
+      if(_isAdmin&&map_o)restoreL1();
       trackEvent('login',{method:(session.user.app_metadata&&session.user.app_metadata.provider)||'email'});
       completedItineraries.clear();visitedPlaces.clear();favs.clear();favItineraries.clear();downloadedSet.clear();
       var favRes=await _supaAuth.from('user_favorites').select('place_id').eq('user_id',session.user.id);
@@ -5859,6 +5859,7 @@ async function checkAuthSession(){
   if(sesRes.data&&sesRes.data.session&&sesRes.data.session.user){
     _currentUser=sesRes.data.session.user;
     _isAdmin=_currentUser.id===ADMIN_USER_ID;
+    if(_isAdmin&&map_o)restoreL1();
     var {data:sesProfile}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
     if(sesProfile)_currentUserProfile=sesProfile;
     updateProfileUI();
