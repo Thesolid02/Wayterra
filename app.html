@@ -2245,7 +2245,8 @@ function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
     m.getElement().innerHTML=createPinEl(p,false,false).innerHTML;
-    var show=(p.published!==false||_isAdmin)&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
+    var regionOk=_travelContext?(p.region===_currentTravelRegion):(p.region==='lazio'||!p.region);
+    var show=regionOk&&(p.published!==false||_isAdmin)&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
     if(show)m.addTo(map_o);else m.remove();
   });
 }
