@@ -3645,16 +3645,14 @@ function renderAnActivities(){
   .then(function(rows){
     if(!Array.isArray(rows)||!rows.length){_anSet('an-activities','<div class="an-empty">Nessun dato nel periodo</div>');return;}
     var ids=rows.map(function(r){return r.activity_id;});
-    fetch(SB_URL+'/rest/v1/activities?select=id,name,is_city_activity&id=in.('+ids.join(',')+')',{headers:_anH})
+    fetch(SB_URL+'/rest/v1/activities?select=id,name&id=in.('+ids.join(',')+')',{headers:_anH})
     .then(function(r){return r.json();})
     .then(function(acts){
       anActivitiesData={sorted:ids,counts:{},isCityMap:{},items:acts};
       ids.forEach(function(id,i){anActivitiesData.counts[id]=rows[i].views;});
-      acts.forEach(function(a){anActivitiesData.isCityMap[a.id]=a.is_city_activity;});
       var html=rows.slice(0,5).map(function(row,i){
         var a=acts.find(function(x){return String(x.id)===String(row.activity_id);})||{name:'ID '+row.activity_id};
-        var tag=a.is_city_activity?'Attività Roma':'Luogo';
-        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><div style="flex:1;min-width:0;"><div class="an-name">'+a.name+'</div><div class="an-sub">'+tag+'</div></div><span class="an-count">'+row.views+'</span></div>';
+        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><span class="an-name">'+a.name+'</span><span class="an-count">'+row.views+'</span></div>';
       }).join('');
       if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAll(\'activities\')">Vedi tutti ('+rows.length+')</button>';
       _anSet('an-activities',html);
@@ -3682,16 +3680,14 @@ function renderAnBmActivities(){
   .then(function(rows){
     if(!Array.isArray(rows)||!rows.length){_anSet('an-bm-activities','<div class="an-empty">Nessun dato nel periodo</div>');return;}
     var ids=rows.map(function(r){return r.activity_id;});
-    fetch(SB_URL+'/rest/v1/activities?select=id,name,is_city_activity&id=in.('+ids.join(',')+')',{headers:_anH})
+    fetch(SB_URL+'/rest/v1/activities?select=id,name&id=in.('+ids.join(',')+')',{headers:_anH})
     .then(function(r){return r.json();})
     .then(function(acts){
       anBmActivitiesData={sorted:ids,counts:{},isCityMap:{},items:acts};
       ids.forEach(function(id,i){anBmActivitiesData.counts[id]=rows[i].saves;});
-      acts.forEach(function(a){anBmActivitiesData.isCityMap[a.id]=a.is_city_activity;});
       var html=rows.slice(0,5).map(function(row,i){
         var a=acts.find(function(x){return String(x.id)===String(row.activity_id);})||{name:'ID '+row.activity_id};
-        var tag=a.is_city_activity?'Attività Roma':'Luogo';
-        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><div style="flex:1;min-width:0;"><div class="an-name">'+a.name+'</div><div class="an-sub">'+tag+'</div></div><span class="an-count">'+row.saves+'</span></div>';
+        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><span class="an-name">'+a.name+'</span><span class="an-count">'+row.saves+'</span></div>';
       }).join('');
       if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAll(\'bookmark_activities\')">Vedi tutti ('+rows.length+')</button>';
       _anSet('an-bm-activities',html);
