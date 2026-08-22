@@ -3548,7 +3548,7 @@ function renderAnalytics(){
   _anSet('an-itinerary-maps','<div class="an-loading">Caricamento…</div>');
   _anSet('an-reviews-views','<div class="an-loading">Caricamento…</div>');
   _anSet('an-counters','<div class="an-loading">Caricamento…</div>');
-  fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.asc',{
+  fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.desc&limit=10000',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
   .then(function(r){return r.json();})
