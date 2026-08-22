@@ -401,6 +401,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
       <span style="font-size:15px;font-weight:500;">Visitatori</span>
       <select id="an-users-period" onchange="renderAnUsers()" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;">
+        <option value="1">Oggi</option>
         <option value="7">Ultimi 7 giorni</option>
         <option value="30">Ultimi 30 giorni</option>
         <option value="0">Tutto</option>
@@ -3587,7 +3588,9 @@ function renderAnCounters(){
 
 function renderAnUsers(){
   var periodo=parseInt((document.getElementById('an-users-period')||{}).value||'7',10);
-  var since=periodo>0?new Date(Date.now()-periodo*86400000).toISOString():null;
+  var since=null;
+  if(periodo===1){var _today=new Date();_today.setHours(0,0,0,0);since=_today.toISOString();}
+  else if(periodo>0){since=new Date(Date.now()-periodo*86400000).toISOString();}
   var evUrl=SB_URL+'/rest/v1/analytics_events?select=session_id,user_id';
   if(since)evUrl+='&created_at=gte.'+encodeURIComponent(since);
   var profUrl=SB_URL+'/rest/v1/profiles?select=id,created_at';
