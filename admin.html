@@ -3463,6 +3463,24 @@ function fetchAnLive(){
         }else if(e.event_type==='landing_view'){
           icon='🏠';
           name='Landing visitata';
+        }else if(e.event_type==='profile_view'){
+          icon='👤';
+          name='Profilo aperto';
+        }else if(e.event_type==='itineraries_view'){
+          icon='📖';
+          name='Elenco itinerari';
+        }else if(e.event_type==='itinerary_map_view'){
+          icon='🗺️';
+          var imv=anItinerariesData&&anItinerariesData.items?anItinerariesData.items.find(function(x){return String(x.id)===String(e.experience_id);}):null;
+          name='Mappa tappe'+(imv?' — '+imv.title:'');
+        }else if(e.event_type==='save_itinerary'){
+          icon='🔖';
+          var siv=anItinerariesData&&anItinerariesData.items?anItinerariesData.items.find(function(x){return String(x.id)===String(e.experience_id);}):null;
+          name='Itinerario salvato'+(siv?' — '+siv.title:'');
+        }else if(e.event_type==='reviews_view'){
+          icon='⭐';
+          var rvv=anItinerariesData&&anItinerariesData.items?anItinerariesData.items.find(function(x){return String(x.id)===String(e.experience_id);}):null;
+          name='Recensioni aperte'+(rvv?' — '+rvv.title:'');
         }else{
           icon='🎯';
           name=e.event_type;

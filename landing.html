@@ -1320,7 +1320,8 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
 <script>
 (function(){
   if(localStorage.getItem('wayterra.dev')==='1')return;
-  fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({event_type:'landing_view'})}).catch(function(){});
+  console.log('[landing] tracking view');
+  fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({event_type:'landing_view'})}).then(function(r){console.log('[landing] status:',r.status);}).catch(function(){});
 })();
 </script>
 </body>

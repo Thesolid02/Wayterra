@@ -1832,6 +1832,7 @@ function openActPopup(actId, placeId, triggerEl){
         }).join('')+'</div>':'')
       +((a.maps||a.bookingUrl)?'<div style="display:flex;gap:8px;">'+(a.maps?'<a class="act-popup-maps-btn" href="'+a.maps+'" target="_blank" rel="noopener noreferrer" style="flex:1;display:flex;align-items:center;justify-content:center;text-decoration:none;">'+t('maps')+'</a>':'')+(a.bookingUrl?'<button class="act-popup-maps-btn" style="flex:1;background:#dc6b2f;" onclick="openBooking(\''+a.bookingUrl+'\')"><i class="ti '+(a.bookingUrl.startsWith('tel:')?'ti-phone':'ti-ticket')+'" style="margin-right:4px;"></i>'+t('book')+'</button>':'')+'</div>':'');
     if(actDesc) renderExpandableText(actDesc,'act-popup-desc-el',200);
+    trackEvent({event_type:'activity_view',place_id:placeId,activity_id:actId,is_city_activity:false});
     document.getElementById('act-popup').style.zIndex=_travelContext?'650':'';
     document.getElementById('act-popup').classList.add('show');
   }
@@ -2808,7 +2809,7 @@ function showActBubbleBottomCard(a, placeId){
   var p=DATA.places.find(function(x){return x.id===placeId;});
   var at=a.experienceTypeId?expTypeOf(a.experienceTypeId):atypeOf(a.type);
   if(window.umami)umami.track('activity_view',{name:a.name,category:atName(at)});
-  trackEvent({event_type:'activity_view',activity_id:a.id,is_city_activity:false});
+  trackEvent({event_type:'activity_view',activity_id:a.id,place_id:placeId,is_city_activity:false});
   var imgWrap=document.getElementById('bc-img-wrap');
   if(a.coverPhoto){
     imgWrap.innerHTML='<img class="bc-img" src="'+a.coverPhoto+'" alt="">';
@@ -3089,7 +3090,7 @@ function toggleFavItinerary(expId){
     favItineraries.add(expId);
     if(_supaAuth)_supaAuth.from('user_favorite_itineraries').insert({user_id:_currentUser.id,experience_id:expId}).then(function(){});
     toast(lang==='en'?'Itinerary saved':'Itinerario salvato');
-    trackEvent('save_itinerary',{experience_id:expId});
+    trackEvent({event_type:'save_itinerary',experience_id:expId});
   }
   updateItdBookmarkBtn();
   var _pp=document.getElementById('profile-page');
@@ -3970,6 +3971,7 @@ function closeItinerariPage(){
   setBottomNav('mappa');
 }
 async function renderItinerariPage(region){
+  trackEvent({event_type:'itineraries_view',region:region||_currentTravelRegion||'lazio'});
   var scroll=document.getElementById('itp-scroll');
   if(!scroll)return;
   var reviewsByExp={};
@@ -4471,6 +4473,7 @@ function openItinerario(id){
 }
 async function openReviewsPopup(expId){
   _currentReviewsExpId=expId;
+  trackEvent({event_type:'reviews_view',experience_id:typeof expId==='number'?expId:undefined});
   var popup=document.getElementById('reviews-popup');
   popup.style.display='flex';
   var list=document.getElementById('reviews-popup-list');
@@ -5016,6 +5019,7 @@ function openItinMapPopup(id){
   var e=DATA.experiences.find(function(x){return x.id==id;});
   if(!e)return;
   if(window.umami)umami.track('itinerary_map_open',{experience_id:id});
+  trackEvent({event_type:'itinerary_map_view',experience_id:id});
   var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
   var _btnSt='padding:9px 16px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
   var hasTravelTimes=!!(e.stops||[]).some(function(s){return !!s.travel_time;});
@@ -5170,6 +5174,7 @@ function closeTravelsPage(){
   closeItinerariPage();
 }
 async function renderTravelsPage(){
+  trackEvent({event_type:'itineraries_view',region:_currentTravelRegion||'lazio'});
   var scroll=document.getElementById('trv-scroll');
   if(!scroll)return;
   var reviewsByExp={};
@@ -6050,6 +6055,7 @@ var _userRegions=[];
 var REGION_META={'lazio':{name:'Lazio',flag:'🇮🇹',country:'Italia'},'cotswolds':{name:'Cotswolds',flag:'🇬🇧',country:'UK'},'highlands':{name:'Highlands',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',country:'UK'},'germania':{name:'Strada Romantica',flag:'🇩🇪',country:'Germania'}};
 var GUIDE_REGIONS={'lazio':['lazio'],'cotswolds':['cotswolds'],'germania':['baviera','assia']};
 function openProfilePage(){
+  trackEvent({event_type:'profile_view'});
   var _pp=document.getElementById('profile-page');
   var _itpShow=document.getElementById('itinerari-page').classList.contains('show');
   var _itdShow=document.getElementById('itinerario-detail').classList.contains('show');
