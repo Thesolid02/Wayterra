@@ -410,6 +410,33 @@ textarea.ft{resize:vertical;line-height:1.65;}
       <div id="an-pdf"><div class="an-loading">Caricamento…</div></div>
     </div>
   </div>
+  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Pin &amp; Interazioni</div>
+  <div class="an-top-grid">
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Pin più cliccati (top 10)</div>
+      <div id="an-pin-clicks"><div class="an-loading">Caricamento…</div></div>
+    </div>
+  </div>
+  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Itinerari — azioni</div>
+  <div class="an-top-grid">
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Itinerari più salvati (top 10)</div>
+      <div id="an-saved-itineraries"><div class="an-loading">Caricamento…</div></div>
+    </div>
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Mappe tappe più aperte (top 10)</div>
+      <div id="an-itinerary-maps"><div class="an-loading">Caricamento…</div></div>
+    </div>
+    <div class="an-card" style="margin-bottom:0;">
+      <div class="an-card-title">Recensioni più aperte (top 10)</div>
+      <div id="an-reviews-views"><div class="an-loading">Caricamento…</div></div>
+    </div>
+  </div>
+  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Contatori globali</div>
+  <div class="an-card" style="margin-bottom:0;">
+    <div class="an-card-title">Visite per schermata</div>
+    <div id="an-counters"><div class="an-loading">Caricamento…</div></div>
+  </div>
 </div>
 </div>
 
@@ -3515,6 +3542,11 @@ function renderAnalytics(){
   document.getElementById('an-itineraries').innerHTML='<div class="an-loading">Caricamento…</div>';
   document.getElementById('an-gallery').innerHTML='<div class="an-loading">Caricamento…</div>';
   document.getElementById('an-pdf').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-pin-clicks').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-saved-itineraries').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-itinerary-maps').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-reviews-views').innerHTML='<div class="an-loading">Caricamento…</div>';
+  document.getElementById('an-counters').innerHTML='<div class="an-loading">Caricamento…</div>';
   fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.asc',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
@@ -3528,6 +3560,11 @@ function renderAnalytics(){
     renderAnItineraries(events);
     renderAnGallery(events);
     renderAnPdf(events);
+    renderAnPinClicks(events);
+    renderAnSavedItineraries(events);
+    renderAnItineraryMaps(events);
+    renderAnReviewsViews(events);
+    renderAnCounters(events);
   })
   .catch(function(e){
     console.error('analytics fetch error',e);
@@ -3537,6 +3574,11 @@ function renderAnalytics(){
     document.getElementById('an-bm-activities').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
     document.getElementById('an-itineraries').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
     document.getElementById('an-gallery').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    document.getElementById('an-pin-clicks').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    document.getElementById('an-saved-itineraries').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    document.getElementById('an-itinerary-maps').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    document.getElementById('an-reviews-views').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
+    document.getElementById('an-counters').innerHTML='<div class="an-empty">Errore caricamento dati</div>';
   });
 }
 
@@ -3804,6 +3846,123 @@ function renderAnPdf(events){
     document.getElementById('an-pdf').innerHTML=html;
   })
   .catch(function(){document.getElementById('an-pdf').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
+function renderAnPinClicks(events){
+  var evs=events.filter(function(e){return e.event_type==='place_pin_click'&&e.place_id;});
+  var counts={};
+  evs.forEach(function(e){counts[e.place_id]=(counts[e.place_id]||0)+1;});
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){document.getElementById('an-pin-clicks').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';return;}
+  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+sorted.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+  .then(function(r){return r.json();})
+  .then(function(places){
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
+      var p=places.find(function(x){return String(x.id)===String(id);})||{name:'ID '+id};
+      return'<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+p.name+'</span>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all">Vedi tutti ('+sorted.length+')</button>';}
+    document.getElementById('an-pin-clicks').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-pin-clicks').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
+function renderAnSavedItineraries(events){
+  var evs=events.filter(function(e){return e.event_type==='save_itinerary'&&e.experience_id;});
+  var counts={};
+  evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){document.getElementById('an-saved-itineraries').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';return;}
+  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+sorted.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+  .then(function(r){return r.json();})
+  .then(function(exps){
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
+      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
+      return'<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all">Vedi tutti ('+sorted.length+')</button>';}
+    document.getElementById('an-saved-itineraries').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-saved-itineraries').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
+function renderAnItineraryMaps(events){
+  var evs=events.filter(function(e){return e.event_type==='itinerary_map_view'&&e.experience_id;});
+  var counts={};
+  evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){document.getElementById('an-itinerary-maps').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';return;}
+  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+sorted.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+  .then(function(r){return r.json();})
+  .then(function(exps){
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
+      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
+      return'<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all">Vedi tutti ('+sorted.length+')</button>';}
+    document.getElementById('an-itinerary-maps').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-itinerary-maps').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
+function renderAnReviewsViews(events){
+  var evs=events.filter(function(e){return e.event_type==='reviews_view'&&e.experience_id;});
+  var counts={};
+  evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
+  if(!sorted.length){document.getElementById('an-reviews-views').innerHTML='<div class="an-empty">Nessun dato nel periodo</div>';return;}
+  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+sorted.join(',')+')',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+  .then(function(r){return r.json();})
+  .then(function(exps){
+    var preview=sorted.slice(0,5);
+    var html=preview.map(function(id,i){
+      var ex=exps.find(function(x){return String(x.id)===String(id);})||{title:'ID '+id};
+      return'<div class="an-row">'
+        +'<span class="an-rank">'+(i+1)+'</span>'
+        +(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')
+        +'<span class="an-name">'+(ex.title||'ID '+id)+'</span>'
+        +'<span class="an-count">'+counts[id]+'</span>'
+        +'</div>';
+    }).join('');
+    if(sorted.length>5){html+='<button class="an-see-all">Vedi tutti ('+sorted.length+')</button>';}
+    document.getElementById('an-reviews-views').innerHTML=html;
+  })
+  .catch(function(){document.getElementById('an-reviews-views').innerHTML='<div class="an-empty">Errore caricamento</div>';});
+}
+
+function renderAnCounters(events){
+  var types=['map_view','region_page_view','profile_view','landing_view'];
+  var labels={'map_view':'Visite mappa','region_page_view':'Elenco paesi','profile_view':'Visite profilo','landing_view':'Visite landing'};
+  var counts={};
+  types.forEach(function(t){counts[t]=0;});
+  events.forEach(function(e){if(counts[e.event_type]!==undefined)counts[e.event_type]++;});
+  var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">'
+    +types.map(function(t){
+      return'<div style="text-align:center;padding:16px 8px;background:var(--g50);border-radius:var(--r);">'
+        +'<div style="font-size:1.6rem;font-weight:700;color:var(--g900);">'+counts[t]+'</div>'
+        +'<div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+labels[t]+'</div>'
+        +'</div>';
+    }).join('')
+    +'</div>';
+  document.getElementById('an-counters').innerHTML=html;
 }
 
 function openAnAllPdf(){
