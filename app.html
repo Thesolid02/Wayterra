@@ -2608,6 +2608,7 @@ function refreshL1(){
 
 /* ═══ LEVEL TRANSITIONS ═══ */
 function handleL1Click(place){
+  console.log('[track] handleL1Click - innerWidth:',window.innerWidth,'place:',place.name);
   currentPlace=place;
   activePId=place.id;
   level=2;
@@ -2615,6 +2616,7 @@ function handleL1Click(place){
   document.getElementById('lv2-bar').style.display='flex';
   document.getElementById('lv2-label').textContent=place.premium&&!unlocked?t('premium_name'):place.name;
   setTimeout(function(){
+    console.log('[track] handleL1Click setTimeout - innerWidth:',window.innerWidth);
     if(window.innerWidth<768){showBottomCard(place);}else{openDetail(place);}
     showL2(place);
   },500);
