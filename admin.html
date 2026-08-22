@@ -398,7 +398,14 @@ textarea.ft{resize:vertical;line-height:1.65;}
   </div>
   <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Utenti</div>
   <div class="an-card" style="margin-bottom:0;">
-    <div class="an-card-title">Visitatori unici</div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+      <span style="font-size:15px;font-weight:500;">Visitatori</span>
+      <select id="an-users-period" onchange="renderAnUsers()" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;">
+        <option value="7">Ultimi 7 giorni</option>
+        <option value="30">Ultimi 30 giorni</option>
+        <option value="0">Tutto</option>
+      </select>
+    </div>
     <div id="an-visitors"><div class="an-loading">Caricamento…</div></div>
   </div>
 </div>
@@ -3505,7 +3512,7 @@ function renderAnalytics(){
   _anSet('an-visitors','<div class="an-loading">Caricamento…</div>');
   renderAnChart();
   renderAnCounters();
-  renderAnVisitors();
+  renderAnUsers();
 }
 
 async function renderAnChart(){
@@ -3578,19 +3585,32 @@ function renderAnCounters(){
   }).catch(function(){_anSet('an-counters','<div class="an-empty">Errore caricamento</div>');});
 }
 
-function renderAnVisitors(){
-  fetch(SB_URL+'/rest/v1/analytics_visitors?select=*',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){
-    var row=(Array.isArray(rows)&&rows[0])||{};
+function renderAnUsers(){
+  var periodo=parseInt((document.getElementById('an-users-period')||{}).value||'7',10);
+  var since=periodo>0?new Date(Date.now()-periodo*86400000).toISOString():null;
+  var evUrl=SB_URL+'/rest/v1/analytics_events?select=session_id,user_id';
+  if(since)evUrl+='&created_at=gte.'+encodeURIComponent(since);
+  var profUrl=SB_URL+'/rest/v1/profiles?select=id,created_at';
+  if(since)profUrl+='&created_at=gte.'+encodeURIComponent(since);
+  Promise.all([
+    fetch(evUrl,{headers:_anH}).then(function(r){return r.json();}),
+    fetch(profUrl,{headers:_anH}).then(function(r){return r.json();})
+  ]).then(function(res){
+    var evs=Array.isArray(res[0])?res[0]:[];
+    var profs=Array.isArray(res[1])?res[1]:[];
+    var sessions=new Set(),anonSessions=new Set(),regUsers=new Set();
+    evs.forEach(function(e){
+      if(e.session_id)sessions.add(e.session_id);
+      if(e.session_id&&!e.user_id)anonSessions.add(e.session_id);
+      if(e.user_id)regUsers.add(e.user_id);
+    });
     var items=[
-      {label:'Visitatori unici totali',val:row.unique_visitors||0},
-      {label:'Anonimi',val:row.anonymous_visitors||0},
-      {label:'Utenti registrati attivi',val:row.registered_visitors||0},
-      {label:'Ultimi 30 giorni',val:row.unique_visitors_30d||0},
-      {label:'Ultimi 7 giorni',val:row.unique_visitors_7d||0}
+      {label:'Visitatori unici',val:sessions.size},
+      {label:'Visitatori anonimi',val:anonSessions.size},
+      {label:'Utenti registrati attivi',val:regUsers.size},
+      {label:'Nuovi iscritti nel periodo',val:profs.length}
     ];
-    var html='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">'
+    var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">'
       +items.map(function(it){
         return'<div style="text-align:center;padding:16px 8px;background:var(--g50);border-radius:var(--r);"><div style="font-size:1.6rem;font-weight:700;color:var(--g900);">'+it.val+'</div><div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+it.label+'</div></div>';
       }).join('')+'</div>';
