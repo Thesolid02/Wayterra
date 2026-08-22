@@ -2740,6 +2740,7 @@ function positionBubble(p){
 }
 function closeBubble(){document.getElementById('bubble').classList.remove('show');closeBottomCard();}
 function showBottomCard(p){
+  trackEvent({event_type:'place_view',place_id:p.id,place_name:p.name,region:p.region});
   var c=placeTypeOf(p.placeTypeId);
   var sc=scoreColor(p.hiddenScore);
   var imgWrap=document.getElementById('bc-img-wrap');
