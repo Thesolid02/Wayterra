@@ -1440,7 +1440,7 @@ function switchTab(t,btn){
   if(t==='placetypes') renderPlaceTypes();
   if(t==='experience') renderExpTypes();
   if(t==='esperienze') renderEsperienze();
-  if(t==='analytics'){console.log('[analytics] tab cliccata');renderAnalytics();startAnLive();}
+  if(t==='analytics'){renderAnalytics();startAnLive();}
 }
 
 // ═══ HELPERS ═══
@@ -3429,7 +3429,7 @@ function startAnLive(){
 }
 
 function fetchAnLive(){
-  fetch(SB_URL+'/rest/v1/analytics_events?select=*&order=created_at.desc&limit=20',{
+  fetch(SB_URL+'/rest/v1/analytics_events?select=*&order=created_at.desc&limit=50',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
   .then(function(r){return r.json();})
@@ -3533,11 +3533,9 @@ function setAnPeriod(days,btn){
   renderAnalytics();
 }
 
-function _anSet(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;else console.warn('[analytics] elemento mancante:',id);}
+function _anSet(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;}
 function renderAnalytics(){
-  console.log('[analytics] renderAnalytics chiamata');
   var since=new Date(Date.now()-anPeriod*86400000).toISOString();
-  console.log('[analytics] setting loading states...');
   _anSet('an-places','<div class="an-loading">Caricamento…</div>');
   _anSet('an-activities','<div class="an-loading">Caricamento…</div>');
   _anSet('an-bm-places','<div class="an-loading">Caricamento…</div>');
@@ -3550,13 +3548,11 @@ function renderAnalytics(){
   _anSet('an-itinerary-maps','<div class="an-loading">Caricamento…</div>');
   _anSet('an-reviews-views','<div class="an-loading">Caricamento…</div>');
   _anSet('an-counters','<div class="an-loading">Caricamento…</div>');
-  console.log('[analytics] fetch analytics_events...');
   fetch(SB_URL+'/rest/v1/analytics_events?select=*&created_at=gte.'+encodeURIComponent(since)+'&order=created_at.asc',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   })
-  .then(function(r){console.log('[analytics] analytics_events status:',r.status);return r.json();})
+  .then(function(r){return r.json();})
   .then(function(events){
-    console.log('[analytics] events ricevuti:',Array.isArray(events)?events.length:'non-array',events&&events.error?events.error:null);
     renderAnChart(events);
     renderAnPlaces(events);
     renderAnActivities(events);
@@ -3572,7 +3568,7 @@ function renderAnalytics(){
     renderAnCounters(events);
   })
   .catch(function(e){
-    console.error('[analytics] fetch error:',e);
+    console.error('analytics fetch error',e);
     ['an-places','an-activities','an-bm-places','an-bm-activities','an-itineraries','an-gallery','an-pin-clicks','an-saved-itineraries','an-itinerary-maps','an-reviews-views','an-counters'].forEach(function(id){_anSet(id,'<div class="an-empty">Errore caricamento dati</div>');});
   });
 }
