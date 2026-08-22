@@ -387,9 +387,6 @@ textarea.ft{resize:vertical;line-height:1.65;}
       </select>
       <select id="an-filter-period" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;">
         <option value="1">Oggi</option>
-        <option value="7">Ultimi 7 giorni</option>
-        <option value="30">Ultimi 30 giorni</option>
-        <option value="0">Tutto</option>
       </select>
       <button onclick="renderAnChart()" style="padding:6px 14px;border-radius:8px;border:0.5px solid #ddd;background:#dc6b2f;color:#fff;font-size:13px;cursor:pointer;">Aggiorna</button>
     </div>
@@ -3540,7 +3537,6 @@ async function renderAnChart(){
   var period=parseInt((document.getElementById('an-filter-period')||{}).value||'0',10);
   var since=null;
   if(period===1){var _td=new Date();_td.setHours(0,0,0,0);since=_td.toISOString();}
-  else if(period>0){since=new Date(Date.now()-period*86400000).toISOString();}
   var key=tipo+'_'+metrica;
   var cfg=viewMap[key]||viewMap[tipo+'_visto'];
   if(!cfg)return;
