@@ -365,71 +365,30 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <button class="an-period-btn" onclick="setAnPeriod(90,this)">90 giorni</button>
   </div>
   <div class="an-card">
-    <div class="an-card-title">Andamento nel tempo</div>
-    <canvas id="an-chart" height="100"></canvas>
-  </div>
-  <div class="an-top-grid">
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Luoghi più visti (top 10)</div>
-      <div id="an-places"><div class="an-loading">Caricamento…</div></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+      <span style="font-size:15px;font-weight:500;">Top 10</span>
+      <select id="an-filter-region" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;">
+        <option value="">Tutte le regioni</option>
+        <option value="lazio">Lazio</option>
+        <option value="cotswolds">Cotswolds</option>
+        <option value="baviera">Baviera</option>
+      </select>
+      <select id="an-filter-tipo" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;">
+        <option value="luoghi">Luoghi</option>
+        <option value="attivita">Attività</option>
+        <option value="itinerari">Itinerari</option>
+        <option value="pdf">PDF</option>
+        <option value="gallerie">Gallerie</option>
+      </select>
+      <select id="an-filter-metrica" style="padding:6px 10px;border-radius:8px;border:0.5px solid #ddd;font-size:13px;">
+        <option value="visto">Visto</option>
+        <option value="salvato">Salvato</option>
+        <option value="maps">Click Google Maps</option>
+      </select>
+      <button onclick="renderAnChart()" style="padding:6px 14px;border-radius:8px;border:0.5px solid #ddd;background:#dc6b2f;color:#fff;font-size:13px;cursor:pointer;">Aggiorna</button>
     </div>
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Attività più visitate (top 10)</div>
-      <div id="an-activities"><div class="an-loading">Caricamento…</div></div>
-    </div>
-  </div>
-  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Più salvati</div>
-  <div class="an-top-grid">
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Luoghi più salvati (top 10)</div>
-      <div id="an-bm-places"><div class="an-loading">Caricamento…</div></div>
-    </div>
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Attività più salvate (top 10)</div>
-      <div id="an-bm-activities"><div class="an-loading">Caricamento…</div></div>
-    </div>
-  </div>
-  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Itinerari</div>
-  <div class="an-top-grid">
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Itinerari più visti (top 10)</div>
-      <div id="an-itineraries"><div class="an-loading">Caricamento…</div></div>
-    </div>
-  </div>
-  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Luoghi</div>
-  <div class="an-top-grid">
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Gallerie più aperte (top 10)</div>
-      <div id="an-gallery"><div class="an-loading">Caricamento…</div></div>
-    </div>
-  </div>
-  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Guide PDF</div>
-  <div class="an-top-grid">
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Guide PDF scaricate (top 10)</div>
-      <div id="an-pdf"><div class="an-loading">Caricamento…</div></div>
-    </div>
-  </div>
-  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Pin &amp; Interazioni</div>
-  <div class="an-top-grid">
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Pin più cliccati (top 10)</div>
-      <div id="an-pin-clicks"><div class="an-loading">Caricamento…</div></div>
-    </div>
-  </div>
-  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Itinerari — azioni</div>
-  <div class="an-top-grid">
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Itinerari più salvati (top 10)</div>
-      <div id="an-saved-itineraries"><div class="an-loading">Caricamento…</div></div>
-    </div>
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Mappe tappe più aperte (top 10)</div>
-      <div id="an-itinerary-maps"><div class="an-loading">Caricamento…</div></div>
-    </div>
-    <div class="an-card" style="margin-bottom:0;">
-      <div class="an-card-title">Recensioni più aperte (top 10)</div>
-      <div id="an-reviews-views"><div class="an-loading">Caricamento…</div></div>
+    <div style="position:relative;height:400px;">
+      <canvas id="an-main-chart" role="img" aria-label="Grafico top 10 analytics Wayterra">Top 10 elementi per filtri selezionati.</canvas>
     </div>
   </div>
   <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Contatori globali</div>
@@ -3537,230 +3496,60 @@ function _anSet(id,html){var el=document.getElementById(id);if(el)el.innerHTML=h
 var _anH={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
 
 function renderAnalytics(){
-  var ids=['an-places','an-activities','an-bm-places','an-bm-activities','an-itineraries','an-gallery','an-pdf','an-pin-clicks','an-saved-itineraries','an-itinerary-maps','an-reviews-views','an-counters'];
-  ids.forEach(function(id){_anSet(id,'<div class="an-loading">Caricamento…</div>');});
+  _anSet('an-counters','<div class="an-loading">Caricamento…</div>');
   renderAnChart();
-  renderAnPlaces();
-  renderAnActivities();
-  renderAnBmPlaces();
-  renderAnBmActivities();
-  renderAnItineraries();
-  renderAnGallery();
-  renderAnPdf();
-  renderAnPinClicks();
-  renderAnSavedItineraries();
-  renderAnItineraryMaps();
-  renderAnReviewsViews();
   renderAnCounters();
 }
 
-function renderAnChart(){
-  var since=new Date(Date.now()-anPeriod*86400000).toISOString();
-  fetch(SB_URL+'/rest/v1/analytics_events?select=event_type,created_at&event_type=in.(place_view,activity_view)&created_at=gte.'+encodeURIComponent(since),{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(events){
-    if(!Array.isArray(events))return;
-    var byDay={};
-    events.forEach(function(ev){
-      var d=ev.created_at.slice(0,10);
-      if(!byDay[d])byDay[d]={place_view:0,activity_view:0};
-      if(byDay[d][ev.event_type]!==undefined)byDay[d][ev.event_type]++;
-    });
-    var labels=[],pvData=[],avData=[];
-    for(var i=anPeriod-1;i>=0;i--){
-      var d=new Date(Date.now()-i*86400000).toISOString().slice(0,10);
-      labels.push(d.slice(5));
-      pvData.push((byDay[d]||{}).place_view||0);
-      avData.push((byDay[d]||{}).activity_view||0);
+async function renderAnChart(){
+  var region=document.getElementById('an-filter-region').value;
+  var tipo=document.getElementById('an-filter-tipo').value;
+  var metrica=document.getElementById('an-filter-metrica').value;
+  var viewMap={
+    'luoghi_visto':{view:'analytics_place_views',idField:'place_id',valField:'views',nameTable:'places'},
+    'luoghi_salvato':{view:'analytics_place_saves',idField:'place_id',valField:'saves',nameTable:'places'},
+    'luoghi_maps':{view:'analytics_place_saves',idField:'place_id',valField:'saves',nameTable:'places'},
+    'attivita_visto':{view:'analytics_activity_views',idField:'activity_id',valField:'views',nameTable:'activities'},
+    'attivita_salvato':{view:'analytics_activity_saves',idField:'activity_id',valField:'saves',nameTable:'activities'},
+    'itinerari_visto':{view:'analytics_itinerary_views',idField:'experience_id',valField:'views',nameTable:'experiences'},
+    'itinerari_salvato':{view:'analytics_itinerary_saves',idField:'experience_id',valField:'saves',nameTable:'experiences'},
+    'pdf_visto':{view:'analytics_pdf_downloads',idField:'experience_id',valField:'downloads',nameTable:'experiences'},
+    'gallerie_visto':{view:'analytics_gallery_views',idField:'place_id',valField:'views',nameTable:'places'}
+  };
+  var key=tipo+'_'+metrica;
+  var cfg=viewMap[key]||viewMap[tipo+'_visto'];
+  if(!cfg)return;
+  var url=SB_URL+'/rest/v1/'+cfg.view+'?select='+cfg.idField+','+cfg.valField+'&order='+cfg.valField+'.desc&limit=10';
+  if(region)url+='&region=eq.'+region;
+  var r=await fetch(url,{headers:_anH});
+  var rows=await r.json();
+  if(!rows||!rows.length){
+    if(window._anMainChart){window._anMainChart.destroy();window._anMainChart=null;}
+    return;
+  }
+  var ids=rows.map(function(r){return r[cfg.idField];}).filter(Boolean);
+  var nameField=cfg.nameTable==='experiences'?'title':'name';
+  var nr=await fetch(SB_URL+'/rest/v1/'+cfg.nameTable+'?select=id,'+nameField+'&id=in.('+ids.join(',')+')',{headers:_anH});
+  var names=await nr.json();
+  var labels=rows.map(function(row){
+    var n=(names||[]).find(function(x){return String(x.id)===String(row[cfg.idField]);});
+    return n?(n[nameField]||'#'+row[cfg.idField]):'#'+row[cfg.idField];
+  });
+  var data=rows.map(function(r){return r[cfg.valField];});
+  if(window._anMainChart)window._anMainChart.destroy();
+  var ctx=document.getElementById('an-main-chart');
+  window._anMainChart=new Chart(ctx,{
+    type:'bar',
+    data:{labels:labels,datasets:[{data:data,backgroundColor:'#dc6b2f',borderRadius:4}]},
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'#f0f0f0'},ticks:{color:'#888',font:{size:12}}},
+        y:{grid:{display:false},ticks:{color:'#555',font:{size:12}}}
+      }
     }
-    var ctx=document.getElementById('an-chart').getContext('2d');
-    if(anChartInst){anChartInst.destroy();anChartInst=null;}
-    anChartInst=new Chart(ctx,{
-      type:'bar',
-      data:{labels:labels,datasets:[
-        {label:'Luoghi visti',data:pvData,backgroundColor:'#dc6b2f',borderRadius:3,borderSkipped:false},
-        {label:'Attività viste',data:avData,backgroundColor:'#2563eb',borderRadius:3,borderSkipped:false}
-      ]},
-      options:{responsive:true,plugins:{legend:{position:'top',labels:{font:{family:'Geist,system-ui,sans-serif',size:12},boxWidth:12,padding:16}}},scales:{x:{grid:{display:false},ticks:{font:{size:11},maxRotation:45}},y:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}},grid:{color:'#f3f4f6'}}}}
-    });
-  }).catch(function(){});
-}
-
-function _anRenderPlaces(divId,rows,countField,btnFn){
-  if(!Array.isArray(rows)||!rows.length){_anSet(divId,'<div class="an-empty">Nessun dato nel periodo</div>');return;}
-  var ids=rows.map(function(r){return r.place_id;});
-  fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+ids.join(',')+')',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(places){
-    var html=rows.slice(0,5).map(function(row,i){
-      var p=places.find(function(x){return String(x.id)===String(row.place_id);})||{name:'ID '+row.place_id};
-      return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span>'+(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')+'<span class="an-name">'+p.name+'</span><span class="an-count">'+row[countField]+'</span></div>';
-    }).join('');
-    if(rows.length>5&&btnFn)html+='<button class="an-see-all" onclick="'+btnFn+'">Vedi tutti ('+rows.length+')</button>';
-    _anSet(divId,html);
-  }).catch(function(){_anSet(divId,'<div class="an-empty">Errore caricamento</div>');});
-}
-
-function _anRenderExps(divId,rows,countField,btnFn){
-  if(!Array.isArray(rows)||!rows.length){_anSet(divId,'<div class="an-empty">Nessun dato nel periodo</div>');return;}
-  var ids=rows.map(function(r){return r.experience_id;});
-  fetch(SB_URL+'/rest/v1/experiences?select=id,title,cover_photo&id=in.('+ids.join(',')+')',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(exps){
-    anItinerariesData={sorted:ids,counts:{},items:exps};
-    ids.forEach(function(id,i){anItinerariesData.counts[id]=rows[i][countField];});
-    var html=rows.slice(0,5).map(function(row,i){
-      var ex=exps.find(function(x){return String(x.id)===String(row.experience_id);})||{title:'ID '+row.experience_id};
-      return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span>'+(ex.cover_photo?'<img class="an-thumb" src="'+ex.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')+'<span class="an-name">'+(ex.title||'ID '+row.experience_id)+'</span><span class="an-count">'+row[countField]+'</span></div>';
-    }).join('');
-    if(rows.length>5&&btnFn)html+='<button class="an-see-all" onclick="'+btnFn+'">Vedi tutti ('+rows.length+')</button>';
-    _anSet(divId,html);
-  }).catch(function(){_anSet(divId,'<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnPlaces(){
-  fetch(SB_URL+'/rest/v1/analytics_place_views?select=place_id,views&limit=10',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){
-    if(!Array.isArray(rows)||!rows.length){_anSet('an-places','<div class="an-empty">Nessun dato nel periodo</div>');return;}
-    var ids=rows.map(function(r){return r.place_id;});
-    fetch(SB_URL+'/rest/v1/places?select=id,name,cover_photo&id=in.('+ids.join(',')+')',{headers:_anH})
-    .then(function(r){return r.json();})
-    .then(function(places){
-      anPlacesData={sorted:ids,counts:{},items:places};
-      ids.forEach(function(id,i){anPlacesData.counts[id]=rows[i].views;});
-      var html=rows.slice(0,5).map(function(row,i){
-        var p=places.find(function(x){return String(x.id)===String(row.place_id);})||{name:'ID '+row.place_id};
-        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span>'+(p.cover_photo?'<img class="an-thumb" src="'+p.cover_photo+'" alt="">':'<div class="an-thumb-ph"></div>')+'<span class="an-name">'+p.name+'</span><span class="an-count">'+row.views+'</span></div>';
-      }).join('');
-      if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAll(\'places\')">Vedi tutti ('+rows.length+')</button>';
-      _anSet('an-places',html);
-    });
-  }).catch(function(){_anSet('an-places','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnActivities(){
-  fetch(SB_URL+'/rest/v1/analytics_activity_views?select=activity_id,views&limit=10',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){
-    if(!Array.isArray(rows)||!rows.length){_anSet('an-activities','<div class="an-empty">Nessun dato nel periodo</div>');return;}
-    var ids=rows.map(function(r){return r.activity_id;});
-    fetch(SB_URL+'/rest/v1/activities?select=id,name&id=in.('+ids.join(',')+')',{headers:_anH})
-    .then(function(r){return r.json();})
-    .then(function(acts){
-      anActivitiesData={sorted:ids,counts:{},isCityMap:{},items:acts};
-      ids.forEach(function(id,i){anActivitiesData.counts[id]=rows[i].views;});
-      var html=rows.slice(0,5).map(function(row,i){
-        var a=acts.find(function(x){return String(x.id)===String(row.activity_id);})||{name:'ID '+row.activity_id};
-        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><span class="an-name">'+a.name+'</span><span class="an-count">'+row.views+'</span></div>';
-      }).join('');
-      if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAll(\'activities\')">Vedi tutti ('+rows.length+')</button>';
-      _anSet('an-activities',html);
-    });
-  }).catch(function(){_anSet('an-activities','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnItineraries(){
-  fetch(SB_URL+'/rest/v1/analytics_itinerary_views?select=experience_id,views&limit=10',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){_anRenderExps('an-itineraries',rows,'views',"openAnAll('itineraries')");})
-  .catch(function(){_anSet('an-itineraries','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnBmPlaces(){
-  fetch(SB_URL+'/rest/v1/analytics_place_saves?select=place_id,saves&limit=10',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){_anRenderPlaces('an-bm-places',rows,'saves',"openAnAll('bookmark_places')");})
-  .catch(function(){_anSet('an-bm-places','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnBmActivities(){
-  fetch(SB_URL+'/rest/v1/analytics_activity_saves?select=activity_id,saves&limit=10',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){
-    if(!Array.isArray(rows)||!rows.length){_anSet('an-bm-activities','<div class="an-empty">Nessun dato nel periodo</div>');return;}
-    var ids=rows.map(function(r){return r.activity_id;});
-    fetch(SB_URL+'/rest/v1/activities?select=id,name&id=in.('+ids.join(',')+')',{headers:_anH})
-    .then(function(r){return r.json();})
-    .then(function(acts){
-      anBmActivitiesData={sorted:ids,counts:{},isCityMap:{},items:acts};
-      ids.forEach(function(id,i){anBmActivitiesData.counts[id]=rows[i].saves;});
-      var html=rows.slice(0,5).map(function(row,i){
-        var a=acts.find(function(x){return String(x.id)===String(row.activity_id);})||{name:'ID '+row.activity_id};
-        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><span class="an-name">'+a.name+'</span><span class="an-count">'+row.saves+'</span></div>';
-      }).join('');
-      if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAll(\'bookmark_activities\')">Vedi tutti ('+rows.length+')</button>';
-      _anSet('an-bm-activities',html);
-    });
-  }).catch(function(){_anSet('an-bm-activities','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnGallery(){
-  fetch(SB_URL+'/rest/v1/analytics_gallery_views?select=place_id,views&limit=10',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){_anRenderPlaces('an-gallery',rows,'views',"openAnAll('gallery')");})
-  .catch(function(){_anSet('an-gallery','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnPdf(){
-  fetch(SB_URL+'/rest/v1/analytics_pdf_downloads?select=experience_id,downloads&limit=10',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){
-    if(!Array.isArray(rows)||!rows.length){_anSet('an-pdf','<div class="an-empty">Nessun download nel periodo</div>');return;}
-    var ids=rows.map(function(r){return r.experience_id;});
-    fetch(SB_URL+'/rest/v1/experiences?select=id,title&id=in.('+ids.join(',')+')',{headers:_anH})
-    .then(function(r){return r.json();})
-    .then(function(exps){
-      var html=rows.slice(0,5).map(function(row,i){
-        var ex=exps.find(function(x){return String(x.id)===String(row.experience_id);})||{title:'ID '+row.experience_id};
-        return'<div class="an-row"><span class="an-rank">'+(i+1)+'</span><div class="an-thumb-ph"></div><span class="an-name">'+ex.title+'</span><span class="an-count">'+row.downloads+'</span></div>';
-      }).join('');
-      if(rows.length>5)html+='<button class="an-see-all" onclick="openAnAllPdf()">Vedi tutti ('+rows.length+')</button>';
-      _anSet('an-pdf',html);
-    });
-  }).catch(function(){_anSet('an-pdf','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnPinClicks(){
-  fetch(SB_URL+'/rest/v1/analytics_pin_clicks?select=place_id,clicks&limit=10',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){_anRenderPlaces('an-pin-clicks',rows,'clicks',null);})
-  .catch(function(){_anSet('an-pin-clicks','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnSavedItineraries(){
-  fetch(SB_URL+'/rest/v1/analytics_itinerary_saves?select=experience_id,saves&limit=10',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){_anRenderExps('an-saved-itineraries',rows,'saves',null);})
-  .catch(function(){_anSet('an-saved-itineraries','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnItineraryMaps(){
-  var since=new Date(Date.now()-anPeriod*86400000).toISOString();
-  fetch(SB_URL+'/rest/v1/analytics_events?select=experience_id&event_type=eq.itinerary_map_view&experience_id=not.is.null&created_at=gte.'+encodeURIComponent(since),{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(evs){
-    if(!Array.isArray(evs)||!evs.length){_anSet('an-itinerary-maps','<div class="an-empty">Nessun dato nel periodo</div>');return;}
-    var counts={};
-    evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
-    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-    var rows=sorted.map(function(id){return{experience_id:id,views:counts[id]};});
-    _anRenderExps('an-itinerary-maps',rows,'views',null);
-  }).catch(function(){_anSet('an-itinerary-maps','<div class="an-empty">Errore caricamento</div>');});
-}
-
-function renderAnReviewsViews(){
-  var since=new Date(Date.now()-anPeriod*86400000).toISOString();
-  fetch(SB_URL+'/rest/v1/analytics_events?select=experience_id&event_type=eq.reviews_view&experience_id=not.is.null&created_at=gte.'+encodeURIComponent(since),{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(evs){
-    if(!Array.isArray(evs)||!evs.length){_anSet('an-reviews-views','<div class="an-empty">Nessun dato nel periodo</div>');return;}
-    var counts={};
-    evs.forEach(function(e){counts[e.experience_id]=(counts[e.experience_id]||0)+1;});
-    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,10);
-    var rows=sorted.map(function(id){return{experience_id:id,views:counts[id]};});
-    _anRenderExps('an-reviews-views',rows,'views',null);
-  }).catch(function(){_anSet('an-reviews-views','<div class="an-empty">Errore caricamento</div>');});
+  });
 }
 
 function renderAnCounters(){

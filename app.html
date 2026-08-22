@@ -3486,6 +3486,7 @@ function trackEvent(eventType,data){
     var _p=eventType;
     if(window.umami&&_p.event_type)umami.track(_p.event_type,_p);
     var _ap={event_type:_p.event_type};
+    _ap.region=_p.region||_currentTravelRegion||'lazio';
     if(_p.place_id)_ap.place_id=_p.place_id;
     if(_p.experience_id)_ap.experience_id=_p.experience_id;
     if(_p.activity_id)_ap.activity_id=_p.activity_id;
