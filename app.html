@@ -2245,7 +2245,9 @@ function restoreL1(){
   DATA.places.forEach(function(p){
     var m=l1Mk[p.id];if(!m)return;
     m.getElement().innerHTML=createPinEl(p,false,false).innerHTML;
-    var regionOk=_travelContext?(p.region===_currentTravelRegion):(p.region==='lazio'||!p.region);
+    var _curGuide=_travelContext?_currentTravelRegion:'lazio';
+    var _allowedRegions=GUIDE_REGIONS[_curGuide]||[_curGuide];
+    var regionOk=_allowedRegions.indexOf(p.region.toLowerCase())!==-1;
     var show=regionOk&&(p.published!==false||_isAdmin)&&catMatchFn(p)&&hiddenMatchFn(p.hiddenScore)&&vibeMatchFn(p);
     if(show)m.addTo(map_o);else m.remove();
   });
@@ -6039,6 +6041,7 @@ var _profileOpenedFromRegionPage=false;
 var _profileOpenedFromItinerari=false;
 var _userRegions=[];
 var REGION_META={'lazio':{name:'Lazio',flag:'🇮🇹',country:'Italia'},'cotswolds':{name:'Cotswolds',flag:'🇬🇧',country:'UK'},'highlands':{name:'Highlands',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',country:'UK'},'germania':{name:'Strada Romantica',flag:'🇩🇪',country:'Germania'}};
+var GUIDE_REGIONS={'lazio':['lazio'],'cotswolds':['cotswolds'],'germania':['baviera','assia']};
 function openProfilePage(){
   var _pp=document.getElementById('profile-page');
   var _itpShow=document.getElementById('itinerari-page').classList.contains('show');
