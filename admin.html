@@ -3769,10 +3769,10 @@ function renderAnCounters(){
   .then(function(rows){
     var row=(Array.isArray(rows)&&rows[0])||{};
     var items=[
-      {label:'Visite mappa',val:row.map_view||0},
-      {label:'Elenco paesi',val:row.region_page_view||0},
-      {label:'Visite profilo',val:row.profile_view||0},
-      {label:'Visite landing',val:row.landing_view||0}
+      {label:'Visite mappa',val:row.map_views||0},
+      {label:'Elenco paesi',val:row.region_page_views||0},
+      {label:'Visite profilo',val:row.profile_views||0},
+      {label:'Visite landing',val:row.landing_views||0}
     ];
     var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">'
       +items.map(function(it){
