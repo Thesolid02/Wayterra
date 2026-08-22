@@ -3594,10 +3594,12 @@ function renderAnUsers(){
   if(since)profUrl+='&created_at=gte.'+encodeURIComponent(since);
   Promise.all([
     fetch(evUrl,{headers:_anH}).then(function(r){return r.json();}),
-    fetch(profUrl,{headers:_anH}).then(function(r){return r.json();})
+    fetch(profUrl,{headers:_anH}).then(function(r){return r.json();}),
+    fetch(SB_URL+'/rest/v1/profiles?select=id',{headers:_anH}).then(function(r){return r.json();})
   ]).then(function(res){
     var evs=Array.isArray(res[0])?res[0]:[];
     var profs=Array.isArray(res[1])?res[1]:[];
+    var totalUsers=Array.isArray(res[2])?res[2].length:0;
     var sessions=new Set(),anonSessions=new Set(),regUsers=new Set();
     evs.forEach(function(e){
       if(e.session_id)sessions.add(e.session_id);
@@ -3608,9 +3610,10 @@ function renderAnUsers(){
       {label:'Visitatori unici',val:sessions.size},
       {label:'Visitatori anonimi',val:anonSessions.size},
       {label:'Utenti registrati attivi',val:regUsers.size},
-      {label:'Nuovi iscritti nel periodo',val:profs.length}
+      {label:'Nuovi iscritti nel periodo',val:profs.length},
+      {label:'Utenti registrati totali',val:totalUsers}
     ];
-    var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">'
+    var html='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">'
       +items.map(function(it){
         return'<div style="text-align:center;padding:16px 8px;background:var(--g50);border-radius:var(--r);"><div style="font-size:1.6rem;font-weight:700;color:var(--g900);">'+it.val+'</div><div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+it.label+'</div></div>';
       }).join('')+'</div>';
