@@ -4286,7 +4286,7 @@ function openItinerario(id){
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
       if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);}
     }
-    if(lat&&lng)_itdMapCoords.push([+lng,+lat,!!s.optional,_isAp]);
+    if(lat&&lng)_itdMapCoords.push([+lng,+lat,!!s.optional,_isAp,!!s.is_also_destination,(s.type||'')+'_'+s.id]);
     else console.log('[itd-map] no coords for stop',s.id,s.type);
   });
   var _mapWrap=document.getElementById('itd-map-wrap');
@@ -5227,14 +5227,20 @@ async function renderTravelsPage(){
 var _itdMapCoords=[];
 function buildItdMapUrl(coords){
   var TOKEN='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
-  // pin markers: literal in URL path — no encodeURIComponent on the full overlay string
-  var pinNum=0;
+  // build stop numbers consistent with stopNumbers in the detail list
+  // c[3]=isAirport, c[4]=isAlsoDest, c[5]=stopKey
+  var _staticNums={},_staticCount=0;
+  coords.forEach(function(c){
+    if(c[3]&&!c[4])return; // skip pure-airport stops
+    var key=c[5];
+    if(key&&!_staticNums[key])_staticNums[key]=++_staticCount;
+  });
   var pins=coords.map(function(c){
-    if(c[3]){return 'pin-s-a+2563eb('+c[0].toFixed(4)+','+c[1].toFixed(4)+')';}
-    pinNum++;
-    var col=c[2]?'888888':'dc6b2f';
-    return 'pin-s-'+pinNum+'+'+col+'('+c[0].toFixed(4)+','+c[1].toFixed(4)+')';
-  }).join(',');
+    if(c[3]&&!c[4])return null; // skip pure-airport stops
+    var num=_staticNums[c[5]]||0;
+    var col=c[4]?'2563eb':(c[2]?'888888':'dc6b2f'); // also-dest=blue, optional=gray, normal=orange
+    return 'pin-s-'+num+'+'+col+'('+c[0].toFixed(4)+','+c[1].toFixed(4)+')';
+  }).filter(Boolean).join(',');
   // path: GeoJSON LineString — only the JSON content inside parens is URL-encoded
   var lineGeoJSON=JSON.stringify({type:'LineString',coordinates:coords.map(function(c){return[+c[0].toFixed(4),+c[1].toFixed(4)];})});
   var pathOverlay='path-3+dc6b2f-0.8('+encodeURIComponent(lineGeoJSON)+')';
