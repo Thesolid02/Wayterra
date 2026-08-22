@@ -1998,10 +1998,11 @@ function l1Html(p,dim,showName){
       +'</div>';
   }
   var nameHtml=showName?'<div style="margin-top:4px;background:rgba(17,24,39,.85);color:#fff;font-size:.7rem;font-weight:600;padding:3px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;">'+p.name+'</div>':'';
+  var draftBadge=(_isAdmin&&!p.published)?'<div style="position:absolute;top:-6px;right:-6px;background:#6b7280;color:#fff;font-size:.45rem;font-weight:700;padding:1px 3px;border-radius:3px;letter-spacing:.04em;pointer-events:none;">BOZZA</div>':'';
   return '<div class="pin-hover-wrap" style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
     +'<div class="pin-tooltip">'+p.name+'</div>'
-    +'<div style="width:22px;height:22px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px solid white;'+dimStyle+'">'
-    +renderIcon(c.icon,'white')+'</div>'
+    +'<div style="position:relative;width:22px;height:22px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);border:2.5px dashed '+((_isAdmin&&!p.published)?'#6b7280':'white')+';'+dimStyle+'">'
+    +renderIcon(c.icon,'white')+draftBadge+'</div>'
     +nameHtml
     +'</div>';
 }
@@ -2012,6 +2013,7 @@ function createPinEl(p, dim, showName){
 }
 
 function addL1(p){
+  if(!p.published&&!_isAdmin)return;
   var el=createPinEl(p,false,false);
   var m=new mapboxgl.Marker({element:el,anchor:'center'})
     .setLngLat([p.lng,p.lat]);
@@ -3346,6 +3348,8 @@ var _supaAuth=(function(){try{return supabase.createClient(SB_URL,SB_KEY);}catch
 var _authMode='login';
 var _currentUser=null;
 var _currentUserProfile=null;
+var ADMIN_USER_ID='f10824e8-66c2-4838-a40c-816a8b6952d9';
+var _isAdmin=false;
 var _pendingAvatarUrl=null;
 var _authCallback=null;
 var completedItineraries=new Set();
@@ -3765,7 +3769,7 @@ function loadEsperienze(){
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
                budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',totalKm:r.total_km||'',totalDriveTime:r.total_drive_time||'',clothingEn:r.clothing_en||'',region:r.region?r.region.toLowerCase():'',published:r.published!==false};
       });
-      DATA.experiences=DATA.experiences.filter(function(e){return e.published!==false;});
+      // published filter applied at render time (respects _isAdmin)
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
       renderExpCards();
       updateRegionPageLang();
@@ -3944,7 +3948,7 @@ async function renderItinerariPage(region){
   var reviewsByExp={};
   try{var {data:revData}=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,experience_id,profiles!user_id(full_name,avatar_url)');if(revData)revData.forEach(function(r){if(!reviewsByExp[r.experience_id])reviewsByExp[r.experience_id]=[];reviewsByExp[r.experience_id].push(r);});}catch(e){}
   if(region){
-    var travels=DATA.experiences.filter(function(e){return e.isTravel&&e.region===region;});
+    var travels=DATA.experiences.filter(function(e){return e.isTravel&&e.region===region&&(e.published!==false||_isAdmin);});
     var activeHtml=travels.length?travels.map(function(e){
 
       var title=(lang==='en'&&e.titleEn)?e.titleEn:e.titleIt;
@@ -3958,8 +3962,8 @@ async function renderItinerariPage(region){
         :'<div class="itp-card-img-ph" style="position:relative;">🌍'+_chk+'</div>';
       var stopsCount=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
       var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
-      return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
-        +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
+      var _draftBadgeItp=(_isAdmin&&e.published===false)?'<span style="display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.05em;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle;">BOZZA</span>':'';
+      return '<div class="itp-card" onclick="openItinerario('+e.id+')" style="'+(_isAdmin&&e.published===false?'border:1.5px dashed #6b7280;':'')+'">'+img+'<div class="itp-card-body"><div class="itp-card-title">'+title+_draftBadgeItp+'</div>'
         +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
         +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
         +'<div id="review-bar-'+e.id+'">'+_buildReviewBarFromData(e.id,reviewsByExp[e.id]||[])+'</div>'
@@ -3977,7 +3981,7 @@ async function renderItinerariPage(region){
       +'</div></div>';
     scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
   } else {
-    var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel;});
+    var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel&&(e.published!==false||_isAdmin);});
     if(!lazioExp.length){
       scroll.innerHTML='<div style="text-align:center;padding:52px 20px;color:var(--g400);">Nessun itinerario disponibile.</div>';
       return;
@@ -3994,8 +3998,8 @@ async function renderItinerariPage(region){
         :'<div class="itp-card-img-ph" style="position:relative;">🗺'+_chk+'</div>';
       var _sc=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
       var stops=_sc?'<span class="itp-stop-badge">'+_sc+' tappe</span>':'';
-      return '<div class="itp-card" onclick="openItinerario('+e.id+')">'
-        +img+'<div class="itp-card-body"><div class="itp-card-title">'+title+'</div>'
+      var _draftBadgeLazio=(_isAdmin&&e.published===false)?'<span style="display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.05em;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle;">BOZZA</span>':'';
+      return '<div class="itp-card" onclick="openItinerario('+e.id+')" style="'+(_isAdmin&&e.published===false?'border:1.5px dashed #6b7280;':'')+'">'+img+'<div class="itp-card-body"><div class="itp-card-title">'+title+_draftBadgeLazio+'</div>'
         +(dur?'<div class="itp-card-dur">'+dur+'</div>':'')
         +(stops?'<div style="margin-top:4px;">'+stops+'</div>':'')
         +'<div id="review-bar-'+e.id+'">'+_buildReviewBarFromData(e.id,reviewsByExp[e.id]||[])+'</div>'
@@ -5376,7 +5380,7 @@ window.addEventListener('DOMContentLoaded',function(){
         activities:acts
       };
     });
-    places_=places_.filter(function(p){return p.published!==false;});
+    // published filter applied at render time (respects _isAdmin)
 
     var cityActivities_=(actRows||[]).filter(function(a){return a.place_id===null||a.place_id===undefined;}).map(function(a){
       return{id:a.id,type:a.type,name:a.name,lat:a.lat||null,lng:a.lng||null,
@@ -5776,6 +5780,7 @@ async function checkAuthSession(){
     }
     if(event==='SIGNED_IN'){
       _currentUser=session.user;
+      _isAdmin=_currentUser.id===ADMIN_USER_ID;
       trackEvent('login',{method:(session.user.app_metadata&&session.user.app_metadata.provider)||'email'});
       completedItineraries.clear();visitedPlaces.clear();favs.clear();favItineraries.clear();downloadedSet.clear();
       var favRes=await _supaAuth.from('user_favorites').select('place_id').eq('user_id',session.user.id);
@@ -5815,6 +5820,7 @@ async function checkAuthSession(){
     }
     if(event==='SIGNED_OUT'){
       _currentUser=null;
+      _isAdmin=false;
       updateProfileUI();
     }
   });
@@ -5834,6 +5840,7 @@ async function checkAuthSession(){
   var sesRes=await _supaAuth.auth.getSession();
   if(sesRes.data&&sesRes.data.session&&sesRes.data.session.user){
     _currentUser=sesRes.data.session.user;
+    _isAdmin=_currentUser.id===ADMIN_USER_ID;
     var {data:sesProfile}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
     if(sesProfile)_currentUserProfile=sesProfile;
     updateProfileUI();
