@@ -4184,8 +4184,9 @@ function openItinerario(id){
       var _isAlsoDest=!!(r.isAirport&&s.is_also_destination&&displayNum!=='');
       var numCell;
       if(_isAlsoDest){
-        numCell='<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;">'
+        numCell='<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">'
           +'<div style="width:18px;height:18px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;"><i class="ti ti-plane-departure" style="font-size:9px;color:#fff;"></i></div>'
+          +'<span style="font-size:9px;color:#999;">+</span>'
           +'<div style="width:18px;height:18px;border-radius:50%;background:#888;display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:#fff;font-weight:500;">'+displayNum+'</span></div>'
           +'</div>';
       }else{
@@ -4207,19 +4208,12 @@ function openItinerario(id){
     var html='';
     var hasDays=e.stops.some(function(s){return !!s.day;});
     var totalStops=e.stops.length;
-    // numeri univoci condivisi tra lista e mappa
-    var stopNumbers={},_snCount=0;
-    e.stops.forEach(function(s){
-      if(s.is_airport&&!s.is_also_destination)return;
-      var key=(s.type||'')+'_'+s.id;
-      if(key&&!stopNumbers[key])stopNumbers[key]=++_snCount;
-    });
     if(!hasDays){
       // rendering originale — retrocompatibilità itinerari senza day
+      var _dc=0;
       html+=e.stops.map(function(s,i){
         var r=resolveStop(s);
-        var key=(s.type||'')+'_'+s.id;
-        var dn=(r.isAirport&&!s.is_also_destination)?'':(stopNumbers[key]||'');
+        var dn=(r.isAirport&&!s.is_also_destination)?'':++_dc;
         var card=renderStopCard(s,i,r,dn);
         var _sTt0=lang==='en'?(s.travel_time_en||s.travel_time):s.travel_time;
         if(_sTt0&&i<totalStops-1) card+='<div class="itd-travel-time"><i class="ti ti-arrow-down"></i><span>'+_sTt0+'</span></div>';
@@ -4232,6 +4226,13 @@ function openItinerario(id){
         var d=s.day||0;
         if(!dayMap[d]){dayMap[d]=[];dayGroups.push(d);}
         dayMap[d].push(s);
+      });
+      // numeri univoci per tappa: la stessa tappa in giorni diversi mantiene lo stesso numero
+      var stopNumbers={},_snCount=0;
+      e.stops.forEach(function(s){
+        if(s.is_airport&&!s.is_also_destination)return;
+        var key=(s.type||'')+'_'+s.id;
+        if(key&&!stopNumbers[key])stopNumbers[key]=++_snCount;
       });
       var globalIdx=0;
       dayGroups.forEach(function(d){
@@ -5045,7 +5046,7 @@ function openItinMapPopup(id){
       if(!_fa){var _ca=(DATA.cityActivities||[]).find(function(x){return x.id==s.id;});if(_ca){_fa=_ca;_fp=null;}}
       if(_fa){lat=(_fa.lat||(_fp&&_fp.lat)||null);lng=(_fa.lng||(_fp&&_fp.lng)||null);name=_fa.name||(_fp&&_fp.name)||'';}
     }
-    if(lat&&lng)_itdStops.push({lng:+lng,lat:+lat,optional:!!s.optional,name:name,travelTime:s.travel_time||null,travelTimeEn:s.travel_time_en||null,isAirport:_isAirport,isAlsoDest:!!s.is_also_destination,stopKey:(s.type||'')+'_'+s.id});
+    if(lat&&lng)_itdStops.push({lng:+lng,lat:+lat,optional:!!s.optional,name:name,travelTime:s.travel_time||null,travelTimeEn:s.travel_time_en||null,isAirport:_isAirport,isAlsoDest:!!s.is_also_destination});
   });
   var _leg=document.getElementById('map-popup-legend');
   if(_leg)_leg.style.display='flex';
@@ -5056,14 +5057,17 @@ function openItinMapPopup(id){
       mp.addSource('mp-route',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:coords.map(function(c){return[c[0],c[1]];})}}});
       mp.addLayer({id:'mp-route-line',type:'line',source:'mp-route',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#dc6b2f','line-width':2,'line-dasharray':[4,3]}});
     }
+    var _mpDc=0,_mpNums=[];
+    _itdStops.forEach(function(st){_mpNums.push((st.isAirport&&!st.isAlsoDest)?0:++_mpDc);});
     _itdStops.forEach(function(st,i){
-      var dn=(st.isAirport&&!st.isAlsoDest)?0:(stopNumbers[st.stopKey]||0);
+      var dn=_mpNums[i];
       var el=document.createElement('div');
       el.style.cssText='display:flex;flex-direction:column;align-items:center;gap:2px;cursor:default;';
       var pinHtml;
       if(st.isAirport&&st.isAlsoDest&&dn){
-        pinHtml='<div style="display:flex;flex-direction:column;align-items:center;gap:2px;">'
+        pinHtml='<div style="display:flex;align-items:center;gap:3px;">'
           +'<div style="width:22px;height:22px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);"><i class="ti ti-plane-departure" style="font-size:10px;color:white;"></i></div>'
+          +'<span style="font-size:9px;color:#666;">+</span>'
           +'<div style="width:22px;height:22px;border-radius:50%;background:#888;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);font-size:11px;font-weight:500;color:white;">'+dn+'</div>'
           +'</div>';
       }else if(st.isAirport){
@@ -5115,8 +5119,9 @@ function openMapPopupTimes(){
 function _renderTimesStop(st,displayNum){
   var numCell;
   if(st.isAirport&&st.isAlsoDest&&displayNum){
-    numCell='<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;">'
+    numCell='<div style="display:flex;align-items:center;gap:3px;flex-shrink:0;">'
       +'<div style="width:18px;height:18px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;"><i class="ti ti-plane-departure" style="font-size:9px;color:#fff;"></i></div>'
+      +'<span style="font-size:9px;color:#999;">+</span>'
       +'<div style="width:18px;height:18px;border-radius:50%;background:#888;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;">'+displayNum+'</div>'
       +'</div>';
   }else{
