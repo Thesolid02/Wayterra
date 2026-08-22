@@ -3364,6 +3364,8 @@ var _pendingRecovery=false;
 var _initHash=window.location.hash;
 if(_initHash.includes('type=recovery')||_initHash.includes('type=magiclink')){_pendingRecovery=true;}
 var _supaAuth=(function(){try{return supabase.createClient(SB_URL,SB_KEY);}catch(e){return null;}})();
+if(!localStorage.getItem('WT_SESSION_ID')){localStorage.setItem('WT_SESSION_ID','sess_'+Date.now()+'_'+Math.random().toString(36).substr(2,9));}
+var _sessionId=localStorage.getItem('WT_SESSION_ID');
 var _authMode='login';
 var _currentUser=null;
 var _currentUserProfile=null;
@@ -3491,6 +3493,8 @@ function trackEvent(eventType,data){
     if(_p.experience_id)_ap.experience_id=_p.experience_id;
     if(_p.activity_id)_ap.activity_id=_p.activity_id;
     if(_p.is_city_activity!==undefined)_ap.is_city_activity=_p.is_city_activity;
+    _ap.session_id=_sessionId;
+    if(_currentUser)_ap.user_id=_currentUser.id;
     fetch(SB_URL+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(_ap)}).catch(function(){});
     if(_supaAuth){_supaAuth.from('user_events').insert({event_type:_p.event_type||'unknown',user_id:_currentUser?_currentUser.id:null,region:_currentTravelRegion||'lazio',metadata:_p}).then(function(){});}
     return;

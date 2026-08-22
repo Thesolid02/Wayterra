@@ -392,9 +392,14 @@ textarea.ft{resize:vertical;line-height:1.65;}
     </div>
   </div>
   <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Contatori globali</div>
-  <div class="an-card" style="margin-bottom:0;">
+  <div class="an-card">
     <div class="an-card-title">Visite per schermata</div>
     <div id="an-counters"><div class="an-loading">Caricamento…</div></div>
+  </div>
+  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:24px 0 12px;">Utenti</div>
+  <div class="an-card" style="margin-bottom:0;">
+    <div class="an-card-title">Visitatori unici</div>
+    <div id="an-visitors"><div class="an-loading">Caricamento…</div></div>
   </div>
 </div>
 </div>
@@ -3497,8 +3502,10 @@ var _anH={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
 
 function renderAnalytics(){
   _anSet('an-counters','<div class="an-loading">Caricamento…</div>');
+  _anSet('an-visitors','<div class="an-loading">Caricamento…</div>');
   renderAnChart();
   renderAnCounters();
+  renderAnVisitors();
 }
 
 async function renderAnChart(){
@@ -3569,6 +3576,26 @@ function renderAnCounters(){
       }).join('')+'</div>';
     _anSet('an-counters',html);
   }).catch(function(){_anSet('an-counters','<div class="an-empty">Errore caricamento</div>');});
+}
+
+function renderAnVisitors(){
+  fetch(SB_URL+'/rest/v1/analytics_visitors?select=*',{headers:_anH})
+  .then(function(r){return r.json();})
+  .then(function(rows){
+    var row=(Array.isArray(rows)&&rows[0])||{};
+    var items=[
+      {label:'Visitatori unici totali',val:row.unique_visitors||0},
+      {label:'Anonimi',val:row.anonymous_visitors||0},
+      {label:'Utenti registrati attivi',val:row.registered_visitors||0},
+      {label:'Ultimi 30 giorni',val:row.unique_visitors_30d||0},
+      {label:'Ultimi 7 giorni',val:row.unique_visitors_7d||0}
+    ];
+    var html='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">'
+      +items.map(function(it){
+        return'<div style="text-align:center;padding:16px 8px;background:var(--g50);border-radius:var(--r);"><div style="font-size:1.6rem;font-weight:700;color:var(--g900);">'+it.val+'</div><div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+it.label+'</div></div>';
+      }).join('')+'</div>';
+    _anSet('an-visitors',html);
+  }).catch(function(){_anSet('an-visitors','<div class="an-empty">Errore caricamento</div>');});
 }
 
 function openAnAllPdf(){
