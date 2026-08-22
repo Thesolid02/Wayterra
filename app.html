@@ -886,6 +886,20 @@ lottie.loadAnimation({
         <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
       </div>
     </div>
+    <!-- 🇩🇪 GERMANIA -->
+    <div class="rp-sec-label rp-sec-label-sep">
+      <span style="font-size:24px;">🇩🇪</span>
+      <span style="font-size:13px;font-weight:600;color:var(--g400);letter-spacing:.06em;text-transform:uppercase;">GERMANIA</span>
+    </div>
+    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
+      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/germania-cover.jpg');background-size:cover;background-position:center;background-color:#c8d8c0;"></div>
+      <div class="rp-card-ov"></div>
+      <div class="rp-card-body">
+        <div class="rp-lock-ico">🔒</div>
+        <div class="rp-card-name">Strada Romantica</div>
+        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
+      </div>
+    </div>
   </div>
   </div>
   </div>
@@ -3655,6 +3669,9 @@ function openRegionDropdown(){
     'highlands':{label:'REGNO UNITO',regions:[
       {id:'cotswolds',name:'Cotswolds',active:true},
       {id:'highlands',name:'Highlands',active:false}
+    ]},
+    'germania':{label:'GERMANIA',regions:[
+      {id:'germania',name:'Strada Romantica',active:false}
     ]}
   };
   var country=countries[currentRegion]||countries['lazio'];
@@ -3701,11 +3718,11 @@ function selectRegionFromDropdown(regionId){
   }
 }
 function getRegionCenter(regionId){
-  var centers={cotswolds:[-1.8,51.7],highlands:[-4.2,57.0]};
+  var centers={cotswolds:[-1.8,51.7],highlands:[-4.2,57.0],germania:[10.4515,51.1657]};
   return centers[regionId]||[-1.8,51.7];
 }
 function getRegionZoom(regionId){
-  var zooms={cotswolds:9,highlands:8};
+  var zooms={cotswolds:9,highlands:8,germania:6};
   return zooms[regionId]||9;
 }
 function updateRegionPill(regionId){
@@ -5974,7 +5991,7 @@ var _profileTab='saved';
 var _profileOpenedFromRegionPage=false;
 var _profileOpenedFromItinerari=false;
 var _userRegions=[];
-var REGION_META={'lazio':{name:'Lazio',flag:'🇮🇹',country:'Italia'},'cotswolds':{name:'Cotswolds',flag:'🇬🇧',country:'UK'},'highlands':{name:'Highlands',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',country:'UK'}};
+var REGION_META={'lazio':{name:'Lazio',flag:'🇮🇹',country:'Italia'},'cotswolds':{name:'Cotswolds',flag:'🇬🇧',country:'UK'},'highlands':{name:'Highlands',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',country:'UK'},'germania':{name:'Strada Romantica',flag:'🇩🇪',country:'Germania'}};
 function openProfilePage(){
   var _pp=document.getElementById('profile-page');
   var _itpShow=document.getElementById('itinerari-page').classList.contains('show');
