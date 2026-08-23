@@ -5875,29 +5875,35 @@ async function checkAuthSession(){
       if(_isAdmin&&map_o)restoreL1();
       trackEvent('login',{method:(session.user.app_metadata&&session.user.app_metadata.provider)||'email'});
       completedItineraries.clear();visitedPlaces.clear();favs.clear();favItineraries.clear();downloadedSet.clear();
-      var favRes=await _supaAuth.from('user_favorites').select('place_id').eq('user_id',session.user.id);
-      if(favRes.data)favRes.data.forEach(function(r){if(r.place_id)favs.add(r.place_id);});
-      saveFavs();
-      var compRes=await _supaAuth.from('user_completed_itineraries').select('experience_id').eq('user_id',session.user.id);
-      if(compRes.data)compRes.data.forEach(function(r){if(r.experience_id)completedItineraries.add(r.experience_id);});
-      var visRes=await _supaAuth.from('user_visited_places').select('place_id').eq('user_id',session.user.id);
-      if(visRes.data)visRes.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
-      var favItRes=await _supaAuth.from('user_favorite_itineraries').select('experience_id').eq('user_id',session.user.id);
-      if(favItRes.data)favItRes.data.forEach(function(r){if(r.experience_id)favItineraries.add(r.experience_id);});
-      var dlRes=await _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',session.user.id);
-      if(dlRes.data)dlRes.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
       var _meta=session.user.user_metadata||{};
       var _oauthName=_meta.full_name||_meta.name||(session.user.email?session.user.email.split('@')[0]:'');
       var _oauthAvatar=_meta.avatar_url||_meta.picture||null;
-      var {data:existingProfile}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
-      if(!existingProfile?.avatar_url&&_oauthAvatar){
-        await _supaAuth.from('profiles').upsert({id:session.user.id,full_name:existingProfile?.full_name||_oauthName,avatar_url:_oauthAvatar},{onConflict:'id'});
-        if(_currentUserProfile)_currentUserProfile.avatar_url=_oauthAvatar;
-      } else if(!existingProfile){
+      var [_favRes,_compRes,_visRes,_favItRes,_dlRes,_profileRes,_rgRes]=await Promise.all([
+        _supaAuth.from('user_favorites').select('place_id').eq('user_id',session.user.id),
+        _supaAuth.from('user_completed_itineraries').select('experience_id').eq('user_id',session.user.id),
+        _supaAuth.from('user_visited_places').select('place_id').eq('user_id',session.user.id),
+        _supaAuth.from('user_favorite_itineraries').select('experience_id').eq('user_id',session.user.id),
+        _supaAuth.from('user_downloaded_itineraries').select('experience_id,downloaded_at').eq('user_id',session.user.id),
+        _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single(),
+        _supaAuth.from('user_regions').select('region,first_access').eq('user_id',session.user.id)
+      ]);
+      if(_favRes.data)_favRes.data.forEach(function(r){if(r.place_id)favs.add(r.place_id);});
+      saveFavs();
+      if(_compRes.data)_compRes.data.forEach(function(r){if(r.experience_id)completedItineraries.add(r.experience_id);});
+      if(_visRes.data)_visRes.data.forEach(function(r){if(r.place_id)visitedPlaces.add(r.place_id);});
+      if(_favItRes.data)_favItRes.data.forEach(function(r){if(r.experience_id)favItineraries.add(r.experience_id);});
+      if(_dlRes.data)_dlRes.data.forEach(function(r){if(r.experience_id)downloadedSet.set(r.experience_id,r.downloaded_at||null);});
+      var _existingProfile=_profileRes.data||null;
+      if(!_existingProfile?.avatar_url&&_oauthAvatar){
+        await _supaAuth.from('profiles').upsert({id:session.user.id,full_name:_existingProfile?.full_name||_oauthName,avatar_url:_oauthAvatar},{onConflict:'id'});
+        _currentUserProfile={full_name:_existingProfile?.full_name||_oauthName,avatar_url:_oauthAvatar};
+      }else if(!_existingProfile){
         await _supaAuth.from('profiles').upsert({id:session.user.id,full_name:_oauthName,avatar_url:_oauthAvatar},{onConflict:'id'});
+        _currentUserProfile={full_name:_oauthName,avatar_url:_oauthAvatar};
+      }else{
+        _currentUserProfile=_existingProfile;
       }
-      var {data:profileData}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single();
-      if(profileData)_currentUserProfile=profileData;
+      _userRegions=_rgRes.data||[];
       var _tgName=(_currentUserProfile&&_currentUserProfile.full_name)||session.user.email||'Utente';
       var _tgProvider=(session.user.app_metadata&&session.user.app_metadata.provider)||'email';
       notifyTelegram('🟢 <b>Nuovo accesso Wayterra</b>\n👤 '+_tgName+'\n📧 '+session.user.email+'\n🔑 '+_tgProvider+'\n🌍 '+(_currentTravelRegion||'lazio'));
@@ -5909,8 +5915,6 @@ async function checkAuthSession(){
       loadAllReviews();
       loadRegionReviews('cotswolds','rp-cotswolds-reviews');
       loadRegionReviews('lazio','rp-lazio-reviews');
-      var _rgRes=await _supaAuth.from('user_regions').select('region,first_access').eq('user_id',session.user.id);
-      _userRegions=_rgRes.data||[];
       if(_authCallback){_authCallback();_authCallback=null;}
     }
     if(event==='SIGNED_OUT'){
