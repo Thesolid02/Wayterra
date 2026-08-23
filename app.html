@@ -3579,12 +3579,10 @@ function selectRegion(regionId){
   hideRegionPage(null);
   _currentRegionCenter=[12.8,41.8];
   _currentRegionZoom=window.innerWidth<768?7:8;
-  if(new URLSearchParams(window.location.search).get('region')){
-    history.replaceState(null,'',window.location.pathname+window.location.search);
-    window.addEventListener('popstate',function(){
-      window.location.href=document.referrer||'https://wayterra.it/landing.html';
-    },{once:true});
-  }
+  history.replaceState(null,'','/app?region=lazio');
+  window.addEventListener('popstate',function(){
+    window.location.href=document.referrer||'https://wayterra.it/landing.html';
+  },{once:true});
   if(_mapReady){
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
@@ -3639,12 +3637,10 @@ function selectTravelRegion(regionId,center,zoom){
   var z=window.innerWidth<768?zoom-1:zoom;
   _currentRegionCenter=center;
   _currentRegionZoom=z;
-  if(new URLSearchParams(window.location.search).get('region')){
-    history.replaceState(null,'',window.location.pathname+window.location.search);
-    window.addEventListener('popstate',function(){
-      window.location.href=document.referrer||'https://wayterra.it/landing.html';
-    },{once:true});
-  }
+  history.replaceState(null,'','/app?region='+regionId);
+  window.addEventListener('popstate',function(){
+    window.location.href=document.referrer||'https://wayterra.it/landing.html';
+  },{once:true});
   if(_mapReady){
     var sp=document.getElementById('splash');
     sp.classList.remove('hide');sp.style.display='';
@@ -5919,7 +5915,10 @@ async function checkAuthSession(){
     }
     if(event==='SIGNED_OUT'){
       _currentUser=null;
+      _currentUserProfile=null;
       _isAdmin=false;
+      favs.clear();favItineraries.clear();completedItineraries.clear();visitedPlaces.clear();downloadedSet.clear();
+      saveFavs();
       updateProfileUI();
     }
   });
@@ -6256,6 +6255,10 @@ async function renderProfilePage(){
 }
 function renderProfileSaved(){
   var container=document.getElementById('ptab-content-saved');
+  if(!_currentUser){
+    container.innerHTML='<div style="text-align:center;padding:32px 24px 0;color:var(--g400);font-size:.88rem;">'+(lang==='en'?'Log in to see your saved places':'Accedi per vedere i tuoi salvati')+'</div>';
+    return;
+  }
   var favList=DATA.places.filter(function(p){return favs.has(p.id);});
   var savedHtml='';
   if(!favList.length){
