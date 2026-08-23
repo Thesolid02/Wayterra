@@ -5844,8 +5844,12 @@ async function signOut(){
 var _tgToken='8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM';
 var _tgChat='5194988248';
 function notifyTelegram(msg){
+  console.log('[telegram] invio notifica:',msg);
   if(localStorage.getItem('wayterra.dev')==='1')return;
-  fetch('https://api.telegram.org/bot'+_tgToken+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:_tgChat,text:msg,parse_mode:'HTML'})}).catch(function(){});
+  fetch('https://api.telegram.org/bot'+_tgToken+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:_tgChat,text:msg,parse_mode:'HTML'})})
+  .then(function(r){console.log('[telegram] status:',r.status);return r.json();})
+  .then(function(d){console.log('[telegram] response:',JSON.stringify(d));})
+  .catch(function(e){console.log('[telegram] error:',e);});
 }
 async function checkAuthSession(){
   if(!_supaAuth)return;
