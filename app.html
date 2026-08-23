@@ -3366,6 +3366,7 @@ if(_initHash.includes('type=recovery')||_initHash.includes('type=magiclink')){_p
 var _supaAuth=(function(){try{return supabase.createClient(SB_URL,SB_KEY);}catch(e){return null;}})();
 if(!localStorage.getItem('WT_SESSION_ID')){localStorage.setItem('WT_SESSION_ID','sess_'+Date.now()+'_'+Math.random().toString(36).substr(2,9));}
 var _sessionId=localStorage.getItem('WT_SESSION_ID');
+var _authListenerRegistered=false;
 var _authMode='login';
 var _currentUser=null;
 var _currentUserProfile=null;
@@ -5848,9 +5849,9 @@ function notifyTelegram(msg){
 }
 async function checkAuthSession(){
   if(!_supaAuth)return;
+  if(_authListenerRegistered)return;
+  _authListenerRegistered=true;
   _supaAuth.auth.onAuthStateChange(async function(event,session){
-    console.log('[auth] evento:',event,'session:',!!session,'user:',session?.user?.email);
-    console.log('[auth] URL al momento evento:',window.location.href);
     if(event==='PASSWORD_RECOVERY'){
       setTimeout(function(){openPasswordResetForm();},100);
       return;
