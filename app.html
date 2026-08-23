@@ -5828,24 +5828,17 @@ async function signInWithFacebook(){
   if(!_supaAuth)return;
   await _supaAuth.auth.signInWithOAuth({provider:'facebook',options:{redirectTo:'https://wayterra.it/app'}});
 }
-async function signOut(){
+function signOut(){
   if(!_supaAuth)return;
-  console.log('[logout] click logout');
-  var _tLogout=Date.now();
-  await _supaAuth.auth.signOut();
-  console.log('[logout] signOut() completato in',Date.now()-_tLogout,'ms');
   _currentUser=null;
   _currentUserProfile=null;
-  completedItineraries.clear();
-  visitedPlaces.clear();
-  favs.clear();
-  downloadedSet.clear();
-  favItineraries.clear();
+  completedItineraries.clear();visitedPlaces.clear();favs.clear();downloadedSet.clear();favItineraries.clear();
   saveFavs();
   localStorage.removeItem('WT_FAVS_v2');
   closeProfilePage();
   updateNavProfileAvatar();
   toast(lang==='en'?'Signed out':'Disconnesso');
+  _supaAuth.auth.signOut().catch(function(){});
 }
 var _tgToken='8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM';
 var _tgChat='5194988248';
@@ -5873,7 +5866,6 @@ async function checkAuthSession(){
       return;
     }
     if(event==='SIGNED_IN'){
-      var _t0=Date.now();console.log('[login] inizio SIGNED_IN');
       _currentUser=session.user;
       _isAdmin=_currentUser.id===ADMIN_USER_ID;
       if(_isAdmin&&map_o)restoreL1();
@@ -5891,7 +5883,6 @@ async function checkAuthSession(){
         _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',session.user.id).single(),
         _supaAuth.from('user_regions').select('region,first_access').eq('user_id',session.user.id)
       ]);
-      console.log('[login] Promise.all completato in',Date.now()-_t0,'ms');
       if(_favRes.data)_favRes.data.forEach(function(r){if(r.place_id)favs.add(r.place_id);});
       saveFavs();
       if(_compRes.data)_compRes.data.forEach(function(r){if(r.experience_id)completedItineraries.add(r.experience_id);});
@@ -5914,7 +5905,6 @@ async function checkAuthSession(){
       notifyTelegram('🟢 <b>Nuovo accesso Wayterra</b>\n👤 '+_tgName+'\n📧 '+session.user.email+'\n🔑 '+_tgProvider+'\n🌍 '+(_currentTravelRegion||'lazio'));
       updateProfileUI();
       updateNavProfileAvatar();
-      console.log('[login] UI aggiornata in',Date.now()-_t0,'ms');
       _refreshItineraryChecks();
       var _pp=document.getElementById('profile-page');
       if(_pp&&_pp.style.display!=='none')renderProfilePage();
@@ -5922,18 +5912,14 @@ async function checkAuthSession(){
       loadRegionReviews('cotswolds','rp-cotswolds-reviews');
       loadRegionReviews('lazio','rp-lazio-reviews');
       if(_authCallback){_authCallback();_authCallback=null;}
-      console.log('[login] SIGNED_IN completato in',Date.now()-_t0,'ms');
     }
     if(event==='SIGNED_OUT'){
-      var _t0out=Date.now();console.log('[logout] inizio SIGNED_OUT');
       _currentUser=null;
       _currentUserProfile=null;
       _isAdmin=false;
       favs.clear();favItineraries.clear();completedItineraries.clear();visitedPlaces.clear();downloadedSet.clear();
       saveFavs();
-      console.log('[logout] clear dati in',Date.now()-_t0out,'ms');
       updateProfileUI();
-      console.log('[logout] SIGNED_OUT completato in',Date.now()-_t0out,'ms');
     }
   });
   if(_pendingRecovery){
