@@ -3750,8 +3750,36 @@ function openAnAll(type){
 function closeAnAll(){document.getElementById('m-an-all').classList.remove('on');}
 
 // boot asincrono — load gestisce render internamente
+var _tgToken='8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM';
+var _tgChat='5194988248';
+function notifyTelegramAdmin(msg){
+  fetch('https://api.telegram.org/bot'+_tgToken+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:_tgChat,text:msg,parse_mode:'HTML'})}).catch(function(){});
+}
+async function sendDailyReport(){
+  var today=new Date().toISOString().split('T')[0];
+  if(localStorage.getItem('WT_DAILY_REPORT_'+today))return;
+  var yesterday=new Date(Date.now()-86400000);yesterday.setHours(0,0,0,0);
+  var yesterdayEnd=new Date(yesterday);yesterdayEnd.setHours(23,59,59,999);
+  try{
+    var r=await fetch(SB_URL+'/rest/v1/analytics_events?select=session_id,user_id,event_type&created_at=gte.'+encodeURIComponent(yesterday.toISOString())+'&created_at=lte.'+encodeURIComponent(yesterdayEnd.toISOString()),{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    var events=await r.json();
+    if(!Array.isArray(events))return;
+    var uniqueSessions=new Set(events.filter(function(e){return e.session_id;}).map(function(e){return e.session_id;})).size;
+    var registeredUsers=new Set(events.filter(function(e){return e.user_id;}).map(function(e){return e.user_id;})).size;
+    var placeViews=events.filter(function(e){return e.event_type==='place_view';}).length;
+    var landingViews=events.filter(function(e){return e.event_type==='landing_view';}).length;
+    var msg='📊 <b>Riassunto di ieri</b> ('+yesterday.toLocaleDateString('it-IT')+')\n\n'
+      +'👁 Visitatori unici: '+uniqueSessions+'\n'
+      +'👤 Utenti registrati attivi: '+registeredUsers+'\n'
+      +'🗺 Aperture mappa luogo: '+placeViews+'\n'
+      +'🌐 Visite landing: '+landingViews;
+    notifyTelegramAdmin(msg);
+    localStorage.setItem('WT_DAILY_REPORT_'+today,'1');
+  }catch(e){}
+}
 load();
 checkUnlockStatus();
+sendDailyReport();
 </script>
 
 <div class="ov" id="m-an-all">

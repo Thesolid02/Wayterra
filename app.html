@@ -5374,6 +5374,13 @@ function bootApp(d){
     showRegionPage();
   }
   checkAuthSession();
+  var _isNewSession=!localStorage.getItem('WT_SESSION_NOTIFIED_'+_sessionId);
+  if(_isNewSession){
+    localStorage.setItem('WT_SESSION_NOTIFIED_'+_sessionId,'1');
+    setTimeout(function(){
+      notifyTelegram('👁 <b>Nuovo visitatore</b>\n🌍 '+(_currentTravelRegion||'lazio')+'\n🔑 Anonimo\n⏰ '+new Date().toLocaleTimeString('it-IT'));
+    },2000);
+  }
 }
 
 function startSplashRotation(){
