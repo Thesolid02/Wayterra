@@ -528,8 +528,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-act-row-ico{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;}
 .dp-act-row-name{font-size:.84rem;font-weight:500;color:var(--g900);flex:1;}
 .dp-act-row-arrow{font-size:.78rem;color:var(--g400);flex-shrink:0;}
-.dp-cta{display:flex;gap:8px;padding:12px 16px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-  border-top:1px solid var(--g100);flex-shrink:0;background:var(--w);}
 .dp-maps-btn{flex:1;padding:13px;background:var(--g900);color:#fff;border:none;border-radius:var(--rl);
   font-family:var(--f);font-size:.86rem;font-weight:600;cursor:pointer;}
 
@@ -1091,10 +1089,10 @@ lottie.loadAnimation({
       <img id="dp-act-map-img" src="" alt="Mappa attività" style="width:100%;display:block;">
     </div>
     <button id="dp-act-map-btn" onclick="openPlaceActsPopup(currentPlace)" style="display:none;margin-top:8px;width:100%;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);">Esplora sulla mappa</button>
-  </div>
-  <div class="dp-cta">
-    <button id="dp-visited-btn" style="flex:1;padding:13px;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;background:#dc6b2f;color:#fff;"></button>
-    <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
+    <div style="display:flex;gap:8px;margin-top:20px;">
+      <button id="dp-visited-btn" style="flex:1;padding:13px;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;background:#dc6b2f;color:#fff;"></button>
+      <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
+    </div>
   </div>
 </div>
 
