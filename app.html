@@ -5297,6 +5297,7 @@ function openStopFromItinerario(type,id,placeId){
     document.getElementById('detail-page').style.zIndex=_travelContext?'630':'520';
     document.getElementById('act-map-popup').style.zIndex=_travelContext?'640':'530';
     openDetail();
+    if(window.innerWidth<768){var _bnItd=document.getElementById('bottom-nav');if(_bnItd){_bnItd.style.display='flex';_bnItd.style.zIndex=_travelContext?'640':'530';}setBottomNav('itinerari');}
   } else if(type==='activity'){
     if(window.innerWidth>=768){
       document.getElementById('act-map-popup').style.zIndex=_travelContext?'640':'520';
