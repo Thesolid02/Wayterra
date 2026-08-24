@@ -3058,7 +3058,7 @@ function addEspStopRow(stop){
     +'<option value="place"'+(type==='place'?' selected':'')+'">Luogo</option>'
     +'<option value="activity"'+(type==='activity'?' selected':'')+'">Attività</option>'
     +'</select>'
-    +'<select class="fs2 esp-stop-id" style="flex:1;min-width:160px;" id="esp-stop-id-'+idx+'"></select>'
+    +'<select class="fs2 esp-stop-id" style="flex:1;min-width:160px;" id="esp-stop-id-'+idx+'" onchange="if(this.closest(\'.arow-wrap\').querySelector(\'.esp-stop-type\').value===\'place\')loadStopActivities('+idx+',this.value)"></select>'
     +'<label style="display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--g500);white-space:nowrap;cursor:pointer;">'
     +'<input type="checkbox" class="esp-stop-optional"'+(isOpt?' checked':'')+'> Opz.</label>'
     +'<label style="display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--g500);white-space:nowrap;cursor:pointer;">'
@@ -3074,12 +3074,14 @@ function addEspStopRow(stop){
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',-1)" title="Su">↑</button>'
     +'<button class="btn bs sm ico" onclick="moveEspStop('+idx+',1)" title="Giù">↓</button>'
     +'<button class="btn bd sm ico" onclick="removeEspStop('+idx+')">✕</button>'
-    +'</div></div>';
+    +'</div></div>'
+    +'<div id="esp-stop-acts-'+idx+'" style="margin-top:6px;"></div>';
   container.appendChild(div);
-  populateEspStopSelect(idx, type, stopId);
+  var _savedActs=(stop&&stop.activities)||[];
+  populateEspStopSelect(idx, type, stopId, _savedActs);
 }
 
-function populateEspStopSelect(idx, type, selectedId){
+function populateEspStopSelect(idx, type, selectedId, savedActs){
   var sel=document.getElementById('esp-stop-id-'+idx);
   if(!sel)return;
   sel.innerHTML='<option value="">— seleziona —</option>';
@@ -3093,6 +3095,27 @@ function populateEspStopSelect(idx, type, selectedId){
     if(String(item.id)===String(selectedId))o.selected=true;
     sel.appendChild(o);
   });
+  var actsWrap=document.getElementById('esp-stop-acts-'+idx);
+  if(actsWrap)actsWrap.style.display=type==='place'?'block':'none';
+  if(type==='place'&&selectedId)loadStopActivities(idx,selectedId,savedActs||[]);
+  else if(actsWrap)actsWrap.innerHTML='';
+}
+
+async function loadStopActivities(idx, placeId, savedActs){
+  if(!placeId)return;
+  var r=await fetch(SB_URL+'/rest/v1/activities?select=id,name&place_id=eq.'+placeId+'&order=sort_order',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+  var acts=await r.json();
+  console.log('[stop-acts] place_id:',placeId,'results:',acts?acts.length:'null',acts);
+  var wrap=document.getElementById('esp-stop-acts-'+idx);
+  if(!wrap){console.log('[stop-acts] wrap non trovato per idx:',idx);return;}
+  if(!acts||!acts.length){wrap.innerHTML='<small style="color:#999;">Nessuna attività per questo luogo</small>';return;}
+  var html='<select id="esp-stop-activities-'+idx+'" multiple style="width:100%;min-height:80px;padding:4px;">';
+  acts.forEach(function(a){
+    var selected=(savedActs&&(savedActs.indexOf(a.id)!==-1||savedActs.indexOf(String(a.id))!==-1))?'selected':'';
+    html+='<option value="'+a.id+'" '+selected+'>'+a.name+'</option>';
+  });
+  html+='</select><small style="color:#999;">Lascia vuoto per mostrare tutte le attività</small>';
+  wrap.innerHTML=html;
 }
 
 function onEspStopTypeChange(sel, idx){
@@ -3149,6 +3172,8 @@ function collectEspStops(){
     var durEnInp=row.querySelector('.esp-stop-dur-en');
     var travelInp=row.querySelector('.esp-stop-travel');
     var travelEnInp=row.querySelector('.esp-stop-travel-en');
+    var actsSel=row.querySelector('select[id^="esp-stop-activities-"]');
+    var actsVal=actsSel?Array.from(actsSel.selectedOptions).map(function(o){return parseInt(o.value);}).filter(Boolean):[];
     stops.push({
       type:typeSel.value,
       id:parseInt(idSel.value)||idSel.value,
@@ -3159,7 +3184,8 @@ function collectEspStops(){
       duration:(durInp&&durInp.value.trim())?durInp.value.trim():null,
       duration_en:(durEnInp&&durEnInp.value.trim())?durEnInp.value.trim():null,
       travel_time:(travelInp&&travelInp.value.trim())?travelInp.value.trim():null,
-      travel_time_en:(travelEnInp&&travelEnInp.value.trim())?travelEnInp.value.trim():null
+      travel_time_en:(travelEnInp&&travelEnInp.value.trim())?travelEnInp.value.trim():null,
+      activities:actsVal.length?actsVal:undefined
     });
   });
   return stops;

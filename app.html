@@ -2931,6 +2931,7 @@ function openDetail(){
   }
 
   var acts=p.activities||[];
+  if(_itineraryStopActivities)acts=acts.filter(function(a){return _itineraryStopActivities.indexOf(a.id)!==-1||_itineraryStopActivities.indexOf(String(a.id))!==-1;});
   var actsLbl=document.getElementById('dp-acts-lbl');
   var actsGrid=document.getElementById('dp-acts-grid');
   if(acts.length){
@@ -3008,7 +3009,7 @@ function openDetail(){
     document.getElementById('map').classList.add('panel-open');
     setTimeout(function(){map_o.resize();},320);
   }
-  if(!_detailFromItinerario)_placeOpenedFrom='mappa';
+  if(!_detailFromItinerario){_placeOpenedFrom='mappa';_itineraryStopActivities=null;}
   var _dpEl=document.getElementById('detail-page');_dpEl.classList.remove('gone');_dpEl.classList.add('show');
   if(window.innerWidth<768){var _bn=document.getElementById('bottom-nav');if(_bn){_bn.style.display='flex';_bn.style.zIndex='510';}setBottomNav('mappa');}
   trackEvent({event_type:'place_view',place_id:p.id,region:p.region});
@@ -5293,6 +5294,7 @@ function openItinerarioGMaps(coords){
 
 var _detailFromItinerario=false;
 var _placeOpenedFrom='mappa';
+var _itineraryStopActivities=null;
 function openStopFromItinerario(type,id,placeId){
   if(type==='place'){
     var p=DATA.places.find(function(x){return x.id==id;});
@@ -5300,6 +5302,8 @@ function openStopFromItinerario(type,id,placeId){
     currentPlace=p;
     _detailFromItinerario=true;
     _placeOpenedFrom='itinerario';
+    var _curStop=currentItinerary&&currentItinerary.stops?currentItinerary.stops.find(function(s){return s.type==='place'&&s.id==id;}):null;
+    _itineraryStopActivities=(_curStop&&_curStop.activities&&_curStop.activities.length)?_curStop.activities:null;
     document.getElementById('detail-page').style.zIndex=_travelContext?'630':'520';
     document.getElementById('act-map-popup').style.zIndex=_travelContext?'640':'530';
     openDetail();
