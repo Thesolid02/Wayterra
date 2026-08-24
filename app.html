@@ -3009,11 +3009,12 @@ function openDetail(){
     setTimeout(function(){map_o.resize();},320);
   }
   var _dpEl=document.getElementById('detail-page');_dpEl.classList.remove('gone');_dpEl.classList.add('show');
-  if(window.innerWidth<768){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.display='flex';setBottomNav('mappa');}
+  if(window.innerWidth<768){var _bn=document.getElementById('bottom-nav');if(_bn){_bn.style.display='flex';_bn.style.zIndex='510';}setBottomNav('mappa');}
   trackEvent({event_type:'place_view',place_id:p.id,region:p.region});
 }
 function closeDetail(){
   document.getElementById('detail-page').classList.remove('show');
+  var _bnClose=document.getElementById('bottom-nav');if(_bnClose)_bnClose.style.zIndex='';
   if(_detailFromItinerario){
     document.getElementById('detail-page').style.zIndex='';
     document.getElementById('act-map-popup').style.zIndex='';
