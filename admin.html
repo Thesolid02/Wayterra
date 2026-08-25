@@ -3659,17 +3659,64 @@ function renderAnUsers(){
     var items=[
       {label:'Visitatori unici',val:sessions.size},
       {label:'Visitatori anonimi',val:anonSessions.size},
-      {label:'Utenti registrati attivi',val:regUsers.size},
+      {label:'Utenti registrati attivi',val:regUsers.size,info:'attivi'},
       {label:'Nuovi iscritti nel periodo',val:profs.length},
-      {label:'Utenti registrati totali',val:totalUsers}
+      {label:'Utenti registrati totali',val:totalUsers,info:'totali'}
     ];
     var html='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">'
       +items.map(function(it){
-        return'<div style="text-align:center;padding:16px 8px;background:var(--g50);border-radius:var(--r);"><div style="font-size:1.6rem;font-weight:700;color:var(--g900);">'+it.val+'</div><div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+it.label+'</div></div>';
+        var icon=it.info?'<span onclick="openUsersDetail(\''+it.info+'\')" style="cursor:pointer;color:#dc6b2f;font-size:14px;margin-left:6px;">ⓘ</span>':'';
+        return'<div style="text-align:center;padding:16px 8px;background:var(--g50);border-radius:var(--r);"><div style="font-size:1.6rem;font-weight:700;color:var(--g900);">'+it.val+'</div><div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+it.label+icon+'</div></div>';
       }).join('')+'</div>';
     _anSet('an-visitors',html);
   }).catch(function(){_anSet('an-visitors','<div class="an-empty">Errore caricamento</div>');});
 }
+
+async function openUsersDetail(type){
+  var popup=document.getElementById('users-detail-popup');
+  var body=document.getElementById('users-detail-body');
+  body.innerHTML='<div class="an-loading">Caricamento…</div>';
+  popup.classList.add('on');
+  var periodo=parseInt((document.getElementById('an-users-period')||{}).value||'30',10);
+  var since=null;
+  if(periodo===1){var _t=new Date();_t.setHours(0,0,0,0);since=_t.toISOString();}
+  else if(periodo>0){since=new Date(Date.now()-periodo*86400000).toISOString();}
+  try{
+    var rProf=await fetch(SB_URL+'/rest/v1/profiles?select=id,full_name,created_at&order=created_at.desc',{headers:_anH});
+    var profiles=await rProf.json();
+    if(!Array.isArray(profiles))profiles=[];
+    var rEvs=await fetch(SB_URL+'/rest/v1/analytics_events?select=user_id,created_at&user_id=not.is.null&order=created_at.desc&limit=1000',{headers:_anH});
+    var events=await rEvs.json();
+    if(!Array.isArray(events))events=[];
+    var displayProfiles=profiles;
+    if(type==='attivi'){
+      var activeUrl=SB_URL+'/rest/v1/analytics_events?select=user_id&user_id=not.is.null'+(since?'&created_at=gte.'+encodeURIComponent(since):'');
+      var rAct=await fetch(activeUrl,{headers:_anH});
+      var actEvs=await rAct.json();
+      var activeIds=new Set(Array.isArray(actEvs)?actEvs.map(function(e){return e.user_id;}):[]);
+      displayProfiles=profiles.filter(function(p){return activeIds.has(p.id);});
+    }
+    document.getElementById('users-detail-title').textContent=
+      type==='attivi'?'Utenti registrati attivi'+(since?' ('+periodo+(periodo===1?' giorno':' giorni')+')':''):'Utenti registrati totali';
+    if(!displayProfiles.length){body.innerHTML='<div class="an-empty">Nessun utente trovato.</div>';return;}
+    var rows=displayProfiles.map(function(p){
+      var last=events.find(function(e){return e.user_id===p.id;});
+      return'<tr style="border-bottom:0.5px solid #f0f0f0;">'
+        +'<td style="padding:7px 8px;">'+(p.full_name||'<span style="color:#bbb;">—</span>')+'</td>'
+        +'<td style="padding:7px 8px;font-size:12px;color:#888;">'+new Date(p.created_at).toLocaleDateString('it-IT')+'</td>'
+        +'<td style="padding:7px 8px;font-size:12px;color:#888;">'+(last?new Date(last.created_at).toLocaleDateString('it-IT'):'<span style="color:#bbb;">—</span>')+'</td>'
+        +'</tr>';
+    }).join('');
+    body.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:13px;">'
+      +'<thead><tr style="border-bottom:1px solid #eee;"><th style="text-align:left;padding:7px 8px;font-weight:600;">Nome</th>'
+      +'<th style="text-align:left;padding:7px 8px;font-weight:600;">Registrato</th>'
+      +'<th style="text-align:left;padding:7px 8px;font-weight:600;">Ultima attività</th></tr></thead>'
+      +'<tbody>'+rows+'</tbody></table>';
+  }catch(err){
+    body.innerHTML='<div class="an-empty">Errore caricamento.</div>';
+  }
+}
+function closeUsersDetail(){document.getElementById('users-detail-popup').classList.remove('on');}
 
 function openAnAllPdf(){
   var since=new Date(Date.now()-_anDays*86400000).toISOString();
@@ -3812,6 +3859,13 @@ sendDailyReport();
 <div class="modal" style="max-width:440px;">
   <div class="mh"><div class="mh-t" id="m-an-all-title"></div><button class="mx" onclick="closeAnAll()">✕</button></div>
   <div class="mc" id="m-an-all-body"></div>
+</div>
+</div>
+
+<div class="ov" id="users-detail-popup">
+<div class="modal" style="max-width:560px;width:100%;">
+  <div class="mh"><div class="mh-t" id="users-detail-title">Dettaglio utenti</div><button class="mx" onclick="closeUsersDetail()">✕</button></div>
+  <div class="mc" id="users-detail-body"></div>
 </div>
 </div>
 
