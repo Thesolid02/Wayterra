@@ -3682,16 +3682,12 @@ async function openUsersDetail(type){
   if(periodo===1){var _t=new Date();_t.setHours(0,0,0,0);since=_t.toISOString();}
   else if(periodo>0){since=new Date(Date.now()-periodo*86400000).toISOString();}
   try{
-    var rProf=await fetch(SB_URL+'/rest/v1/profiles?select=id,full_name,created_at&order=created_at.desc',{headers:_anH});
-    var _profRaw=await rProf.json();
-    console.log('[users-detail] profiles HTTP status:', rProf.status);
-    console.log('[users-detail] profiles fetch result:', Array.isArray(_profRaw)?_profRaw.length:'non-array', _profRaw);
-    var profiles=Array.isArray(_profRaw)?_profRaw:[];
+    var rProf=await fetch(SB_URL+'/rest/v1/profiles?select=id,full_name,avatar_url&order=full_name',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    var profiles=await rProf.json();
+    if(!Array.isArray(profiles))profiles=[];
     var rEvs=await fetch(SB_URL+'/rest/v1/analytics_events?select=user_id,created_at&user_id=not.is.null&order=created_at.desc&limit=1000',{headers:_anH});
-    var _evsRaw=await rEvs.json();
-    console.log('[users-detail] events HTTP status:', rEvs.status);
-    console.log('[users-detail] events fetch result:', Array.isArray(_evsRaw)?_evsRaw.length:'non-array', _evsRaw);
-    var events=Array.isArray(_evsRaw)?_evsRaw:[];
+    var events=await rEvs.json();
+    if(!Array.isArray(events))events=[];
     var displayProfiles=profiles;
     if(type==='attivi'){
       var activeUrl=SB_URL+'/rest/v1/analytics_events?select=user_id&user_id=not.is.null'+(since?'&created_at=gte.'+encodeURIComponent(since):'');
@@ -3707,15 +3703,14 @@ async function openUsersDetail(type){
       var last=events.find(function(e){return e.user_id===p.id;});
       return'<tr style="border-bottom:0.5px solid #f0f0f0;">'
         +'<td style="padding:7px 8px;">'+(p.full_name||'<span style="color:#bbb;">—</span>')+'</td>'
-        +'<td style="padding:7px 8px;font-size:12px;color:#888;">'+new Date(p.created_at).toLocaleDateString('it-IT')+'</td>'
         +'<td style="padding:7px 8px;font-size:12px;color:#888;">'+(last?new Date(last.created_at).toLocaleDateString('it-IT'):'<span style="color:#bbb;">—</span>')+'</td>'
         +'</tr>';
     }).join('');
     body.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:13px;">'
-      +'<thead><tr style="border-bottom:1px solid #eee;"><th style="text-align:left;padding:7px 8px;font-weight:600;">Nome</th>'
-      +'<th style="text-align:left;padding:7px 8px;font-weight:600;">Registrato</th>'
-      +'<th style="text-align:left;padding:7px 8px;font-weight:600;">Ultima attività</th></tr></thead>'
-      +'<tbody>'+rows+'</tbody></table>';
+      +'<thead><tr style="border-bottom:1px solid #eee;">'
+      +'<th style="text-align:left;padding:7px 8px;font-weight:600;">Nome</th>'
+      +'<th style="text-align:left;padding:7px 8px;font-weight:600;">Ultima attività</th>'
+      +'</tr></thead><tbody>'+rows+'</tbody></table>';
   }catch(err){
     body.innerHTML='<div class="an-empty">Errore caricamento.</div>';
   }
