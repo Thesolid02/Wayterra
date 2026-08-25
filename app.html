@@ -5160,7 +5160,10 @@ function closeMapPopupTimes(){
 function openPlaceActsPopup(p){
   if(!p)return;
   openMapPopup(p.name,'',function(mp){
-    var actsWithCoords=(p.activities||[]).filter(function(a){return a.lat&&a.lng;});
+    var _srcActs=_itineraryStopActivities
+      ?(p.activities||[]).filter(function(a){return _itineraryStopActivities.indexOf(a.id)!==-1||_itineraryStopActivities.indexOf(String(a.id))!==-1;})
+      :(p.activities||[]);
+    var actsWithCoords=_srcActs.filter(function(a){return a.lat&&a.lng;});
     var b=new mapboxgl.LngLatBounds();
     actsWithCoords.forEach(function(a){
       var el=_mkActPinEl(a);
