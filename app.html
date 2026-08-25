@@ -2930,6 +2930,7 @@ function openDetail(){
     gallWrap.innerHTML='';
   }
 
+  if(!_detailFromItinerario) _itineraryStopActivities=null;
   var acts=p.activities||[];
   if(_itineraryStopActivities)acts=acts.filter(function(a){return _itineraryStopActivities.indexOf(a.id)!==-1||_itineraryStopActivities.indexOf(String(a.id))!==-1;});
   var actsLbl=document.getElementById('dp-acts-lbl');
@@ -2977,7 +2978,7 @@ function openDetail(){
 
   var _dpActMapWrap=document.getElementById('dp-act-map-wrap');
   var _dpActMapBtn=document.getElementById('dp-act-map-btn');
-  var _actsWithCoords=(p.activities||[]).filter(function(a){return a.lat&&a.lng;});
+  var _actsWithCoords=acts.filter(function(a){return a.lat&&a.lng;});
   if(_actsWithCoords.length>=2){
     var _MB_TOKEN='pk.eyJ1IjoidGhlc29saWQiLCJhIjoiY21wYmJkM3pyMWVkNDJzc2VnbzhtZTVrdyJ9.JiwxN7LW5N_XH4jlvi4agA';
     var _PCOLOR={'1':'16a34a','4':'2563eb'};
@@ -4132,7 +4133,7 @@ function openItinerario(id){
           name=(lang==='en'&&p.nameEn)?p.nameEn:p.name;
           meta=p.region||'';
           sc=scoreColor(p.hiddenScore);
-          onclick=' onclick="openStopFromItinerario(\'place\','+p.id+')"';
+          onclick=' onclick="openStopFromItinerario(\'place\','+p.id+',0,'+( s.day!=null?s.day:'null')+')"';
           thumb=p.coverPhoto
             ?'<img class="itd-stop-thumb" src="'+p.coverPhoto+'" alt="">'
             :'<div class="itd-stop-thumb-ph" style="background:var(--g100);">📍</div>';
@@ -4377,7 +4378,7 @@ function openItinerario(id){
         var _thumb=p.coverPhoto
           ?'<img src="'+p.coverPhoto+'" style="width:130px;height:90px;border-radius:10px;object-fit:cover;display:block;">'
           :'<div style="width:130px;height:90px;border-radius:10px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📍</div>';
-        return '<div onclick="openStopFromItinerario(\'place\','+p.id+')" style="width:130px;flex-shrink:0;cursor:pointer;">'
+        return '<div onclick="openStopFromItinerario(\'place\','+p.id+',0,null)" style="width:130px;flex-shrink:0;cursor:pointer;">'
           +_thumb
           +'<div style="font-size:.78rem;font-weight:500;color:var(--g900);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+_pName+'</div>'
           +(_pType?'<div style="font-size:.72rem;color:var(--g400);">'+_pType+'</div>':'')
@@ -5295,15 +5296,15 @@ function openItinerarioGMaps(coords){
 var _detailFromItinerario=false;
 var _placeOpenedFrom='mappa';
 var _itineraryStopActivities=null;
-function openStopFromItinerario(type,id,placeId){
-  console.log('[stop] apertura luogo da itinerario:', id, 'type:', type);
+function openStopFromItinerario(type,id,placeId,day){
+  console.log('[stop] apertura luogo da itinerario:', id, 'type:', type, 'day:', day);
   if(type==='place'){
     var p=DATA.places.find(function(x){return x.id==id;});
     if(!p||!hasDetail(p))return;
     currentPlace=p;
     _detailFromItinerario=true;
     _placeOpenedFrom='itinerario';
-    var _curStop=_currentItdExp&&_currentItdExp.stops?_currentItdExp.stops.find(function(s){return s.type==='place'&&s.id==id;}):null;
+    var _curStop=_currentItdExp&&_currentItdExp.stops?_currentItdExp.stops.find(function(s){return s.type==='place'&&s.id==id&&s.day==day;}):null;
     _itineraryStopActivities=(_curStop&&_curStop.activities&&_curStop.activities.length)?_curStop.activities:null;
     document.getElementById('detail-page').style.zIndex=_travelContext?'630':'520';
     document.getElementById('act-map-popup').style.zIndex=_travelContext?'640':'530';
