@@ -404,6 +404,11 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   .dp-back::before{content:'✕';font-size:.82rem;}
   .dp-back{font-size:0;}
 }
+@media(max-width:767px){
+  #detail-page{overflow-y:auto;}
+  .dp-header{position:sticky;top:0;z-index:10;}
+  .dp-scroll{overflow:visible;flex:none;}
+}
 .dp-header{display:flex;align-items:center;gap:10px;padding:12px 16px;
   padding-top:calc(env(safe-area-inset-top,0px) + 12px);border-bottom:1px solid var(--g100);flex-shrink:0;background:var(--w);}
 .dp-back{width:34px;height:34px;border-radius:50%;background:var(--g50);border:0.5px solid var(--g200);
