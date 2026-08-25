@@ -5296,13 +5296,14 @@ var _detailFromItinerario=false;
 var _placeOpenedFrom='mappa';
 var _itineraryStopActivities=null;
 function openStopFromItinerario(type,id,placeId){
+  console.log('[stop] apertura luogo da itinerario:', id, 'type:', type);
   if(type==='place'){
     var p=DATA.places.find(function(x){return x.id==id;});
     if(!p||!hasDetail(p))return;
     currentPlace=p;
     _detailFromItinerario=true;
     _placeOpenedFrom='itinerario';
-    var _curStop=currentItinerary&&currentItinerary.stops?currentItinerary.stops.find(function(s){return s.type==='place'&&s.id==id;}):null;
+    var _curStop=_currentItdExp&&_currentItdExp.stops?_currentItdExp.stops.find(function(s){return s.type==='place'&&s.id==id;}):null;
     _itineraryStopActivities=(_curStop&&_curStop.activities&&_curStop.activities.length)?_curStop.activities:null;
     document.getElementById('detail-page').style.zIndex=_travelContext?'630':'520';
     document.getElementById('act-map-popup').style.zIndex=_travelContext?'640':'530';
