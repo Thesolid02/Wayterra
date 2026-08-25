@@ -3683,11 +3683,15 @@ async function openUsersDetail(type){
   else if(periodo>0){since=new Date(Date.now()-periodo*86400000).toISOString();}
   try{
     var rProf=await fetch(SB_URL+'/rest/v1/profiles?select=id,full_name,created_at&order=created_at.desc',{headers:_anH});
-    var profiles=await rProf.json();
-    if(!Array.isArray(profiles))profiles=[];
+    var _profRaw=await rProf.json();
+    console.log('[users-detail] profiles HTTP status:', rProf.status);
+    console.log('[users-detail] profiles fetch result:', Array.isArray(_profRaw)?_profRaw.length:'non-array', _profRaw);
+    var profiles=Array.isArray(_profRaw)?_profRaw:[];
     var rEvs=await fetch(SB_URL+'/rest/v1/analytics_events?select=user_id,created_at&user_id=not.is.null&order=created_at.desc&limit=1000',{headers:_anH});
-    var events=await rEvs.json();
-    if(!Array.isArray(events))events=[];
+    var _evsRaw=await rEvs.json();
+    console.log('[users-detail] events HTTP status:', rEvs.status);
+    console.log('[users-detail] events fetch result:', Array.isArray(_evsRaw)?_evsRaw.length:'non-array', _evsRaw);
+    var events=Array.isArray(_evsRaw)?_evsRaw:[];
     var displayProfiles=profiles;
     if(type==='attivi'){
       var activeUrl=SB_URL+'/rest/v1/analytics_events?select=user_id&user_id=not.is.null'+(since?'&created_at=gte.'+encodeURIComponent(since):'');
