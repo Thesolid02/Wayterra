@@ -1322,6 +1322,7 @@ var T={
     itd_legend_air:'Aeroporto',
     itd_travel_times:'Tempi di spostamento',
     rdd_change_country:'Cambia paese',
+    nav_mappa:'Mappa',
     nav_itinerari:'Itinerari',
     nav_profile:'Profilo',
     profile_tab_saved:'Salvati',
@@ -1409,6 +1410,7 @@ var T={
     itd_legend_air:'Airport',
     itd_travel_times:'Travel times',
     rdd_change_country:'Change country',
+    nav_mappa:'Map',
     nav_itinerari:'Itineraries',
     nav_profile:'Profile',
     profile_tab_saved:'Saved',
@@ -3824,7 +3826,7 @@ function loadEsperienze(){
                myMaps:r.my_maps_url||'',
                transport:r.transport||'',clothing:r.clothing||'',
                seasons:r.seasons||[],tripTypes:r.trip_types||[],
-               budget:r.budget||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',totalKm:r.total_km||'',totalDriveTime:r.total_drive_time||'',clothingEn:r.clothing_en||'',region:r.region?r.region.toLowerCase():'',published:r.published!==false};
+               budget:r.budget||'',budgetEn:r.budget_en||'',intensity:r.intensity||'',climate:r.climate||'',climateEn:r.climate_en||'',notes:r.notes||'',notesEn:r.notes_en||'',totalKm:r.total_km||'',totalDriveTime:r.total_drive_time||'',clothingEn:r.clothing_en||'',seasonsEn:r.seasons_en||[],region:r.region?r.region.toLowerCase():'',published:r.published!==false};
       });
       // published filter applied at render time (respects _isAdmin)
       localStorage.setItem(K.EXP,JSON.stringify(DATA.experiences));
@@ -4092,6 +4094,8 @@ function openItinerario(id){
   var hasInfo=_transportDisplay||(e.clothing)||(e.seasons&&e.seasons.length)||(e.tripTypes&&e.tripTypes.length)||(e.budget)||e.intensity||_climateText||_notesText||e.totalKm||e.totalDriveTime;
   if(hasInfo){
     var _SEASON_ICON={'Primavera':'🌸','Estate':'☀️','Autunno':'🍂','Inverno':'❄️'};
+    var _SEASON_EN={'Primavera':'Spring','Estate':'Summer','Autunno':'Autumn','Inverno':'Winter'};
+    var _BUDGET_EN={'Basso':'Low','Medio':'Medium','Alto':'High'};
     var _INTENSITY_LABEL={'rilassato':lang==='en'?'Easy':'Rilassato','moderato':lang==='en'?'Moderate':'Moderato','intenso':lang==='en'?'Intense':'Intenso'};
     var _INTENSITY_BARS={
       'rilassato':'<div style="display:flex;align-items:flex-end;gap:3px;height:14px;flex-shrink:0;"><div style="width:5px;height:60%;background:#16a34a;border-radius:2px;"></div><div style="width:5px;height:80%;background:var(--g200);border-radius:2px;"></div><div style="width:5px;height:100%;background:var(--g200);border-radius:2px;"></div></div>',
@@ -4106,12 +4110,12 @@ function openItinerario(id){
       var _intBars=_INTENSITY_BARS[e.intensity]||'';
       _always+='<div class="itd-info-row"><i class="ti ti-activity"></i><span><span class="itd-info-badge" style="display:inline-flex;align-items:center;gap:6px;">'+_intBars+_intLabel+'</span></span></div>';
     }
-    if(e.seasons&&e.seasons.length) _always+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+e.seasons.map(function(s){return'<span class="itd-info-badge">'+(_SEASON_ICON[s]||'')+' '+s+'</span>';}).join('')+'</span></div>';
+    if(e.seasons&&e.seasons.length){var _seasonsDisplay=lang==='en'?(e.seasonsEn&&e.seasonsEn.length?e.seasonsEn:e.seasons.map(function(s){return _SEASON_EN[s]||s;})):e.seasons;_always+='<div class="itd-info-row"><i class="ti ti-sun"></i><span>'+_seasonsDisplay.map(function(s,i){var _ico=_SEASON_ICON[e.seasons[i]]||_SEASON_ICON[s]||'';return'<span class="itd-info-badge">'+_ico+' '+s+'</span>';}).join('')+'</span></div>';}
     if(e.tripTypes&&e.tripTypes.length) _always+='<div class="itd-info-row"><i class="ti ti-map"></i><span>'+e.tripTypes.map(function(tt){return'<span class="itd-info-badge">'+tt+'</span>';}).join('')+'</span></div>';
     // campi extra (nascosti di default)
     var _extra='';
     if(_clothingText) _extra+='<div class="itd-info-row"><i class="ti ti-shirt"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+_clothingText+'</span></span></div>';
-    if(e.budget) _extra+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+e.budget+'</span></span></div>';
+    if(e.budget){var _budgetDisplay=lang==='en'?(e.budgetEn||_BUDGET_EN[e.budget]||e.budget):e.budget;_extra+='<div class="itd-info-row"><i class="ti ti-currency-euro"></i><span><span class="itd-info-badge" style="border-radius:8px;white-space:normal;line-height:1.4;">'+_budgetDisplay+'</span></span></div>';}
     if(e.totalKm) _extra+='<div class="itd-info-row"><i class="ti ti-road"></i><span><span class="itd-info-badge">'+e.totalKm+' km</span><span style="font-size:.72rem;color:var(--g400);margin-left:6px;">'+(lang==='en'?'Total km':'Totale km')+'</span></span></div>';
     if(e.totalDriveTime) _extra+='<div class="itd-info-row"><i class="ti ti-steering-wheel"></i><span><span class="itd-info-badge">'+e.totalDriveTime+'</span><span style="font-size:.72rem;color:var(--g400);margin-left:6px;">'+(lang==='en'?'Total drive time':'Totale ore guida')+'</span></span></div>';
     if(_climateText){
@@ -5094,9 +5098,9 @@ function openItinMapPopup(id){
     }
     if(lat&&lng)_itdStops.push({lng:+lng,lat:+lat,optional:!!s.optional,name:name,travelTime:s.travel_time||null,travelTimeEn:s.travel_time_en||null,isAirport:_isAirport,isAlsoDest:!!s.is_also_destination,stopKey:(s.type||'')+'_'+s.id});
   });
-  var _leg=document.getElementById('map-popup-legend');
-  if(_leg)_leg.style.display='flex';
   openMapPopup(title,footerHtml,function(mp){
+    var _leg=document.getElementById('map-popup-legend');
+    if(_leg)_leg.style.display='flex';
     _mapPopupStops=_itdStops;
     var coords=_itdMapCoords;
     if(coords.length>=2){
@@ -5597,7 +5601,7 @@ window.addEventListener('DOMContentLoaded',function(){
 <div id="bottom-nav">
   <button class="bn-item active" data-nav="mappa" onclick="goToMap()">
     <i class="ti ti-map-2"></i>
-    <span>Mappa</span>
+    <span data-t="nav_mappa">Mappa</span>
   </button>
   <button class="bn-item" data-nav="itinerari" onclick="openItinerariNav()">
     <i class="ti ti-route"></i>
@@ -5685,7 +5689,7 @@ window.addEventListener('DOMContentLoaded',function(){
       </div>
       <div style="display:flex;width:100%;border-top:0.5px solid rgba(255,255,255,.2);">
         <div class="profile-tab active" data-ptab="saved" id="ptab-saved" onclick="switchProfileTab('saved')">Salvati</div>
-        <div class="profile-tab" data-ptab="guides" id="ptab-guides" onclick="switchProfileTab('guides')">Le mie guide</div>
+        <div class="profile-tab" data-ptab="guides" id="ptab-guides" data-t="profile_tab_guides" onclick="switchProfileTab('guides')">Le mie guide</div>
         <div class="profile-tab" data-ptab="settings" id="ptab-settings" onclick="switchProfileTab('settings')">Impostazioni</div>
       </div>
     </div>
