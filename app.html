@@ -440,8 +440,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-acts-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:10px;border-top:0.5px solid #e5e7eb;padding-top:14px;margin-top:14px;}
 /* activity detail popup */
 #act-popup{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center;}
-#access-request-modal{display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;}
-#access-request-modal.show{display:flex;}
+#access-request-modal,#cotswolds-access-modal{display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;}
+#access-request-modal.show,#cotswolds-access-modal.show{display:flex;}
 .arm-panel{background:var(--w);border-radius:16px;width:100%;max-width:400px;padding:24px 20px;box-shadow:0 8px 40px rgba(0,0,0,.2);}
 .arm-title{font-size:1.1rem;font-weight:800;color:var(--g900);margin-bottom:4px;letter-spacing:-.01em;}
 .arm-sub{font-size:.82rem;color:var(--g500);margin-bottom:20px;line-height:1.5;}
@@ -1247,7 +1247,7 @@ lottie.loadAnimation({
 var ITINERARI_LIVE=true; // set to true when itinerary content is ready for launch
 
 /* ═══ STORAGE KEYS ═══ */
-var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1',CA:'WT_CITY_ACTIVITIES_v1',EXP:'WT_EXPERIENCES_v1'};
+var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1',CA:'WT_CITY_ACTIVITIES_v1',EXP:'WT_EXPERIENCES_v1',UC:'WT_ACCESS_COTSWOLDS'};
 var BUY_URL='https://mattiagold.gumroad.com/l/wayterra';
 
 /* ═══ TRANSLATIONS ═══ */
@@ -3250,6 +3250,28 @@ function redeemCode(){
   closeAccessRequestModal();
   selectRegion('lazio');
 }
+function openCotswoldsModal(){
+  var m=document.getElementById('cotswolds-access-modal');
+  document.getElementById('caw-code-input').value='';
+  m.classList.add('show');
+}
+function closeCotswoldsModal(){
+  document.getElementById('cotswolds-access-modal').classList.remove('show');
+}
+function redeemCotswoldsCode(){
+  var code=document.getElementById('caw-code-input').value.trim().toUpperCase();
+  if(!code)return;
+  if(code!=='WAYCOTSWOLDS'){toast('Codice non valido','err');return;}
+  localStorage.setItem(K.UC,'1');
+  closeCotswoldsModal();
+  var _sp=document.getElementById('splash');
+  if(_sp&&_mapReady){_sp.classList.remove('hide');_sp.style.display='';startSplashRotation();}
+  var _rco2=document.getElementById('region-change-overlay');
+  if(!_rco2){_rco2=document.createElement('div');_rco2.id='region-change-overlay';_rco2.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco2);}
+  else{_rco2.style.display='block';}
+  selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+  toast('✓ Accesso Cotswolds sbloccato!');
+}
 function showPW(){
   document.getElementById('pw').style.display='flex';
   // mostra pulsante demo solo su localhost
@@ -3820,6 +3842,7 @@ function loadEsperienze(){
         if(_exp){
           var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
           if(_exp.isTravel&&_exp.region){
+            if(_exp.region==='cotswolds'){localStorage.setItem(K.UC,'1');}
             selectTravelRegion(_exp.region,getRegionCenter(_exp.region),getRegionZoom(_exp.region));
           }else{
             selectRegion('lazio');
@@ -3830,16 +3853,20 @@ function loadEsperienze(){
         var _regionParam=_urlParams.get('region');
         if(_regionParam){
           var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
-          var _sp=document.getElementById('splash');
-          if(_sp&&_mapReady){
-            _sp.classList.remove('hide');_sp.style.display='';
-            startSplashRotation();
+          if(_regionParam==='cotswolds'&&!localStorage.getItem(K.UC)){
+            openCotswoldsModal();
+          } else {
+            var _sp=document.getElementById('splash');
+            if(_sp&&_mapReady){
+              _sp.classList.remove('hide');_sp.style.display='';
+              startSplashRotation();
+            }
+            var _rco2=document.getElementById('region-change-overlay');
+            if(!_rco2){_rco2=document.createElement('div');_rco2.id='region-change-overlay';_rco2.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco2);}
+            else{_rco2.style.display='block';}
+            if(_regionParam==='lazio'){selectRegion('lazio');}
+            else{selectTravelRegion(_regionParam,getRegionCenter(_regionParam),getRegionZoom(_regionParam));}
           }
-          var _rco2=document.getElementById('region-change-overlay');
-          if(!_rco2){_rco2=document.createElement('div');_rco2.id='region-change-overlay';_rco2.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco2);}
-          else{_rco2.style.display='block';}
-          if(_regionParam==='lazio'){selectRegion('lazio');}
-          else{selectTravelRegion(_regionParam,getRegionCenter(_regionParam),getRegionZoom(_regionParam));}
         }
       }
     })
@@ -6413,5 +6440,16 @@ function renderProfileSettings(){
   </div>
 </div>
 <button onclick="_profileOpenedFromRegionPage=true;openProfilePage();" id="rp-profile-btn" style="display:none;position:fixed;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;align-items:center;justify-content:center;z-index:650;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
+<div id="cotswolds-access-modal" onclick="if(event.target===this)closeCotswoldsModal()">
+  <div class="arm-panel" style="position:relative;">
+    <button class="arm-close-btn" onclick="closeCotswoldsModal()">✕</button>
+    <div class="arm-title">Accesso Cotswolds</div>
+    <div class="arm-sub">Inserisci il codice di accesso per esplorare i Cotswolds</div>
+    <div class="arm-code-row" style="margin-top:20px;">
+      <input class="arm-code-input" id="caw-code-input" type="text" placeholder="Inserisci il codice">
+      <button class="arm-code-btn" onclick="redeemCotswoldsCode()">Sblocca</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
