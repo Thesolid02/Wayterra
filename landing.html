@@ -287,6 +287,15 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
       <a class="hcta-primary" href="#destinazioni" data-t="hcta-ghost">Scegli la destinazione →</a>
       <a class="hcta-ghost" href="https://wayterra.gumroad.com/l/wayterra" data-gumroad-single-product="true" data-t="hcta-primary" style="display:none;">Get full access — <span style="text-decoration:line-through;color:#9ca3af;font-size:.9em;">€29</span> <span style="color:#dc6b2f;font-weight:700;">€19</span></a>
     </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:16px;justify-content:center;">
+      <div style="display:flex;">
+        <div style="width:32px;height:32px;border-radius:50%;background:#dc6b2f;border:2px solid #fff;display:flex;align-items:center;justify-content:center;margin-right:-8px;z-index:5;font-size:12px;color:#fff;font-weight:500;">M</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#2563eb;border:2px solid #fff;display:flex;align-items:center;justify-content:center;margin-right:-8px;z-index:4;font-size:12px;color:#fff;font-weight:500;">L</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#16a34a;border:2px solid #fff;display:flex;align-items:center;justify-content:center;margin-right:-8px;z-index:3;font-size:12px;color:#fff;font-weight:500;">A</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:#7c3aed;border:2px solid #fff;display:flex;align-items:center;justify-content:center;z-index:2;font-size:12px;color:#fff;font-weight:500;">S</div>
+      </div>
+      <p style="font-size:14px;color:rgba(255,255,255,0.9);margin:0;">+<span id="hero-counter">0</span> esploratori stanno utilizzando i miei itinerari</p>
+    </div>
     <p class="hero-note" data-t="hero-note" style="display:none;">Free to explore · Unlock all places for €19 (instead of €29) · One-time payment</p>
     </div><!-- end hero-col-left -->
     <div class="hero-col-right">
@@ -691,92 +700,6 @@ function closeLandingReviewsPopup(){
     </div>
   </div>
 </section>
-
-<!-- STATS SECTION -->
-<section id="stats-section" style="padding:60px 20px;max-width:900px;margin:0 auto;">
-  <div style="display:flex;align-items:center;gap:40px;flex-wrap:wrap;justify-content:center;">
-
-    <!-- SVG esploratore -->
-    <div style="flex-shrink:0;width:220px;">
-      <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <!-- sfondo cerchio -->
-        <circle cx="110" cy="110" r="105" fill="#fff7f3" stroke="#f3d5c0" stroke-width="2"/>
-        <!-- testa -->
-        <circle cx="110" cy="72" r="22" fill="#f5c8a0"/>
-        <!-- capelli -->
-        <path d="M88 72 Q88 50 110 50 Q132 50 132 72" fill="#4a2c10"/>
-        <!-- cappello da esploratore -->
-        <rect x="89" y="53" width="42" height="7" rx="3.5" fill="#dc6b2f"/>
-        <rect x="84" y="51" width="52" height="5" rx="2.5" fill="#c45a27"/>
-        <!-- busto -->
-        <rect x="95" y="96" width="30" height="40" rx="7" fill="#dc6b2f"/>
-        <!-- zaino -->
-        <rect x="118" y="98" width="17" height="30" rx="5" fill="#b85520"/>
-        <line x1="120" y1="106" x2="133" y2="106" stroke="#dc6b2f" stroke-width="2" stroke-linecap="round"/>
-        <line x1="120" y1="111" x2="133" y2="111" stroke="#dc6b2f" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
-        <!-- braccio sx -->
-        <line x1="95" y1="101" x2="80" y2="120" stroke="#f5c8a0" stroke-width="10" stroke-linecap="round"/>
-        <!-- braccio dx con mappa -->
-        <line x1="125" y1="101" x2="140" y2="118" stroke="#f5c8a0" stroke-width="10" stroke-linecap="round"/>
-        <!-- mappa in mano -->
-        <rect x="136" y="116" width="24" height="19" rx="3" fill="#fff" stroke="#dc6b2f" stroke-width="1.5"/>
-        <line x1="140" y1="121" x2="156" y2="121" stroke="#dc6b2f" stroke-width="1" opacity=".45"/>
-        <line x1="140" y1="125" x2="154" y2="125" stroke="#dc6b2f" stroke-width="1" opacity=".45"/>
-        <circle cx="147" cy="129" r="2.5" fill="#dc6b2f"/>
-        <!-- gambe -->
-        <line x1="104" y1="136" x2="100" y2="162" stroke="#4a2c10" stroke-width="12" stroke-linecap="round"/>
-        <line x1="116" y1="136" x2="120" y2="162" stroke="#4a2c10" stroke-width="12" stroke-linecap="round"/>
-        <!-- scarpe -->
-        <ellipse cx="98" cy="164" rx="10" ry="5" fill="#2d1a08"/>
-        <ellipse cx="122" cy="164" rx="10" ry="5" fill="#2d1a08"/>
-        <!-- pin decorativi -->
-        <circle cx="58" cy="98" r="5" fill="#dc6b2f" opacity=".3"/>
-        <line x1="58" y1="98" x2="58" y2="108" stroke="#dc6b2f" stroke-width="1.5" opacity=".25"/>
-        <circle cx="163" cy="145" r="4" fill="#dc6b2f" opacity=".25"/>
-        <line x1="163" y1="145" x2="163" y2="153" stroke="#dc6b2f" stroke-width="1.5" opacity=".2"/>
-        <circle cx="66" cy="152" r="3.5" fill="#dc6b2f" opacity=".2"/>
-        <circle cx="158" cy="78" r="4" fill="#dc6b2f" opacity=".2"/>
-      </svg>
-    </div>
-
-    <!-- testo + contatore -->
-    <div style="flex:1;min-width:260px;text-align:left;">
-      <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:16px;">
-        <span style="font-size:14px;color:#dc6b2f;font-weight:600;letter-spacing:.06em;">GIÀ</span>
-        <span id="download-counter" style="font-size:64px;font-weight:600;color:#dc6b2f;line-height:1;">0</span>
-        <span style="font-size:40px;font-weight:600;color:#dc6b2f;">+</span>
-      </div>
-      <p style="font-size:22px;font-weight:500;color:#1a1a1a;margin:0;line-height:1.4;">
-        esploratori stanno<br>utilizzando le mie guide
-      </p>
-      <p style="font-size:15px;color:#888;margin-top:12px;">
-        Guide pratiche, itinerari testati e luoghi selezionati per viaggiatori curiosi.
-      </p>
-    </div>
-  </div>
-</section>
-<script>
-(function(){
-  var target=500;var duration=2000;
-  var el=document.getElementById('download-counter');
-  var started=false;
-  function animate(){
-    var start=null;
-    function step(ts){
-      if(!start)start=ts;
-      var p=Math.min((ts-start)/duration,1);
-      var e=1-Math.pow(1-p,3);
-      el.textContent=Math.floor(e*target);
-      if(p<1)requestAnimationFrame(step);
-      else el.textContent=target;
-    }
-    requestAnimationFrame(step);
-  }
-  new IntersectionObserver(function(entries){
-    if(entries[0].isIntersecting&&!started){started=true;animate();}
-  },{threshold:0.3}).observe(document.getElementById('stats-section'));
-})();
-</script>
 
 <!-- REGIONS ROADMAP -->
 <section class="regions-sec" style="display:none;">
@@ -1411,6 +1334,22 @@ document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
   var _sid=localStorage.getItem('WT_SESSION_ID');
   if(!_sid){_sid='sess_'+Date.now()+'_'+Math.random().toString(36).substr(2,9);localStorage.setItem('WT_SESSION_ID',_sid);}
   fetch(_su+'/rest/v1/analytics_events',{method:'POST',headers:{'apikey':_sk,'Authorization':'Bearer '+_sk,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({event_type:'landing_view',session_id:_sid})}).catch(function(){});
+})();
+</script>
+<script>
+(function(){
+  var target=500;var duration=2000;
+  var el=document.getElementById('hero-counter');
+  var start=null;
+  function step(ts){
+    if(!start)start=ts;
+    var p=Math.min((ts-start)/duration,1);
+    var e=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(e*target);
+    if(p<1)requestAnimationFrame(step);
+    else el.textContent=target;
+  }
+  requestAnimationFrame(step);
 })();
 </script>
 </body>
