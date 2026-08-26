@@ -609,7 +609,7 @@ function openLandingReviewsPopup(reviews,regionName){
       +'<div style="font-size:12px;">'+stars+'</div></div>'
       +'<span style="font-size:11px;color:#999;">'+date+'</span>'
       +'</div>'
-      +'<p style="font-size:13px;color:#555;margin:0;line-height:1.5;">'+(r.text||'')+'</p>'
+      +'<p style="font-size:13px;color:#555;margin:0;line-height:1.5;">'+((currentLang==='en'&&r.text_en)?r.text_en:(r.text||''))+'</p>'
       +'</div>';
   }).join('');
 }
@@ -623,7 +623,7 @@ function closeLandingReviewsPopup(){
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
   var COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed'];
   function loadReviews(expIds,elId){
-    fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,user_id,created_at,text,profiles!user_id(full_name,avatar_url)&experience_id=in.('+expIds.join(',')+')',{
+    fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,user_id,created_at,text,text_en,profiles!user_id(full_name,avatar_url)&experience_id=in.('+expIds.join(',')+')',{
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
     }).then(function(r){return r.json();}).then(function(reviews){
       if(!reviews||!reviews.length)return;
