@@ -3412,7 +3412,7 @@ var _writeReviewExpId=null;
 var _REVIEW_COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#db2777'];
 function loadAllReviews(){
   if(!_supaAuth)return;
-  _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,experience_id,profiles!user_id(full_name,avatar_url)')
+  _supaAuth.from('itinerary_reviews').select('id,rating,text,text_en,user_id,created_at,experience_id,profiles!user_id(full_name,avatar_url)')
     .then(function(res){
       _reviewsCache={};
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
@@ -4465,7 +4465,7 @@ function openItinerario(id){
           +avatarHtml+'</div>'
           +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+displayName+'</p><div style="display:flex;gap:2px;">'+stars+'</div></div>'
           +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
-          +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
+          +(((lang==='en'&&r.text_en)||r.text)?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+(lang==='en'&&r.text_en?r.text_en:r.text)+'</p>':'')
           +'</div>';
       });
       if(_revs.length>2){
@@ -4523,7 +4523,7 @@ async function openReviewsPopup(expId){
     }).map(function(e){return e.id;});
     var rRevs=[];
     if(ids.length){
-      var rRes=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)').in('experience_id',ids).order('created_at',{ascending:false});
+      var rRes=await _supaAuth.from('itinerary_reviews').select('id,rating,text,text_en,user_id,created_at,profiles!user_id(full_name,avatar_url)').in('experience_id',ids).order('created_at',{ascending:false});
       rRevs=rRes.data||[];
     }
     if(!rRevs.length){
@@ -4552,7 +4552,7 @@ async function openReviewsPopup(expId){
           +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+displayName+'</p>'
           +'<div style="display:flex;gap:2px;margin-top:1px;">'+stars+'</div></div>'
           +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
-          +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
+          +(((lang==='en'&&r.text_en)||r.text)?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+(lang==='en'&&r.text_en?r.text_en:r.text)+'</p>':'')
           +'</div>';
       }).join('');
     }
@@ -4562,7 +4562,7 @@ async function openReviewsPopup(expId){
   var e=(DATA.experiences||[]).find(function(x){return x.id===expId;});
   document.getElementById('reviews-popup-title').textContent=e?(lang==='en'?e.titleEn||e.titleIt:e.titleIt):'Recensioni';
   list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">Caricamento...</p>';
-  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)').eq('experience_id',expId).order('created_at',{ascending:false});
+  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,text,text_en,user_id,created_at,profiles!user_id(full_name,avatar_url)').eq('experience_id',expId).order('created_at',{ascending:false});
   var reviews=res.data||[];
   if(!reviews.length){
     list.innerHTML='<p style="text-align:center;color:var(--g400);font-size:.85rem;">'+(lang==='en'?'No reviews yet':'Nessuna recensione ancora')+'</p>';
@@ -4590,7 +4590,7 @@ async function openReviewsPopup(expId){
         +'<div style="flex:1;"><p style="font-size:11px;font-weight:500;margin:0;">'+displayName+'</p>'
         +'<div style="display:flex;gap:2px;margin-top:1px;">'+stars+'</div></div>'
         +'<span style="font-size:10px;color:var(--g400);">'+date+'</span></div>'
-        +(r.text?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+r.text+'</p>':'')
+        +(((lang==='en'&&r.text_en)||r.text)?'<p style="font-size:.8rem;color:var(--g600);margin:0;line-height:1.5;">'+(lang==='en'&&r.text_en?r.text_en:r.text)+'</p>':'')
         +'</div>';
     }).join('');
   }
