@@ -440,8 +440,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .dp-acts-lbl{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);margin-bottom:10px;border-top:0.5px solid #e5e7eb;padding-top:14px;margin-top:14px;}
 /* activity detail popup */
 #act-popup{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center;}
-#access-request-modal,#cotswolds-access-modal{display:none;position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;}
-#access-request-modal.show,#cotswolds-access-modal.show{display:flex;}
+#access-request-modal{display:none;position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;}
+#access-request-modal.show{display:flex;}
 .arm-panel{background:var(--w);border-radius:16px;width:100%;max-width:400px;padding:24px 20px;box-shadow:0 8px 40px rgba(0,0,0,.2);}
 .arm-title{font-size:1.1rem;font-weight:800;color:var(--g900);margin-bottom:4px;letter-spacing:-.01em;}
 .arm-sub{font-size:.82rem;color:var(--g500);margin-bottom:20px;line-height:1.5;}
@@ -3195,9 +3195,12 @@ function buildPWCats(){
     return'<span class="pw-cat" style="color:'+c.color+';">'+renderIcon(c.icon)+' '+catName(c)+'</span>';
   }).join('');
 }
-function openAccessRequestModal(){
-  if(unlocked){selectRegion('lazio');return;}
+function openAccessRequestModal(region){
+  _accessModalRegion=region||'lazio';
+  if(_accessModalRegion==='lazio'&&unlocked){selectRegion('lazio');return;}
+  if(_accessModalRegion==='cotswolds'&&localStorage.getItem(K.UC)){selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));return;}
   var m=document.getElementById('access-request-modal');
+  document.getElementById('arm-modal-title').textContent=_accessModalRegion==='cotswolds'?'Richiedi accesso ai Cotswolds':'Richiedi accesso al Lazio';
   document.getElementById('arm-name').value='';
   document.getElementById('arm-email').value='';
   document.getElementById('arm-code-input').value='';
@@ -3226,7 +3229,7 @@ function submitAccessRequest(){
   fetch(SB_URL+'/rest/v1/access_requests',{
     method:'POST',
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-    body:JSON.stringify({nome:name,email:email})
+    body:JSON.stringify({nome:name,email:email,region:_accessModalRegion})
   }).then(function(res){
     if(!res.ok){return res.text().then(function(b){throw new Error(b);});}
     document.getElementById('arm-form-wrap').style.display='none';
@@ -3244,33 +3247,25 @@ function updateLazioBtn(){
 function redeemCode(){
   var code=document.getElementById('arm-code-input').value.trim().toUpperCase();
   if(!code)return;
-  if(code!=='WAYLAZIO'){toast('Codice non valido','err');return;}
-  devUnlock();
-  updateLazioBtn();
-  closeAccessRequestModal();
-  selectRegion('lazio');
-}
-function openCotswoldsModal(){
-  var m=document.getElementById('cotswolds-access-modal');
-  document.getElementById('caw-code-input').value='';
-  m.classList.add('show');
-}
-function closeCotswoldsModal(){
-  document.getElementById('cotswolds-access-modal').classList.remove('show');
-}
-function redeemCotswoldsCode(){
-  var code=document.getElementById('caw-code-input').value.trim().toUpperCase();
-  if(!code)return;
-  if(code!=='WAYCOTSWOLDS'){toast('Codice non valido','err');return;}
-  localStorage.setItem(K.UC,'1');
-  closeCotswoldsModal();
-  var _sp=document.getElementById('splash');
-  if(_sp&&_mapReady){_sp.classList.remove('hide');_sp.style.display='';startSplashRotation();}
-  var _rco2=document.getElementById('region-change-overlay');
-  if(!_rco2){_rco2=document.createElement('div');_rco2.id='region-change-overlay';_rco2.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco2);}
-  else{_rco2.style.display='block';}
-  selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
-  toast('✓ Accesso Cotswolds sbloccato!');
+  if(_accessModalRegion==='cotswolds'){
+    if(code!=='WAYCOTSWOLDS'){toast('Codice non valido','err');return;}
+    localStorage.setItem(K.UC,'1');
+    closeAccessRequestModal();
+    var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
+    var _sp=document.getElementById('splash');
+    if(_sp&&_mapReady){_sp.classList.remove('hide');_sp.style.display='';startSplashRotation();}
+    var _rco2=document.getElementById('region-change-overlay');
+    if(!_rco2){_rco2=document.createElement('div');_rco2.id='region-change-overlay';_rco2.style.cssText='position:fixed;inset:0;z-index:599;background:var(--w);';document.body.appendChild(_rco2);}
+    else{_rco2.style.display='block';}
+    selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+    toast('✓ Accesso Cotswolds sbloccato!');
+  } else {
+    if(code!=='WAYLAZIO'){toast('Codice non valido','err');return;}
+    devUnlock();
+    updateLazioBtn();
+    closeAccessRequestModal();
+    selectRegion('lazio');
+  }
 }
 function showPW(){
   document.getElementById('pw').style.display='flex';
@@ -3852,10 +3847,10 @@ function loadEsperienze(){
       } else {
         var _regionParam=_urlParams.get('region');
         if(_regionParam){
-          var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
           if(_regionParam==='cotswolds'&&!localStorage.getItem(K.UC)){
-            openCotswoldsModal();
+            openAccessRequestModal('cotswolds');
           } else {
+            var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
             var _sp=document.getElementById('splash');
             if(_sp&&_mapReady){
               _sp.classList.remove('hide');_sp.style.display='';
@@ -5326,6 +5321,7 @@ function openItinerarioGMaps(coords){
 var _detailFromItinerario=false;
 var _placeOpenedFrom='mappa';
 var _itineraryStopActivities=null;
+var _accessModalRegion='lazio';
 function openStopFromItinerario(type,id,placeId,day){
   console.log('[stop] apertura luogo da itinerario:', id, 'type:', type, 'day:', day);
   if(type==='place'){
@@ -5614,8 +5610,8 @@ window.addEventListener('DOMContentLoaded',function(){
   <div class="arm-panel" style="position:relative;">
     <button class="arm-close-btn" onclick="closeAccessRequestModal()">✕</button>
     <div id="arm-form-wrap">
-      <div class="arm-title">Richiedi accesso al Lazio</div>
-      <div class="arm-sub">Ti contatteremo con il link di accesso</div>
+      <div class="arm-title" id="arm-modal-title">Richiedi accesso al Lazio</div>
+      <div class="arm-sub" id="arm-modal-sub">Ti contatteremo con il link di accesso</div>
       <label class="arm-label">Nome</label>
       <input class="arm-input" id="arm-name" type="text" placeholder="Il tuo nome" autocomplete="given-name">
       <label class="arm-label">Email</label>
@@ -6440,16 +6436,5 @@ function renderProfileSettings(){
   </div>
 </div>
 <button onclick="_profileOpenedFromRegionPage=true;openProfilePage();" id="rp-profile-btn" style="display:none;position:fixed;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;align-items:center;justify-content:center;z-index:650;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
-<div id="cotswolds-access-modal" onclick="if(event.target===this)closeCotswoldsModal()">
-  <div class="arm-panel" style="position:relative;">
-    <button class="arm-close-btn" onclick="closeCotswoldsModal()">✕</button>
-    <div class="arm-title">Accesso Cotswolds</div>
-    <div class="arm-sub">Inserisci il codice di accesso per esplorare i Cotswolds</div>
-    <div class="arm-code-row" style="margin-top:20px;">
-      <input class="arm-code-input" id="caw-code-input" type="text" placeholder="Inserisci il codice">
-      <button class="arm-code-btn" onclick="redeemCotswoldsCode()">Sblocca</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
