@@ -3017,17 +3017,21 @@ function openDetail(){
 }
 function closeDetail(){
   document.getElementById('detail-page').classList.remove('show');
-  var _bnClose=document.getElementById('bottom-nav');if(_bnClose){_bnClose.style.zIndex='';_bnClose.style.display='flex';}
   if(_detailFromItinerario){
     document.getElementById('detail-page').style.zIndex='';
     document.getElementById('act-map-popup').style.zIndex='';
     _detailFromItinerario=false;
-    if(window.innerWidth<768)setBottomNav('itinerari');
+    if(window.innerWidth<768){
+      var _bnClose=document.getElementById('bottom-nav');
+      if(_bnClose){_bnClose.style.display='flex';_bnClose.style.zIndex=_travelContext?'640':'530';}
+      setBottomNav('itinerari');
+    }
     if(window.innerWidth>=768){
       document.getElementById('map').classList.remove('panel-open');
       setTimeout(function(){map_o.resize();},320);
     }
   } else {
+    var _bnClose=document.getElementById('bottom-nav');if(_bnClose){_bnClose.style.zIndex='';_bnClose.style.display='flex';}
     closeInlineBubble();
     if(window.innerWidth<768)setBottomNav('mappa');
     if(window.innerWidth>=768){
