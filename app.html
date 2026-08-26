@@ -4449,6 +4449,7 @@ function openItinerario(id){
         +renderStars(Math.round(_avg),13)
         +'</div><span style="font-size:.75rem;color:var(--g400);">'+_revs.length+' '+(lang==='en'?'reviews':'recensioni')+'</span></div></div>';
       _revs.slice(0,2).forEach(function(r){
+        console.log('[reviews/itd] lang:',lang,'| r.text_en:',r.text_en,'| r.text:',r.text);
         var fullName=(r.profiles&&r.profiles.full_name)||'';
         var parts=fullName.trim().split(' ');
         var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0]||'?';
@@ -4535,6 +4536,7 @@ async function openReviewsPopup(expId){
       document.getElementById('reviews-popup-rating').textContent=rAvg;
       document.getElementById('reviews-popup-count').textContent='('+rRevs.length+' '+(lang==='en'?'reviews':'recensioni')+')';
       list.innerHTML=rRevs.map(function(r,i){
+        console.log('[reviews/region] lang:',lang,'| r.text_en:',r.text_en,'| r.text:',r.text);
         var fullName=(r.profiles&&r.profiles.full_name)||'';
         var parts=fullName.trim().split(' ');
         var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0]||'?';
@@ -4573,6 +4575,7 @@ async function openReviewsPopup(expId){
     document.getElementById('reviews-popup-rating').textContent=avg;
     document.getElementById('reviews-popup-count').textContent='('+reviews.length+' '+(lang==='en'?'reviews':'recensioni')+')';
     list.innerHTML=reviews.map(function(r,i){
+      console.log('[reviews/popup] lang:',lang,'| r.text_en:',r.text_en,'| r.text:',r.text);
       var fullName=(r.profiles&&r.profiles.full_name)||'';
       var parts=fullName.trim().split(' ');
       var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0]||'?';
