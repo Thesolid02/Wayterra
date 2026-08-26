@@ -1088,7 +1088,7 @@ lottie.loadAnimation({
     <div id="dp-act-map-wrap" style="display:none;margin-top:16px;border-radius:12px;overflow:hidden;">
       <img id="dp-act-map-img" src="" alt="Mappa attività" style="width:100%;display:block;">
     </div>
-    <button id="dp-act-map-btn" onclick="openPlaceActsPopup(currentPlace)" style="display:none;margin-top:8px;width:100%;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);">Esplora sulla mappa</button>
+    <button id="dp-act-map-btn" data-t="dp_act_map_btn" onclick="openPlaceActsPopup(currentPlace)" style="display:none;margin-top:8px;width:100%;padding:9px 12px;border:none;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;background:var(--g100);color:var(--g900);">Esplora sulla mappa</button>
     <div style="display:flex;gap:8px;margin-top:20px;">
       <button id="dp-visited-btn" style="flex:1;padding:13px;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.86rem;font-weight:700;cursor:pointer;background:#dc6b2f;color:#fff;"></button>
       <a class="dp-maps-btn" id="dp-maps-btn" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;"></a>
@@ -1338,7 +1338,9 @@ var T={
     settings_logout:'Esci',
     settings_login:'Accedi / Registrati',
     no_saved:'Nessun luogo salvato',
-    stats_hint:'Le statistiche si aggiornano con le tue azioni'
+    stats_hint:'Le statistiche si aggiornano con le tue azioni',
+    dp_act_map_btn:'Esplora sulla mappa',
+    itd_pill_hint:'Scopri i percorsi pronti ✨'
   },
   en:{
     search_placeholder:'Where do you want to go?',
@@ -1426,7 +1428,9 @@ var T={
     settings_logout:'Sign out',
     settings_login:'Sign in / Register',
     no_saved:'No saved places',
-    stats_hint:'Statistics update with your actions'
+    stats_hint:'Statistics update with your actions',
+    dp_act_map_btn:'Explore on map',
+    itd_pill_hint:'Discover ready-made routes ✨'
   }
 };
 
@@ -5565,7 +5569,7 @@ window.addEventListener('DOMContentLoaded',function(){
 <!-- ITINERARI PILL — desktop only -->
 <div id="itd-pill-overlay" onclick="closeItdPill()"></div>
 <div id="itd-pill-wrap" style="display:none;">
-  <div id="itd-pill-hint">Scopri i percorsi pronti ✨</div>
+  <div id="itd-pill-hint" data-t="itd_pill_hint">Scopri i percorsi pronti ✨</div>
   <button id="itd-pill-btn" onclick="toggleItdPill()">
     <span class="itd-pill-dot"></span>
     <i class="ti ti-route"></i>
