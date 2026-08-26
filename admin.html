@@ -2711,8 +2711,6 @@ function fillCityActForm(a){
 // ═══ CITY ACTIVITY (place_id=null) ═══
 function upsertCityAct(a){
   var row=actToRow(a,null);
-  console.log('upsertCityAct row:', JSON.stringify(row));
-  console.log('PAYLOAD:', JSON.stringify(row, null, 2));
   return sbFetch('activities',{
     method:'POST',
     headers:{
@@ -3105,9 +3103,8 @@ async function loadStopActivities(idx, placeId, savedActs){
   if(!placeId)return;
   var r=await fetch(SB_URL+'/rest/v1/activities?select=id,name&place_id=eq.'+placeId+'&order=sort_order',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
   var acts=await r.json();
-  console.log('[stop-acts] place_id:',placeId,'results:',acts?acts.length:'null',acts);
   var wrap=document.getElementById('esp-stop-acts-'+idx);
-  if(!wrap){console.log('[stop-acts] wrap non trovato per idx:',idx);return;}
+  if(!wrap)return;
   if(!acts||!acts.length){wrap.innerHTML='<small style="color:#999;">Nessuna attività per questo luogo</small>';return;}
   var html='<select id="esp-stop-activities-'+idx+'" multiple style="width:100%;min-height:80px;padding:4px;">';
   acts.forEach(function(a){
