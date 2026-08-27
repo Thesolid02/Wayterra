@@ -38,6 +38,9 @@ nav.scrolled{background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-
 nav.scrolled .nav-name{color:var(--g900);}
 .nav-cta{display:inline-flex;align-items:center;padding:9px 20px;border-radius:100px;font-weight:700;font-size:.82rem;cursor:pointer;background:#dc6b2f;color:#fff;border:none;font-family:var(--f);transition:background .15s;}
 .nav-cta:hover{background:var(--orange-d);}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.lang-sw-nav{display:flex;background:rgba(255,255,255,.18);border-radius:100px;padding:3px;gap:2px;transition:background .3s;}
+nav.scrolled .lang-sw-nav{background:var(--g100);}
 
 /* HERO */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;overflow:hidden;}
@@ -157,7 +160,13 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     </svg>
     <span class="nav-name">Wayterra</span>
   </div>
-  <a href="#acquista" class="nav-cta">Acquista la guida →</a>
+  <div class="nav-links">
+    <div class="lang-sw-nav" style="display:flex;background:rgba(255,255,255,.18);border-radius:100px;padding:3px;gap:2px;">
+      <button id="lang-en" onclick="setLang('en')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:var(--g900);color:#fff;transition:all .15s;">EN</button>
+      <button id="lang-it" onclick="setLang('it')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:none;color:var(--g500);transition:all .15s;">IT</button>
+    </div>
+    <a href="#acquista" class="nav-cta" id="nav-buy" data-t="nav-buy">Acquista la guida →</a>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -279,20 +288,22 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 </footer>
 
 <script>
-// Language detection
-var _lang=navigator.language&&navigator.language.toLowerCase().startsWith('en')?'en':'it';
+// Translation
+var T={
+  it:{'nav-buy':'Acquista la guida →'},
+  en:{'nav-buy':'Buy the guide →'}
+};
+var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
 
-// Phone mockups
-(function(){
-  var BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
-  var phones=_lang==='en'?[
-    {src:BASE+'cotswolds-screen-1-en.png',label:'Explore the interactive map'},
-    {src:BASE+'cotswolds-screen-2-en.png',label:'Discover each place in detail'},
-    {src:BASE+'cotswolds-screen-3-en.png',label:'Follow the itinerary day by day'}
+function renderPhones(l){
+  var phones=l==='en'?[
+    {src:_BASE+'cotswolds-screen-1-en.png',label:'Explore the interactive map'},
+    {src:_BASE+'cotswolds-screen-2-en.png',label:'Discover each place in detail'},
+    {src:_BASE+'cotswolds-screen-3-en.png',label:'Follow the itinerary day by day'}
   ]:[
-    {src:BASE+'cotswolds-screen-1.png',label:'Esplora la mappa interattiva'},
-    {src:BASE+'cotswolds-screen-2.png',label:'Scopri ogni luogo nel dettaglio'},
-    {src:BASE+'cotswolds-screen-3.png',label:"Segui l'itinerario giorno per giorno"}
+    {src:_BASE+'cotswolds-screen-1.png',label:'Esplora la mappa interattiva'},
+    {src:_BASE+'cotswolds-screen-2.png',label:'Scopri ogni luogo nel dettaglio'},
+    {src:_BASE+'cotswolds-screen-3.png',label:"Segui l'itinerario giorno per giorno"}
   ];
   document.getElementById('phones-row').innerHTML=phones.map(function(p){
     return'<div class="phone-wrap">'
@@ -305,7 +316,21 @@ var _lang=navigator.language&&navigator.language.toLowerCase().startsWith('en')?
       +'<div class="phone-label">'+p.label+'</div>'
       +'</div>';
   }).join('');
-})();
+}
+
+function setLang(l){
+  localStorage.setItem('WT_LANG_v1',l);
+  document.getElementById('lang-en').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:'+(l==='en'?'#111827;color:#fff':'none;color:#6b7280')+';transition:all .15s;';
+  document.getElementById('lang-it').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:'+(l==='it'?'#111827;color:#fff':'none;color:#6b7280')+';transition:all .15s;';
+  var t=T[l]||T.it;
+  document.querySelectorAll('[data-t]').forEach(function(el){
+    var key=el.getAttribute('data-t');
+    if(t[key]!==undefined)el.innerHTML=t[key];
+  });
+  renderPhones(l);
+}
+
+setLang(localStorage.getItem('WT_LANG_v1')||'it');
 
 // Nav scroll effect
 window.addEventListener('scroll',function(){
