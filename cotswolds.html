@@ -127,8 +127,9 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 .phones-row{display:flex;flex-direction:row;justify-content:center;align-items:flex-start;gap:32px;margin-top:40px;max-width:800px;margin-left:auto;margin-right:auto;}
 .phone-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
 .phone-frame{background:#1a1a1a;border-radius:36px;padding:8px;width:160px;}
-.phone-notch{width:52px;height:8px;background:#000;border-radius:0 0 8px 8px;margin:0 auto 4px;}
-.phone-screen{border-radius:26px;width:100%;height:280px;object-fit:cover;display:block;}
+.phone-inner{border-radius:28px;overflow:hidden;}
+.phone-notch{width:52px;height:8px;background:#1a1a1a;border-radius:0 0 8px 8px;margin:0 auto;position:relative;z-index:1;}
+.phone-screen{width:100%;height:280px;object-fit:cover;display:block;}
 .phone-label{font-size:13px;text-align:center;color:var(--g500);line-height:1.5;max-width:140px;}
 @media(min-width:768px){.phone-frame{width:220px;}.phone-screen{height:380px;}.phone-label{max-width:200px;}}
 @media(max-width:640px){.phones-row{flex-direction:column;align-items:center;}}
@@ -294,8 +295,10 @@ var _lang=navigator.language&&navigator.language.toLowerCase().startsWith('en')?
   document.getElementById('phones-row').innerHTML=phones.map(function(p){
     return'<div class="phone-wrap">'
       +'<div class="phone-frame">'
+      +'<div class="phone-inner">'
       +'<div class="phone-notch"></div>'
       +'<img class="phone-screen" src="'+p.src+'" alt="'+p.label+'" loading="lazy">'
+      +'</div>'
       +'</div>'
       +'<div class="phone-label">'+p.label+'</div>'
       +'</div>';
