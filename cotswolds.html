@@ -175,7 +175,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
       <button id="lang-en" onclick="setLang('en')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:var(--g900);color:#fff;transition:all .15s;">EN</button>
       <button id="lang-it" onclick="setLang('it')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:none;color:var(--g500);transition:all .15s;">IT</button>
     </div>
-    <a href="#acquista" class="nav-cta" id="nav-buy">Acquista la guida <span class="nav-cta-arrow">→</span></a>
+    <a href="#acquista" class="nav-cta" id="nav-buy" data-t="nav-buy">Acquista la guida <span class="nav-cta-arrow">→</span></a>
   </div>
 </nav>
 
@@ -187,12 +187,12 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   <div class="hero-content">
     <div class="hero-badge">🇬🇧 United Kingdom</div>
     <h1 class="hero-h1">Cotswolds</h1>
-    <p class="hero-sub">La guida completa per esplorare i borghi più belli d'Inghilterra</p>
-    <a href="#acquista" class="hero-cta">Acquista la guida — €19,99 →</a>
+    <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare i borghi più belli d'Inghilterra</p>
+    <a href="#acquista" class="hero-cta" data-t="hero-cta">Acquista la guida — €19,99 →</a>
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
-    SCORRI
+    <span data-t="hero-scroll">SCORRI</span>
   </div>
 </section>
 
@@ -201,10 +201,10 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   <div class="si">
     <div class="intro-2col">
       <div>
-        <div class="badge">La guida</div>
-        <h2 class="s-title">Esplora le Cotswolds come un locale</h2>
-        <p class="s-sub">Le Cotswolds sono una delle aree più pittoresche d'Inghilterra, con borghi medievali, cottage in pietra dorata e campagne sconfinate. La nostra guida ti porta nei luoghi più autentici, lontano dai percorsi turistici di massa, con tutto quello che ti serve per un viaggio indimenticabile.</p>
-        <div class="intro-claim">💬 Una guida personale — tutto quello che trovi è stato vissuto e verificato da noi.</div>
+        <div class="badge" data-t="intro-badge">La guida</div>
+        <h2 class="s-title" data-t="intro-title">Esplora le Cotswolds come un locale</h2>
+        <p class="s-sub" data-t="intro-sub">Le Cotswolds sono una delle aree più pittoresche d'Inghilterra, con borghi medievali, cottage in pietra dorata e campagne sconfinate. La nostra guida ti porta nei luoghi più autentici, lontano dai percorsi turistici di massa, con tutto quello che ti serve per un viaggio indimenticabile.</p>
+        <div class="intro-claim" data-t="intro-claim">💬 Una guida personale — tutto quello che trovi è stato vissuto e verificato da noi.</div>
       </div>
       <div class="intro-mosaic">
         <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cover1_cots.jpg" alt="" style="grid-column:1/3;grid-row:1/2;" loading="lazy">
@@ -219,18 +219,18 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <!-- COSA INCLUDE -->
 <section style="background:var(--g50);">
   <div class="si">
-    <div class="badge">Cosa include</div>
-    <h2 class="s-title">Tutto quello che ti serve</h2>
+    <div class="badge" data-t="inc-badge">Cosa include</div>
+    <h2 class="s-title" data-t="inc-title">Tutto quello che ti serve</h2>
     <div class="includes-grid">
-      <div class="include-item"><div class="include-ico">🗺</div><div class="include-text">Itinerario di 4 giorni con 15 tappe selezionate da noi</div></div>
-      <div class="include-item"><div class="include-ico">📍</div><div class="include-text">Solo luoghi visitati e verificati personalmente</div></div>
-      <div class="include-item"><div class="include-ico">🚗</div><div class="include-text">Indicazioni pratiche su parcheggi e logistica per ogni tappa</div></div>
-      <div class="include-item"><div class="include-ico">🍽</div><div class="include-text">Dove abbiamo mangiato noi — selezionato e testato</div></div>
-      <div class="include-item"><div class="include-ico">🛏</div><div class="include-text">Dove abbiamo dormito noi — selezionato e testato</div></div>
-      <div class="include-item"><div class="include-ico">🎯</div><div class="include-text">Esperienze e attività che abbiamo fatto</div></div>
-      <div class="include-item"><div class="include-ico">🤫</div><div class="include-text">Segreti locali scoperti durante il viaggio</div></div>
-      <div class="include-item"><div class="include-ico">📄</div><div class="include-text">PDF scaricabile dell'itinerario completo</div></div>
-      <div class="include-item"><div class="include-ico">♾️</div><div class="include-text">Aggiornamenti gratuiti inclusi per sempre</div></div>
+      <div class="include-item"><div class="include-ico">🗺</div><div class="include-text" data-t="inc-1">Itinerario di 4 giorni con 15 tappe selezionate da noi</div></div>
+      <div class="include-item"><div class="include-ico">📍</div><div class="include-text" data-t="inc-2">Solo luoghi visitati e verificati personalmente</div></div>
+      <div class="include-item"><div class="include-ico">🚗</div><div class="include-text" data-t="inc-3">Indicazioni pratiche su parcheggi e logistica per ogni tappa</div></div>
+      <div class="include-item"><div class="include-ico">🍽</div><div class="include-text" data-t="inc-4">Dove abbiamo mangiato noi — selezionato e testato</div></div>
+      <div class="include-item"><div class="include-ico">🛏</div><div class="include-text" data-t="inc-5">Dove abbiamo dormito noi — selezionato e testato</div></div>
+      <div class="include-item"><div class="include-ico">🎯</div><div class="include-text" data-t="inc-6">Esperienze e attività che abbiamo fatto</div></div>
+      <div class="include-item"><div class="include-ico">🤫</div><div class="include-text" data-t="inc-7">Segreti locali scoperti durante il viaggio</div></div>
+      <div class="include-item"><div class="include-ico">📄</div><div class="include-text" data-t="inc-8">PDF scaricabile dell'itinerario completo</div></div>
+      <div class="include-item"><div class="include-ico">♾️</div><div class="include-text" data-t="inc-9">Aggiornamenti gratuiti inclusi per sempre</div></div>
     </div>
   </div>
 </section>
@@ -239,8 +239,8 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <section class="app-preview-sec">
   <div class="si tc">
     <div class="badge">App Wayterra</div>
-    <h2 class="s-title">Tutto nella tua tasca</h2>
-    <p class="s-sub">Accedi alla guida direttamente dall'app Wayterra — mappa interattiva, schede luoghi, itinerario giorno per giorno e PDF da stampare.</p>
+    <h2 class="s-title" data-t="app-title">Tutto nella tua tasca</h2>
+    <p class="s-sub" data-t="app-sub">Accedi alla guida direttamente dall'app Wayterra — mappa interattiva, schede luoghi, itinerario giorno per giorno e PDF da stampare.</p>
     <div class="phones-row" id="phones-row"></div>
     <div class="phones-dots" id="phones-dots"></div>
   </div>
@@ -249,8 +249,8 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <!-- RECENSIONI -->
 <section>
   <div class="si">
-    <div class="badge">Recensioni</div>
-    <h2 class="s-title">Cosa dicono i viaggiatori</h2>
+    <div class="badge" data-t="rev-badge">Recensioni</div>
+    <h2 class="s-title" data-t="rev-title">Cosa dicono i viaggiatori</h2>
     <div class="reviews-avg" id="reviews-avg" style="display:none;cursor:pointer;" onclick="openReviewsPopup()">
       <div class="reviews-avg-num" id="avg-num"></div>
       <div>
@@ -267,18 +267,18 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <!-- CTA ACQUISTO -->
 <section class="cta-sec" id="acquista">
   <div class="si tc">
-    <div class="badge">Accesso permanente</div>
-    <h2 class="s-title">Pronto a esplorare le Cotswolds?</h2>
+    <div class="badge" data-t="cta-badge">Accesso permanente</div>
+    <h2 class="s-title" data-t="cta-title">Pronto a esplorare le Cotswolds?</h2>
     <div class="cta-price">€19,99</div>
-    <div class="cta-price-note">Accesso permanente • Aggiornamenti inclusi • PDF scaricabile</div>
-    <a href="https://wayterra.gumroad.com/l/lbchl" target="_blank" rel="noopener" class="cta-btn">Acquista la guida Cotswolds →</a>
-    <div class="cta-or">oppure</div>
-    <div class="cta-code-label">Hai un codice di accesso?</div>
+    <div class="cta-price-note" data-t="cta-note">Accesso permanente • Aggiornamenti inclusi • PDF scaricabile</div>
+    <a href="https://wayterra.gumroad.com/l/lbchl" target="_blank" rel="noopener" class="cta-btn" data-t="cta-btn">Acquista la guida Cotswolds →</a>
+    <div class="cta-or" data-t="cta-or">oppure</div>
+    <div class="cta-code-label" data-t="cta-code-label">Hai un codice di accesso?</div>
     <div class="cta-code-wrap">
-      <input class="cta-code-input" id="access-code-input" type="text" placeholder="Inserisci codice">
-      <button class="cta-code-btn" onclick="activateCode()">Attiva</button>
+      <input class="cta-code-input" id="access-code-input" type="text" placeholder="Inserisci codice" data-t="cta-code-input">
+      <button class="cta-code-btn" onclick="activateCode()" data-t="cta-code-btn">Attiva</button>
     </div>
-    <div class="cta-error" id="code-error">Codice non valido</div>
+    <div class="cta-error" id="code-error" data-t="cta-error">Codice non valido</div>
   </div>
 </section>
 
@@ -311,8 +311,74 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <script>
 // Translation
 var T={
-  it:{'nav-buy':'Acquista la guida →'},
-  en:{'nav-buy':'Buy the guide →'}
+  it:{
+    'nav-buy':'Acquista la guida <span class="nav-cta-arrow">→</span>',
+    'hero-sub':"La guida completa per esplorare i borghi più belli d'Inghilterra",
+    'hero-cta':'Acquista la guida — €19,99 →',
+    'hero-scroll':'SCORRI',
+    'intro-badge':'La guida',
+    'intro-title':'Esplora le Cotswolds come un locale',
+    'intro-sub':"Le Cotswolds sono una delle aree più pittoresche d'Inghilterra, con borghi medievali, cottage in pietra dorata e campagne sconfinate. La nostra guida ti porta nei luoghi più autentici, lontano dai percorsi turistici di massa, con tutto quello che ti serve per un viaggio indimenticabile.",
+    'intro-claim':'💬 Una guida personale — tutto quello che trovi è stato vissuto e verificato da noi.',
+    'inc-badge':'Cosa include',
+    'inc-title':'Tutto quello che ti serve',
+    'inc-1':'Itinerario di 4 giorni con 15 tappe selezionate da noi',
+    'inc-2':'Solo luoghi visitati e verificati personalmente',
+    'inc-3':'Indicazioni pratiche su parcheggi e logistica per ogni tappa',
+    'inc-4':'Dove abbiamo mangiato noi — selezionato e testato',
+    'inc-5':'Dove abbiamo dormito noi — selezionato e testato',
+    'inc-6':'Esperienze e attività che abbiamo fatto',
+    'inc-7':'Segreti locali scoperti durante il viaggio',
+    'inc-8':"PDF scaricabile dell'itinerario completo",
+    'inc-9':'Aggiornamenti gratuiti inclusi per sempre',
+    'app-title':'Tutto nella tua tasca',
+    'app-sub':"Accedi alla guida direttamente dall'app Wayterra — mappa interattiva, schede luoghi, itinerario giorno per giorno e PDF da stampare.",
+    'rev-badge':'Recensioni',
+    'rev-title':'Cosa dicono i viaggiatori',
+    'cta-badge':'Accesso permanente',
+    'cta-title':'Pronto a esplorare le Cotswolds?',
+    'cta-note':'Accesso permanente • Aggiornamenti inclusi • PDF scaricabile',
+    'cta-btn':'Acquista la guida Cotswolds →',
+    'cta-or':'oppure',
+    'cta-code-label':'Hai un codice di accesso?',
+    'cta-code-input':'Inserisci codice',
+    'cta-code-btn':'Attiva',
+    'cta-error':'Codice non valido'
+  },
+  en:{
+    'nav-buy':'Buy the guide <span class="nav-cta-arrow">→</span>',
+    'hero-sub':"The complete guide to exploring England's most beautiful villages",
+    'hero-cta':'Buy the guide — €19.99 →',
+    'hero-scroll':'SCROLL',
+    'intro-badge':'The guide',
+    'intro-title':'Explore the Cotswolds like a local',
+    'intro-sub':"The Cotswolds are one of England's most picturesque areas, with medieval villages, golden stone cottages and rolling countryside. Our guide takes you to the most authentic places, away from the tourist crowds, with everything you need for an unforgettable trip.",
+    'intro-claim':'💬 A personal guide — everything you find has been personally experienced and verified by us.',
+    'inc-badge':"What's included",
+    'inc-title':'Everything you need',
+    'inc-1':'4-day itinerary with 15 stops selected by us',
+    'inc-2':'Only personally visited and verified places',
+    'inc-3':'Practical directions on parking and logistics for each stop',
+    'inc-4':'Where we ate — selected and tested',
+    'inc-5':'Where we stayed — selected and tested',
+    'inc-6':'Experiences and activities we did',
+    'inc-7':'Local secrets discovered during our trip',
+    'inc-8':'Downloadable PDF of the complete itinerary',
+    'inc-9':'Free updates included forever',
+    'app-title':'Everything in your pocket',
+    'app-sub':'Access the guide directly from the Wayterra app — interactive map, place cards, day-by-day itinerary and printable PDF.',
+    'rev-badge':'Reviews',
+    'rev-title':'What travelers say',
+    'cta-badge':'Permanent access',
+    'cta-title':'Ready to explore the Cotswolds?',
+    'cta-note':'Permanent access • Updates included • Downloadable PDF',
+    'cta-btn':'Buy the Cotswolds guide →',
+    'cta-or':'or',
+    'cta-code-label':'Do you have an access code?',
+    'cta-code-input':'Enter code',
+    'cta-code-btn':'Activate',
+    'cta-error':'Invalid code'
+  }
 };
 var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
 
