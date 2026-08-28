@@ -441,6 +441,7 @@ function setLang(l){
     else{el.innerHTML=T[l][key];}
   });
   renderPhones(l);
+  if(typeof window.renderReviews==='function')window.renderReviews();
 }
 
 setLang(localStorage.getItem('WT_LANG_v1')||'it');
@@ -526,6 +527,15 @@ function closeLandingReviewsPopup(){
   window.openReviewsPopup=function(){
     if(!_allReviews.length)return;
     openLandingReviewsPopup(_allReviews,'Cotswolds');
+  };
+
+  window.renderReviews=function(){
+    if(!_allReviews.length)return;
+    var grid=document.getElementById('reviews-grid');
+    var priorityIds=[14,19,17,15];
+    var preview=priorityIds.map(function(id){return _allReviews.find(function(r){return r.id===id;});}).filter(Boolean);
+    if(preview.length<4)preview=preview.concat(_allReviews.filter(function(r){return priorityIds.indexOf(r.id)===-1;})).slice(0,4);
+    grid.innerHTML=preview.map(makeReviewHTML).join('');
   };
 
   fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,text,text_en,user_id,created_at,profiles!user_id(full_name,avatar_url)&experience_id=eq.8&order=created_at.desc',{
