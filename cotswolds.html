@@ -309,6 +309,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 </footer>
 
 <script>
+var _lang=localStorage.getItem('WT_LANG_v1')||'it';
 // Translation
 var T={
   it:{
@@ -429,13 +430,15 @@ function renderPhones(l){
 }
 
 function setLang(l){
+  _lang=l;
   localStorage.setItem('WT_LANG_v1',l);
   document.getElementById('lang-en').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:'+(l==='en'?'#111827;color:#fff':'none;color:#6b7280')+';transition:all .15s;';
   document.getElementById('lang-it').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:'+(l==='it'?'#111827;color:#fff':'none;color:#6b7280')+';transition:all .15s;';
-  var t=T[l]||T.it;
   document.querySelectorAll('[data-t]').forEach(function(el){
     var key=el.getAttribute('data-t');
-    if(t[key]!==undefined)el.innerHTML=t[key];
+    if(!T[l]||T[l][key]===undefined)return;
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=T[l][key];}
+    else{el.innerHTML=T[l][key];}
   });
   renderPhones(l);
 }
@@ -510,7 +513,7 @@ function closeLandingReviewsPopup(){
     var avatarContent=(r.profiles&&r.profiles.avatar_url)
       ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;">'
       :'<span>'+ini+'</span>';
-    var text=(typeof _lang!=='undefined'&&_lang==='en'&&r.text_en)?r.text_en:(r.text||'');
+    var text=(localStorage.getItem('WT_LANG_v1')==='en'&&r.text_en)?r.text_en:(r.text||'');
     return'<div class="review-card">'
       +'<div class="review-header">'
       +'<div class="review-avatar" style="background:'+COLORS[i%COLORS.length]+';">'+avatarContent+'</div>'
