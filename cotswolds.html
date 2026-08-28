@@ -136,7 +136,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 .phone-notch{width:52px;height:8px;background:#1a1a1a;border-radius:0 0 8px 8px;margin:0 auto;position:relative;z-index:1;}
 .phone-screen{width:100%;height:280px;object-fit:cover;object-position:top center;display:block;margin-top:-8px;}
 .phone-label{font-size:13px;text-align:center;color:var(--g500);line-height:1.5;max-width:140px;}
-@media(min-width:768px){.phone-frame{width:220px;}.phone-inner{height:400px;}.phone-screen{height:400px;object-fit:cover;object-position:top center;}.phone-label{max-width:200px;}}
+@media(min-width:768px){.phone-frame{width:190px;}.phone-inner{height:360px;}.phone-screen{height:360px;object-fit:cover;object-position:top center;}.phone-label{max-width:170px;}.phones-row{max-width:900px;gap:20px;}}
 @media(max-width:640px){.phones-row{flex-direction:column;align-items:center;}}
 </style>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -311,10 +311,12 @@ function renderPhones(l){
   var phones=l==='en'?[
     {src:_BASE+'cotswolds-screen-1-en.png',label:'Explore the interactive map'},
     {src:_BASE+'cotswolds-screen-2-en.png',label:'Discover each place in detail'},
+    {src:_BASE+'cotswolds-screen-4-en.png',label:'Activity map for each place'},
     {src:_BASE+'cotswolds-screen-3-en.png',label:'Follow the itinerary day by day'}
   ]:[
     {src:_BASE+'cotswolds-screen-1.png',label:'Esplora la mappa interattiva'},
     {src:_BASE+'cotswolds-screen-2.png',label:'Scopri ogni luogo nel dettaglio'},
+    {src:_BASE+'cotswolds-screen-4.png',label:'Mappa attività per ogni luogo'},
     {src:_BASE+'cotswolds-screen-3.png',label:"Segui l'itinerario giorno per giorno"}
   ];
   document.getElementById('phones-row').innerHTML=phones.map(function(p){
