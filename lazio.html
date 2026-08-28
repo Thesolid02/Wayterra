@@ -232,7 +232,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   <div class="si">
     <div class="badge">Recensioni</div>
     <h2 class="s-title">Cosa dicono i viaggiatori</h2>
-    <div class="reviews-avg" id="reviews-avg" style="display:none;">
+    <div class="reviews-avg" id="reviews-avg" style="display:none;cursor:pointer;" onclick="openReviewsPopup()">
       <div class="reviews-avg-num" id="avg-num"></div>
       <div>
         <div class="reviews-avg-stars" id="avg-stars"></div>
@@ -331,42 +331,68 @@ document.getElementById('access-code-input').addEventListener('keydown',function
   var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
   var COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed','#0891b2'];
-  fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)&experience_id=in.(1,2,5,6,7)&order=created_at.desc&limit=4',{
+  var _allReviews=[];
+
+  function makeReviewHTML(r,i){
+    var name=(r.profiles&&r.profiles.full_name)?r.profiles.full_name:'Viaggiatore';
+    var parts=name.trim().split(' ');
+    var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0];
+    var ini=parts[0]?parts[0][0].toUpperCase()+(parts[1]?parts[1][0].toUpperCase():''):'?';
+    var stars='';for(var s=1;s<=5;s++)stars+=(s<=r.rating?'★':'☆');
+    var avatarContent=(r.profiles&&r.profiles.avatar_url)
+      ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;">'
+      :'<span>'+ini+'</span>';
+    var text=r.text||'';
+    return'<div class="review-card">'
+      +'<div class="review-header">'
+      +'<div class="review-avatar" style="background:'+COLORS[i%COLORS.length]+';">'+avatarContent+'</div>'
+      +'<div><div class="review-name">'+displayName+'</div><div class="review-stars">'+stars+'</div></div>'
+      +'</div>'
+      +(text?'<p class="review-text">'+text+'</p>':'')
+      +'</div>';
+  }
+
+  window.openReviewsPopup=function(){
+    if(!_allReviews.length)return;
+    var avg=Math.round(_allReviews.reduce(function(s,r){return s+r.rating;},0)/_allReviews.length*10)/10;
+    document.getElementById('reviews-popup-count').textContent=_allReviews.length+' recensioni • ⭐ '+avg+'/5';
+    document.getElementById('all-reviews-list').innerHTML=_allReviews.map(makeReviewHTML).join('');
+    document.getElementById('reviews-popup-page').style.display='block';
+  };
+
+  fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)&experience_id=in.(1,2,5,6,7)&order=created_at.desc',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   }).then(function(r){return r.json();}).then(function(reviews){
+    _allReviews=reviews||[];
     var grid=document.getElementById('reviews-grid');
-    if(!reviews||!reviews.length){
+    if(!_allReviews.length){
       grid.innerHTML='<p style="color:var(--g400);font-size:.88rem;">Nessuna recensione ancora.</p>';
       return;
     }
-    var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+    var avg=Math.round(_allReviews.reduce(function(s,r){return s+r.rating;},0)/_allReviews.length*10)/10;
     var avgEl=document.getElementById('reviews-avg');
     document.getElementById('avg-num').textContent=avg;
     document.getElementById('avg-stars').textContent='★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg));
-    document.getElementById('avg-count').textContent='('+reviews.length+' recensioni)';
+    document.getElementById('avg-count').textContent='('+_allReviews.length+' recensioni)';
     avgEl.style.display='flex';
-    grid.innerHTML=reviews.map(function(r,i){
-      var name=(r.profiles&&r.profiles.full_name)?r.profiles.full_name:'Viaggiatore';
-      var parts=name.trim().split(' ');
-      var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0];
-      var ini=parts[0]?parts[0][0].toUpperCase()+(parts[1]?parts[1][0].toUpperCase():''):'?';
-      var stars='';for(var s=1;s<=5;s++)stars+=(s<=r.rating?'★':'☆');
-      var avatarContent=(r.profiles&&r.profiles.avatar_url)
-        ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;">'
-        :'<span>'+ini+'</span>';
-      var text=r.text||'';
-      return'<div class="review-card">'
-        +'<div class="review-header">'
-        +'<div class="review-avatar" style="background:'+COLORS[i%COLORS.length]+';">'+avatarContent+'</div>'
-        +'<div><div class="review-name">'+displayName+'</div><div class="review-stars">'+stars+'</div></div>'
-        +'</div>'
-        +(text?'<p class="review-text">'+text+'</p>':'')
-        +'</div>';
-    }).join('');
+    grid.innerHTML=_allReviews.slice(0,4).map(makeReviewHTML).join('');
   }).catch(function(){
     document.getElementById('reviews-grid').innerHTML='<p style="color:var(--g400);font-size:.88rem;">Impossibile caricare le recensioni.</p>';
   });
 })();
 </script>
+
+<div id="reviews-popup-page" style="display:none;position:fixed;inset:0;z-index:1000;background:#fff;overflow-y:auto;padding:20px;">
+  <div style="max-width:600px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;position:sticky;top:0;background:#fff;padding:10px 0;border-bottom:0.5px solid #eee;">
+      <button onclick="document.getElementById('reviews-popup-page').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:22px;color:#1a1a1a;">←</button>
+      <div>
+        <h2 style="margin:0;font-size:18px;" id="reviews-popup-title">Recensioni</h2>
+        <div id="reviews-popup-count" style="font-size:13px;color:#888;"></div>
+      </div>
+    </div>
+    <div id="all-reviews-list" style="display:flex;flex-direction:column;gap:16px;padding-top:16px;"></div>
+  </div>
+</div>
 </body>
 </html>
