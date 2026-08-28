@@ -326,6 +326,40 @@ document.getElementById('access-code-input').addEventListener('keydown',function
   if(e.key==='Enter')activateCode();
 });
 
+function openLandingReviewsPopup(reviews,regionName){
+  var popup=document.getElementById('landing-reviews-popup');
+  popup.style.display='flex';
+  document.getElementById('lrp-title').textContent='Recensioni · '+regionName;
+  var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
+  document.getElementById('lrp-rating').textContent='★ '+avg;
+  document.getElementById('lrp-count').textContent='('+reviews.length+' recensioni)';
+  var COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed'];
+  document.getElementById('lrp-list').innerHTML=reviews.map(function(r,i){
+    var name=(r.profiles&&r.profiles.full_name)?r.profiles.full_name:'?';
+    var parts=name.trim().split(' ');
+    var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0];
+    var ini=parts[0]?parts[0][0].toUpperCase()+(parts[1]?parts[1][0].toUpperCase():''):'?';
+    var avatarHtml=(r.profiles&&r.profiles.avatar_url)
+      ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
+    var stars='';
+    for(var s=1;s<=5;s++)stars+='<span style="color:'+(s<=r.rating?'#f59e0b':'#ddd')+';">★</span>';
+    var date=new Date(r.created_at).toLocaleDateString('it-IT',{month:'short',year:'numeric'});
+    return'<div style="padding:12px;background:#f9f9f9;border-radius:10px;">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+      +'<div style="width:32px;height:32px;border-radius:50%;background:'+COLORS[i%COLORS.length]+';display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'+avatarHtml+'</div>'
+      +'<div style="flex:1;"><p style="font-size:12px;font-weight:500;margin:0;">'+displayName+'</p>'
+      +'<div style="font-size:12px;">'+stars+'</div></div>'
+      +'<span style="font-size:11px;color:#999;">'+date+'</span>'
+      +'</div>'
+      +'<p style="font-size:13px;color:#555;margin:0;line-height:1.5;">'+(r.text||'')+'</p>'
+      +'</div>';
+  }).join('');
+}
+function closeLandingReviewsPopup(){
+  document.getElementById('landing-reviews-popup').style.display='none';
+}
+
 // Load reviews
 (function(){
   var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
@@ -354,10 +388,7 @@ document.getElementById('access-code-input').addEventListener('keydown',function
 
   window.openReviewsPopup=function(){
     if(!_allReviews.length)return;
-    var avg=Math.round(_allReviews.reduce(function(s,r){return s+r.rating;},0)/_allReviews.length*10)/10;
-    document.getElementById('reviews-popup-count').textContent=_allReviews.length+' recensioni • ⭐ '+avg+'/5';
-    document.getElementById('all-reviews-list').innerHTML=_allReviews.map(makeReviewHTML).join('');
-    document.getElementById('reviews-popup-page').style.display='block';
+    openLandingReviewsPopup(_allReviews,'Lazio');
   };
 
   fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)&experience_id=in.(1,2,5,6,7)&order=created_at.desc',{
@@ -382,16 +413,19 @@ document.getElementById('access-code-input').addEventListener('keydown',function
 })();
 </script>
 
-<div id="reviews-popup-page" style="display:none;position:fixed;inset:0;z-index:1000;background:#fff;overflow-y:auto;padding:20px;">
-  <div style="max-width:600px;margin:0 auto;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;position:sticky;top:0;background:#fff;padding:10px 0;border-bottom:0.5px solid #eee;">
-      <button onclick="document.getElementById('reviews-popup-page').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:22px;color:#1a1a1a;">←</button>
+<div id="landing-reviews-popup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeLandingReviewsPopup()">
+  <div style="background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:80vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px);">
+    <div style="padding:16px 20px;border-bottom:0.5px solid #eee;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;">
       <div>
-        <h2 style="margin:0;font-size:18px;" id="reviews-popup-title">Recensioni</h2>
-        <div id="reviews-popup-count" style="font-size:13px;color:#888;"></div>
+        <p style="font-size:1rem;font-weight:500;margin:0;" id="lrp-title">Recensioni</p>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+          <span id="lrp-rating" style="font-size:13px;font-weight:500;color:#f59e0b;"></span>
+          <span id="lrp-count" style="font-size:12px;color:#999;"></span>
+        </div>
       </div>
+      <button onclick="closeLandingReviewsPopup()" style="background:none;border:none;cursor:pointer;font-size:24px;color:#999;line-height:1;">×</button>
     </div>
-    <div id="all-reviews-list" style="display:flex;flex-direction:column;gap:16px;padding-top:16px;"></div>
+    <div id="lrp-list" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;"></div>
   </div>
 </div>
 </body>
