@@ -38,6 +38,7 @@ nav{position:sticky;top:0;z-index:100;padding:0 24px;height:64px;display:flex;al
 .nav-cta:hover{background:var(--orange-d);}
 .nav-links{display:flex;align-items:center;gap:8px;}
 .lang-sw-nav{display:flex;background:var(--g100);border-radius:100px;padding:3px;gap:2px;}
+@media(max-width:768px){.nav-cta-arrow{display:none;}.nav-cta{font-size:12px;padding:6px 10px;}}
 
 /* HERO */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;overflow:hidden;}
@@ -162,7 +163,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
       <button id="lang-en" onclick="setLang('en')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:var(--g900);color:#fff;transition:all .15s;">EN</button>
       <button id="lang-it" onclick="setLang('it')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:none;color:var(--g500);transition:all .15s;">IT</button>
     </div>
-    <a href="#acquista" class="nav-cta" id="nav-buy" data-t="nav-buy">Acquista la guida →</a>
+    <a href="#acquista" class="nav-cta" id="nav-buy">Acquista la guida <span class="nav-cta-arrow">→</span></a>
   </div>
 </nav>
 
@@ -427,7 +428,10 @@ function closeLandingReviewsPopup(){
     document.getElementById('avg-stars').textContent='★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg));
     document.getElementById('avg-count').textContent='('+_allReviews.length+' recensioni)';
     avgEl.style.display='flex';
-    grid.innerHTML=_allReviews.slice(0,4).map(makeReviewHTML).join('');
+    var priorityIds=[14,19,17,15];
+    var preview=priorityIds.map(function(id){return _allReviews.find(function(r){return r.id===id;});}).filter(Boolean);
+    if(preview.length<4)preview=preview.concat(_allReviews.filter(function(r){return priorityIds.indexOf(r.id)===-1;})).slice(0,4);
+    grid.innerHTML=preview.map(makeReviewHTML).join('');
   }).catch(function(){
     document.getElementById('reviews-grid').innerHTML='<p style="color:var(--g400);font-size:.88rem;">Impossibile caricare le recensioni.</p>';
   });
