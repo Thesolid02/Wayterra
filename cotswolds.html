@@ -137,7 +137,15 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 .phone-screen{width:100%;height:280px;object-fit:cover;object-position:top center;display:block;margin-top:-8px;}
 .phone-label{font-size:13px;text-align:center;color:var(--g500);line-height:1.5;max-width:140px;}
 @media(min-width:768px){.phone-frame{width:190px;}.phone-inner{height:360px;}.phone-screen{height:360px;object-fit:cover;object-position:top center;}.phone-label{max-width:170px;}.phones-row{max-width:900px;gap:20px;}}
-@media(max-width:640px){.phones-row{flex-direction:column;align-items:center;}}
+@media(max-width:767px){
+  .phones-row{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 12px 4px;justify-content:flex-start;max-width:100%;scrollbar-width:none;-ms-overflow-style:none;}
+  .phones-row::-webkit-scrollbar{display:none;}
+  .phone-wrap{scroll-snap-align:center;flex-shrink:0;width:75vw;max-width:260px;}
+  .phones-dots{display:flex!important;}
+}
+.phones-dots{display:none;justify-content:center;gap:7px;margin-top:18px;}
+.phones-dot{width:7px;height:7px;border-radius:50%;background:var(--g300);transition:background .2s;cursor:pointer;}
+.phones-dot.active{background:var(--orange);}
 </style>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
@@ -234,6 +242,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h2 class="s-title">Tutto nella tua tasca</h2>
     <p class="s-sub">Accedi alla guida direttamente dall'app Wayterra — mappa interattiva, schede luoghi, itinerario giorno per giorno e PDF da stampare.</p>
     <div class="phones-row" id="phones-row"></div>
+    <div class="phones-dots" id="phones-dots"></div>
   </div>
 </section>
 
@@ -319,7 +328,8 @@ function renderPhones(l){
     {src:_BASE+'cotswolds-screen-4.png',label:'Mappa attività per ogni luogo'},
     {src:_BASE+'cotswolds-screen-3.png',label:"Segui l'itinerario giorno per giorno"}
   ];
-  document.getElementById('phones-row').innerHTML=phones.map(function(p){
+  var row=document.getElementById('phones-row');
+  row.innerHTML=phones.map(function(p){
     return'<div class="phone-wrap">'
       +'<div class="phone-frame">'
       +'<div class="phone-inner">'
@@ -330,6 +340,26 @@ function renderPhones(l){
       +'<div class="phone-label">'+p.label+'</div>'
       +'</div>';
   }).join('');
+
+  // carousel dots (mobile only — shown via CSS)
+  var dotsEl=document.getElementById('phones-dots');
+  if(dotsEl){
+    dotsEl.innerHTML=phones.map(function(_,i){
+      return'<div class="phones-dot'+(i===0?' active':'')+'" id="phones-dot-'+i+'"></div>';
+    }).join('');
+    var wraps=row.querySelectorAll('.phone-wrap');
+    if(typeof IntersectionObserver!=='undefined'){
+      var obs=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting&&entry.intersectionRatio>=0.5){
+            var idx=Array.from(wraps).indexOf(entry.target);
+            dotsEl.querySelectorAll('.phones-dot').forEach(function(d,i){d.classList.toggle('active',i===idx);});
+          }
+        });
+      },{root:row,threshold:0.5});
+      wraps.forEach(function(w){obs.observe(w);});
+    }
+  }
 }
 
 function setLang(l){
