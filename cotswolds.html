@@ -252,7 +252,10 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <!-- RECENSIONI -->
 <section>
   <div class="si">
-    <div class="badge" data-t="rev-badge">Recensioni</div>
+    <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
+      <div class="badge" data-t="rev-badge">Recensioni</div>
+      <span data-t="rev-pill" style="background:#dc6b2f;color:#fff;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:500;white-space:nowrap;">+500 viaggiatori la stanno già utilizzando</span>
+    </div>
     <h2 class="s-title" data-t="rev-title">Cosa dicono i viaggiatori</h2>
     <div class="reviews-avg" id="reviews-avg" style="display:none;cursor:pointer;" onclick="openReviewsPopup()">
       <div class="reviews-avg-num" id="avg-num"></div>
@@ -338,6 +341,7 @@ var T={
     'app-title':'La guida in tasca',
     'app-sub':"Accedi alla guida direttamente tramite il sito Wayterra (senza scaricare nulla) — mappa interattiva, schede luoghi, itinerario giorno per giorno e PDF da stampare.",
     'rev-badge':'Recensioni',
+    'rev-pill':'+500 viaggiatori la stanno già utilizzando',
     'rev-title':'Cosa dicono i viaggiatori',
     'cta-badge':'Accesso per sempre',
     'cta-title':'Pronto a esplorare le Cotswolds?',
@@ -374,6 +378,7 @@ var T={
     'app-title':'The guide in your pocket',
     'app-sub':'Access the guide directly on the Wayterra website (no download needed) — interactive map, place cards, day-by-day itinerary and printable PDF.',
     'rev-badge':'Reviews',
+    'rev-pill':'+500 travelers are already using it',
     'rev-title':'What travelers say',
     'cta-badge':'Permanent access',
     'cta-title':'Ready to explore the Cotswolds?',
