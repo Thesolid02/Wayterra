@@ -142,6 +142,8 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   .phones-row::-webkit-scrollbar{display:none;}
   .phone-wrap{scroll-snap-align:center;flex-shrink:0;width:75vw;max-width:260px;}
   .phones-dots{display:flex!important;}
+  .rev-pill-desktop{display:none;}
+  .rev-pill-mobile{display:inline-block!important;}
 }
 .phones-dots{display:none;justify-content:center;gap:7px;margin-top:18px;}
 .phones-dot{width:7px;height:7px;border-radius:50%;background:var(--g300);transition:background .2s;cursor:pointer;}
@@ -260,8 +262,9 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
         <div class="reviews-avg-stars" id="avg-stars"></div>
         <div class="reviews-avg-count" id="avg-count"></div>
       </div>
-      <span data-t="rev-pill" style="background:#dc6b2f;color:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;">+500 viaggiatori la stanno già utilizzando</span>
+      <span class="rev-pill-desktop" data-t="rev-pill" style="background:#dc6b2f;color:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;">+500 viaggiatori la stanno già utilizzando</span>
     </div>
+    <div class="rev-pill-mobile" data-t="rev-pill" style="display:none;background:#dc6b2f;color:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;margin-top:8px;">+500 viaggiatori la stanno già utilizzando</div>
     <div class="reviews-grid" id="reviews-grid">
       <p style="color:var(--g400);font-size:.88rem;">Caricamento recensioni…</p>
     </div>
