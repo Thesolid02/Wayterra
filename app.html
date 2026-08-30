@@ -4162,7 +4162,7 @@ function openItinerario(id){
     function _fmtTravelTime(txt){
       if(!txt)return '';
       var parts=txt.split(/\s*\+\s*/);
-      var out='<span style="color:#999;font-size:13px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;">';
+      var out='<span style="color:#999;font-size:13px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;"><i class="ti ti-arrow-down"></i>';
       var first=true;
       parts.forEach(function(part){
         part=part.trim();if(!part)return;
