@@ -5448,7 +5448,13 @@ function bootApp(d){
   document.getElementById('splash').style.display='none';
   var _urlParamsB=new URLSearchParams(window.location.search);
   var _accessParam=_urlParamsB.get('access');
-  if(_accessParam==='lazio'){
+  if(_accessParam==='cotswolds'){
+    localStorage.setItem(K.UC,'1');
+    setTimeout(function(){
+      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+      selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+    },100);
+  } else if(_accessParam==='lazio'){
     setTimeout(function(){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       showRegionPage();
