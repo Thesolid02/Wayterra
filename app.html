@@ -4813,7 +4813,25 @@ function openItinerarioPDF(){
       h+='</div>';
     }
     h+='</div></div>';
-    if(sTt&&globalIdx<totalStops-1)h+='<div class="pdf-travel-time">↓ '+sTt+'</div>';
+    if(sTt&&globalIdx<totalStops-1){
+      var _pdfTt='<div class="pdf-travel-time" style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;color:#999;font-size:12px;margin:4px 0 10px 36px;"><i class="ti ti-arrow-down"></i>';
+      var _pdfParts=sTt.split(/\s*\+\s*/);
+      var _pdfFirst=true;
+      _pdfParts.forEach(function(part){
+        part=part.trim();if(!part)return;
+        var lp=part.toLowerCase();
+        var icon='ti-route';
+        if(lp.indexOf('auto')!==-1||lp.indexOf('macchina')!==-1||lp.indexOf('car')!==-1)icon='ti-car';
+        else if(lp.indexOf('piedi')!==-1||lp.indexOf('walk')!==-1)icon='ti-walk';
+        else if(lp.indexOf('bici')!==-1||lp.indexOf('bike')!==-1)icon='ti-bike';
+        var m=part.match(/(\d+)\s*min/);
+        var dur=m?m[1]+' min':part;
+        if(!_pdfFirst)_pdfTt+='<span style="color:#ccc;margin:0 1px;">·</span>';
+        _pdfTt+='<i class="ti '+icon+'"></i><span>'+dur+'</span>';
+        _pdfFirst=false;
+      });
+      h+=_pdfTt+'</div>';
+    }
     return h;
   }
   var hasDays=stops.some(function(s){return !!s.day;});
@@ -4885,7 +4903,7 @@ function openItinerarioPDF(){
     +'.pdf-header,.pdf-day-header,.pdf-stop-num{-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
     +'a{color:#dc6b2f!important;}'
     +'.pdf-print-bar{display:none!important;}}';
-  var html='<!DOCTYPE html><html lang="'+(isEN?'en':'it')+'"><head><meta charset="UTF-8"><title>'+title+'</title><style>'+css+'</style></head><body>'
+  var html='<!DOCTYPE html><html lang="'+(isEN?'en':'it')+'"><head><meta charset="UTF-8"><title>'+title+'</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"><style>'+css+'</style></head><body>'
     +'<div class="pdf-print-bar" style="position:sticky;top:0;background:#fff;padding:12px 20px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;z-index:100;">'
     +'<span style="font-size:14px;color:#666;">Itinerario Wayterra</span>'
     +'<button onclick="window.print()" style="background:#2563eb;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;">⬇️ '+(isEN?'Download PDF':'Scarica PDF')+'</button>'
