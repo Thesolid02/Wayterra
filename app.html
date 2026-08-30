@@ -769,7 +769,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 <script>if(localStorage.getItem('wayterra.dev')==='1')localStorage.setItem('umami.disabled','1');</script>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="8ac51bd2-99a5-4dbd-bf8e-9dd98d87d138"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
-<script defer src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
 <style>
   :root {
     --cc-btn-primary-bg: #dc6b2f;
@@ -6459,6 +6458,7 @@ function renderProfileSettings(){
   </div>
 </div>
 <button onclick="_profileOpenedFromRegionPage=true;openProfilePage();" id="rp-profile-btn" style="display:none;position:fixed;top:16px;right:16px;background:rgba(255,255,255,.9);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;align-items:center;justify-content:center;z-index:650;box-shadow:0 1px 4px rgba(0,0,0,.12);"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
+<script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
 <script>
 CookieConsent.run({
   guiOptions: {
