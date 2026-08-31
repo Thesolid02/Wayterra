@@ -61,12 +61,9 @@ nav{position:sticky;top:0;z-index:100;padding:0 24px;height:64px;display:flex;al
 .nav-cta{display:inline-flex;align-items:center;padding:9px 20px;border-radius:100px;font-weight:700;font-size:.82rem;cursor:pointer;background:#dc6b2f;color:#fff;border:none;font-family:var(--f);transition:background .15s;}
 .nav-cta:hover{background:var(--orange-d);}
 .nav-links{display:flex;align-items:center;gap:8px;}
-.lang-sw-nav{display:flex;background:var(--g100);border-radius:100px;padding:3px;gap:2px;}
 @media(max-width:768px){.nav-cta-arrow{display:none;}.nav-cta{font-size:12px;padding:6px 10px;}}
 .nav-login{font-size:13px;color:#1a1a1a;text-decoration:none;padding:6px 12px;border:0.5px solid #ddd;border-radius:20px;white-space:nowrap;}
 .nav-login:hover{border-color:#999;}
-#mobile-menu-btn{display:none;}
-@media(max-width:767px){#mobile-menu-btn{display:flex!important;}.nav-login,#nav-buy,.lang-sw-nav{display:none!important;}}
 
 /* HERO */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;overflow:hidden;}
@@ -211,13 +208,18 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <span class="nav-name">Wayterra</span>
   </div>
   <div class="nav-links">
-    <div class="lang-sw-nav">
-      <button id="lang-en" onclick="setLang('en')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:var(--g900);color:#fff;transition:all .15s;">EN</button>
-      <button id="lang-it" onclick="setLang('it')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:none;color:var(--g500);transition:all .15s;">IT</button>
+    <div style="position:relative;">
+      <button id="lang-dropdown-btn" onclick="toggleLangDropdown()" style="background:none;border:0.5px solid #ddd;border-radius:20px;padding:5px 10px;cursor:pointer;font-size:16px;display:flex;align-items:center;gap:4px;font-family:var(--f);">
+        <span id="lang-flag">🇮🇹</span>
+        <i class="ti ti-chevron-down" style="font-size:12px;color:#666;" aria-hidden="true"></i>
+      </button>
+      <div id="lang-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:0.5px solid #ddd;border-radius:10px;overflow:hidden;z-index:100;min-width:80px;box-shadow:0 4px 12px rgba(0,0,0,.1);">
+        <div onclick="setLang('it');closeLangDropdown();" style="padding:8px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇮🇹 ITA</div>
+        <div onclick="setLang('en');closeLangDropdown();" style="padding:8px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇬🇧 EN</div>
+      </div>
     </div>
     <a href="#" id="nav-login" onclick="event.preventDefault();openLoginSheet();" class="nav-login" data-t="nav-login">Accedi</a>
     <a href="#acquista" class="nav-cta" id="nav-buy" data-t="nav-buy">Acquista la guida <span class="nav-cta-arrow">→</span></a>
-    <button id="mobile-menu-btn" onclick="openMobileMenu()" style="display:none;background:none;border:none;cursor:pointer;padding:4px;" aria-label="Menu"><i class="ti ti-menu-2" style="font-size:22px;color:#1a1a1a;" aria-hidden="true"></i></button>
   </div>
 </nav>
 
@@ -515,8 +517,7 @@ function renderPhones(l){
 function setLang(l){
   _lang=l;
   localStorage.setItem('WT_LANG_v1',l);
-  document.getElementById('lang-en').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:'+(l==='en'?'#111827;color:#fff':'none;color:#6b7280')+';transition:all .15s;';
-  document.getElementById('lang-it').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:'+(l==='it'?'#111827;color:#fff':'none;color:#6b7280')+';transition:all .15s;';
+  var _lf=document.getElementById('lang-flag');if(_lf)_lf.textContent=l==='en'?'🇬🇧':'🇮🇹';
   document.querySelectorAll('[data-t]').forEach(function(el){
     var key=el.getAttribute('data-t');
     if(!T[l]||T[l][key]===undefined)return;
@@ -722,18 +723,6 @@ async function goToPurchase(){
     <button onclick="submitLogin()" id="login-cta-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="login-cta">Accedi →</button>
   </div>
 </div>
-<div id="mobile-menu-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="closeMobileMenu()"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
-    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
-    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px;">
-      <button onclick="setLang('it');closeMobileMenu();" id="mobile-btn-it" style="padding:6px 20px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:13px;cursor:pointer;font-family:inherit;">🇮🇹 ITA</button>
-      <button onclick="setLang('en');closeMobileMenu();" id="mobile-btn-en" style="padding:6px 20px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:13px;cursor:pointer;font-family:inherit;">🇬🇧 EN</button>
-    </div>
-    <div id="mobile-menu-login" style="margin-bottom:12px;"></div>
-    <button id="mobile-menu-buy" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="cta-btn">Acquista la guida Cotswolds →</button>
-  </div>
-</div>
 <div id="profile-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
   <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="document.getElementById('profile-sheet').style.display='none'"></div>
   <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
@@ -778,40 +767,18 @@ function showToast(msg){
   t.textContent=msg;t.style.opacity='1';
   clearTimeout(t._to);t._to=setTimeout(function(){t.style.opacity='0';},3000);
 }
-function openMobileMenu(){
-  if(!_supaLanding){document.getElementById('mobile-menu-sheet').style.display='block';return;}
-  _supaLanding.auth.getSession().then(function(result){
-    var session=result.data&&result.data.session;
-    var container=document.getElementById('mobile-menu-login');
-    var buyBtn=document.getElementById('mobile-menu-buy');
-    if(session&&session.user){
-      _supaLanding.from('profiles').select('avatar_url').eq('id',session.user.id).single().then(function(pr){
-        var avatarUrl=(pr.data&&pr.data.avatar_url)||(session.user.user_metadata&&session.user.user_metadata.avatar_url);
-        var initials=session.user.email.charAt(0).toUpperCase();
-        var avatarHtml=avatarUrl?'<img src="'+avatarUrl+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid #dc6b2f;">':'<div style="width:36px;height:36px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</div>';
-        container.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:12px;background:#f9f9f9;border-radius:8px;margin-bottom:8px;">'+avatarHtml+'<div style="font-size:13px;font-weight:500;">'+session.user.email+'</div></div>'+'<button onclick="localStorage.setItem(\'WT_REDIRECT_REGION\',\'cotswolds\');window.location.href=\'/app\';" style="width:100%;background:#f5f5f5;color:#1a1a1a;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:8px;">'+(_lang==='en'?'Access the guide →':'Accedi alla guida →')+'</button>'+'<button onclick="_supaLanding.auth.signOut().then(function(){window.location.reload();})" style="width:100%;background:#f5f5f5;color:#888;border:none;border-radius:8px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:8px;">Logout</button>';
-        buyBtn.onclick=function(){closeMobileMenu();showToast(_lang==='en'?'Guide already purchased! ✓':'Guida già acquistata! ✓');};
-      });
-    } else {
-      container.innerHTML='<button onclick="closeMobileMenu();openLoginSheet();" style="width:100%;background:#f5f5f5;color:#1a1a1a;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:8px;">'+(_lang==='en'?'Sign in':'Accedi')+'</button>';
-      buyBtn.onclick=function(){closeMobileMenu();openPurchaseSheet();};
-    }
-    document.getElementById('mobile-menu-sheet').style.display='block';
-  });
-}
-function closeMobileMenu(){document.getElementById('mobile-menu-sheet').style.display='none';}
+function toggleLangDropdown(){var dd=document.getElementById('lang-dropdown');dd.style.display=dd.style.display==='none'?'block':'none';}
+function closeLangDropdown(){var dd=document.getElementById('lang-dropdown');if(dd)dd.style.display='none';}
+document.addEventListener('click',function(e){var btn=document.getElementById('lang-dropdown-btn');if(btn&&!btn.contains(e.target))closeLangDropdown();});
 document.addEventListener('DOMContentLoaded',async function(){
   if(!_supaLanding)return;
   var r=await _supaLanding.auth.getSession();
   var session=r.data&&r.data.session;
   if(session&&session.user){
-    document.querySelectorAll('.cta-btn, .hero-cta').forEach(function(btn){
+    document.querySelectorAll('.cta-btn').forEach(function(btn){
       btn.textContent=_lang==='en'?'Access the guide →':'Accedi alla guida →';
-      if(btn.tagName==='A')btn.removeAttribute('href');
       btn.onclick=function(){localStorage.setItem('WT_REDIRECT_REGION','cotswolds');window.location.href='/app';};
     });
-    var _navBuy=document.getElementById('nav-buy');
-    if(_navBuy){_navBuy.removeAttribute('href');_navBuy.onclick=function(e){e.preventDefault();showToast(_lang==='en'?'Guide already purchased! ✓':'Guida già acquistata! ✓');};}
     var _userId=session.user.id;
     _supaLanding.from('profiles').select('avatar_url').eq('id',_userId).single().then(function(result){
       var avatarUrl=(result.data&&result.data.avatar_url)||(session.user.user_metadata&&session.user.user_metadata.avatar_url);
