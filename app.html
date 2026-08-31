@@ -6354,6 +6354,7 @@ async function renderProfilePage(){
   var profileRow=null;
   if(isLoggedIn&&_supaAuth){
     var {data:_pr}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
+    console.log('Profilo ricaricato da Supabase:',JSON.stringify(_pr));
     profileRow=_pr||null;
   }
   var _fn=(profileRow&&profileRow.full_name)?profileRow.full_name:((isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.full_name)?_currentUser.user_metadata.full_name:'');
