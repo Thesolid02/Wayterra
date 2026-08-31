@@ -3415,6 +3415,7 @@ var _supaAuth=(function(){try{return supabase.createClient(SB_URL,SB_KEY);}catch
 if(!localStorage.getItem('WT_SESSION_ID')){localStorage.setItem('WT_SESSION_ID','sess_'+Date.now()+'_'+Math.random().toString(36).substr(2,9));}
 var _sessionId=localStorage.getItem('WT_SESSION_ID');
 var _authListenerRegistered=false;
+var _loggingOut=false;
 var _authMode='login';
 var _currentUser=null;
 var _currentUserProfile=null;
@@ -5983,6 +5984,7 @@ async function checkAuthSession(){
   if(_authListenerRegistered)return;
   _authListenerRegistered=true;
   _supaAuth.auth.onAuthStateChange(async function(event,session){
+    if(_loggingOut)return;
     if(event==='PASSWORD_RECOVERY'){
       setTimeout(function(){openPasswordResetForm();},100);
       return;
@@ -6533,10 +6535,12 @@ async function saveProfileSettings(){
   errEl.style.display='none';
   if(isLoggedIn){
     var fullName=(firstName+' '+lastName).trim();
-    await _supaAuth.from('profiles').upsert({id:_currentUser.id,full_name:fullName},{onConflict:'id'});if(_currentUserProfile)_currentUserProfile.full_name=fullName;
+    var _upRes=await _supaAuth.from('profiles').update({full_name:fullName}).eq('id',_currentUser.id);
+    if(_upRes.error){await _supaAuth.from('profiles').upsert({id:_currentUser.id,full_name:fullName},{onConflict:'id'});}
+    if(_currentUserProfile)_currentUserProfile.full_name=fullName;
     if(email&&email!==_currentUser.email){await _supaAuth.auth.updateUser({email:email});}
     if(password){await _supaAuth.auth.updateUser({password:password});}
-    toast(t('settings_profile_updated'));
+    toast(t('settings_profile_updated')||'Profilo aggiornato ✓');
   }else{
     if(!email||!password){errEl.textContent=t('settings_fill_email_pw');errEl.style.display='block';return;}
     var fullName=(firstName+' '+lastName).trim();
@@ -6553,6 +6557,7 @@ async function saveProfileSettings(){
   }
 }
 async function settingsLogout(){
+  _loggingOut=true;
   if(_currentUser){
     _currentUser=null;_currentUserProfile=null;
     completedItineraries.clear();visitedPlaces.clear();favs.clear();downloadedSet.clear();favItineraries.clear();
