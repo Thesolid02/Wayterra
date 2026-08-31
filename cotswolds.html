@@ -35,6 +35,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --w:#fff;--g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;
@@ -394,7 +395,13 @@ var T={
     'purchase-error':'Inserisci un\'email valida',
     'purchase-cta':'Continua con il pagamento →',
     'purchase-login-text':'Hai già un account?',
-    'purchase-login-link':'Accedi'
+    'purchase-login-link':'Accedi',
+    'login-title':'Accedi al tuo account',
+    'login-sub':'Inserisci le tue credenziali per accedere alla guida Cotswolds.',
+    'login-email-placeholder':'nome@email.com',
+    'login-password-placeholder':'Password',
+    'login-error':'Email o password non corretti.',
+    'login-cta':'Accedi →'
   },
   en:{
     'nav-buy':'Buy the guide <span class="nav-cta-arrow">→</span>',
@@ -438,7 +445,13 @@ var T={
     'purchase-error':'Enter a valid email',
     'purchase-cta':'Continue to payment →',
     'purchase-login-text':'Already have an account?',
-    'purchase-login-link':'Sign in'
+    'purchase-login-link':'Sign in',
+    'login-title':'Sign in to your account',
+    'login-sub':'Enter your credentials to access the Cotswolds guide.',
+    'login-email-placeholder':'name@email.com',
+    'login-password-placeholder':'Password',
+    'login-error':'Invalid email or password.',
+    'login-cta':'Sign in →'
   }
 };
 var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
@@ -653,7 +666,7 @@ function closeLandingReviewsPopup(){
     <div id="purchase-email-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;" data-t="purchase-error">Inserisci un'email valida</div>
     <button onclick="goToPurchase()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="purchase-cta">Continua con il pagamento →</button>
     <div style="text-align:center;margin-top:12px;font-size:13px;color:#888;">
-      <span data-t="purchase-login-text">Hai già un account?</span> <a href="https://wayterra.it/app" style="color:#dc6b2f;" data-t="purchase-login-link">Accedi</a>
+      <span data-t="purchase-login-text">Hai già un account?</span> <a href="#" onclick="openLoginFromPurchase();return false;" style="color:#dc6b2f;" data-t="purchase-login-link">Accedi</a>
     </div>
   </div>
 </div>
@@ -666,6 +679,37 @@ function goToPurchase(){
   document.getElementById('purchase-email-error').style.display='none';
   localStorage.setItem('WT_PENDING_EMAIL',email);
   window.location.href='https://wayterra.gumroad.com/l/lbchl';
+}
+</script>
+<div id="login-sheet" style="display:none;position:fixed;inset:0;z-index:1001;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="closeLoginSheet()"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div data-t="login-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Accedi al tuo account</div>
+    <div data-t="login-sub" style="font-size:14px;color:#888;margin-bottom:20px;">Inserisci le tue credenziali per accedere alla guida Cotswolds.</div>
+    <input id="login-email" type="email" data-t-placeholder="login-email-placeholder" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <input id="login-password" type="password" data-t-placeholder="login-password-placeholder" placeholder="Password" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <div id="login-error" data-t="login-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;">Email o password non corretti.</div>
+    <button onclick="submitLogin()" id="login-cta-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="login-cta">Accedi →</button>
+  </div>
+</div>
+<script>
+var _supaLanding=(function(){try{var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';return supabase.createClient(SB_URL,SB_KEY);}catch(e){return null;}})();
+function openLoginFromPurchase(){closePurchaseSheet();document.getElementById('login-sheet').style.display='block';}
+function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
+async function submitLogin(){
+  var email=document.getElementById('login-email').value.trim();
+  var password=document.getElementById('login-password').value;
+  var errEl=document.getElementById('login-error');
+  var btn=document.getElementById('login-cta-btn');
+  errEl.style.display='none';
+  if(!email||!email.includes('@')||!password){errEl.style.display='block';return;}
+  btn.disabled=true;btn.textContent='...';
+  if(!_supaLanding){errEl.style.display='block';btn.disabled=false;btn.textContent=_lang==='en'?'Sign in →':'Accedi →';return;}
+  var result=await _supaLanding.auth.signInWithPassword({email:email,password:password});
+  if(result.error){errEl.style.display='block';btn.disabled=false;btn.textContent=_lang==='en'?'Sign in →':'Accedi →';return;}
+  localStorage.setItem('WT_REDIRECT_REGION','cotswolds');
+  window.location.href='/app';
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>

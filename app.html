@@ -5466,13 +5466,22 @@ function bootApp(d){
       openAccessRequestModal();
     },100);
   } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
-    if(!localStorage.getItem('WT_LAST_REGION')){
+    var _rr=localStorage.getItem('WT_REDIRECT_REGION');
+    if(_rr){
+      localStorage.removeItem('WT_REDIRECT_REGION');
+      localStorage.setItem(K.UC,'1');
+      setTimeout(function(){
+        var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+        selectTravelRegion(_rr,getRegionCenter(_rr),getRegionZoom(_rr));
+      },100);
+    } else if(!localStorage.getItem('WT_LAST_REGION')){
       window.location.href='/landing.html';
       return;
+    } else {
+      var _io=document.getElementById('initial-overlay');
+      if(_io)_io.remove();
+      showRegionPage();
     }
-    var _io=document.getElementById('initial-overlay');
-    if(_io)_io.remove();
-    showRegionPage();
   }
   checkAuthSession();
   var _isNewSession=!localStorage.getItem('WT_SESSION_NOTIFIED_'+_sessionId);
