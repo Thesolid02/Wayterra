@@ -3834,6 +3834,7 @@ function goToMap(){
   setTimeout(function(){setBottomNav('mappa');},50);
 }
 function openItinerariNav(){
+  var _ppN=document.getElementById('profile-page');if(_ppN&&_ppN.classList.contains('show'))closeProfilePage();
   if(_itineraryViewId!==null)closeItineraryMapView();
   else openItinerariPage(_travelContext?_currentTravelRegion:null);
 }
@@ -4014,6 +4015,7 @@ function updateExpCarousel(){
   if(n)n.style.opacity=expCardIndex>=max?'.3':'1';
 }
 function openItinerariPage(region){
+  var _ppI=document.getElementById('profile-page');if(_ppI&&_ppI.classList.contains('show'))closeProfilePage();
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
   region=region||null;
   renderItinerariPage(region);
