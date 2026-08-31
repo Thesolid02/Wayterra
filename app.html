@@ -6305,7 +6305,6 @@ async function renderProfileGuides(){
   }).join('')+'</div>';
 }
 function triggerAvatarUpload(){
-  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to set a profile photo':'Accedi per aggiungere una foto profilo',null);return;}
   document.getElementById('avatar-file-input').click();
 }
 async function handleAvatarChange(input){
@@ -6315,7 +6314,27 @@ async function handleAvatarChange(input){
   var avatarEl=document.getElementById('profile-avatar-wrap');
   var localUrl=URL.createObjectURL(blob);
   avatarEl.innerHTML='<img src="'+localUrl+'" style="width:100%;height:100%;object-fit:cover;">';
-  if(!_supaAuth||!_currentUser)return;
+  if(!_supaAuth)return;
+  if(!_currentUser){
+    var _aEmailInput=document.getElementById('settings-email');
+    var _aPwInput=document.getElementById('settings-password');
+    var _aEmailVal=_aEmailInput?_aEmailInput.value.trim():'';
+    var _aPwVal=_aPwInput?_aPwInput.value.trim():'';
+    if(!_aEmailVal||!_aPwVal){
+      if(_aEmailInput&&!_aEmailVal)_aEmailInput.style.border='1.5px solid #e53e3e';
+      if(_aPwInput&&!_aPwVal)_aPwInput.style.border='1.5px solid #e53e3e';
+      switchProfileTab('settings');
+      var _aErrEl=document.getElementById('settings-form-error');
+      if(_aErrEl){_aErrEl.textContent=lang==='en'?'Enter email and password to save your profile photo':'Inserisci email e password per salvare la foto profilo';_aErrEl.style.display='block';_aErrEl.style.background='#fef3ec';_aErrEl.style.color='#dc6b2f';_aErrEl.style.borderRadius='8px';_aErrEl.style.padding='10px';}
+      return;
+    }
+    if(_aEmailInput)_aEmailInput.style.border='';
+    if(_aPwInput)_aPwInput.style.border='';
+    var _aSignUp=await _supaAuth.auth.signUp({email:_aEmailVal,password:_aPwVal});
+    if(_aSignUp.error){var _aErrEl2=document.getElementById('settings-form-error');if(_aErrEl2){_aErrEl2.textContent=translateAuthError(_aSignUp.error.message,lang);_aErrEl2.style.display='block';}return;}
+    _currentUser=_aSignUp.data&&_aSignUp.data.user;
+    if(!_currentUser)return;
+  }
   var path='avatars/'+_currentUser.id+'.jpg';
   var up=await _supaAuth.storage.from('wayterra-images').upload(path,blob,{upsert:true,contentType:'image/jpeg'});
   if(up.error){console.warn('[avatar]',up.error.message);return;}
