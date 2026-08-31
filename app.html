@@ -152,7 +152,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   #profile-btn-d{display:none;}
 }
 /* ── BOTTOM NAV (mobile only) ── */
-#bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:310;
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:650;
   background:rgba(255,255,255,.97);border-top:0.5px solid rgba(0,0,0,.08);
   padding:8px 0 env(safe-area-inset-bottom,10px);
   display:flex;justify-content:space-around;
@@ -6249,7 +6249,7 @@ function closeProfilePage(){
   var _pp=document.getElementById('profile-page');
   _pp.classList.remove('show');
   _pp.style.zIndex='';
-  var _bnProf=document.getElementById('bottom-nav');if(_bnProf)_bnProf.style.zIndex='';
+  var _bnProf=document.getElementById('bottom-nav');if(_bnProf)_bnProf.style.zIndex='650';
   if(_profileOpenedFromRegionPage){
     _profileOpenedFromRegionPage=false;
     var _rpb=document.getElementById('rp-profile-btn');if(_rpb)_rpb.style.display='flex';
