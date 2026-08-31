@@ -6737,7 +6737,22 @@ async function createAccountFromPurchase(){
     <input id="purchase-login-password" type="password" placeholder="Password" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;">
     <div id="purchase-login-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
     <button onclick="submitPurchaseLogin()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:10px;">Accedi →</button>
-    <button onclick="document.getElementById('purchase-login-sheet').style.display='none';document.getElementById('purchase-onboarding-sheet').style.display='block';" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;">← Torna alla registrazione</button>
+    <div style="text-align:center;margin-top:8px;">
+      <a href="#" onclick="event.preventDefault();showPurchaseForgotPassword();" style="font-size:12px;color:#888;">Password dimenticata?</a>
+    </div>
+    <button onclick="document.getElementById('purchase-login-sheet').style.display='none';document.getElementById('purchase-onboarding-sheet').style.display='block';" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;margin-top:10px;">← Torna alla registrazione</button>
+  </div>
+</div>
+<div id="purchase-forgot-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div style="font-size:20px;font-weight:500;margin-bottom:6px;">Recupera password</div>
+    <div style="font-size:14px;color:#888;margin-bottom:20px;">Inserisci la tua email per ricevere il link di recupero.</div>
+    <input id="purchase-forgot-email" type="email" placeholder="Email" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;">
+    <div id="purchase-forgot-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
+    <button onclick="submitPurchaseForgot()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:10px;">Invia link di recupero</button>
+    <button onclick="document.getElementById('purchase-forgot-sheet').style.display='none';document.getElementById('purchase-login-sheet').style.display='block';" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;">← Torna al login</button>
   </div>
 </div>
 <script>
@@ -6783,6 +6798,19 @@ async function onboardingGoogleLogin(){
 function switchToLogin(){
   document.getElementById('purchase-onboarding-sheet').style.display='none';
   document.getElementById('purchase-login-sheet').style.display='block';
+}
+function showPurchaseForgotPassword(){
+  document.getElementById('purchase-login-sheet').style.display='none';
+  document.getElementById('purchase-forgot-sheet').style.display='block';
+}
+async function submitPurchaseForgot(){
+  var email=document.getElementById('purchase-forgot-email').value.trim();
+  var errEl=document.getElementById('purchase-forgot-error');
+  errEl.style.display='none';
+  if(!email||!email.includes('@')){errEl.textContent='Inserisci un\'email valida';errEl.style.display='block';return;}
+  await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/app?access=cotswolds'});
+  document.getElementById('purchase-forgot-sheet').style.display='none';
+  if(typeof toast==='function')toast(lang==='en'?'Recovery email sent! Check your inbox.':'Email di recupero inviata! Controlla la casella.');
 }
 async function submitPurchaseLogin(){
   var email=document.getElementById('purchase-login-email').value.trim();
