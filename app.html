@@ -4677,10 +4677,16 @@ async function deleteReview(reviewId,expId){
   }
 }
 function openWriteReview(expId){
-  if(!requireAuth(lang==='en'?'leave a review':'lasciare una recensione'))return;
+  console.log('openWriteReview chiamata, _currentUser:',!!_currentUser);
+  if(!requireAuth(lang==='en'?'leave a review':'lasciare una recensione')){
+    console.log('requireAuth ha bloccato — utente anonimo');
+    return;
+  }
   if(_currentUser){
     var _fn=((_currentUserProfile&&_currentUserProfile.full_name)||'').split(' ')[0].trim();
+    console.log('Nome utente:',_fn);
     if(!_fn){
+      console.log('Nome vuoto — apro settings');
       openProfilePage();
       switchProfileTab('settings');
       setTimeout(function(){
