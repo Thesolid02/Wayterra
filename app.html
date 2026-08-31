@@ -4518,7 +4518,7 @@ function openItinerario(id){
       }
       var _loginBoxItd='<div style="padding:12px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;text-align:center;margin-top:8px;">'
         +'<p style="font-size:.85rem;color:#dc6b2f;font-weight:500;margin:0 0 8px;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</p>'
-        +'<button onclick="openAuthPage(lang===\'en\'?\'Sign in to leave a review\':\'Accedi per lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
+        +'<button onclick="requireAuth(lang===\'en\'?\'leave a review\':\'lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
         +'</div>';
       if(_currentUser){
         var _myRev=_revs.find(function(r){return r.user_id===_currentUser.id;});
@@ -4539,7 +4539,7 @@ function openItinerario(id){
       } else {
         _revEl.innerHTML='<div style="padding:12px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;text-align:center;margin-top:8px;">'
           +'<p style="font-size:.85rem;color:#dc6b2f;font-weight:500;margin:0 0 8px;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</p>'
-          +'<button onclick="openAuthPage(lang===\'en\'?\'Sign in to leave a review\':\'Accedi per lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
+          +'<button onclick="requireAuth(lang===\'en\'?\'leave a review\':\'lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
           +'</div>';
         _revEl.style.display='';
       }
@@ -4658,7 +4658,7 @@ async function openReviewsPopup(expId){
   } else {
     cta.innerHTML='<div style="padding:12px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;text-align:center;margin-top:8px;">'
       +'<p style="font-size:.85rem;color:#dc6b2f;font-weight:500;margin:0 0 8px;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</p>'
-      +'<button onclick="openAuthPage(lang===\'en\'?\'Sign in to leave a review\':\'Accedi per lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
+      +'<button onclick="requireAuth(lang===\'en\'?\'leave a review\':\'lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
       +'</div>';
   }
 }
