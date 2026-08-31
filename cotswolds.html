@@ -694,7 +694,7 @@ function goToPurchase(){
   </div>
 </div>
 <script>
-var _supaLanding=(function(){try{var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';return supabase.createClient(SB_URL,SB_KEY);}catch(e){return null;}})();
+var _supaLanding=(function(){try{var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';return supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storage:window.localStorage}});}catch(e){return null;}})();
 function openLoginFromPurchase(){closePurchaseSheet();document.getElementById('login-sheet').style.display='block';}
 function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
 async function submitLogin(){
