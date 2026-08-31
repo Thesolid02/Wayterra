@@ -1339,6 +1339,13 @@ var T={
     settings_language:'Lingua',
     settings_logout:'Esci',
     settings_login:'Accedi / Registrati',
+    settings_firstname:'Nome',
+    settings_lastname:'Cognome',
+    settings_save:'Salva',
+    settings_profile_updated:'Profilo aggiornato ✓',
+    settings_account_created:'Account creato ✓',
+    settings_fill_email_pw:'Compila email e password per registrarti',
+    settings_review_need_name:'Completa il tuo profilo con il tuo Nome per lasciare una recensione',
     no_saved:'Nessun luogo salvato',
     stats_hint:'Le statistiche si aggiornano con le tue azioni',
     dp_act_map_btn:'Esplora sulla mappa',
@@ -1429,6 +1436,13 @@ var T={
     settings_language:'Language',
     settings_logout:'Sign out',
     settings_login:'Sign in / Register',
+    settings_firstname:'First name',
+    settings_lastname:'Last name',
+    settings_save:'Save',
+    settings_profile_updated:'Profile updated ✓',
+    settings_account_created:'Account created ✓',
+    settings_fill_email_pw:'Enter email and password to create an account',
+    settings_review_need_name:'Complete your profile with your Name to leave a review',
     no_saved:'No saved places',
     stats_hint:'Statistics update with your actions',
     dp_act_map_btn:'Explore on map',
@@ -4662,6 +4676,10 @@ async function deleteReview(reviewId,expId){
   }
 }
 function openWriteReview(expId){
+  if(_currentUser){
+    var _fn=((_currentUserProfile&&_currentUserProfile.full_name)||'').split(' ')[0].trim();
+    if(!_fn){toast(t('settings_review_need_name'));return;}
+  }
   _writeReviewExpId=expId;
   _writeReviewRating=0;
   document.getElementById('write-review-title').textContent=lang==='en'?'Leave a review':'Lascia una recensione';
@@ -6477,26 +6495,65 @@ function renderProfileStats(){
 function renderProfileSettings(){
   var isLoggedIn=!!_currentUser;
   var langLabel=lang==='it'?'Italiano':'English';
-  var html='<div style="padding-top:8px;">'
-    +'<div class="profile-setting-row" onclick="openLangPopup()">'
+  var nameParts=(_currentUserProfile&&_currentUserProfile.full_name||'').split(' ');
+  var firstName=isLoggedIn?(nameParts[0]||''):'';
+  var lastName=isLoggedIn?(nameParts.slice(1).join(' ')||''):'';
+  var emailVal=isLoggedIn?(_currentUser.email||''):'';
+  var pwPlaceholder=isLoggedIn?'••••••••':'';
+  var inputStyle='width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.88rem;font-family:var(--f);box-sizing:border-box;outline:none;';
+  var html='<div style="padding:16px;">'
+    +'<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">'
+    +'<input type="text" id="settings-firstname" placeholder="'+t('settings_firstname')+'" value="'+firstName.replace(/"/g,'&quot;')+'" style="'+inputStyle+'">'
+    +'<input type="text" id="settings-lastname" placeholder="'+t('settings_lastname')+'" value="'+lastName.replace(/"/g,'&quot;')+'" style="'+inputStyle+'">'
+    +'<input type="email" id="settings-email" placeholder="Email" value="'+emailVal.replace(/"/g,'&quot;')+'" style="'+inputStyle+'">'
+    +'<input type="password" id="settings-password" placeholder="'+pwPlaceholder+'" style="'+inputStyle+'">'
+    +'<div id="settings-form-error" style="font-size:.8rem;color:#dc2626;display:none;"></div>'
+    +'<button onclick="saveProfileSettings()" style="width:100%;padding:10px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.9rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+t('settings_save')+'</button>'
+    +'</div>'
+    +'<div class="profile-setting-row" onclick="openLangPopup()" style="border-radius:8px 8px 0 0;">'
     +'<div class="profile-setting-icon" style="background:#f0f9ff;"><i class="ti ti-language" style="color:#0284c7;font-size:16px;"></i></div>'
     +'<div class="profile-setting-label">'+t('settings_language')+'</div>'
     +'<div class="profile-setting-value" id="settings-lang-value">'+langLabel+'</div>'
     +'<i class="ti ti-chevron-right" style="font-size:14px;color:var(--g400);flex-shrink:0;margin-left:8px;"></i>'
-    +'</div>';
-  if(isLoggedIn){
-    html+='<div class="profile-setting-row" onclick="signOut()">'
+    +'</div>'
+    +'<div class="profile-setting-row" onclick="settingsLogout()" style="border-radius:0 0 8px 8px;">'
     +'<div class="profile-setting-icon" style="background:#fef2f2;"><i class="ti ti-logout" style="color:#dc2626;font-size:16px;"></i></div>'
     +'<div class="profile-setting-label" style="color:#dc2626;">'+t('settings_logout')+'</div>'
+    +'</div>'
     +'</div>';
-  }else{
-    html+='<div class="profile-setting-row" onclick="openAuthPage(null,null)">'
-    +'<div class="profile-setting-icon" style="background:#fff7ed;"><i class="ti ti-login" style="color:#dc6b2f;font-size:16px;"></i></div>'
-    +'<div class="profile-setting-label" style="color:#dc6b2f;">'+t('settings_login')+'</div>'
-    +'</div>';
-  }
-  html+='</div>';
   document.getElementById('ptab-content-settings').innerHTML=html;
+}
+async function saveProfileSettings(){
+  var isLoggedIn=!!_currentUser;
+  var firstName=(document.getElementById('settings-firstname').value||'').trim();
+  var lastName=(document.getElementById('settings-lastname').value||'').trim();
+  var email=(document.getElementById('settings-email').value||'').trim();
+  var password=document.getElementById('settings-password').value;
+  var errEl=document.getElementById('settings-form-error');
+  errEl.style.display='none';
+  if(isLoggedIn){
+    var fullName=(firstName+' '+lastName).trim();
+    if(fullName){await _supaAuth.from('profiles').upsert({id:_currentUser.id,full_name:fullName},{onConflict:'id'});if(_currentUserProfile)_currentUserProfile.full_name=fullName;}
+    if(email&&email!==_currentUser.email){await _supaAuth.auth.updateUser({email:email});}
+    if(password){await _supaAuth.auth.updateUser({password:password});}
+    toast(t('settings_profile_updated'));
+  }else{
+    if(!email||!password){errEl.textContent=t('settings_fill_email_pw');errEl.style.display='block';return;}
+    var fullName=(firstName+' '+lastName).trim();
+    var result=await _supaAuth.auth.signUp({email:email,password:password,options:{data:{full_name:fullName||undefined}}});
+    if(result.error){errEl.textContent=translateAuthError(result.error.message,lang);errEl.style.display='block';return;}
+    if(result.data&&result.data.user){
+      var uid=result.data.user.id;
+      if(fullName){await _supaAuth.from('profiles').upsert({id:uid,full_name:fullName},{onConflict:'id'});}
+      if(localStorage.getItem(K.UC)==='1'){await _supaAuth.from('user_regions').upsert({user_id:uid,region:'cotswolds'},{onConflict:'user_id,region'});}
+      _currentUser=result.data.user;
+      updateProfileUI();
+    }
+    toast(t('settings_account_created'));
+  }
+}
+function settingsLogout(){
+  if(_currentUser){signOut();}else{window.location.reload();}
 }
 </script>
 <div id="pw-forgot-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;">
