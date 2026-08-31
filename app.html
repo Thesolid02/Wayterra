@@ -6495,6 +6495,7 @@ function renderProfileStats(){
   if(_plEl)_plEl.textContent=visitedPlaces.size;
 }
 function renderProfileSettings(){
+  console.log('renderProfileSettings chiamato, _currentUserProfile:',JSON.stringify(_currentUserProfile));
   var isLoggedIn=!!_currentUser;
   var langLabel=lang==='it'?'Italiano':'English';
   var nameParts=(_currentUserProfile&&_currentUserProfile.full_name||'').split(' ');
@@ -6539,8 +6540,11 @@ async function saveProfileSettings(){
     console.log('User id:',_currentUser.id);
     var updateResult=await _supaAuth.from('profiles').update({full_name:fullName}).eq('id',_currentUser.id);
     console.log('Update result:',JSON.stringify(updateResult));
+    console.log('fullName salvato:',fullName);
+    console.log('_currentUserProfile prima:',JSON.stringify(_currentUserProfile));
     if(!_currentUserProfile)_currentUserProfile={};
     _currentUserProfile.full_name=fullName;
+    console.log('_currentUserProfile dopo:',JSON.stringify(_currentUserProfile));
     if(email&&email!==_currentUser.email){await _supaAuth.auth.updateUser({email:email});}
     if(password){await _supaAuth.auth.updateUser({password:password});}
     toast(t('settings_profile_updated')||'Profilo aggiornato ✓');
