@@ -6357,6 +6357,9 @@ async function renderProfilePage(){
     console.log('Profilo ricaricato da Supabase:',JSON.stringify(_pr));
     profileRow=_pr||null;
   }
+  console.log('profileRow:',JSON.stringify(profileRow));
+  console.log('full_name da Supabase:',profileRow&&profileRow.full_name);
+  console.log('user_metadata full_name:',_currentUser&&_currentUser.user_metadata&&_currentUser.user_metadata.full_name);
   var _fn=(profileRow&&profileRow.full_name!==undefined&&profileRow.full_name!==null)?profileRow.full_name:((isLoggedIn&&_currentUser.user_metadata&&_currentUser.user_metadata.full_name)?_currentUser.user_metadata.full_name:'');
   var _fnParts=_fn.trim().split(' ');
   var _umeta=isLoggedIn&&_currentUser.user_metadata?_currentUser.user_metadata:{};
