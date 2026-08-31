@@ -693,6 +693,15 @@ function goToPurchase(){
     <button onclick="submitLogin()" id="login-cta-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="login-cta">Accedi →</button>
   </div>
 </div>
+<div id="profile-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="document.getElementById('profile-sheet').style.display='none'"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div id="profile-email" style="font-size:14px;color:#888;margin-bottom:20px;text-align:center;"></div>
+    <button onclick="localStorage.setItem('WT_REDIRECT_REGION','cotswolds');window.location.href='/app';" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:10px;">Accedi alla guida →</button>
+    <button onclick="_supaLanding.auth.signOut().then(function(){window.location.reload();})" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;font-family:inherit;">Logout</button>
+  </div>
+</div>
 <script>
 var _supaLanding=(function(){try{var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';return supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storage:window.localStorage}});}catch(e){return null;}})();
 function openLoginFromPurchase(){closePurchaseSheet();document.getElementById('login-sheet').style.display='block';}
@@ -711,16 +720,30 @@ async function submitLogin(){
   localStorage.setItem('WT_REDIRECT_REGION','cotswolds');
   window.location.href='/app';
 }
+function openProfilePopup(){
+  if(!_supaLanding)return;
+  _supaLanding.auth.getSession().then(function(result){
+    var session=result.data&&result.data.session;
+    if(session)document.getElementById('profile-email').textContent=session.user.email;
+  });
+  document.getElementById('profile-sheet').style.display='block';
+}
 document.addEventListener('DOMContentLoaded',async function(){
   if(!_supaLanding)return;
   var r=await _supaLanding.auth.getSession();
   var session=r.data&&r.data.session;
   if(session&&session.user){
     document.querySelectorAll('.cta-btn, .hero-cta').forEach(function(btn){
-      btn.textContent='Accedi alla guida →';
+      btn.textContent=_lang==='en'?'Access the guide →':'Accedi alla guida →';
       if(btn.tagName==='A')btn.removeAttribute('href');
       btn.onclick=function(){localStorage.setItem('WT_REDIRECT_REGION','cotswolds');window.location.href='/app';};
     });
+    var navBuy=document.getElementById('nav-buy');
+    if(navBuy){
+      var avatarUrl=session.user.user_metadata&&session.user.user_metadata.avatar_url;
+      var initials=(session.user.email||'U').charAt(0).toUpperCase();
+      navBuy.outerHTML='<div id="nav-avatar" onclick="openProfilePopup()" style="width:34px;height:34px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">'+(avatarUrl?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</span>')+'</div>';
+    }
   }
 });
 </script>
