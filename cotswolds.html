@@ -232,6 +232,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h1 class="hero-h1">Cotswolds</h1>
     <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare i borghi più belli d'Inghilterra</p>
     <a class="hero-cta" data-t="hero-cta" href="#acquista">Acquista la guida — €14,99 →</a>
+    <div style="margin-top:16px;"><a href="#" onclick="event.preventDefault();openLoginSheet();" style="font-size:14px;color:rgba(255,255,255,.75);text-decoration:underline;cursor:pointer;" data-t="hero-login">Hai già acquistato? Accedi alla guida</a></div>
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
@@ -410,7 +411,9 @@ var T={
     'login-email-placeholder':'nome@email.com',
     'login-password-placeholder':'Password',
     'login-error':'Email o password non corretti.',
-    'login-cta':'Accedi →'
+    'login-cta':'Accedi →',
+    'login-forgot':'Password dimenticata?',
+    'hero-login':'Hai già acquistato? Accedi alla guida'
   },
   en:{
     'nav-buy':'Buy the guide <span class="nav-cta-arrow">→</span>',
@@ -462,7 +465,9 @@ var T={
     'login-email-placeholder':'name@email.com',
     'login-password-placeholder':'Password',
     'login-error':'Invalid email or password.',
-    'login-cta':'Sign in →'
+    'login-cta':'Sign in →',
+    'login-forgot':'Forgot password?',
+    'hero-login':'Already purchased? Access the guide'
   }
 };
 var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
@@ -720,6 +725,7 @@ async function goToPurchase(){
     <input id="login-password" type="password" data-t-placeholder="login-password-placeholder" placeholder="Password" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
     <div id="login-error" data-t="login-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;">Email o password non corretti.</div>
     <button onclick="submitLogin()" id="login-cta-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="login-cta">Accedi →</button>
+    <div style="text-align:center;margin-top:8px;"><a href="#" onclick="event.preventDefault();resetPassword();" style="font-size:12px;color:#888;" data-t="login-forgot">Password dimenticata?</a></div>
   </div>
 </div>
 <div id="profile-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
@@ -738,6 +744,12 @@ var _supaLanding=(function(){try{return supabase.createClient(_SB_URL,_SB_ANON_K
 function openLoginSheet(){document.getElementById('login-sheet').style.display='block';}
 function openLoginFromPurchase(){closePurchaseSheet();openLoginSheet();}
 function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
+async function resetPassword(){
+  var email=document.getElementById('login-email').value.trim();
+  if(!email){alert(_lang==='en'?'Enter your email first':'Inserisci prima la tua email');return;}
+  await _supaLanding.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/app'});
+  alert(_lang==='en'?'Password reset email sent!':'Email di recupero inviata!');
+}
 async function submitLogin(){
   var email=document.getElementById('login-email').value.trim();
   var password=document.getElementById('login-password').value;
