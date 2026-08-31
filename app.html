@@ -6537,9 +6537,8 @@ async function saveProfileSettings(){
     var fullName=(firstName+' '+lastName).trim();
     console.log('Saving fullName:',fullName);
     console.log('User id:',_currentUser.id);
-    var _upRes=await _supaAuth.from('profiles').update({full_name:fullName}).eq('id',_currentUser.id);
-    console.log('Update result:',JSON.stringify(_upRes));
-    if(_upRes.error){await _supaAuth.from('profiles').upsert({id:_currentUser.id,full_name:fullName},{onConflict:'id'});}
+    var updateResult=await _supaAuth.from('profiles').update({full_name:fullName}).eq('id',_currentUser.id);
+    console.log('Update result:',JSON.stringify(updateResult));
     if(_currentUserProfile)_currentUserProfile.full_name=fullName;
     if(email&&email!==_currentUser.email){await _supaAuth.auth.updateUser({email:email});}
     if(password){await _supaAuth.auth.updateUser({password:password});}
