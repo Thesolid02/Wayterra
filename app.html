@@ -5508,11 +5508,7 @@ function bootApp(d){
         return;
       }
       selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
-      var _pendingEmail=localStorage.getItem('WT_PENDING_EMAIL');
-      if(_pendingEmail){
-        localStorage.removeItem('WT_PENDING_EMAIL');
-        showOnboardingSheet(_pendingEmail);
-      }
+      document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
   } else if(_accessParam==='lazio'){
     setTimeout(function(){
@@ -6704,52 +6700,51 @@ async function createAccountFromPurchase(){
 </script>
 
 <!-- ONBOARDING SHEET (post-acquisto) -->
-<div id="onboarding-sheet" style="display:none;position:fixed;inset:0;z-index:1500;background:#fff;overflow-y:auto;">
-  <div style="max-width:420px;margin:0 auto;padding:48px 24px 40px;display:flex;flex-direction:column;align-items:center;">
-    <div style="width:56px;height:56px;border-radius:16px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
-      <i class="ti ti-map-2" style="font-size:28px;color:#fff;"></i>
+<div id="purchase-onboarding-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;max-height:90vh;overflow-y:auto;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div style="font-size:20px;font-weight:500;margin-bottom:6px;">Benvenuto su Wayterra! 🎉</div>
+    <div style="font-size:14px;color:#888;margin-bottom:20px;">Crea il tuo account per accedere alla guida Cotswolds da qualsiasi dispositivo.</div>
+    <button onclick="onboardingGoogleLogin()" style="width:100%;background:#fff;color:#1a1a1a;border:1px solid #ddd;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+      Continua con Google
+    </button>
+    <div style="text-align:center;margin-bottom:16px;font-size:13px;color:#bbb;">oppure</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <input id="onboard-firstname" type="text" placeholder="Nome *" style="flex:1;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+      <input id="onboard-lastname" type="text" placeholder="Cognome" style="flex:1;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
     </div>
-    <p id="onb-title" style="font-size:1.4rem;font-weight:700;margin:0 0 8px;text-align:center;">Benvenuto su Wayterra! 🎉</p>
-    <p id="onb-subtitle" style="font-size:.9rem;color:#6b7280;margin:0 0 32px;text-align:center;">Completa il tuo profilo per accedere alla guida</p>
-    <div style="width:100%;display:flex;flex-direction:column;gap:12px;">
-      <input type="text" id="onb-firstname" placeholder="Nome *" style="width:100%;padding:12px 14px;border-radius:10px;border:0.5px solid #d1d5db;font-size:.95rem;font-family:inherit;box-sizing:border-box;outline:none;">
-      <input type="text" id="onb-lastname" placeholder="Cognome" style="width:100%;padding:12px 14px;border-radius:10px;border:0.5px solid #d1d5db;font-size:.95rem;font-family:inherit;box-sizing:border-box;outline:none;">
-      <input type="password" id="onb-password" placeholder="Password (min. 6 caratteri)" style="width:100%;padding:12px 14px;border-radius:10px;border:0.5px solid #d1d5db;font-size:.95rem;font-family:inherit;box-sizing:border-box;outline:none;">
-      <div id="onb-error" style="font-size:.82rem;color:#dc2626;display:none;"></div>
-      <button onclick="submitOnboarding()" id="onb-btn" style="width:100%;padding:13px;background:#dc6b2f;border:none;border-radius:10px;color:#fff;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:4px;">Inizia a esplorare →</button>
+    <input id="onboard-email" type="email" placeholder="Email *" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;">
+    <input id="onboard-password" type="password" placeholder="Password * (min. 6 caratteri)" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;">
+    <div id="onboard-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
+    <button onclick="submitOnboarding()" id="onboard-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;">Accedi alla guida →</button>
+    <div style="text-align:center;margin-top:12px;font-size:13px;color:#888;">
+      Hai già un account? <a href="#" onclick="event.preventDefault();switchToLogin();" style="color:#dc6b2f;">Accedi</a>
     </div>
   </div>
 </div>
 <script>
-var _onboardingEmail='';
-function showOnboardingSheet(email){
-  _onboardingEmail=email;
-  var isEN=lang==='en';
-  document.getElementById('onb-title').textContent=isEN?'Welcome to Wayterra! 🎉':'Benvenuto su Wayterra! 🎉';
-  document.getElementById('onb-subtitle').textContent=isEN?'Complete your profile to access the guide':'Completa il tuo profilo per accedere alla guida';
-  document.getElementById('onb-firstname').placeholder=isEN?'First name *':'Nome *';
-  document.getElementById('onb-lastname').placeholder=isEN?'Last name':'Cognome';
-  document.getElementById('onb-password').placeholder=isEN?'Password (min. 6 characters)':'Password (min. 6 caratteri)';
-  document.getElementById('onb-btn').textContent=isEN?'Start exploring →':'Inizia a esplorare →';
-  document.getElementById('onb-error').style.display='none';
-  document.getElementById('onb-firstname').value='';
-  document.getElementById('onb-lastname').value='';
-  document.getElementById('onb-password').value='';
-  document.getElementById('onboarding-sheet').style.display='block';
-}
 async function submitOnboarding(){
-  var isEN=lang==='en';
-  var firstName=document.getElementById('onb-firstname').value.trim();
-  var lastName=document.getElementById('onb-lastname').value.trim();
-  var password=document.getElementById('onb-password').value;
-  var errEl=document.getElementById('onb-error');
+  var firstName=document.getElementById('onboard-firstname').value.trim();
+  var lastName=document.getElementById('onboard-lastname').value.trim();
+  var email=document.getElementById('onboard-email').value.trim();
+  var password=document.getElementById('onboard-password').value;
+  var errEl=document.getElementById('onboard-error');
   errEl.style.display='none';
-  if(!firstName){errEl.textContent=isEN?'Enter your name':'Inserisci il tuo nome';errEl.style.display='block';return;}
-  if(password.length<6){errEl.textContent=isEN?'Password must be at least 6 characters':'La password deve essere di almeno 6 caratteri';errEl.style.display='block';return;}
+  document.getElementById('onboard-firstname').style.border='';
+  document.getElementById('onboard-email').style.border='';
+  document.getElementById('onboard-password').style.border='';
+  if(!firstName){document.getElementById('onboard-firstname').style.border='1.5px solid #e53e3e';errEl.textContent='Inserisci il tuo nome';errEl.style.display='block';return;}
+  if(!email||!email.includes('@')){document.getElementById('onboard-email').style.border='1.5px solid #e53e3e';errEl.textContent='Inserisci un\'email valida';errEl.style.display='block';return;}
+  if(password.length<6){document.getElementById('onboard-password').style.border='1.5px solid #e53e3e';errEl.textContent='La password deve essere di almeno 6 caratteri';errEl.style.display='block';return;}
   var fullName=firstName+(lastName?' '+lastName:'');
-  var btn=document.getElementById('onb-btn');
+  var btn=document.getElementById('onboard-btn');
   btn.disabled=true;btn.style.opacity='.7';
-  var result=await _supaAuth.auth.signUp({email:_onboardingEmail,password:password,options:{data:{full_name:fullName}}});
+  var result=await _supaAuth.auth.signUp({email:email,password:password,options:{data:{full_name:fullName}}});
+  if(result.error&&result.error.message.toLowerCase().includes('already')){
+    result=await _supaAuth.auth.signInWithPassword({email:email,password:password});
+  }
   if(result.error){
     btn.disabled=false;btn.style.opacity='';
     errEl.textContent=translateAuthError(result.error.message,lang);errEl.style.display='block';return;
@@ -6758,13 +6753,20 @@ async function submitOnboarding(){
     var uid=result.data.user.id;
     await _supaAuth.from('profiles').upsert({id:uid,full_name:fullName},{onConflict:'id'});
     await _supaAuth.from('user_regions').upsert({user_id:uid,region:'cotswolds'},{onConflict:'user_id,region'});
-    await _supaAuth.auth.signInWithPassword({email:_onboardingEmail,password:password});
+    if(!result.data.session){await _supaAuth.auth.signInWithPassword({email:email,password:password});}
     _currentUser=result.data.user;
     _currentUserProfile={full_name:fullName,avatar_url:null};
     updateNavProfileAvatar();
   }
-  document.getElementById('onboarding-sheet').style.display='none';
+  document.getElementById('purchase-onboarding-sheet').style.display='none';
   selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+}
+async function onboardingGoogleLogin(){
+  await _supaAuth.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/app?access=cotswolds'}});
+}
+function switchToLogin(){
+  document.getElementById('purchase-onboarding-sheet').style.display='none';
+  openAuthPage();
 }
 function requireAuth(actionName){
   console.log('requireAuth chiamata, actionName:',actionName,'_currentUser:',!!_currentUser);
