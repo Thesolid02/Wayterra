@@ -6349,11 +6349,13 @@ function updateNavProfileAvatar(){
   }
 }
 async function renderProfilePage(){
+  console.log('renderProfilePage chiamata');
   var isLoggedIn=!!_currentUser;
   var email=isLoggedIn?(_currentUser.email||''):'';
   var profileRow=null;
   if(isLoggedIn&&_supaAuth){
-    var {data:_pr}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
+    var {data:_pr,error:_prErr}=await _supaAuth.from('profiles').select('full_name,avatar_url').eq('id',_currentUser.id).single();
+    console.log('Select profiles result:',JSON.stringify(_pr),JSON.stringify(_prErr));
     console.log('Profilo ricaricato da Supabase:',JSON.stringify(_pr));
     profileRow=_pr||null;
   }
