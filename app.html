@@ -5236,6 +5236,9 @@ function openItinMapPopup(id){
   });
 }
 function openMapPopupTimes(){
+  console.log('openMapPopupTimes chiamata');
+  console.log('_mapPopupStops:',JSON.stringify(_mapPopupStops));
+  console.log('map-popup-times element:',document.getElementById('map-popup-times'));
   var stops=_mapPopupStops;
   var displayNums=[],_dc=0;
   for(var k=0;k<stops.length;k++){displayNums.push((stops[k].isAirport&&!stops[k].isAlsoDest)?'':++_dc);}
