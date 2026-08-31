@@ -674,7 +674,7 @@ function closeLandingReviewsPopup(){
     <div data-t="purchase-sub" style="font-size:14px;color:#888;margin-bottom:20px;">Inserisci la tua email per ricevere l'accesso alla guida.</div>
     <input id="purchase-email" type="email" data-t-placeholder="purchase-email-placeholder" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
     <div id="purchase-email-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;" data-t="purchase-error">Inserisci un'email valida</div>
-    <button onclick="goToPurchase()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="purchase-cta">Continua con il pagamento →</button>
+    <button id="purchase-cta-btn" onclick="goToPurchase()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="purchase-cta">Continua con il pagamento →</button>
     <div style="text-align:center;margin-top:12px;font-size:13px;color:#888;">
       <span data-t="purchase-login-text">Hai già un account?</span> <a href="#" onclick="openLoginFromPurchase();return false;" style="color:#dc6b2f;" data-t="purchase-login-link">Accedi</a>
     </div>
@@ -688,15 +688,23 @@ async function goToPurchase(){
   var errEl=document.getElementById('purchase-email-error');
   if(!email||!email.includes('@')){errEl.style.display='block';errEl.textContent=T[_lang]['purchase-error'];return;}
   errEl.style.display='none';
-  var btn=document.querySelector('#purchase-sheet button[onclick="goToPurchase()"]');
+  var btn=document.getElementById('purchase-cta-btn');
+  var originalText=btn.textContent;
   btn.textContent='...';btn.disabled=true;
-  if(_supaLanding){
-    var result=await _supaLanding.from('profiles').select('id').eq('email',email).maybeSingle();
-    if(result.data){
-      btn.textContent=T[_lang]['purchase-cta'];btn.disabled=false;
+  try{
+    var resp=await fetch(_SB_URL+'/functions/v1/check-email',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_SB_ANON_KEY},
+      body:JSON.stringify({email:email})
+    });
+    var data=await resp.json();
+    if(data.exists){
       errEl.textContent=T[_lang]['purchase-already'];errEl.style.display='block';
+      btn.textContent=originalText;btn.disabled=false;
       return;
     }
+  }catch(e){
+    console.warn('check-email failed',e);
   }
   localStorage.setItem('WT_PENDING_EMAIL',email);
   window.location.href='https://wayterra.gumroad.com/l/lbchl';
@@ -736,7 +744,9 @@ async function goToPurchase(){
   </div>
 </div>
 <script>
-var _supaLanding=(function(){try{var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';return supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storage:window.localStorage}});}catch(e){return null;}})();
+var _SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
+var _SB_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
+var _supaLanding=(function(){try{return supabase.createClient(_SB_URL,_SB_ANON_KEY,{auth:{persistSession:true,storage:window.localStorage}});}catch(e){return null;}})();
 function openLoginSheet(){document.getElementById('login-sheet').style.display='block';}
 function openLoginFromPurchase(){closePurchaseSheet();openLoginSheet();}
 function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
