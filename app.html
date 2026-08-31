@@ -5500,8 +5500,13 @@ function bootApp(d){
   var _accessParam=_urlParamsB.get('access');
   if(_accessParam==='cotswolds'){
     localStorage.setItem(K.UC,'1');
-    setTimeout(function(){
+    setTimeout(async function(){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+      var _sess=await _supaAuth.auth.getSession();
+      if(_sess.data&&_sess.data.session){
+        selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+        return;
+      }
       selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
       var _pendingEmail=localStorage.getItem('WT_PENDING_EMAIL');
       if(_pendingEmail){
@@ -6753,6 +6758,7 @@ async function submitOnboarding(){
     var uid=result.data.user.id;
     await _supaAuth.from('profiles').upsert({id:uid,full_name:fullName},{onConflict:'id'});
     await _supaAuth.from('user_regions').upsert({user_id:uid,region:'cotswolds'},{onConflict:'user_id,region'});
+    await _supaAuth.auth.signInWithPassword({email:_onboardingEmail,password:password});
     _currentUser=result.data.user;
     _currentUserProfile={full_name:fullName,avatar_url:null};
     updateNavProfileAvatar();
