@@ -61,7 +61,7 @@ nav{position:sticky;top:0;z-index:100;padding:0 24px;height:64px;display:flex;al
 .nav-btn{background:#dc6b2f;color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;font-family:var(--f);transition:background .15s;}
 .nav-btn:hover{background:var(--orange-d);}
 .nav-links{display:flex;align-items:center;gap:8px;}
-@media(max-width:767px){.nav-cta-arrow{display:none;}.nav-btn{padding:6px 10px;font-size:11px;}#lang-dropdown-btn{padding:4px 8px;font-size:14px;}}
+@media(max-width:767px){.nav-cta-arrow{display:none;}.nav-btn{padding:6px 10px;font-size:11px;}}
 
 /* HERO */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;overflow:hidden;}
@@ -207,13 +207,13 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   </div>
   <div class="nav-links">
     <div style="position:relative;">
-      <button id="lang-dropdown-btn" onclick="toggleLangDropdown()" style="background:none;border:0.5px solid #ddd;border-radius:20px;padding:5px 10px;cursor:pointer;font-size:16px;display:flex;align-items:center;gap:4px;font-family:var(--f);">
+      <button id="lang-dropdown-btn" onclick="toggleLangDropdown()" class="nav-btn" style="gap:4px;">
         <span id="lang-flag">🇮🇹</span>
-        <i class="ti ti-chevron-down" style="font-size:12px;color:#666;" aria-hidden="true"></i>
+        <i class="ti ti-chevron-down" style="font-size:12px;color:#fff;" aria-hidden="true"></i>
       </button>
-      <div id="lang-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:0.5px solid #ddd;border-radius:10px;overflow:hidden;z-index:100;min-width:80px;box-shadow:0 4px 12px rgba(0,0,0,.1);">
-        <div onclick="setLang('it');closeLangDropdown();" style="padding:8px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇮🇹 ITA</div>
-        <div onclick="setLang('en');closeLangDropdown();" style="padding:8px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇬🇧 EN</div>
+      <div id="lang-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:0.5px solid #ddd;border-radius:10px;overflow:hidden;z-index:100;min-width:48px;box-shadow:0 4px 12px rgba(0,0,0,.1);">
+        <div onclick="setLang('it');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇮🇹</div>
+        <div onclick="setLang('en');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇬🇧</div>
       </div>
     </div>
     <a href="#" id="nav-login" onclick="event.preventDefault();openLoginSheet();" class="nav-btn" data-t="nav-login">Accedi</a>
