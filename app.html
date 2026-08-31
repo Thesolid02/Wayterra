@@ -6535,7 +6535,10 @@ async function saveProfileSettings(){
   errEl.style.display='none';
   if(isLoggedIn){
     var fullName=(firstName+' '+lastName).trim();
+    console.log('Saving fullName:',fullName);
+    console.log('User id:',_currentUser.id);
     var _upRes=await _supaAuth.from('profiles').update({full_name:fullName}).eq('id',_currentUser.id);
+    console.log('Update result:',JSON.stringify(_upRes));
     if(_upRes.error){await _supaAuth.from('profiles').upsert({id:_currentUser.id,full_name:fullName},{onConflict:'id'});}
     if(_currentUserProfile)_currentUserProfile.full_name=fullName;
     if(email&&email!==_currentUser.email){await _supaAuth.auth.updateUser({email:email});}
@@ -6557,6 +6560,7 @@ async function saveProfileSettings(){
   }
 }
 async function settingsLogout(){
+  console.log('Logout chiamato, _currentUser:',_currentUser);
   _loggingOut=true;
   if(_currentUser){
     _currentUser=null;_currentUserProfile=null;
@@ -6564,6 +6568,7 @@ async function settingsLogout(){
     saveFavs();localStorage.removeItem('WT_FAVS_v2');
     if(_supaAuth){await _supaAuth.auth.signOut({scope:'local'}).catch(function(){});}
   }
+  console.log('Redirecting to cotswolds...');
   window.location.href='https://wayterra.it/cotswolds';
 }
 </script>
