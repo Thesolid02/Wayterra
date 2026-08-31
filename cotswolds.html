@@ -711,6 +711,18 @@ async function submitLogin(){
   localStorage.setItem('WT_REDIRECT_REGION','cotswolds');
   window.location.href='/app';
 }
+document.addEventListener('DOMContentLoaded',async function(){
+  if(!_supaLanding)return;
+  var r=await _supaLanding.auth.getSession();
+  var session=r.data&&r.data.session;
+  if(session&&session.user){
+    document.querySelectorAll('.cta-btn, .hero-cta').forEach(function(btn){
+      btn.textContent='Accedi alla guida →';
+      if(btn.tagName==='A')btn.removeAttribute('href');
+      btn.onclick=function(){localStorage.setItem('WT_REDIRECT_REGION','cotswolds');window.location.href='/app';};
+    });
+  }
+});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
 <script>
