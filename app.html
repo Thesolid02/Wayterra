@@ -3080,7 +3080,7 @@ function setupDpVisited(id){
 
 /* ═══ FAVORITES ═══ */
 async function toggleFav(id){
-  if(!favs.has(id)&&!_currentUser){openAuthPage(lang==='en'?'Sign in to save places':'Accedi per salvare i luoghi',function(){toggleFav(id);});return;}
+  if(!favs.has(id)&&!requireAuth(lang==='en'?'save a place':'salvare un luogo'))return;
   if(favs.has(id)){
     favs.delete(id);
     if(_currentUser&&_supaAuth)_supaAuth.from('user_favorites').delete().eq('user_id',_currentUser.id).eq('place_id',id).then(function(){});
@@ -3113,7 +3113,7 @@ function updateItdBookmarkBtn(){
 }
 function toggleFavItinerary(expId){
   if(!expId)return;
-  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to save itineraries':'Accedi per salvare gli itinerari',function(){toggleFavItinerary(expId);});return;}
+  if(!requireAuth(lang==='en'?'save an itinerary':'salvare un itinerario'))return;
   if(favItineraries.has(expId)){
     favItineraries.delete(expId);
     if(_supaAuth)_supaAuth.from('user_favorite_itineraries').delete().eq('user_id',_currentUser.id).eq('experience_id',expId).then(function(){});
@@ -4677,6 +4677,7 @@ async function deleteReview(reviewId,expId){
   }
 }
 function openWriteReview(expId){
+  if(!requireAuth(lang==='en'?'leave a review':'lasciare una recensione'))return;
   if(_currentUser){
     var _fn=((_currentUserProfile&&_currentUserProfile.full_name)||'').split(' ')[0].trim();
     if(!_fn){toast(t('settings_review_need_name'));return;}
@@ -4766,7 +4767,7 @@ function closeItinerarioDetail(){
   }
 }
 function openItinerarioPDF(){
-  if(!_currentUser){openAuthPage(lang==='en'?'Sign in to download itineraries':'Accedi per scaricare gli itinerari',function(){openItinerarioPDF();});return;}
+  if(!requireAuth(lang==='en'?'download the PDF':'scaricare il PDF'))return;
   var e=_currentItdExp;
   if(!e)return;
   var isEN=lang==='en';
@@ -5475,7 +5476,7 @@ function bootApp(d){
       var _pendingEmail=localStorage.getItem('WT_PENDING_EMAIL');
       if(_pendingEmail){
         localStorage.removeItem('WT_PENDING_EMAIL');
-        showCreatePasswordSheet(_pendingEmail);
+        showOnboardingSheet(_pendingEmail);
       }
     },100);
   } else if(_accessParam==='lazio'){
@@ -6622,6 +6623,87 @@ async function createAccountFromPurchase(){
     }
     document.getElementById('create-password-sheet').style.display='none';
   }
+}
+</script>
+
+<!-- ONBOARDING SHEET (post-acquisto) -->
+<div id="onboarding-sheet" style="display:none;position:fixed;inset:0;z-index:1500;background:#fff;overflow-y:auto;">
+  <div style="max-width:420px;margin:0 auto;padding:48px 24px 40px;display:flex;flex-direction:column;align-items:center;">
+    <div style="width:56px;height:56px;border-radius:16px;background:#dc6b2f;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+      <i class="ti ti-map-2" style="font-size:28px;color:#fff;"></i>
+    </div>
+    <p id="onb-title" style="font-size:1.4rem;font-weight:700;margin:0 0 8px;text-align:center;">Benvenuto su Wayterra! 🎉</p>
+    <p id="onb-subtitle" style="font-size:.9rem;color:#6b7280;margin:0 0 32px;text-align:center;">Completa il tuo profilo per accedere alla guida</p>
+    <div style="width:100%;display:flex;flex-direction:column;gap:12px;">
+      <input type="text" id="onb-firstname" placeholder="Nome *" style="width:100%;padding:12px 14px;border-radius:10px;border:0.5px solid #d1d5db;font-size:.95rem;font-family:inherit;box-sizing:border-box;outline:none;">
+      <input type="text" id="onb-lastname" placeholder="Cognome" style="width:100%;padding:12px 14px;border-radius:10px;border:0.5px solid #d1d5db;font-size:.95rem;font-family:inherit;box-sizing:border-box;outline:none;">
+      <input type="password" id="onb-password" placeholder="Password (min. 6 caratteri)" style="width:100%;padding:12px 14px;border-radius:10px;border:0.5px solid #d1d5db;font-size:.95rem;font-family:inherit;box-sizing:border-box;outline:none;">
+      <div id="onb-error" style="font-size:.82rem;color:#dc2626;display:none;"></div>
+      <button onclick="submitOnboarding()" id="onb-btn" style="width:100%;padding:13px;background:#dc6b2f;border:none;border-radius:10px;color:#fff;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:4px;">Inizia a esplorare →</button>
+    </div>
+  </div>
+</div>
+<script>
+var _onboardingEmail='';
+function showOnboardingSheet(email){
+  _onboardingEmail=email;
+  var isEN=lang==='en';
+  document.getElementById('onb-title').textContent=isEN?'Welcome to Wayterra! 🎉':'Benvenuto su Wayterra! 🎉';
+  document.getElementById('onb-subtitle').textContent=isEN?'Complete your profile to access the guide':'Completa il tuo profilo per accedere alla guida';
+  document.getElementById('onb-firstname').placeholder=isEN?'First name *':'Nome *';
+  document.getElementById('onb-lastname').placeholder=isEN?'Last name':'Cognome';
+  document.getElementById('onb-password').placeholder=isEN?'Password (min. 6 characters)':'Password (min. 6 caratteri)';
+  document.getElementById('onb-btn').textContent=isEN?'Start exploring →':'Inizia a esplorare →';
+  document.getElementById('onb-error').style.display='none';
+  document.getElementById('onb-firstname').value='';
+  document.getElementById('onb-lastname').value='';
+  document.getElementById('onb-password').value='';
+  document.getElementById('onboarding-sheet').style.display='block';
+}
+async function submitOnboarding(){
+  var isEN=lang==='en';
+  var firstName=document.getElementById('onb-firstname').value.trim();
+  var lastName=document.getElementById('onb-lastname').value.trim();
+  var password=document.getElementById('onb-password').value;
+  var errEl=document.getElementById('onb-error');
+  errEl.style.display='none';
+  if(!firstName){errEl.textContent=isEN?'Enter your name':'Inserisci il tuo nome';errEl.style.display='block';return;}
+  if(password.length<6){errEl.textContent=isEN?'Password must be at least 6 characters':'La password deve essere di almeno 6 caratteri';errEl.style.display='block';return;}
+  var fullName=firstName+(lastName?' '+lastName:'');
+  var btn=document.getElementById('onb-btn');
+  btn.disabled=true;btn.style.opacity='.7';
+  var result=await _supaAuth.auth.signUp({email:_onboardingEmail,password:password,options:{data:{full_name:fullName}}});
+  if(result.error){
+    btn.disabled=false;btn.style.opacity='';
+    errEl.textContent=translateAuthError(result.error.message,lang);errEl.style.display='block';return;
+  }
+  if(result.data&&result.data.user){
+    var uid=result.data.user.id;
+    await _supaAuth.from('profiles').upsert({id:uid,full_name:fullName},{onConflict:'id'});
+    await _supaAuth.from('user_regions').upsert({user_id:uid,region:'cotswolds'},{onConflict:'user_id,region'});
+    _currentUser=result.data.user;
+    _currentUserProfile={full_name:fullName,avatar_url:null};
+    updateNavProfileAvatar();
+  }
+  document.getElementById('onboarding-sheet').style.display='none';
+  selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+}
+function requireAuth(actionName){
+  if(_currentUser)return true;
+  openProfilePage();
+  switchProfileTab('settings');
+  setTimeout(function(){
+    var msgEl=document.getElementById('settings-form-error');
+    if(msgEl){
+      msgEl.textContent=lang==='en'?'Complete your profile to '+actionName:'Completa il tuo profilo per '+actionName;
+      msgEl.style.display='block';
+      msgEl.style.background='#fef3ec';
+      msgEl.style.color='#dc6b2f';
+      msgEl.style.borderRadius='8px';
+      msgEl.style.padding='10px';
+    }
+  },50);
+  return false;
 }
 </script>
 </body>
