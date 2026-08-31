@@ -401,6 +401,7 @@ var T={
     'purchase-email-placeholder':'nome@email.com',
     'purchase-error':'Inserisci un\'email valida',
     'purchase-cta':'Continua con il pagamento →',
+    'purchase-already':'Hai già comprato questa guida ☺️',
     'purchase-login-text':'Hai già un account?',
     'purchase-login-link':'Accedi',
     'login-title':'Accedi al tuo account',
@@ -452,6 +453,7 @@ var T={
     'purchase-email-placeholder':'name@email.com',
     'purchase-error':'Enter a valid email',
     'purchase-cta':'Continue to payment →',
+    'purchase-already':'You already purchased this guide ☺️',
     'purchase-login-text':'Already have an account?',
     'purchase-login-link':'Sign in',
     'login-title':'Sign in to your account',
@@ -681,10 +683,21 @@ function closeLandingReviewsPopup(){
 <script>
 function openPurchaseSheet(){document.getElementById('purchase-sheet').style.display='block';}
 function closePurchaseSheet(){document.getElementById('purchase-sheet').style.display='none';}
-function goToPurchase(){
+async function goToPurchase(){
   var email=document.getElementById('purchase-email').value.trim();
-  if(!email||!email.includes('@')){document.getElementById('purchase-email-error').style.display='block';return;}
-  document.getElementById('purchase-email-error').style.display='none';
+  var errEl=document.getElementById('purchase-email-error');
+  if(!email||!email.includes('@')){errEl.style.display='block';errEl.textContent=T[_lang]['purchase-error'];return;}
+  errEl.style.display='none';
+  var btn=document.querySelector('#purchase-sheet button[onclick="goToPurchase()"]');
+  btn.textContent='...';btn.disabled=true;
+  if(_supaLanding){
+    var result=await _supaLanding.from('profiles').select('id').eq('email',email).maybeSingle();
+    if(result.data){
+      btn.textContent=T[_lang]['purchase-cta'];btn.disabled=false;
+      errEl.textContent=T[_lang]['purchase-already'];errEl.style.display='block';
+      return;
+    }
+  }
   localStorage.setItem('WT_PENDING_EMAIL',email);
   window.location.href='https://wayterra.gumroad.com/l/lbchl';
 }
