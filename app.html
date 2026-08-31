@@ -6716,7 +6716,9 @@ async function submitOnboarding(){
   selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
 }
 function requireAuth(actionName){
+  console.log('requireAuth chiamata, actionName:',actionName,'_currentUser:',!!_currentUser);
   if(_currentUser)return true;
+  console.log('Utente anonimo — apro profilo settings');
   openProfilePage();
   switchProfileTab('settings');
   setTimeout(function(){
