@@ -4516,10 +4516,9 @@ function openItinerario(id){
         _revHtml+='<div onclick="openReviewsPopup('+e.id+')" style="text-align:center;padding:8px;cursor:pointer;">'
           +'<span style="font-size:.8rem;color:#dc6b2f;font-weight:500;">'+(lang==='en'?'See all reviews':'Vedi tutte le recensioni')+' →</span></div>';
       }
-      var _loginBoxItd='<div style="padding:12px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;text-align:center;margin-top:8px;">'
-        +'<p style="font-size:.85rem;color:#dc6b2f;font-weight:500;margin:0 0 8px;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</p>'
-        +'<button onclick="requireAuth(lang===\'en\'?\'leave a review\':\'lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
-        +'</div>';
+      var _loginBoxItd='<div onclick="requireAuth(lang===\'en\'?\'leave a review\':\'lasciare una recensione\')" style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:6px;">'
+        +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
+        +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
       if(_currentUser){
         var _myRev=_revs.find(function(r){return r.user_id===_currentUser.id;});
         _revHtml+='<div onclick="openWriteReview('+e.id+')" style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:6px;">'
@@ -4537,10 +4536,9 @@ function openItinerario(id){
           +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
         _revEl.style.display='';
       } else {
-        _revEl.innerHTML='<div style="padding:12px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;text-align:center;margin-top:8px;">'
-          +'<p style="font-size:.85rem;color:#dc6b2f;font-weight:500;margin:0 0 8px;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</p>'
-          +'<button onclick="requireAuth(lang===\'en\'?\'leave a review\':\'lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
-          +'</div>';
+        _revEl.innerHTML='<div onclick="requireAuth(lang===\'en\'?\'leave a review\':\'lasciare una recensione\')" style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;">'
+          +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
+          +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
         _revEl.style.display='';
       }
     }
@@ -4656,10 +4654,9 @@ async function openReviewsPopup(expId){
         +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
     }
   } else {
-    cta.innerHTML='<div style="padding:12px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;text-align:center;margin-top:8px;">'
-      +'<p style="font-size:.85rem;color:#dc6b2f;font-weight:500;margin:0 0 8px;">'+(lang==='en'?'Sign in to leave a review':'Accedi per lasciare una recensione')+'</p>'
-      +'<button onclick="requireAuth(lang===\'en\'?\'leave a review\':\'lasciare una recensione\')" style="padding:8px 20px;background:#dc6b2f;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:500;cursor:pointer;font-family:var(--f);">'+(lang==='en'?'Sign in / Register':'Accedi / Registrati')+'</button>'
-      +'</div>';
+    cta.innerHTML='<div onclick="requireAuth(lang===\'en\'?\'leave a review\':\'lasciare una recensione\')" style="padding:8px;background:#fff3ed;border-radius:8px;border:0.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:8px;">'
+      +'<i class="ti ti-edit" style="font-size:14px;color:#dc6b2f;"></i>'
+      +'<span style="font-size:.8rem;font-weight:500;color:#dc6b2f;">'+(lang==='en'?'Leave a review':'Lascia una recensione')+'</span></div>';
   }
 }
 function closeReviewsPopup(){
@@ -4698,8 +4695,9 @@ function openWriteReview(expId){
           msgEl.style.color='#dc6b2f';
           msgEl.style.borderRadius='8px';
           msgEl.style.padding='10px';
+          msgEl.scrollIntoView({behavior:'smooth'});
         }
-      },50);
+      },500);
       return;
     }
   }
@@ -6245,11 +6243,13 @@ function openProfilePage(){
   renderProfilePage();
   _pp.classList.add('show');
   setBottomNav('profilo');
+  var _bnProf=document.getElementById('bottom-nav');if(_bnProf)_bnProf.style.zIndex='750';
 }
 function closeProfilePage(){
   var _pp=document.getElementById('profile-page');
   _pp.classList.remove('show');
   _pp.style.zIndex='';
+  var _bnProf=document.getElementById('bottom-nav');if(_bnProf)_bnProf.style.zIndex='';
   if(_profileOpenedFromRegionPage){
     _profileOpenedFromRegionPage=false;
     var _rpb=document.getElementById('rp-profile-btn');if(_rpb)_rpb.style.display='flex';
