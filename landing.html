@@ -51,10 +51,12 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-
 .nav-btn-ghost:hover{background:var(--g50);}
 .nav-btn-blue{background:var(--blue);color:#fff;border:1.5px solid transparent;}
 .nav-btn-blue:hover{background:var(--blue-d);}
+#lang-dropdown-btn{background:#fff;color:#1a1a1a;border:0.5px solid #ddd;border-radius:20px;padding:8px 10px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-family:var(--f);height:36px;width:56px;min-width:56px;box-sizing:border-box;}
+#lang-dropdown-btn:hover{border-color:#999;}
 @media(max-width:480px){
   nav{padding:0 14px;}
   .nav-btn-ghost{display:none;}
-  .lang-sw-nav{display:none;}
+  #lang-dropdown-btn{width:46px;min-width:46px;}
   .nav-btn-blue{padding:8px 14px;font-size:.8rem;}
 }
 
@@ -285,9 +287,15 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <span class="nav-name">Wayterra</span>
   </div>
   <div class="nav-links">
-    <div class="lang-sw-nav" style="display:flex;background:var(--g100);border-radius:100px;padding:3px;gap:2px;">
-      <button id="lang-en" onclick="setLandingLang('en')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:var(--g900);color:#fff;transition:all .15s;">EN</button>
-      <button id="lang-it" onclick="setLandingLang('it')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:none;color:var(--g500);transition:all .15s;">IT</button>
+    <div style="position:relative;">
+      <button id="lang-dropdown-btn" onclick="toggleLangDropdown()">
+        <span id="lang-flag">🇬🇧</span>
+        <i class="ti ti-chevron-down" style="font-size:12px;color:#666;" aria-hidden="true"></i>
+      </button>
+      <div id="lang-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:0.5px solid #ddd;border-radius:10px;overflow:hidden;z-index:100;min-width:48px;box-shadow:0 4px 12px rgba(0,0,0,.1);">
+        <div onclick="setLang('it');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇮🇹</div>
+        <div onclick="setLang('en');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇬🇧</div>
+      </div>
     </div>
     <a class="nav-btn nav-btn-blue" href="#destinazioni" id="nav-buy" data-t="nav-buy">Scegli la destinazione</a>
   </div>
@@ -1048,14 +1056,17 @@ var T={
 
 var currentLang='en';
 
+function setLang(l){setLandingLang(l);}
+function toggleLangDropdown(){var dd=document.getElementById('lang-dropdown');dd.style.display=dd.style.display==='none'?'block':'none';}
+function closeLangDropdown(){var dd=document.getElementById('lang-dropdown');if(dd)dd.style.display='none';}
+document.addEventListener('click',function(e){var btn=document.getElementById('lang-dropdown-btn');if(btn&&!btn.contains(e.target))closeLangDropdown();});
 function setLandingLang(l){
   currentLang=l;
   localStorage.setItem('WT_LANG_v1',l); // sincronizza con app.html
   var t=T[l];
 
-  // toggle buttons
-  document.getElementById('lang-en').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;transition:all .15s;background:'+(l==='en'?'#111827;color:#fff':'none;color:#6b7280')+';';
-  document.getElementById('lang-it').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;transition:all .15s;background:'+(l==='it'?'#111827;color:#fff':'none;color:#6b7280')+';';
+  // aggiorna bandiera dropdown
+  var flagEl=document.getElementById('lang-flag');if(flagEl)flagEl.textContent=l==='it'?'🇮🇹':'🇬🇧';
 
   // applica tutte le traduzioni tramite data-t
   document.querySelectorAll('[data-t]').forEach(function(el){
