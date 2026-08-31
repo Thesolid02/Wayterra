@@ -223,7 +223,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="hero-badge">🇬🇧 United Kingdom</div>
     <h1 class="hero-h1">Cotswolds</h1>
     <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare i borghi più belli d'Inghilterra</p>
-    <a href="#acquista" class="hero-cta" data-t="hero-cta">Acquista la guida — €14,99 →</a>
+    <a class="hero-cta" data-t="hero-cta" onclick="openPurchaseSheet()" style="cursor:pointer;">Acquista la guida — €14,99 →</a>
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
@@ -311,7 +311,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h2 class="s-title" data-t="cta-title">Pronto a esplorare le Cotswolds?</h2>
     <div class="cta-price">€14,99</div>
     <div class="cta-price-note" data-t="cta-note">Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile</div>
-    <a href="https://wayterra.gumroad.com/l/lbchl" target="_blank" rel="noopener" class="cta-btn" data-t="cta-btn">Acquista la guida Cotswolds →</a>
+    <button onclick="openPurchaseSheet()" class="cta-btn" data-t="cta-btn">Acquista la guida Cotswolds →</button>
     <div class="cta-or" data-t="cta-or">oppure</div>
     <div class="cta-code-label" data-t="cta-code-label">Hai un codice di accesso?</div>
     <div class="cta-code-wrap">
@@ -387,7 +387,14 @@ var T={
     'cta-code-btn':'Attiva',
     'cta-error':'Codice non valido',
     'launch-offer':'⏳ Offerta lancio — valida fino al 6 settembre',
-    'gallery-caption':'Alcuni scatti del nostro itinerario'
+    'gallery-caption':'Alcuni scatti del nostro itinerario',
+    'purchase-title':'Quasi lì! 🎉',
+    'purchase-sub':'Inserisci la tua email per ricevere l\'accesso alla guida.',
+    'purchase-email-placeholder':'nome@email.com',
+    'purchase-error':'Inserisci un\'email valida',
+    'purchase-cta':'Continua con il pagamento →',
+    'purchase-login-text':'Hai già un account?',
+    'purchase-login-link':'Accedi'
   },
   en:{
     'nav-buy':'Buy the guide <span class="nav-cta-arrow">→</span>',
@@ -424,7 +431,14 @@ var T={
     'cta-code-btn':'Activate',
     'cta-error':'Invalid code',
     'launch-offer':'⏳ Launch offer — valid until September 6th',
-    'gallery-caption':'Some shots from our itinerary'
+    'gallery-caption':'Some shots from our itinerary',
+    'purchase-title':'Almost there! 🎉',
+    'purchase-sub':'Enter your email to receive access to the guide.',
+    'purchase-email-placeholder':'name@email.com',
+    'purchase-error':'Enter a valid email',
+    'purchase-cta':'Continue to payment →',
+    'purchase-login-text':'Already have an account?',
+    'purchase-login-link':'Sign in'
   }
 };
 var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
@@ -485,6 +499,11 @@ function setLang(l){
     if(!T[l]||T[l][key]===undefined)return;
     if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=T[l][key];}
     else{el.innerHTML=T[l][key];}
+  });
+  document.querySelectorAll('[data-t-placeholder]').forEach(function(el){
+    var key=el.getAttribute('data-t-placeholder');
+    if(!T[l]||T[l][key]===undefined)return;
+    el.placeholder=T[l][key];
   });
   renderPhones(l);
   if(typeof window.renderReviews==='function')window.renderReviews();
@@ -624,6 +643,31 @@ function closeLandingReviewsPopup(){
     <div id="lrp-list" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;"></div>
   </div>
 </div>
+<div id="purchase-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="closePurchaseSheet()"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div data-t="purchase-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Quasi lì! 🎉</div>
+    <div data-t="purchase-sub" style="font-size:14px;color:#888;margin-bottom:20px;">Inserisci la tua email per ricevere l'accesso alla guida.</div>
+    <input id="purchase-email" type="email" data-t-placeholder="purchase-email-placeholder" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <div id="purchase-email-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;" data-t="purchase-error">Inserisci un'email valida</div>
+    <button onclick="goToPurchase()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="purchase-cta">Continua con il pagamento →</button>
+    <div style="text-align:center;margin-top:12px;font-size:13px;color:#888;">
+      <span data-t="purchase-login-text">Hai già un account?</span> <a href="https://wayterra.it/app" style="color:#dc6b2f;" data-t="purchase-login-link">Accedi</a>
+    </div>
+  </div>
+</div>
+<script>
+function openPurchaseSheet(){document.getElementById('purchase-sheet').style.display='block';}
+function closePurchaseSheet(){document.getElementById('purchase-sheet').style.display='none';}
+function goToPurchase(){
+  var email=document.getElementById('purchase-email').value.trim();
+  if(!email||!email.includes('@')){document.getElementById('purchase-email-error').style.display='block';return;}
+  document.getElementById('purchase-email-error').style.display='none';
+  localStorage.setItem('WT_PENDING_EMAIL',email);
+  window.location.href='https://wayterra.gumroad.com/l/lbchl';
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
 <script>
 CookieConsent.run({
