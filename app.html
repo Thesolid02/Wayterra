@@ -542,7 +542,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 .auth-inner{position:relative;width:100%;min-height:100%;}
 @media(max-width:767px){
   #profile-page.show{background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center;}
-  .profile-inner{width:100%;height:80vh;max-height:80vh;margin-top:auto;border-radius:20px 20px 0 0;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px);}
+  .profile-inner{width:100%;height:80vh;max-height:80vh;margin-top:auto;border-radius:20px 20px 0 0;overflow-y:auto;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 80px);}
   #profile-header{padding-top:16px;}
 }
 @media(min-width:768px){
@@ -6530,7 +6530,7 @@ function renderProfileSettings(){
   var firstName=isLoggedIn?(nameParts[0]||''):'';
   var lastName=isLoggedIn?(nameParts.slice(1).join(' ')||''):'';
   var emailVal=isLoggedIn?(_currentUser.email||''):'';
-  var pwPlaceholder=isLoggedIn?'••••••••':'';
+  var pwPlaceholder=isLoggedIn?'••••••••':'Password';
   var inputStyle='width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--g200);font-size:.88rem;font-family:var(--f);box-sizing:border-box;outline:none;';
   var html='<div style="padding:16px;">'
     +'<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">'
