@@ -6015,8 +6015,8 @@ async function checkAuthSession(){
   var _initUser=_initSess.data&&_initSess.data.session&&_initSess.data.session.user;
   if(_initUser){
     var _notifKey='WT_NOTIF_USER_'+_initUser.id;
-    if(!localStorage.getItem(_notifKey)){
-      localStorage.setItem(_notifKey,'1');
+    if(!sessionStorage.getItem(_notifKey)){
+      sessionStorage.setItem(_notifKey,'1');
       setTimeout(function(){
         var _tgName=(_currentUserProfile&&_currentUserProfile.full_name)||_initUser.email||'Utente';
         var _tgProvider=(_initUser.app_metadata&&_initUser.app_metadata.provider)||'email';
@@ -6024,8 +6024,8 @@ async function checkAuthSession(){
       },2000);
     }
   } else {
-    if(!localStorage.getItem('WT_NOTIF_ANON')){
-      localStorage.setItem('WT_NOTIF_ANON','1');
+    if(!sessionStorage.getItem('WT_NOTIF_ANON')){
+      sessionStorage.setItem('WT_NOTIF_ANON','1');
       setTimeout(function(){
         notifyTelegram('👁 <b>Nuovo visitatore</b>\n🌍 '+(_currentTravelRegion||'lazio')+'\n🔑 Anonimo\n⏰ '+new Date().toLocaleTimeString('it-IT'));
       },2000);
@@ -6085,8 +6085,8 @@ async function checkAuthSession(){
       var _tgName=(_currentUserProfile&&_currentUserProfile.full_name)||session.user.email||'Utente';
       var _tgProvider=(session.user.app_metadata&&session.user.app_metadata.provider)||'email';
       var _signInNotifKey='WT_NOTIF_USER_'+session.user.id;
-      if(!localStorage.getItem(_signInNotifKey)){
-        localStorage.setItem(_signInNotifKey,'1');
+      if(!sessionStorage.getItem(_signInNotifKey)){
+        sessionStorage.setItem(_signInNotifKey,'1');
         notifyTelegram('🟢 <b>Nuovo accesso Wayterra</b>\n👤 '+_tgName+'\n📧 '+session.user.email+'\n🔑 '+_tgProvider+'\n🌍 '+(_currentTravelRegion||'lazio'));
       }
       updateProfileUI();
@@ -6100,6 +6100,7 @@ async function checkAuthSession(){
       if(_authCallback){_authCallback();_authCallback=null;}
     }
     if(event==='SIGNED_OUT'){
+      if(session&&session.user)localStorage.removeItem('WT_NOTIF_USER_'+session.user.id);
       _currentUser=null;
       _currentUserProfile=null;
       _isAdmin=false;
