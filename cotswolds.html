@@ -738,12 +738,15 @@ document.addEventListener('DOMContentLoaded',async function(){
       if(btn.tagName==='A')btn.removeAttribute('href');
       btn.onclick=function(){localStorage.setItem('WT_REDIRECT_REGION','cotswolds');window.location.href='/app';};
     });
-    var navBuy=document.getElementById('nav-buy');
-    if(navBuy){
-      var avatarUrl=session.user.user_metadata&&session.user.user_metadata.avatar_url;
+    var _userId=session.user.id;
+    _supaLanding.from('profiles').select('avatar_url').eq('id',_userId).single().then(function(result){
+      var avatarUrl=(result.data&&result.data.avatar_url)||(session.user.user_metadata&&session.user.user_metadata.avatar_url);
       var initials=(session.user.email||'U').charAt(0).toUpperCase();
-      navBuy.outerHTML='<div id="nav-avatar" onclick="openProfilePopup()" style="width:34px;height:34px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">'+(avatarUrl?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</span>')+'</div>';
-    }
+      var navBuy=document.getElementById('nav-buy');
+      if(navBuy){
+        navBuy.outerHTML='<div id="nav-avatar" onclick="openProfilePopup()" style="width:34px;height:34px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">'+(avatarUrl?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</span>')+'</div>';
+      }
+    });
   }
 });
 </script>
