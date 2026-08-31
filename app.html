@@ -1328,8 +1328,10 @@ var T={
     nav_itinerari:'Itinerari',
     nav_profile:'Profilo',
     profile_tab_saved:'Salvati',
+    'tab-saved':'Salvati',
     profile_tab_stats:'Statistiche',
     profile_tab_settings:'Impostazioni',
+    'tab-settings':'Impostazioni',
     profile_tab_guides:'Le mie guide',
     no_guides:'Non hai ancora accesso a nessuna guida',
     stat_saved_label:'Luoghi salvati',
@@ -1425,8 +1427,10 @@ var T={
     nav_itinerari:'Itineraries',
     nav_profile:'Profile',
     profile_tab_saved:'Saved',
+    'tab-saved':'Saved',
     profile_tab_stats:'Statistics',
     profile_tab_settings:'Settings',
+    'tab-settings':'Settings',
     profile_tab_guides:'My guides',
     no_guides:'You don\'t have access to any guide yet',
     stat_saved_label:'Places saved',
@@ -5797,9 +5801,9 @@ window.addEventListener('DOMContentLoaded',function(){
         </div>
       </div>
       <div style="display:flex;width:100%;border-top:0.5px solid rgba(255,255,255,.2);">
-        <div class="profile-tab active" data-ptab="saved" id="ptab-saved" onclick="switchProfileTab('saved')">Salvati</div>
+        <div class="profile-tab active" data-ptab="saved" id="ptab-saved" data-t="tab-saved" onclick="switchProfileTab('saved')">Salvati</div>
         <div class="profile-tab" data-ptab="guides" id="ptab-guides" data-t="profile_tab_guides" onclick="switchProfileTab('guides')">Le mie guide</div>
-        <div class="profile-tab" data-ptab="settings" id="ptab-settings" onclick="switchProfileTab('settings')">Impostazioni</div>
+        <div class="profile-tab" data-ptab="settings" id="ptab-settings" data-t="tab-settings" onclick="switchProfileTab('settings')">Impostazioni</div>
       </div>
     </div>
     <div id="profile-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;">
@@ -6399,8 +6403,6 @@ async function renderProfilePage(){
   var profileDisplayName=_fn?(_fnParts.length>1?_fnParts[0]+' '+_fnParts[_fnParts.length-1].charAt(0)+'.':_fnParts[0]):(email.split('@')[0]||'');
   document.getElementById('profile-name-el').textContent=isLoggedIn?profileDisplayName:'';
   document.getElementById('profile-email-el').textContent=email;
-  document.getElementById('ptab-saved').textContent=t('profile_tab_saved');
-  document.getElementById('ptab-settings').textContent=t('profile_tab_settings');
   var _itEl=document.getElementById('stat-itineraries');
   var _plEl=document.getElementById('stat-places');
   if(_itEl)_itEl.textContent=completedItineraries.size;
