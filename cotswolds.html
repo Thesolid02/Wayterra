@@ -320,7 +320,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h2 class="s-title" data-t="cta-title">Pronto a esplorare le Cotswolds?</h2>
     <div class="cta-price">€9,99</div>
     <div class="cta-price-note" data-t="cta-note">Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile</div>
-    <a href="https://wayterra.gumroad.com/l/lbchl" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;">Acquista la guida Cotswolds →</a>
+    <a href="https://wayterra.gumroad.com/l/lbchl" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="trackCTAClick();">Acquista la guida Cotswolds →</a>
     <div class="cta-or" data-t="cta-or">oppure</div>
     <div class="cta-code-label" data-t="cta-code-label">Hai un codice di accesso?</div>
     <div class="cta-code-wrap">
@@ -756,6 +756,7 @@ async function goToPurchase(){
 var _SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
 var _SB_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
 var _supaLanding=(function(){try{return supabase.createClient(_SB_URL,_SB_ANON_KEY,{auth:{persistSession:true,storage:window.localStorage}});}catch(e){return null;}})();
+async function trackCTAClick(){try{if(_supaLanding)await _supaLanding.from('analytics_events').insert({event_type:'cta_purchase_click',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,user_id:null});}catch(e){}}
 function openLoginSheet(){document.getElementById('login-sheet').style.display='block';}
 function openLoginFromPurchase(){closePurchaseSheet();openLoginSheet();}
 function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}

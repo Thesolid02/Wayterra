@@ -3624,19 +3624,24 @@ async function renderAnChart(){
 }
 
 function renderAnCounters(){
-  fetch(SB_URL+'/rest/v1/analytics_totals?select=*',{headers:_anH})
-  .then(function(r){return r.json();})
-  .then(function(rows){
-    var row=(Array.isArray(rows)&&rows[0])||{};
+  Promise.all([
+    fetch(SB_URL+'/rest/v1/analytics_totals?select=*',{headers:_anH}).then(function(r){return r.json();}),
+    fetch(SB_URL+'/rest/v1/analytics_events?select=id&event_type=eq.cta_purchase_click',{headers:Object.assign({},_anH,{'Prefer':'count=exact','Range':'0-0'})}).then(function(r){return r.headers.get('content-range');})
+  ]).then(function(results){
+    var row=(Array.isArray(results[0])&&results[0][0])||{};
+    var ctaCount=0;var cr=results[1];if(cr){var m=cr.match(/\/(\d+)/);if(m)ctaCount=parseInt(m[1],10);}
     var items=[
       {label:'Visite mappa',val:row.map_views||0},
       {label:'Elenco paesi',val:row.region_page_views||0},
       {label:'Visite profilo',val:row.profile_views||0},
-      {label:'Visite landing',val:row.landing_views||0}
+      {label:'Visite landing',val:row.landing_views||0},
+      {label:'Click Acquista Cotswolds',val:ctaCount,accent:true}
     ];
-    var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">'
+    var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;">'
       +items.map(function(it){
-        return'<div style="text-align:center;padding:16px 8px;background:var(--g50);border-radius:var(--r);"><div style="font-size:1.6rem;font-weight:700;color:var(--g900);">'+it.val+'</div><div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+it.label+'</div></div>';
+        return'<div style="text-align:center;padding:16px 8px;background:'+(it.accent?'#fff3ed':'var(--g50)')+';border-radius:var(--r);">'
+          +'<div style="font-size:1.6rem;font-weight:700;color:'+(it.accent?'#dc6b2f':'var(--g900)')+';">'+it.val+'</div>'
+          +'<div style="font-size:.72rem;color:var(--g500);margin-top:4px;">'+it.label+'</div></div>';
       }).join('')+'</div>';
     _anSet('an-counters',html);
   }).catch(function(){_anSet('an-counters','<div class="an-empty">Errore caricamento</div>');});
