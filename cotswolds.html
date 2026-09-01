@@ -13,74 +13,36 @@
 <link rel="alternate" hreflang="it" href="https://wayterra.it/cotswolds"/>
 <link rel="alternate" hreflang="en" href="https://wayterra.it/cotswolds?lang=en"/>
 <link rel="alternate" hreflang="x-default" href="https://wayterra.it/cotswolds"/>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "Guida Wayterra — Cotswolds",
-  "description": "Guida di viaggio completa per le Cotswolds: itinerario di 4 giorni, 15 tappe selezionate, mappa interattiva e PDF scaricabile.",
-  "url": "https://wayterra.it/cotswolds",
-  "image": "https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cotswolds-cover.jpg",
-  "brand": {
-    "@type": "Brand",
-    "name": "Wayterra"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "9.99",
-    "priceCurrency": "EUR",
-    "availability": "https://schema.org/InStock",
-    "hasMerchantReturnPolicy": {
-      "@type": "MerchantReturnPolicy",
-      "applicableCountry": "IT",
-      "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
-    },
-    "shippingDetails": {
-      "@type": "OfferShippingDetails",
-      "shippingRate": {
-        "@type": "MonetaryAmount",
-        "value": "0",
-        "currency": "EUR"
-      },
-      "deliveryTime": {
-        "@type": "ShippingDeliveryTime",
-        "handlingTime": {
-          "@type": "QuantitativeValue",
-          "minValue": 0,
-          "maxValue": 0,
-          "unitCode": "DAY"
-        },
-        "transitTime": {
-          "@type": "QuantitativeValue",
-          "minValue": 0,
-          "maxValue": 0,
-          "unitCode": "DAY"
-        }
-      }
+<script>
+var COTSWOLDS_PRICE='9.99';
+var ldJson={
+  "@context":"https://schema.org","@type":"Product",
+  "name":"Guida Wayterra — Cotswolds",
+  "description":"Guida di viaggio completa per le Cotswolds: itinerario di 4 giorni, 15 tappe selezionate, mappa interattiva e PDF scaricabile.",
+  "url":"https://wayterra.it/cotswolds",
+  "image":"https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cotswolds-cover.jpg",
+  "brand":{"@type":"Brand","name":"Wayterra"},
+  "offers":{
+    "@type":"Offer","price":COTSWOLDS_PRICE,"priceCurrency":"EUR","availability":"https://schema.org/InStock",
+    "hasMerchantReturnPolicy":{"@type":"MerchantReturnPolicy","applicableCountry":"IT","returnPolicyCategory":"https://schema.org/MerchantReturnNotPermitted"},
+    "shippingDetails":{
+      "@type":"OfferShippingDetails",
+      "shippingRate":{"@type":"MonetaryAmount","value":"0","currency":"EUR"},
+      "deliveryTime":{"@type":"ShippingDeliveryTime","handlingTime":{"@type":"QuantitativeValue","minValue":0,"maxValue":0,"unitCode":"DAY"},"transitTime":{"@type":"QuantitativeValue","minValue":0,"maxValue":0,"unitCode":"DAY"}}
     }
   },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.9",
-    "reviewCount": "24",
-    "bestRating": "5",
-    "worstRating": "1"
-  },
-  "review": [
-    {
-      "@type": "Review",
-      "author": {
-        "@type": "Person",
-        "name": "Veronica C."
-      },
-      "reviewRating": {
-        "@type": "Rating",
-        "ratingValue": "5",
-        "bestRating": "5"
-      }
-    }
-  ]
-}
+  "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"24","bestRating":"5","worstRating":"1"},
+  "review":[{"@type":"Review","author":{"@type":"Person","name":"Veronica C."},"reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":"5"}}]
+};
+var _ldScript=document.createElement('script');
+_ldScript.type='application/ld+json';
+_ldScript.text=JSON.stringify(ldJson);
+document.head.appendChild(_ldScript);
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('[data-price]').forEach(function(el){
+    el.textContent='€'+COTSWOLDS_PRICE.replace('.',',');
+  });
+});
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -368,7 +330,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   <div class="si tc">
     <div class="badge" data-t="cta-badge">Accesso per sempre</div>
     <h2 class="s-title" data-t="cta-title">Pronto a esplorare le Cotswolds?</h2>
-    <div class="cta-price">€9,99</div>
+    <div class="cta-price" data-price>€9,99</div>
     <div class="cta-price-note" data-t="cta-note">Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile</div>
     <a href="https://wayterra.gumroad.com/l/lbchl" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="trackCTAClick();">Acquista la guida Cotswolds →</a>
     <div class="cta-or" data-t="cta-or">oppure</div>
@@ -415,7 +377,7 @@ var T={
     'nav-buy':'Acquista la guida <span class="nav-cta-arrow">→</span>',
     'nav-login':'Vai alla tua guida',
     'hero-sub':"La guida completa per esplorare i borghi più belli d'Inghilterra",
-    'hero-cta':'Acquista la guida — €9,99 →',
+    'hero-cta':'Acquista la guida — €'+COTSWOLDS_PRICE.replace('.',',')+' →',
     'hero-scroll':'SCORRI',
     'intro-badge':'La guida',
     'intro-title':"Dove l'Inghilterra sembra uscita da un romanzo",
@@ -474,7 +436,7 @@ var T={
     'nav-buy':'Buy the guide <span class="nav-cta-arrow">→</span>',
     'nav-login':'Go to your guide',
     'hero-sub':"The complete guide to exploring England's most beautiful villages",
-    'hero-cta':'Buy the guide — €9.99 →',
+    'hero-cta':'Buy the guide — €'+COTSWOLDS_PRICE+' →',
     'hero-scroll':'SCROLL',
     'intro-badge':'The guide',
     'intro-title':'Where England looks like it stepped out of a novel',
