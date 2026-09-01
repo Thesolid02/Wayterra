@@ -20,6 +20,7 @@
   "name": "Guida Wayterra — Cotswolds",
   "description": "Guida di viaggio completa per le Cotswolds: itinerario di 4 giorni, 15 tappe selezionate, mappa interattiva e PDF scaricabile.",
   "url": "https://wayterra.it/cotswolds",
+  "image": "https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cotswolds-cover.jpg",
   "brand": {
     "@type": "Brand",
     "name": "Wayterra"
@@ -28,7 +29,35 @@
     "@type": "Offer",
     "price": "9.99",
     "priceCurrency": "EUR",
-    "availability": "https://schema.org/InStock"
+    "availability": "https://schema.org/InStock",
+    "hasMerchantReturnPolicy": {
+      "@type": "MerchantReturnPolicy",
+      "applicableCountry": "IT",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
+    },
+    "shippingDetails": {
+      "@type": "OfferShippingDetails",
+      "shippingRate": {
+        "@type": "MonetaryAmount",
+        "value": "0",
+        "currency": "EUR"
+      },
+      "deliveryTime": {
+        "@type": "ShippingDeliveryTime",
+        "handlingTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 0,
+          "maxValue": 0,
+          "unitCode": "DAY"
+        },
+        "transitTime": {
+          "@type": "QuantitativeValue",
+          "minValue": 0,
+          "maxValue": 0,
+          "unitCode": "DAY"
+        }
+      }
+    }
   },
   "aggregateRating": {
     "@type": "AggregateRating",
