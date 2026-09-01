@@ -756,7 +756,13 @@ async function goToPurchase(){
 var _SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
 var _SB_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
 var _supaLanding=(function(){try{return supabase.createClient(_SB_URL,_SB_ANON_KEY,{auth:{persistSession:true,storage:window.localStorage}});}catch(e){return null;}})();
-async function trackCTAClick(){try{if(_supaLanding)await _supaLanding.from('analytics_events').insert({event_type:'cta_purchase_click',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,user_id:null});}catch(e){}}
+async function trackCTAClick(){
+  try{if(_supaLanding)await _supaLanding.from('analytics_events').insert({event_type:'cta_purchase_click',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,user_id:null});}catch(e){}
+  _supaLanding&&_supaLanding.auth.getSession().then(function(res){
+    var _tgUser=res.data&&res.data.session&&res.data.session.user?res.data.session.user.email:'Visitatore anonimo';
+    fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'🛒 Click Acquista Cotswolds\nUtente: '+_tgUser})}).catch(function(){});
+  });
+}
 function openLoginSheet(){document.getElementById('login-sheet').style.display='block';}
 function openLoginFromPurchase(){closePurchaseSheet();openLoginSheet();}
 function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
@@ -805,6 +811,11 @@ document.addEventListener('DOMContentLoaded',async function(){
   if(!_supaLanding)return;
   var r=await _supaLanding.auth.getSession();
   var session=r.data&&r.data.session;
+  if(!sessionStorage.getItem('WT_NOTIF_COTSWOLDS_VIEW')){
+    sessionStorage.setItem('WT_NOTIF_COTSWOLDS_VIEW','1');
+    var _tgUser=session&&session.user?session.user.email:'Visitatore anonimo';
+    fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'👀 Visita pagina Cotswolds\nUtente: '+_tgUser})}).catch(function(){});
+  }
   if(session&&session.user){
     document.querySelectorAll('.cta-btn').forEach(function(btn){
       btn.textContent=_lang==='en'?'Access the guide →':'Accedi alla guida →';
