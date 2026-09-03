@@ -3583,7 +3583,7 @@ async function renderBehavior(){
   try{
     var [scrollR,timeR,sectionR]=await Promise.all([
       fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_scroll_depth',{headers:h}).then(function(r){return r.json();}),
-      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_time_on_page',{headers:h}).then(function(r){return r.json();}),
+      fetch(SB_URL+'/rest/v1/analytics_events?select=properties,session_id&event_type=eq.cotswolds_time_on_page',{headers:h}).then(function(r){return r.json();}),
       fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_section_click',{headers:h}).then(function(r){return r.json();})
     ]);
     var totalSessions=Math.max(
@@ -3607,10 +3607,17 @@ async function renderBehavior(){
         options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{max:100,ticks:{callback:function(v){return v+'%';}}}}}
       });
     }
-    var timeBuckets={5:0,10:0,30:0,60:0,120:0,300:0};
+    var sessionMaxSeconds={};
     timeR.forEach(function(e){
       var p=typeof e.properties==='object'?e.properties:JSON.parse(e.properties||'{}');
-      if(timeBuckets[p.seconds]!==undefined)timeBuckets[p.seconds]++;
+      var sid=e.session_id||'__anon__';
+      var secs=parseInt(p.seconds,10)||0;
+      if(!sessionMaxSeconds[sid]||secs>sessionMaxSeconds[sid])sessionMaxSeconds[sid]=secs;
+    });
+    var timeBuckets={5:0,10:0,30:0,60:0,120:0,300:0};
+    Object.keys(sessionMaxSeconds).forEach(function(sid){
+      var maxSec=sessionMaxSeconds[sid];
+      if(timeBuckets[maxSec]!==undefined)timeBuckets[maxSec]++;
     });
     var timeHtml='<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">';
     [[5,'5s'],[10,'10s'],[30,'30s'],[60,'60s'],[120,'2m'],[300,'5m']].forEach(function(pair){
