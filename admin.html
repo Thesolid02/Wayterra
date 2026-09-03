@@ -3582,9 +3582,9 @@ async function renderBehavior(){
   var h=_anH;
   try{
     var [scrollR,timeR,sectionR]=await Promise.all([
-      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event=eq.cotswolds_scroll_depth',{headers:h}).then(function(r){return r.json();}),
-      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event=eq.cotswolds_time_on_page',{headers:h}).then(function(r){return r.json();}),
-      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event=eq.cotswolds_section_click',{headers:h}).then(function(r){return r.json();})
+      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_scroll_depth',{headers:h}).then(function(r){return r.json();}),
+      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_time_on_page',{headers:h}).then(function(r){return r.json();}),
+      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_section_click',{headers:h}).then(function(r){return r.json();})
     ]);
     var totalSessions=Math.max(
       scrollR.filter(function(e){var p=e.properties;return(typeof p==='object'?p:JSON.parse(p||'{}')).depth===25;}).length,1
