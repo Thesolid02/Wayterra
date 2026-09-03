@@ -162,6 +162,8 @@ textarea.ft{resize:vertical;line-height:1.65;}
 /* ── ANALYTICS ── */
 .an-period-btn{padding:6px 14px;border:1px solid var(--g200);background:var(--w);border-radius:var(--r);font-family:var(--f);font-size:.8rem;font-weight:600;color:var(--g500);cursor:pointer;transition:all .14s;}
 .an-period-btn.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.an-beh-btn{padding:6px 14px;border:1px solid var(--g200);background:var(--w);border-radius:var(--r);font-family:var(--f);font-size:.8rem;font-weight:600;color:var(--g500);cursor:pointer;transition:all .14s;}
+.an-beh-btn.on{background:var(--blue);color:#fff;border-color:var(--blue);}
 .an-card{background:var(--w);border:1px solid var(--g200);border-radius:var(--rxl);padding:20px;margin-bottom:20px;}
 .an-card-title{font-size:.83rem;font-weight:700;color:var(--g900);margin-bottom:16px;}
 .an-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--g100);}
@@ -430,6 +432,12 @@ textarea.ft{resize:vertical;line-height:1.65;}
   </div>
   <hr class="an-divider" style="margin-top:24px;">
   <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:4px 0 12px;">Comportamento Cotswolds</div>
+  <div style="display:flex;gap:8px;margin-bottom:20px;">
+    <button class="an-beh-btn" onclick="setBehaviorPeriod(1,this)">Oggi</button>
+    <button class="an-beh-btn" onclick="setBehaviorPeriod(7,this)">7 giorni</button>
+    <button class="an-beh-btn on" onclick="setBehaviorPeriod(30,this)">30 giorni</button>
+    <button class="an-beh-btn" onclick="setBehaviorPeriod(0,this)">Tutto</button>
+  </div>
   <div class="an-card">
     <div class="an-card-title">Scroll depth — % utenti per soglia</div>
     <div style="position:relative;height:200px;">
@@ -3582,15 +3590,26 @@ function renderAnalytics(){
 }
 
 var _scrollChartInst=null;
+var anBehaviorPeriod=30;
+function setBehaviorPeriod(days,btn){
+  document.querySelectorAll('.an-beh-btn').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  anBehaviorPeriod=days;
+  renderBehavior();
+}
 async function renderBehavior(){
   _anSet('an-time-stats','<div class="an-loading">Caricamento…</div>');
   _anSet('an-section-clicks','<div class="an-loading">Caricamento…</div>');
   var h=_anH;
+  var since=null;
+  if(anBehaviorPeriod===1){var _td=new Date();_td.setHours(0,0,0,0);since=_td.toISOString();}
+  else if(anBehaviorPeriod>1){since=new Date(Date.now()-anBehaviorPeriod*86400000).toISOString();}
+  var dateFilter=since?'&created_at=gte.'+encodeURIComponent(since):'';
   try{
     var [scrollR,timeR,sectionR]=await Promise.all([
-      fetch(SB_URL+'/rest/v1/analytics_events?select=properties,session_id&event_type=eq.cotswolds_scroll_depth',{headers:h}).then(function(r){return r.json();}),
-      fetch(SB_URL+'/rest/v1/analytics_events?select=properties,session_id&event_type=eq.cotswolds_time_on_page',{headers:h}).then(function(r){return r.json();}),
-      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_section_click',{headers:h}).then(function(r){return r.json();})
+      fetch(SB_URL+'/rest/v1/analytics_events?select=properties,session_id&event_type=eq.cotswolds_scroll_depth'+dateFilter,{headers:h}).then(function(r){return r.json();}),
+      fetch(SB_URL+'/rest/v1/analytics_events?select=properties,session_id&event_type=eq.cotswolds_time_on_page'+dateFilter,{headers:h}).then(function(r){return r.json();}),
+      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_section_click'+dateFilter,{headers:h}).then(function(r){return r.json();})
     ]);
     var scrollSessionMax={};
     scrollR.filter(function(e){return e.session_id!==null;}).forEach(function(e){
