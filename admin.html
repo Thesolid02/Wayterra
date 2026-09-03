@@ -3593,7 +3593,7 @@ async function renderBehavior(){
       fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_section_click',{headers:h}).then(function(r){return r.json();})
     ]);
     var scrollSessionMax={};
-    scrollR.forEach(function(e){
+    scrollR.filter(function(e){return e.session_id!==null;}).forEach(function(e){
       var p=typeof e.properties==='object'?e.properties:JSON.parse(e.properties||'{}');
       var sid=e.session_id||'__anon__';
       var depth=parseInt(p.depth,10)||0;
@@ -3619,7 +3619,7 @@ async function renderBehavior(){
       });
     }
     var sessionMaxSeconds={};
-    timeR.forEach(function(e){
+    timeR.filter(function(e){return e.session_id!==null;}).forEach(function(e){
       var p=typeof e.properties==='object'?e.properties:JSON.parse(e.properties||'{}');
       var sid=e.session_id||'__anon__';
       var secs=parseInt(p.seconds,10)||0;
