@@ -793,6 +793,7 @@ async function goToPurchase(){
 var _SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
 var _SB_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
 var _supaLanding=(function(){try{return supabase.createClient(_SB_URL,_SB_ANON_KEY,{auth:{persistSession:true,storage:window.localStorage}});}catch(e){return null;}})();
+if(!localStorage.getItem('WT_SESSION_ID')){localStorage.setItem('WT_SESSION_ID','sess_'+Date.now()+'_'+Math.random().toString(36).substr(2,9));}
 async function trackSectionClick(section){
   if(!_supaLanding)return;
   try{await _supaLanding.from('analytics_events').insert({event_type:'cotswolds_section_click',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:{section:section}});}catch(e){}
