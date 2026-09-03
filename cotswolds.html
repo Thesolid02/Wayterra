@@ -793,9 +793,9 @@ async function goToPurchase(){
 var _SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
 var _SB_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
 var _supaLanding=(function(){try{return supabase.createClient(_SB_URL,_SB_ANON_KEY,{auth:{persistSession:true,storage:window.localStorage}});}catch(e){return null;}})();
-function trackSectionClick(section){
+async function trackSectionClick(section){
   if(!_supaLanding)return;
-  _supaLanding.from('analytics_events').insert({event:'cotswolds_section_click',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:JSON.stringify({section:section})}).catch(function(){});
+  try{await _supaLanding.from('analytics_events').insert({event_type:'cotswolds_section_click',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:JSON.stringify({section:section})});}catch(e){}
 }
 var _scrollTracked={};
 window.addEventListener('scroll',function(){
@@ -803,16 +803,16 @@ window.addEventListener('scroll',function(){
   [25,50,75,100].forEach(function(threshold){
     if(scrollPct>=threshold&&!_scrollTracked[threshold]){
       _scrollTracked[threshold]=true;
-      if(_supaLanding)_supaLanding.from('analytics_events').insert({event:'cotswolds_scroll_depth',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:JSON.stringify({depth:threshold})}).catch(function(){});
+      if(_supaLanding)(async function(){try{await _supaLanding.from('analytics_events').insert({event_type:'cotswolds_scroll_depth',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:JSON.stringify({depth:threshold})});}catch(e){}})();
     }
   });
 });
 var _timeTracked={};
 [5,10,30,60,120,300].forEach(function(seconds){
-  setTimeout(function(){
+  setTimeout(async function(){
     if(!_timeTracked[seconds]){
       _timeTracked[seconds]=true;
-      if(_supaLanding)_supaLanding.from('analytics_events').insert({event:'cotswolds_time_on_page',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:JSON.stringify({seconds:seconds})}).catch(function(){});
+      if(_supaLanding)try{await _supaLanding.from('analytics_events').insert({event_type:'cotswolds_time_on_page',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:JSON.stringify({seconds:seconds})});}catch(e){}
     }
   },seconds*1000);
 });
