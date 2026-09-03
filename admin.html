@@ -3582,19 +3582,24 @@ async function renderBehavior(){
   var h=_anH;
   try{
     var [scrollR,timeR,sectionR]=await Promise.all([
-      fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_scroll_depth',{headers:h}).then(function(r){return r.json();}),
+      fetch(SB_URL+'/rest/v1/analytics_events?select=properties,session_id&event_type=eq.cotswolds_scroll_depth',{headers:h}).then(function(r){return r.json();}),
       fetch(SB_URL+'/rest/v1/analytics_events?select=properties,session_id&event_type=eq.cotswolds_time_on_page',{headers:h}).then(function(r){return r.json();}),
       fetch(SB_URL+'/rest/v1/analytics_events?select=properties&event_type=eq.cotswolds_section_click',{headers:h}).then(function(r){return r.json();})
     ]);
-    var totalSessions=Math.max(
-      scrollR.filter(function(e){var p=e.properties;return(typeof p==='object'?p:JSON.parse(p||'{}')).depth===25;}).length,1
-    );
-    var depthCounts={25:0,50:0,75:0,100:0};
+    var scrollSessionMax={};
     scrollR.forEach(function(e){
       var p=typeof e.properties==='object'?e.properties:JSON.parse(e.properties||'{}');
-      if(depthCounts[p.depth]!==undefined)depthCounts[p.depth]++;
+      var sid=e.session_id||'__anon__';
+      var depth=parseInt(p.depth,10)||0;
+      if(!scrollSessionMax[sid]||depth>scrollSessionMax[sid])scrollSessionMax[sid]=depth;
     });
-    var depthPct=[25,50,75,100].map(function(d){return Math.round(depthCounts[d]/totalSessions*100);});
+    var depthCounts={25:0,50:0,75:0,100:0};
+    Object.keys(scrollSessionMax).forEach(function(sid){
+      var d=scrollSessionMax[sid];
+      if(depthCounts[d]!==undefined)depthCounts[d]++;
+    });
+    var total=Math.max(Object.keys(scrollSessionMax).length,1);
+    var depthPct=[25,50,75,100].map(function(d){return Math.round(depthCounts[d]/total*100);});
     var ctx=document.getElementById('an-scroll-chart');
     if(ctx){
       if(_scrollChartInst)_scrollChartInst.destroy();
@@ -3621,7 +3626,7 @@ async function renderBehavior(){
     });
     var timeHtml='<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">';
     [[5,'5s'],[10,'10s'],[30,'30s'],[60,'60s'],[120,'2m'],[300,'5m']].forEach(function(pair){
-      timeHtml+='<div style="text-align:center;padding:12px 8px;background:var(--g50);border-radius:10px;"><div style="font-size:1.4rem;font-weight:800;color:#dc6b2f;">'+timeBuckets[pair[0]]+'</div><div style="font-size:.75rem;color:var(--g400);margin-top:4px;">≥ '+pair[1]+'</div></div>';
+      timeHtml+='<div style="text-align:center;padding:12px 8px;background:var(--g50);border-radius:10px;"><div style="font-size:1.4rem;font-weight:800;color:#dc6b2f;">'+timeBuckets[pair[0]]+'</div><div style="font-size:.75rem;color:var(--g400);margin-top:4px;">max '+pair[1]+'</div></div>';
     });
     timeHtml+='</div>';
     _anSet('an-time-stats',timeHtml);
