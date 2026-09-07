@@ -884,7 +884,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <div class="fg" style="margin-top:10px;"><label>Hiddenness Score <span style="font-size:.68rem;font-weight:400;color:var(--g400);">0–100</span></label><input type="number" id="ca-score" min="0" max="100" step="1" value="0" placeholder="0"></div>
     <div class="sdiv">Caratteristiche specifiche</div>
     <div class="specs-box">
-      <div class="specs-hd"><div class="specs-hd-lbl">Specifiche</div><button class="btn bs sm" onclick="addSpecRow('ca-main','','')">+ Aggiungi</button></div>
+      <div class="specs-hd"><div class="specs-hd-lbl">Specifiche</div><button class="btn bs sm" onclick="addSpecRow('ca-main','','','','')">+ Aggiungi</button></div>
       <div class="spec-rows" id="spec-rows-ca-main"></div>
     </div>
     <div class="sdiv" style="margin-top:14px;">Foto <span style="font-weight:400;font-size:.68rem;color:var(--g400);">(compresse automaticamente)</span></div>
@@ -1816,7 +1816,7 @@ function addActRow(a){
     +'<div class="fg"><label>🤫 Secret EN</label><input type="text" class="ar-secret-en" placeholder="The local detail that makes the difference…"></div>'
     +'<div class="fg"><label>Caratteristiche specifiche</label>'
     +'<div class="specs-box">'
-    +'<div class="specs-hd"><div class="specs-hd-lbl">Specifiche</div><button class="btn bs sm" onclick="addSpecRow(\''+rid+'\',\'\',\'\')">+ Aggiungi</button></div>'
+    +'<div class="specs-hd"><div class="specs-hd-lbl">Specifiche</div><button class="btn bs sm" onclick="addSpecRow(\''+rid+'\',\'\',\'\',\'\',\'\')">+ Aggiungi</button></div>'
     +'<div class="spec-rows" id="spec-rows-'+rid+'"></div>'
     +'<div class="presets-row" id="presets-'+rid+'"></div>'
     +'</div></div>'
@@ -1885,7 +1885,7 @@ function addActRow(a){
       div.querySelector('.ar-exp-type').value=a.experienceTypeId;
       populateExpSubtypeSelect(div.querySelector('.ar-exp-subtype'), a.experienceTypeId, a.experienceSubtypeId);
     }
-    (a.specs||[]).forEach(function(s){ addSpecRow(rid, s.k, s.v); });
+    (a.specs||[]).forEach(function(s){ addSpecRow(rid, s.k, s.k_en||'', s.v, s.v_en||''); });
   }
 
   // Load presets for current type
@@ -1901,22 +1901,27 @@ function loadPresets(rid, typeId){
   var el=document.getElementById('presets-'+rid);
   if(!el) return;
   el.innerHTML=presets.map(function(p){
-    return '<button class="preset-btn" onclick="addSpecRow(\''+rid+'\',\''+p+'\',\'\')">'+p+'</button>';
+    return '<button class="preset-btn" onclick="addSpecRow(\''+rid+'\',\''+p+'\',\'\',\'\',\'\')">'+p+'</button>';
   }).join('');
 }
 
-function addSpecRow(rid, k, v){
+function addSpecRow(rid, k, k_en, v, v_en){
   var rowId='sr-'+(Date.now()+Math.random()).toString().replace('.','');
   var rows=document.getElementById('spec-rows-'+rid);
   if(!rows) return;
+  var inp='border:1px solid var(--g200);border-radius:var(--r);padding:6px 9px;font-family:var(--f);font-size:.82rem;outline:none;width:100%;';
   var div=document.createElement('div');
-  div.id=rowId; div.className='spec-row';
-  div.innerHTML='<input type="text" class="spec-k" placeholder="Es. Lunghezza" value="" style="flex:0 0 38%;border:1px solid var(--g200);border-radius:var(--r);padding:6px 9px;font-family:var(--f);font-size:.82rem;outline:none;">'
-    +'<input type="text" class="spec-v" placeholder="Es. 8 km A/R" value="" style="flex:1;border:1px solid var(--g200);border-radius:var(--r);padding:6px 9px;font-family:var(--f);font-size:.82rem;outline:none;">'
-    +'<button class="spec-rm" onclick="document.getElementById(\''+rowId+'\').remove()">✕</button>';
+  div.id=rowId; div.className='spec-row'; div.style.display='grid'; div.style.gridTemplateColumns='1fr 1fr auto'; div.style.gap='6px'; div.style.alignItems='start';
+  div.innerHTML='<input type="text" class="spec-k" placeholder="Nome (IT)" style="'+inp+'">'
+    +'<input type="text" class="spec-v" placeholder="Valore (IT)" style="'+inp+'">'
+    +'<button class="spec-rm" style="margin-top:1px;" onclick="document.getElementById(\''+rowId+'\').remove()">✕</button>'
+    +'<input type="text" class="spec-k-en" placeholder="Spec name (EN)" style="'+inp+';grid-column:1;">'
+    +'<input type="text" class="spec-v-en" placeholder="Value (EN)" style="'+inp+';grid-column:2;">';
   rows.appendChild(div);
   div.querySelector('.spec-k').value=k||'';
+  div.querySelector('.spec-k-en').value=k_en||'';
   div.querySelector('.spec-v').value=v||'';
+  div.querySelector('.spec-v-en').value=v_en||'';
 }
 
 function handleActPhoto(inp, rid){
@@ -2018,8 +2023,10 @@ function savePlace(){
     var specs=[];
     row.querySelectorAll('.spec-row').forEach(function(sr){
       var k=(sr.querySelector('.spec-k')&&sr.querySelector('.spec-k').value||'').trim();
+      var k_en=(sr.querySelector('.spec-k-en')&&sr.querySelector('.spec-k-en').value||'').trim();
       var v=(sr.querySelector('.spec-v')&&sr.querySelector('.spec-v').value||'').trim();
-      if(k) specs.push({k:k,v:v});
+      var v_en=(sr.querySelector('.spec-v-en')&&sr.querySelector('.spec-v-en').value||'').trim();
+      if(k) specs.push({k:k,k_en:k_en,v:v,v_en:v_en});
     });
     var rawExpType=row.querySelector('.ar-exp-type')&&row.querySelector('.ar-exp-type').value||'';
     var rawExpSubtype=row.querySelector('.ar-exp-subtype')&&row.querySelector('.ar-exp-subtype').value||'';
@@ -2746,7 +2753,7 @@ function fillCityActForm(a){
   }
   renderCityActGGrid();
   document.getElementById('spec-rows-ca-main').innerHTML='';
-  (a.specs||[]).forEach(function(s){addSpecRow('ca-main',s.k,s.v);});
+  (a.specs||[]).forEach(function(s){addSpecRow('ca-main',s.k,s.k_en||'',s.v,s.v_en||'');});
   ['romantico','cinematografico','avventura','relax'].forEach(function(v){var el=document.getElementById('ca-vibe-'+v);if(el)el.checked=(a.vibe||[]).indexOf(v)>=0;});
 }
 
@@ -2823,8 +2830,10 @@ function saveCityAct(){
   var specs=[];
   document.querySelectorAll('#spec-rows-ca-main .spec-row').forEach(function(sr){
     var k=(sr.querySelector('.spec-k')&&sr.querySelector('.spec-k').value||'').trim();
+    var k_en=(sr.querySelector('.spec-k-en')&&sr.querySelector('.spec-k-en').value||'').trim();
     var v=(sr.querySelector('.spec-v')&&sr.querySelector('.spec-v').value||'').trim();
-    if(k) specs.push({k:k,v:v});
+    var v_en=(sr.querySelector('.spec-v-en')&&sr.querySelector('.spec-v-en').value||'').trim();
+    if(k) specs.push({k:k,k_en:k_en,v:v,v_en:v_en});
   });
   var obj={
     id:editCityActId||undefined,
