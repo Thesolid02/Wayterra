@@ -93,7 +93,7 @@ nav{position:sticky;top:0;z-index:100;padding:0 24px;height:64px;display:flex;al
 #lang-dropdown-btn{background:#fff;color:#1a1a1a;border:0.5px solid #ddd;border-radius:20px;padding:8px 10px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-family:var(--f);height:36px;width:56px;min-width:56px;box-sizing:border-box;}
 #lang-dropdown-btn:hover{border-color:#999;}
 .nav-links{display:flex;align-items:center;gap:8px;}
-@media(max-width:767px){.nav-cta-arrow{display:none;}.nav-btn{padding:8px 14px;font-size:.8rem;min-width:80px;}#lang-dropdown-btn{width:46px;min-width:46px;}.nav-btn,#lang-dropdown-btn{height:32px!important;min-height:32px!important;max-height:32px!important;padding-top:0!important;padding-bottom:0!important;line-height:32px!important;box-sizing:border-box!important;}}
+@media(max-width:767px){.nav-cta-arrow{display:none;}.nav-btn{padding:8px 14px;font-size:.8rem;min-width:80px;}#lang-dropdown-btn{width:46px;min-width:46px;}.nav-btn,#lang-dropdown-btn{height:32px!important;min-height:32px!important;max-height:32px!important;padding-top:0!important;padding-bottom:0!important;line-height:32px!important;box-sizing:border-box!important;}#lang-dropdown-btn{display:none!important;}#lang-tab{display:flex!important;flex-direction:column;}}
 
 /* HERO */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;overflow:hidden;}
@@ -599,6 +599,8 @@ function setLang(l){
   _lang=l;
   localStorage.setItem('WT_LANG_v1',l);
   var _lf=document.getElementById('lang-flag');if(_lf)_lf.textContent=l==='en'?'🇬🇧':'🇮🇹';
+  var _tcf=document.getElementById('lang-tab-flag');if(_tcf)_tcf.textContent=l==='en'?'🇬🇧':'🇮🇹';
+  var _tof=document.getElementById('lang-tab-other-flag');if(_tof)_tof.textContent=l==='en'?'🇮🇹':'🇬🇧';
   document.querySelectorAll('[data-t]').forEach(function(el){
     var key=el.getAttribute('data-t');
     if(!T[l]||T[l][key]===undefined)return;
@@ -895,6 +897,10 @@ function showToast(msg){
 function toggleLangDropdown(){var dd=document.getElementById('lang-dropdown');dd.style.display=dd.style.display==='none'?'block':'none';}
 function closeLangDropdown(){var dd=document.getElementById('lang-dropdown');if(dd)dd.style.display='none';}
 document.addEventListener('click',function(e){var btn=document.getElementById('lang-dropdown-btn');if(btn&&!btn.contains(e.target))closeLangDropdown();});
+var _langTabOpen=false;
+function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display=_langTabOpen?'flex':'none';}
+function switchLangFromTab(l){setLang(l);_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}
+document.addEventListener('click',function(e){var tab=document.getElementById('lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}});
 document.addEventListener('DOMContentLoaded',async function(){
   if(window.location.hash.includes('type=recovery')){
     document.getElementById('reset-password-sheet').style.display='block';
@@ -1043,6 +1049,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
   <div style="position:absolute;top:16px;right:16px;">
     <i class="ti ti-x" style="font-size:24px;color:#fff;" aria-hidden="true"></i>
   </div>
+</div>
+<div id="lang-tab" style="display:none;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:900;flex-direction:column;align-items:stretch;">
+  <div id="lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="lang-tab-flag">🇮🇹</span></div>
+  <div id="lang-tab-other" onclick="switchLangFromTab(_lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
 </div>
 </body>
 </html>
