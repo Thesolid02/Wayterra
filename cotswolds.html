@@ -159,19 +159,10 @@ section{padding:80px 24px;}
 .cta-sec{background:#dc6b2f;}
 .cta-sec .badge{background:rgba(255,255,255,.18);color:rgba(255,255,255,.85);}
 .cta-sec .s-title{color:#fff;}
-.cta-price{font-size:4rem;font-weight:900;color:#fff;letter-spacing:-.05em;line-height:1;margin:16px 0 4px;}
-.cta-price-note{font-size:.85rem;color:rgba(255,255,255,.75);margin-bottom:32px;}
+.cta-sub{font-size:1rem;color:rgba(255,255,255,.85);line-height:1.65;max-width:520px;margin:0 auto 28px;}
 .cta-btn{display:inline-flex;align-items:center;justify-content:center;width:100%;max-width:420px;padding:16px 32px;background:#fff;color:#dc6b2f;border:none;border-radius:100px;font-family:var(--f);font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 24px rgba(0,0,0,.18);transition:all .15s;text-decoration:none;}
 .cta-btn:hover{background:var(--g50);transform:translateY(-1px);}
-.cta-or{display:flex;align-items:center;gap:12px;max-width:420px;margin:24px auto;color:rgba(255,255,255,.5);font-size:.8rem;}
-.cta-or::before,.cta-or::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.25);}
-.cta-code-wrap{display:flex;gap:8px;max-width:420px;margin:0 auto;}
-.cta-code-label{font-size:.85rem;color:rgba(255,255,255,.8);margin-bottom:10px;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;}
-.cta-code-input{flex:1;padding:12px 16px;border-radius:var(--rl);border:none;font-family:var(--f);font-size:.9rem;color:var(--g900);outline:none;}
-.cta-code-input:focus{box-shadow:0 0 0 3px rgba(255,255,255,.4);}
-.cta-code-btn{padding:12px 20px;background:var(--g900);color:#fff;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;}
-.cta-code-btn:hover{background:#1f2937;}
-.cta-error{margin-top:10px;font-size:.82rem;color:rgba(255,220,200,.9);display:none;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;}
+.cta-price-note{font-size:.85rem;color:rgba(255,255,255,.75);margin-top:14px;}
 
 /* FOOTER */
 footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
@@ -183,7 +174,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 .foot-links a:hover{color:rgba(255,255,255,.7);}
 .foot-copy{font-size:.72rem;color:rgba(255,255,255,.2);}
 
-@media(max-width:640px){section{padding:60px 18px;}.cta-price{font-size:3rem;}}
+@media(max-width:640px){section{padding:60px 18px;}}
 
 /* PHONE MOCKUPS */
 .phones-row{display:flex;flex-direction:row;justify-content:center;align-items:flex-start;gap:32px;margin-top:40px;max-width:800px;margin-left:auto;margin-right:auto;}
@@ -250,7 +241,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
         <div onclick="setLang('en');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇬🇧</div>
       </div>
     </div>
-    <a href="#" id="nav-login" onclick="event.preventDefault();openLoginSheet();" class="nav-btn" data-t="nav-login">Vai alla tua guida</a>
+    <a href="https://wayterra.it/app?region=cotswolds" class="nav-btn" data-t="nav-explore">Esplora la mappa →</a>
   </div>
 </nav>
 
@@ -263,8 +254,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="hero-badge">🇬🇧 United Kingdom</div>
     <h1 class="hero-h1">Cotswolds</h1>
     <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare i borghi più belli d'Inghilterra</p>
-    <a class="hero-cta" data-t="hero-cta" href="#acquista">Acquista la guida — €9,99 →</a>
-    <div style="margin-top:16px;"><a href="#" onclick="event.preventDefault();openLoginSheet();" style="font-size:14px;color:rgba(255,255,255,.75);text-decoration:underline;cursor:pointer;" data-t="hero-login">Hai già acquistato? Accedi alla guida</a></div>
+    <a class="hero-cta" data-t="hero-cta" href="https://wayterra.it/app?region=cotswolds" onclick="trackCTAClick();">Esplora la mappa delle Cotswolds →</a>
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
@@ -354,43 +344,14 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   </div>
 </section>
 
-<!-- CTA ACQUISTO -->
-<section class="cta-sec" id="acquista">
+<!-- FREEMIUM CTA -->
+<section class="cta-sec" id="freemium">
   <div class="si tc">
-    <div class="badge" data-t="cta-badge">Accesso per sempre</div>
-    <h2 class="s-title" data-t="cta-title">Pronto a esplorare le Cotswolds?</h2>
-    <div class="cta-price" data-price>€9,99</div>
-    <div class="cta-price-note" data-t="cta-note">Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile</div>
-    <a href="https://wayterra.gumroad.com/l/lbchl" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="trackCTAClick();">Acquista la guida Cotswolds →</a>
-    <div style="display:flex;align-items:center;justify-content:flex-start;gap:6px;margin-top:12px;margin-bottom:10px;">
-      <i class="ti ti-lock" style="font-size:14px;color:rgba(255,255,255,0.85);"></i>
-      <span style="font-size:12px;color:rgba(255,255,255,0.85);" data-t="payment-secure">Pagamento sicuro e crittografato</span>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
-      <div style="border:0.5px solid rgba(255,255,255,0.3);border-radius:6px;padding:4px 8px;display:flex;align-items:center;justify-content:flex-start;height:28px;background:rgba(255,255,255,0.15);">
-        <svg width="38" height="12" viewBox="0 0 38 12"><text x="0" y="11" font-family="Arial" font-size="13" font-weight="700" fill="#fff">VISA</text></svg>
-      </div>
-      <div style="border:0.5px solid rgba(255,255,255,0.3);border-radius:6px;padding:4px 8px;display:flex;align-items:center;height:28px;background:rgba(255,255,255,0.15);">
-        <div style="width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.7);"></div>
-        <div style="width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.5);margin-left:-6px;"></div>
-      </div>
-      <div style="border:0.5px solid rgba(255,255,255,0.3);border-radius:6px;padding:4px 8px;display:flex;align-items:center;justify-content:flex-start;height:28px;background:rgba(255,255,255,0.15);">
-        <svg width="42" height="14" viewBox="0 0 42 14"><text x="0" y="11" font-family="Arial" font-size="11" font-weight="700" fill="#fff">Pay</text><text x="20" y="11" font-family="Arial" font-size="11" font-weight="700" fill="rgba(255,255,255,0.8)">Pal</text></svg>
-      </div>
-      <div style="border:0.5px solid rgba(255,255,255,0.3);border-radius:6px;padding:4px 8px;display:flex;align-items:center;justify-content:flex-start;height:28px;background:rgba(255,255,255,0.15);">
-        <svg width="50" height="14" viewBox="0 0 50 14"><text x="0" y="11" font-family="Arial" font-size="10" font-weight="500" fill="#fff">Apple Pay</text></svg>
-      </div>
-    </div>
-    <div style="text-align:left;font-size:11px;color:rgba(255,255,255,0.7);" data-t="payment-info">
-      Gestito da <span style="font-weight:500;color:rgba(255,255,255,0.7);">Gumroad</span> · Accesso immediato dopo il pagamento
-    </div>
-    <div class="cta-or" data-t="cta-or">oppure</div>
-    <div class="cta-code-label" data-t="cta-code-label">Hai un codice di accesso?</div>
-    <div class="cta-code-wrap">
-      <input class="cta-code-input" id="access-code-input" type="text" placeholder="Inserisci codice" data-t="cta-code-input">
-      <button class="cta-code-btn" onclick="activateCode()" data-t="cta-code-btn">Attiva</button>
-    </div>
-    <div class="cta-error" id="code-error" data-t="cta-error">Codice non valido</div>
+    <div class="badge" data-t="cta-badge">COME FUNZIONA</div>
+    <h2 class="s-title" data-t="cta-title">Esplora gratis, acquista quando vuoi</h2>
+    <p class="cta-sub" data-t="cta-sub">Accedi subito alla mappa delle Cotswolds. Quando sei pronto, sblocca la guida completa dall'app.</p>
+    <a href="https://wayterra.it/app?region=cotswolds" class="cta-btn" data-t="cta-btn" onclick="trackCTAClick();">Esplora la mappa →</a>
+    <div class="cta-price-note" data-t="cta-price-note">€9,99 per l'accesso completo alla guida</div>
   </div>
 </section>
 
@@ -425,10 +386,9 @@ var _lang=localStorage.getItem('WT_LANG_v1')||'it';
 // Translation
 var T={
   it:{
-    'nav-buy':'Acquista la guida <span class="nav-cta-arrow">→</span>',
-    'nav-login':'Vai alla tua guida',
+    'nav-explore':'Esplora la mappa →',
     'hero-sub':"La guida completa per esplorare i borghi più belli d'Inghilterra",
-    'hero-cta':'Acquista la guida — €'+COTSWOLDS_PRICE.replace('.',',')+' →',
+    'hero-cta':'Esplora la mappa delle Cotswolds →',
     'hero-scroll':'SCORRI',
     'intro-badge':'La guida',
     'video-label':'I villaggi che troverai nella guida',
@@ -451,45 +411,17 @@ var T={
     'rev-badge':'Recensioni',
     'rev-pill':'+500 viaggiatori la stanno già utilizzando',
     'rev-title':'Cosa dicono i viaggiatori',
-    'cta-badge':'Accesso per sempre',
-    'cta-title':'Pronto a esplorare le Cotswolds?',
-    'cta-note':'Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile',
-    'cta-btn':'Acquista la guida Cotswolds →',
-    'payment-secure':'Pagamento sicuro e crittografato',
-    'cta-or':'oppure',
-    'cta-code-label':'Hai un codice di accesso?',
-    'cta-code-input':'Inserisci codice',
-    'cta-code-btn':'Attiva',
-    'cta-error':'Codice non valido',
-    'launch-offer':'⏳ Offerta lancio — valida fino al 6 settembre',
-    'gallery-caption':'Alcuni scatti del nostro itinerario',
-    'purchase-title':'Quasi lì! 🎉',
-    'purchase-sub':'Inserisci la tua email per ricevere l\'accesso alla guida.',
-    'purchase-email-placeholder':'nome@email.com',
-    'purchase-error':'Inserisci un\'email valida',
-    'purchase-cta':'Continua con il pagamento →',
-    'purchase-already':'Hai già comprato questa guida ☺️',
-    'purchase-login-text':'Hai già un account?',
-    'purchase-login-link':'Accedi',
-    'login-title':'Accedi al tuo account',
-    'login-sub':'Inserisci le tue credenziali per accedere alla guida Cotswolds.',
-    'login-email-placeholder':'nome@email.com',
-    'login-password-placeholder':'Password',
-    'login-error':'Email o password non corretti.',
-    'login-cta':'Accedi →',
-    'login-forgot':'Password dimenticata?',
-    'hero-login':'Hai già acquistato? Accedi alla guida',
-    'forgot-title':'Recupera password',
-    'forgot-sub':'Inserisci la tua email per ricevere il link di recupero.',
-    'forgot-btn':'Invia link di recupero',
-    'reset-title':'Crea nuova password',
-    'reset-btn':'Salva nuova password'
+    'cta-badge':'COME FUNZIONA',
+    'cta-title':'Esplora gratis, acquista quando vuoi',
+    'cta-sub':"Accedi subito alla mappa delle Cotswolds. Quando sei pronto, sblocca la guida completa dall'app.",
+    'cta-btn':'Esplora la mappa →',
+    'cta-price-note':"€9,99 per l'accesso completo alla guida",
+    'gallery-caption':'Alcuni scatti del nostro itinerario'
   },
   en:{
-    'nav-buy':'Buy the guide <span class="nav-cta-arrow">→</span>',
-    'nav-login':'Go to your guide',
+    'nav-explore':'Explore the map →',
     'hero-sub':"The complete guide to exploring England's most beautiful villages",
-    'hero-cta':'Buy the guide — €'+COTSWOLDS_PRICE+' →',
+    'hero-cta':'Explore the Cotswolds map →',
     'hero-scroll':'SCROLL',
     'intro-badge':'The guide',
     'video-label':"The villages you'll find in the guide",
@@ -512,39 +444,12 @@ var T={
     'rev-badge':'Reviews',
     'rev-pill':'+500 travelers are already using it',
     'rev-title':'What travelers say',
-    'cta-badge':'Permanent access',
-    'cta-title':'Ready to explore the Cotswolds?',
-    'cta-note':'Permanent access • Updates included • Downloadable PDF',
-    'cta-btn':'Buy the Cotswolds guide →',
-    'payment-secure':'Secure and encrypted payment',
-    'cta-or':'or',
-    'cta-code-label':'Do you have an access code?',
-    'cta-code-input':'Enter code',
-    'cta-code-btn':'Activate',
-    'cta-error':'Invalid code',
-    'launch-offer':'⏳ Launch offer — valid until September 6th',
-    'gallery-caption':'Some shots from our itinerary',
-    'purchase-title':'Almost there! 🎉',
-    'purchase-sub':'Enter your email to receive access to the guide.',
-    'purchase-email-placeholder':'name@email.com',
-    'purchase-error':'Enter a valid email',
-    'purchase-cta':'Continue to payment →',
-    'purchase-already':'You already purchased this guide ☺️',
-    'purchase-login-text':'Already have an account?',
-    'purchase-login-link':'Sign in',
-    'login-title':'Sign in to your account',
-    'login-sub':'Enter your credentials to access the Cotswolds guide.',
-    'login-email-placeholder':'name@email.com',
-    'login-password-placeholder':'Password',
-    'login-error':'Invalid email or password.',
-    'login-cta':'Sign in →',
-    'login-forgot':'Forgot password?',
-    'hero-login':'Already purchased? Access the guide',
-    'forgot-title':'Reset password',
-    'forgot-sub':'Enter your email to receive the recovery link.',
-    'forgot-btn':'Send recovery link',
-    'reset-title':'Create new password',
-    'reset-btn':'Save new password'
+    'cta-badge':'HOW IT WORKS',
+    'cta-title':"Explore for free, buy when you're ready",
+    'cta-sub':'Access the Cotswolds map straight away. When you\'re ready, unlock the full guide from the app.',
+    'cta-btn':'Explore the map →',
+    'cta-price-note':'€9.99 for full access to the guide',
+    'gallery-caption':'Some shots from our itinerary'
   }
 };
 var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
@@ -619,21 +524,6 @@ function setLang(l){
 setLang(localStorage.getItem('WT_LANG_v1')||'it');
 
 
-// Code activation
-function activateCode(){
-  var code=document.getElementById('access-code-input').value.trim().toLowerCase();
-  var err=document.getElementById('code-error');
-  if(code==='waycotswolds'){
-    localStorage.setItem('WT_ACCESS_COTSWOLDS','1');
-    window.location.href='https://wayterra.it/app?region=cotswolds';
-  } else {
-    err.style.display='block';
-    setTimeout(function(){err.style.display='none';},3000);
-  }
-}
-document.getElementById('access-code-input').addEventListener('keydown',function(e){
-  if(e.key==='Enter')activateCode();
-});
 
 function openLandingReviewsPopup(reviews,regionName){
   var popup=document.getElementById('landing-reviews-popup');
@@ -750,77 +640,6 @@ function closeLandingReviewsPopup(){
     <div id="lrp-list" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;"></div>
   </div>
 </div>
-<div id="purchase-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="closePurchaseSheet()"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
-    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
-    <div data-t="purchase-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Quasi lì! 🎉</div>
-    <div data-t="purchase-sub" style="font-size:14px;color:#888;margin-bottom:20px;">Inserisci la tua email per ricevere l'accesso alla guida.</div>
-    <input id="purchase-email" type="email" data-t-placeholder="purchase-email-placeholder" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
-    <div id="purchase-email-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;" data-t="purchase-error">Inserisci un'email valida</div>
-    <button id="purchase-cta-btn" onclick="goToPurchase()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="purchase-cta">Continua con il pagamento →</button>
-    <div style="text-align:center;margin-top:12px;font-size:13px;color:#888;">
-      <span data-t="purchase-login-text">Hai già un account?</span> <a href="#" onclick="openLoginFromPurchase();return false;" style="color:#dc6b2f;" data-t="purchase-login-link">Accedi</a>
-    </div>
-  </div>
-</div>
-<script>
-function openPurchaseSheet(){document.getElementById('purchase-sheet').style.display='block';}
-function closePurchaseSheet(){document.getElementById('purchase-sheet').style.display='none';}
-async function goToPurchase(){
-  var email=document.getElementById('purchase-email').value.trim();
-  var errEl=document.getElementById('purchase-email-error');
-  if(!email||!email.includes('@')){errEl.style.display='block';errEl.textContent=T[_lang]['purchase-error'];return;}
-  errEl.style.display='none';
-  var btn=document.getElementById('purchase-cta-btn');
-  var originalText=btn.textContent;
-  btn.textContent='...';btn.disabled=true;
-  try{
-    var resp=await fetch(_SB_URL+'/functions/v1/check-email',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_SB_ANON_KEY},
-      body:JSON.stringify({email:email})
-    });
-    var data=await resp.json();
-    if(data.exists){
-      errEl.textContent=T[_lang]['purchase-already'];errEl.style.display='block';
-      btn.textContent=originalText;btn.disabled=false;
-      return;
-    }
-  }catch(e){
-    console.warn('check-email failed',e);
-  }
-  localStorage.setItem('WT_PENDING_EMAIL',email);
-  window.location.href='https://wayterra.gumroad.com/l/lbchl';
-}
-</script>
-<div id="login-sheet" style="display:none;position:fixed;inset:0;z-index:1001;">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="closeLoginSheet()"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
-    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
-    <div data-t="login-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Accedi al tuo account</div>
-    <div data-t="login-sub" style="font-size:14px;color:#888;margin-bottom:20px;">Inserisci le tue credenziali per accedere alla guida Cotswolds.</div>
-    <button onclick="loginWithGoogle()" style="width:100%;background:#fff;color:#1a1a1a;border:1px solid #ddd;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;">
-      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-      Continua con Google
-    </button>
-    <div style="text-align:center;margin-bottom:16px;font-size:13px;color:#bbb;">oppure</div>
-    <input id="login-email" type="email" data-t-placeholder="login-email-placeholder" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
-    <input id="login-password" type="password" data-t-placeholder="login-password-placeholder" placeholder="Password" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
-    <div id="login-error" data-t="login-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;">Email o password non corretti.</div>
-    <button onclick="submitLogin()" id="login-cta-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="login-cta">Accedi →</button>
-    <div style="text-align:center;margin-top:8px;"><a href="#" onclick="event.preventDefault();document.getElementById('login-sheet').style.display='none';document.getElementById('forgot-password-sheet').style.display='block';" style="font-size:12px;color:#888;" data-t="login-forgot">Password dimenticata?</a></div>
-  </div>
-</div>
-<div id="profile-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="document.getElementById('profile-sheet').style.display='none'"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
-    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
-    <div id="profile-email" style="font-size:14px;color:#888;margin-bottom:20px;text-align:center;"></div>
-    <button onclick="localStorage.setItem('WT_REDIRECT_REGION','cotswolds');window.location.href='/app';" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:10px;">Accedi alla guida →</button>
-    <button onclick="_supaLanding.auth.signOut().then(function(){window.location.reload();})" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;font-family:inherit;">Logout</button>
-  </div>
-</div>
 <script>
 var _SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
 var _SB_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
@@ -850,43 +669,8 @@ var _timeTracked={};
   },seconds*1000);
 });
 async function trackCTAClick(){
-  try{if(_supaLanding)await _supaLanding.from('analytics_events').insert({event_type:'cta_purchase_click',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,user_id:null});}catch(e){}
-  _supaLanding&&_supaLanding.auth.getSession().then(function(res){
-    var _tgUser=res.data&&res.data.session&&res.data.session.user?res.data.session.user.email:'Visitatore anonimo';
-    fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'🛒 Click Acquista Cotswolds\nUtente: '+_tgUser})}).catch(function(){});
-  });
-}
-function openLoginSheet(){document.getElementById('login-sheet').style.display='block';}
-function openLoginFromPurchase(){closePurchaseSheet();openLoginSheet();}
-function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
-async function loginWithGoogle(){if(!_supaLanding)return;await _supaLanding.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/cotswolds'}});}
-async function resetPassword(){
-  var email=document.getElementById('login-email').value.trim();
-  if(!email){alert(_lang==='en'?'Enter your email first':'Inserisci prima la tua email');return;}
-  await _supaLanding.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/cotswolds'});
-  alert(_lang==='en'?'Password reset email sent!':'Email di recupero inviata!');
-}
-async function submitLogin(){
-  var email=document.getElementById('login-email').value.trim();
-  var password=document.getElementById('login-password').value;
-  var errEl=document.getElementById('login-error');
-  var btn=document.getElementById('login-cta-btn');
-  errEl.style.display='none';
-  if(!email||!email.includes('@')||!password){errEl.style.display='block';return;}
-  btn.disabled=true;btn.textContent='...';
-  if(!_supaLanding){errEl.style.display='block';btn.disabled=false;btn.textContent=_lang==='en'?'Sign in →':'Accedi →';return;}
-  var result=await _supaLanding.auth.signInWithPassword({email:email,password:password});
-  if(result.error){errEl.style.display='block';btn.disabled=false;btn.textContent=_lang==='en'?'Sign in →':'Accedi →';return;}
-  localStorage.setItem('WT_REDIRECT_REGION','cotswolds');
-  window.location.href='/app';
-}
-function openProfilePopup(){
-  if(!_supaLanding)return;
-  _supaLanding.auth.getSession().then(function(result){
-    var session=result.data&&result.data.session;
-    if(session)document.getElementById('profile-email').textContent=session.user.email;
-  });
-  document.getElementById('profile-sheet').style.display='block';
+  try{if(_supaLanding)await _supaLanding.from('analytics_events').insert({event_type:'cta_explore_click',region:'cotswolds',session_id:localStorage.getItem('WT_SESSION_ID')||null,user_id:null});}catch(e){}
+  fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'🗺️ Click Esplora Mappa Cotswolds'})}).catch(function(){});
 }
 function showToast(msg){
   var t=document.getElementById('wt-toast');
@@ -901,30 +685,10 @@ var _langTabOpen=false;
 function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display=_langTabOpen?'flex':'none';}
 function switchLangFromTab(l){setLang(l);_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}
 document.addEventListener('click',function(e){var tab=document.getElementById('lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}});
-document.addEventListener('DOMContentLoaded',async function(){
-  if(window.location.hash.includes('type=recovery')){
-    document.getElementById('reset-password-sheet').style.display='block';
-  }
-  if(!_supaLanding)return;
-  var r=await _supaLanding.auth.getSession();
-  var session=r.data&&r.data.session;
+document.addEventListener('DOMContentLoaded',function(){
   if(!sessionStorage.getItem('WT_NOTIF_COTSWOLDS_VIEW')){
     sessionStorage.setItem('WT_NOTIF_COTSWOLDS_VIEW','1');
-    var _tgUser=session&&session.user?session.user.email:'Visitatore anonimo';
-    fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'👀 Visita pagina Cotswolds\nUtente: '+_tgUser})}).catch(function(){});
-  }
-  if(session&&session.user){
-    document.querySelectorAll('.cta-btn').forEach(function(btn){
-      btn.textContent=_lang==='en'?'Access the guide →':'Accedi alla guida →';
-      btn.onclick=function(){localStorage.setItem('WT_REDIRECT_REGION','cotswolds');window.location.href='/app';};
-    });
-    var _userId=session.user.id;
-    _supaLanding.from('profiles').select('avatar_url').eq('id',_userId).single().then(function(result){
-      var avatarUrl=(result.data&&result.data.avatar_url)||(session.user.user_metadata&&session.user.user_metadata.avatar_url);
-      var initials=(session.user.email||'U').charAt(0).toUpperCase();
-      var navLogin=document.getElementById('nav-login');
-      if(navLogin){navLogin.outerHTML='<div id="nav-avatar" onclick="openProfilePopup()" style="width:34px;height:34px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">'+(avatarUrl?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</span>')+'</div>';}
-    });
+    fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'👀 Visita pagina Cotswolds\nUtente: Visitatore anonimo'})}).catch(function(){});
   }
 });
 </script>
@@ -991,48 +755,7 @@ CookieConsent.run({
   onChange: function() {}
 });
 </script>
-<div id="forgot-password-sheet" style="display:none;position:fixed;inset:0;z-index:1001;">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="document.getElementById('forgot-password-sheet').style.display='none'"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
-    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
-    <div data-t="forgot-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Recupera password</div>
-    <div data-t="forgot-sub" style="font-size:14px;color:#888;margin-bottom:16px;">Inserisci la tua email per ricevere il link di recupero.</div>
-    <input id="forgot-email-input" type="email" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
-    <div id="forgot-email-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
-    <button onclick="sendResetEmail()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="forgot-btn">Invia link di recupero</button>
-  </div>
-</div>
-<div id="reset-password-sheet" style="display:none;position:fixed;inset:0;z-index:1002;">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
-    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
-    <div data-t="reset-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Crea nuova password</div>
-    <input id="reset-password-input" type="password" placeholder="Nuova password (min. 6 caratteri)" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
-    <div id="reset-password-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
-    <button onclick="saveNewPassword()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="reset-btn">Salva nuova password</button>
-  </div>
-</div>
 <script>
-async function sendResetEmail(){
-  var email=document.getElementById('forgot-email-input').value.trim();
-  var errEl=document.getElementById('forgot-email-error');
-  if(!email||!email.includes('@')){errEl.textContent=_lang==='en'?'Enter a valid email':'Inserisci un\'email valida';errEl.style.display='block';return;}
-  var btn=document.querySelector('#forgot-password-sheet button');
-  btn.disabled=true;btn.textContent='...';
-  await _supaLanding.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/cotswolds'});
-  document.getElementById('forgot-password-sheet').style.display='none';
-  btn.disabled=false;
-  showToast(_lang==='en'?'Recovery email sent! Check your inbox.':'Email di recupero inviata! Controlla la casella.');
-}
-async function saveNewPassword(){
-  var password=document.getElementById('reset-password-input').value;
-  var errEl=document.getElementById('reset-password-error');
-  if(password.length<6){errEl.textContent=_lang==='en'?'Password must be at least 6 characters':'La password deve essere di almeno 6 caratteri';errEl.style.display='block';return;}
-  var result=await _supaLanding.auth.updateUser({password:password});
-  if(result.error){errEl.textContent=result.error.message;errEl.style.display='block';return;}
-  document.getElementById('reset-password-sheet').style.display='none';
-  showToast(_lang==='en'?'Password updated! ✓':'Password aggiornata! ✓');
-}
 function openLightbox(src){
   document.getElementById('lightbox-img').src=src;
   document.getElementById('lightbox').style.display='flex';
