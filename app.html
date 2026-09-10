@@ -6977,5 +6977,25 @@ function _setOnboardingFieldsLocked(locked){
   <div id="lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="lang-tab-flag">🇮🇹</span></div>
   <div id="lang-tab-other" onclick="switchLangFromTab(lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
 </div>
+<script>
+window.addEventListener('load', function() {
+  var tab = document.getElementById('lang-tab');
+  if(!tab) {
+    console.log('lang-tab NON TROVATO nel DOM');
+    return;
+  }
+  console.log('lang-tab trovato');
+  console.log('display computed:', window.getComputedStyle(tab).display);
+  console.log('visibility:', window.getComputedStyle(tab).visibility);
+  console.log('z-index:', window.getComputedStyle(tab).zIndex);
+  console.log('position:', window.getComputedStyle(tab).position);
+  console.log('top:', window.getComputedStyle(tab).top);
+  console.log('right:', window.getComputedStyle(tab).right);
+
+  // forza la visibilità
+  tab.style.cssText = 'display:flex!important;flex-direction:column;position:fixed!important;right:0!important;top:50%!important;transform:translateY(-50%)!important;z-index:9999!important;';
+  console.log('lang-tab forzato visibile');
+});
+</script>
 </body>
 </html>
