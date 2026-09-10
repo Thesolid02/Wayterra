@@ -3883,6 +3883,10 @@ function loadEsperienze(){
         }
       } else {
         var _regionParam=_urlParams.get('region');
+        console.log('URL params:', window.location.search);
+        console.log('WT_PROMO_ACCESS:', localStorage.getItem('WT_PROMO_ACCESS'));
+        console.log('region param:', _regionParam);
+        console.log('K.UC (WT_ACCESS_COTSWOLDS):', localStorage.getItem(K.UC));
         if(_regionParam){
           if(_regionParam==='cotswolds'&&!localStorage.getItem(K.UC)){
             if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){
