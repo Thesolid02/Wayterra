@@ -256,6 +256,7 @@ textarea.ft{resize:vertical;line-height:1.65;}
   <button class="tab" onclick="switchTab('experience',this)">Categorie attività</button>
   <button class="tab" onclick="switchTab('esperienze',this)">Itinerari</button>
   <button class="tab" onclick="switchTab('analytics',this)">📊 Analytics</button>
+  <button class="tab" onclick="switchTab('settings',this)">⚙️ Impostazioni</button>
 </div>
 
 <div class="pane on" id="pane-places">
@@ -458,20 +459,29 @@ textarea.ft{resize:vertical;line-height:1.65;}
     <div class="an-card-title">Click per sezione</div>
     <div id="an-section-clicks"><div class="an-loading">Caricamento…</div></div>
   </div>
-  <hr class="an-divider" style="margin-top:24px;">
-  <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin:4px 0 12px;">Impostazioni Cotswolds</div>
-  <div class="an-card" style="margin-bottom:0;">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-      <div>
-        <div style="font-size:14px;font-weight:500;color:#1a1a1a;">Guida gratuita</div>
-        <div style="font-size:12px;color:#888;margin-top:2px;">Se attivo: itinerario completo visibile a tutti senza acquisto</div>
+</div>
+</div>
+
+<div class="pane" id="pane-settings">
+<div class="page">
+  <div id="settings-section">
+    <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:20px;">Impostazioni guide</h2>
+    <div style="background:#fff;border:0.5px solid #eee;border-radius:12px;padding:20px;max-width:400px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:15px;font-weight:500;">Guida Cotswolds</div>
+          <div style="font-size:13px;color:#888;margin-top:4px;">Modalità accesso</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="cotswolds-free-label" style="font-size:13px;color:#888;">🔒 Premium</span>
+          <label style="position:relative;display:inline-block;width:44px;height:24px;">
+            <input type="checkbox" id="cotswolds-free-toggle" onchange="toggleCotswoldsFree(this.checked)" style="opacity:0;width:0;height:0;">
+            <span id="cotswolds-free-slider" style="position:absolute;cursor:pointer;inset:0;background:#ddd;border-radius:24px;transition:.3s;"></span>
+          </label>
+        </div>
       </div>
-      <div id="cotswolds-free-btns" style="display:inline-flex;align-items:center;background:var(--g100);border:0.5px solid var(--g200);border-radius:7px;overflow:hidden;">
-        <button id="cf-btn-free" onclick="setCotswoldsFree(false)" style="padding:5px 12px;font-size:.75rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);">Free</button>
-        <button id="cf-btn-paid" onclick="setCotswoldsFree(true)" style="padding:5px 12px;font-size:.75rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);">Pagamento</button>
-      </div>
+      <div style="font-size:12px;color:#bbb;margin-top:12px;">Se attivo, tutti gli utenti accedono alla guida completa gratuitamente senza pagare.</div>
     </div>
-    <div id="cotswolds-free-status" style="font-size:12px;margin-top:10px;color:#888;"></div>
   </div>
 </div>
 </div>
@@ -1477,6 +1487,7 @@ function switchTab(t,btn){
   if(t==='experience') renderExpTypes();
   if(t==='esperienze') renderEsperienze();
   if(t==='analytics'){renderAnalytics();startAnLive();}
+  if(t==='settings'){loadCotswoldsSetting();}
 }
 
 // ═══ HELPERS ═══
@@ -3611,39 +3622,31 @@ function renderAnalytics(){
   renderAnCounters();
   renderAnUsers();
   renderBehavior();
-  loadCotswoldsFreeToggle();
 }
-async function loadCotswoldsFreeToggle(){
+async function loadCotswoldsSetting(){
   try{
     var r=await fetch(SB_URL+'/rest/v1/settings?select=value&key=eq.cotswolds_free&limit=1',{headers:_anH});
     var rows=r.ok?await r.json():[];
-    var isFree=(rows.length&&rows[0].value==='true');
-    _updateCFBtns(isFree);
-  }catch(e){_anSet('cotswolds-free-status','Errore caricamento impostazione');}
+    var isFree=!!(rows.length&&rows[0].value==='true');
+    var tog=document.getElementById('cotswolds-free-toggle');
+    if(tog)tog.checked=isFree;
+    updateCotswoldsToggleUI(isFree);
+  }catch(e){}
 }
-async function setCotswoldsFree(free){
+async function toggleCotswoldsFree(checked){
   try{
-    var _h=Object.assign({},_anH,{'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'});
-    var r=await fetch(SB_URL+'/rest/v1/settings',{method:'POST',headers:_h,body:JSON.stringify({key:'cotswolds_free',value:free?'true':'false',updated_at:new Date().toISOString()})});
-    if(!r.ok){var e=await r.text();throw new Error(e);}
-    _updateCFBtns(free);
-    toast((free?'✅ Guida libera attivata':'🔒 Pagamento richiesto'),'ok');
+    var h=Object.assign({},_anH,{'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'});
+    var r=await fetch(SB_URL+'/rest/v1/settings',{method:'POST',headers:h,body:JSON.stringify({key:'cotswolds_free',value:checked?'true':'false',updated_at:new Date().toISOString()})});
+    if(!r.ok)throw new Error(await r.text());
+    updateCotswoldsToggleUI(checked);
+    toast((checked?'✅ Guida gratuita attivata':'🔒 Paywall riattivato'),'ok');
   }catch(e){toast('⚠️ '+e.message,'err');}
 }
-function _updateCFBtns(isFree){
-  var bFree=document.getElementById('cf-btn-free');
-  var bPaid=document.getElementById('cf-btn-paid');
-  var sEl=document.getElementById('cotswolds-free-status');
-  if(!bFree||!bPaid)return;
-  if(isFree){
-    bFree.style.cssText='padding:5px 12px;font-size:.75rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);background:#16a34a;color:#fff;border-radius:5px 0 0 5px;margin:2px 0 2px 2px;';
-    bPaid.style.cssText='padding:5px 12px;font-size:.75rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);color:var(--g400);background:none;';
-    if(sEl)sEl.innerHTML='<span style="color:#16a34a;">Attivo — tutti gli utenti vedono l\'itinerario completo</span>';
-  } else {
-    bFree.style.cssText='padding:5px 12px;font-size:.75rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);color:var(--g400);background:none;';
-    bPaid.style.cssText='padding:5px 12px;font-size:.75rem;font-weight:600;border:none;cursor:pointer;font-family:var(--f);background:#2563eb;color:#fff;border-radius:0 5px 5px 0;margin:2px 2px 2px 0;';
-    if(sEl)sEl.innerHTML='<span style="color:#2563eb;">Paywall attivo — richiede acquisto Gumroad</span>';
-  }
+function updateCotswoldsToggleUI(isFree){
+  var slider=document.getElementById('cotswolds-free-slider');
+  var label=document.getElementById('cotswolds-free-label');
+  if(slider)slider.style.background=isFree?'#dc6b2f':'#ddd';
+  if(label)label.textContent=isFree?'🆓 Gratuita':'🔒 Premium';
 }
 
 var _scrollChartInst=null;
