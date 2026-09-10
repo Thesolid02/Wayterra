@@ -766,7 +766,8 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   .rp-grid{padding-left:0;padding-right:0;gap:14px;}
   .rp-card{min-height:160px;}
   .rp-card-main{min-height:220px;}
-}</style>
+}
+@media(max-width:767px){#lang-tab{display:flex!important;flex-direction:column;}}</style>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
 <script>if(localStorage.getItem('wayterra.dev')==='1')localStorage.setItem('umami.disabled','1');</script>
@@ -1788,6 +1789,10 @@ function openLangPopup(){
   document.getElementById('lang-check-en').style.display=lang==='en'?'':'none';
 }
 function closeLangPopup(){document.getElementById('lang-popup').style.display='none';}
+var _langTabOpen=false;
+function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display=_langTabOpen?'flex':'none';}
+function switchLangFromTab(l){setLang(l);_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}
+document.addEventListener('click',function(e){var tab=document.getElementById('lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}});
 function selectLang(l){setLang(l);closeLangPopup();}
 function setLang(l){
   lang=l;
@@ -1800,6 +1805,8 @@ function setLang(l){
   buildDD();
   var langVal=document.getElementById('settings-lang-value');
   if(langVal)langVal.textContent=l==='it'?'Italiano':'English';
+  var _tcf=document.getElementById('lang-tab-flag');if(_tcf)_tcf.textContent=l==='en'?'🇬🇧':'🇮🇹';
+  var _tof=document.getElementById('lang-tab-other-flag');if(_tof)_tof.textContent=l==='en'?'🇮🇹':'🇬🇧';
 }
 function applyTranslations(){
   document.getElementById('fav-title').textContent=t('favorites');
@@ -6964,6 +6971,10 @@ function _setOnboardingFieldsLocked(locked){
       <span data-t="pw-secure">Pagamento sicuro via Gumroad</span>
     </div>
   </div>
+</div>
+<div id="lang-tab" style="display:none;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:900;flex-direction:column;align-items:stretch;">
+  <div id="lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="lang-tab-flag">🇮🇹</span></div>
+  <div id="lang-tab-other" onclick="switchLangFromTab(lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
 </div>
 </body>
 </html>
