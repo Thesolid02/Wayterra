@@ -1354,7 +1354,17 @@ var T={
     no_saved:'Nessun luogo salvato',
     stats_hint:'Le statistiche si aggiornano con le tue azioni',
     dp_act_map_btn:'Esplora sulla mappa',
-    itd_pill_hint:'Scopri i percorsi pronti ✨'
+    itd_pill_hint:'Scopri i percorsi pronti ✨',
+    'pw-title':'Luogo riservato alla guida',
+    'pw-region':'Cotswolds — guida completa',
+    'pw-benefits':'Con la guida completa accedi a:',
+    'pw-benefit-1':'Tutti i luoghi e le attività sbloccati',
+    'pw-benefit-2':'Itinerario completo di 4 giorni',
+    'pw-benefit-3':'PDF scaricabile',
+    'pw-benefit-4':'Accesso per sempre',
+    'pw-price-label':'Guida Cotswolds',
+    'pw-cta':'Acquista la guida →',
+    'pw-secure':'Pagamento sicuro via Gumroad'
   },
   en:{
     search_placeholder:'Where do you want to go?',
@@ -1453,7 +1463,17 @@ var T={
     no_saved:'No saved places',
     stats_hint:'Statistics update with your actions',
     dp_act_map_btn:'Explore on map',
-    itd_pill_hint:'Discover ready-made routes ✨'
+    itd_pill_hint:'Discover ready-made routes ✨',
+    'pw-title':'Place reserved for guide owners',
+    'pw-region':'Cotswolds — full guide',
+    'pw-benefits':'With the full guide you get:',
+    'pw-benefit-1':'All places and activities unlocked',
+    'pw-benefit-2':'Complete 4-day itinerary',
+    'pw-benefit-3':'Downloadable PDF',
+    'pw-benefit-4':'Permanent access',
+    'pw-price-label':'Cotswolds guide',
+    'pw-cta':'Buy the guide →',
+    'pw-secure':'Secure payment via Gumroad'
   }
 };
 
@@ -3303,10 +3323,10 @@ function redeemCode(){
   }
 }
 function showPW(){
-  document.getElementById('pw').style.display='flex';
-  // mostra pulsante demo solo su localhost
-  var demoBtn=document.querySelector('.pw-demo');
-  if(demoBtn)demoBtn.style.display=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'block':'none';
+  document.getElementById('premium-popup').style.display='block';
+}
+function closePW(){
+  document.getElementById('premium-popup').style.display='none';
 }
 function hidePW(){
   document.getElementById('pw').style.display='none';
@@ -6854,5 +6874,38 @@ function requireAuth(actionName){
   return false;
 }
 </script>
+<div id="premium-popup" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);" onclick="closePW()"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;">
+    <div style="width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 20px;"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <div style="width:40px;height:40px;border-radius:10px;background:#fef3ec;display:flex;align-items:center;justify-content:center;">
+        <i class="ti ti-lock" style="font-size:20px;color:#dc6b2f;"></i>
+      </div>
+      <div>
+        <div style="font-size:16px;font-weight:500;color:#1a1a1a;" id="pw-title" data-t="pw-title">Luogo riservato alla guida</div>
+        <div style="font-size:13px;color:#888;" data-t="pw-region">Cotswolds — guida completa</div>
+      </div>
+    </div>
+    <div style="background:#f9f9f9;border-radius:10px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:13px;color:#555;margin-bottom:10px;" data-t="pw-benefits">Con la guida completa accedi a:</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#1a1a1a;"><i class="ti ti-check" style="font-size:14px;color:#16a34a;"></i><span data-t="pw-benefit-1">Tutti i luoghi e le attività sbloccati</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#1a1a1a;"><i class="ti ti-check" style="font-size:14px;color:#16a34a;"></i><span data-t="pw-benefit-2">Itinerario completo di 4 giorni</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#1a1a1a;"><i class="ti ti-check" style="font-size:14px;color:#16a34a;"></i><span data-t="pw-benefit-3">PDF scaricabile</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#1a1a1a;"><i class="ti ti-check" style="font-size:14px;color:#16a34a;"></i><span data-t="pw-benefit-4">Accesso per sempre</span></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-size:13px;color:#888;" data-t="pw-price-label">Guida Cotswolds</div>
+      <div style="font-size:20px;font-weight:500;color:#1a1a1a;">€9,99</div>
+    </div>
+    <a href="https://wayterra.gumroad.com/l/lbchl" target="_blank" style="display:block;background:#dc6b2f;color:#fff;border-radius:10px;padding:13px;text-align:center;font-size:15px;font-weight:500;text-decoration:none;margin-bottom:10px;" data-t="pw-cta">Acquista la guida →</a>
+    <div style="text-align:center;font-size:12px;color:#bbb;">
+      <i class="ti ti-lock" style="font-size:12px;"></i>
+      <span data-t="pw-secure">Pagamento sicuro via Gumroad</span>
+    </div>
+  </div>
+</div>
 </body>
 </html>
