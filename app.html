@@ -3883,19 +3883,14 @@ function loadEsperienze(){
         }
       } else {
         var _regionParam=_urlParams.get('region');
-        console.log('URL params:', window.location.search);
-        console.log('WT_PROMO_ACCESS:', localStorage.getItem('WT_PROMO_ACCESS'));
-        console.log('region param:', _regionParam);
-        console.log('K.UC (WT_ACCESS_COTSWOLDS):', localStorage.getItem(K.UC));
         if(_regionParam){
-          if(_regionParam==='cotswolds'&&!localStorage.getItem(K.UC)){
-            if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){
-              var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
-              selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
-              document.getElementById('purchase-onboarding-sheet').style.display='block';
-            } else {
-              openAccessRequestModal('cotswolds');
-            }
+          if(_regionParam==='cotswolds'&&localStorage.getItem('WT_PROMO_ACCESS')==='1'){
+            localStorage.removeItem(K.UC);
+            var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
+            selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+            document.getElementById('purchase-onboarding-sheet').style.display='block';
+          } else if(_regionParam==='cotswolds'&&!localStorage.getItem(K.UC)){
+            openAccessRequestModal('cotswolds');
           } else {
             var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
             var _sp=document.getElementById('splash');
