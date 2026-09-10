@@ -1792,7 +1792,7 @@ function openLangPopup(){
 function closeLangPopup(){document.getElementById('lang-popup').style.display='none';}
 var _langTabOpen=false;
 function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display=_langTabOpen?'flex':'none';}
-function switchLangFromTab(l){setLang(l);_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}
+function switchLangFromTab(l){_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';setLang(l);var currentFlag=document.getElementById('lang-tab-flag');var otherFlag=document.getElementById('lang-tab-other-flag');if(currentFlag)currentFlag.textContent=l==='en'?'🇬🇧':'🇮🇹';if(otherFlag)otherFlag.textContent=l==='en'?'🇮🇹':'🇬🇧';}
 document.addEventListener('click',function(e){var tab=document.getElementById('lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}});
 function selectLang(l){setLang(l);closeLangPopup();}
 function setLang(l){
@@ -3074,6 +3074,7 @@ function openDetail(){
   var _dpEl=document.getElementById('detail-page');_dpEl.classList.remove('gone');_dpEl.classList.add('show');
   if(window.innerWidth<768){var _bn=document.getElementById('bottom-nav');if(_bn){_bn.style.display='flex';_bn.style.zIndex='510';}setBottomNav('mappa');}
   trackEvent({event_type:'place_view',place_id:p.id,region:p.region});
+  ensureLangTabVisible();
 }
 function closeDetail(){
   document.getElementById('detail-page').classList.remove('show');
@@ -3099,6 +3100,7 @@ function closeDetail(){
       setTimeout(function(){map_o.resize();},320);
     }
   }
+  ensureLangTabVisible();
 }
 function setupDpSave(id){
   var sv=document.getElementById('dp-save');
@@ -3746,6 +3748,7 @@ function selectTravelRegion(regionId,center,zoom){
     if(map_o)map_o.flyTo({center:center,zoom:z,duration:800});
     renderItdPill();
   }
+  ensureLangTabVisible();
 }
 var _regionDropdownOpen=false;
 function openRegionDropdown(){
@@ -4055,6 +4058,7 @@ function openItinerariPage(region){
   page.classList.remove('gone');page.classList.add('show');
   setBottomNav('itinerari');
   var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.zIndex=region?'630':'520';
+  ensureLangTabVisible();
 }
 function closeItinerariPage(){
   var page=document.getElementById('itinerari-page');
@@ -6333,6 +6337,7 @@ function openProfilePage(){
   _pp.classList.add('show');
   setBottomNav('profilo');
   var _bnProf=document.getElementById('bottom-nav');if(_bnProf)_bnProf.style.zIndex='750';
+  ensureLangTabVisible();
 }
 function closeProfilePage(){
   var _pp=document.getElementById('profile-page');
@@ -6348,6 +6353,7 @@ function closeProfilePage(){
   } else {
     setBottomNav('mappa');
   }
+  ensureLangTabVisible();
 }
 function switchProfileTab(tab){
   _profileTab=tab;
@@ -6996,11 +7002,13 @@ function _setOnboardingFieldsLocked(locked){
   <div id="lang-tab-other" onclick="switchLangFromTab(lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
 </div>
 <script>
-window.addEventListener('load', function() {
-  if(window.innerWidth > 767) return;
-  var tab = document.getElementById('lang-tab');
-  if(tab) tab.style.cssText = 'display:flex;flex-direction:column;align-items:stretch;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9999;';
-});
+function ensureLangTabVisible(){
+  if(window.innerWidth>767)return;
+  var tab=document.getElementById('lang-tab');
+  if(!tab)return;
+  tab.style.cssText='display:flex!important;flex-direction:column;align-items:stretch;position:fixed!important;right:0!important;top:50%!important;transform:translateY(-50%)!important;z-index:9999!important;';
+}
+window.addEventListener('load',ensureLangTabVisible);
 </script>
 </body>
 </html>
