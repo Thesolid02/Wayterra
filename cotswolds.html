@@ -264,6 +264,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h1 class="hero-h1">Cotswolds</h1>
     <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare i borghi più belli d'Inghilterra</p>
     <a class="hero-cta" data-t="hero-cta" href="#acquista">Acquista la guida — €9,99 →</a>
+    <div data-t="promo-text" style="margin-top:10px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.35);border-radius:8px;padding:8px 14px;font-size:13px;color:#fff;display:inline-block;">🎁 Codice <strong>WAYCOTSWOLDS</strong> — accesso gratuito fino al 20 settembre</div>
     <div style="margin-top:16px;"><a href="#" onclick="event.preventDefault();openLoginSheet();" style="font-size:14px;color:rgba(255,255,255,.75);text-decoration:underline;cursor:pointer;" data-t="hero-login">Hai già acquistato? Accedi alla guida</a></div>
   </div>
   <div class="hero-scroll">
@@ -384,6 +385,13 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div style="text-align:left;font-size:11px;color:rgba(255,255,255,0.7);" data-t="payment-info">
       Gestito da <span style="font-weight:500;color:rgba(255,255,255,0.7);">Gumroad</span> · Accesso immediato dopo il pagamento
     </div>
+    <div class="cta-or" data-t="cta-or-promo">oppure</div>
+    <div data-t="promo-label" style="font-size:14px;color:rgba(255,255,255,0.9);font-weight:500;margin-bottom:8px;text-align:left;">🎁 Hai un codice promozionale?</div>
+    <div class="cta-code-wrap">
+      <input class="cta-code-input" id="promo-code-input" type="text" data-t-placeholder="promo-placeholder" placeholder="Inserisci il codice promo">
+      <button class="cta-code-btn" onclick="applyPromoCode()" data-t="promo-btn">Attiva →</button>
+    </div>
+    <div id="promo-error" style="display:none;font-size:12px;color:#ffb3a0;margin-top:6px;text-align:left;" data-t="promo-error">Codice non valido</div>
     <div class="cta-or" data-t="cta-or">oppure</div>
     <div class="cta-code-label" data-t="cta-code-label">Hai un codice di accesso?</div>
     <div class="cta-code-wrap">
@@ -457,10 +465,16 @@ var T={
     'cta-btn':'Acquista la guida Cotswolds →',
     'payment-secure':'Pagamento sicuro e crittografato',
     'cta-or':'oppure',
+    'cta-or-promo':'oppure',
     'cta-code-label':'Hai un codice di accesso?',
     'cta-code-input':'Inserisci codice',
     'cta-code-btn':'Attiva',
     'cta-error':'Codice non valido',
+    'promo-text':'🎁 Codice <strong>WAYCOTSWOLDS</strong> — accesso gratuito fino al 20 settembre',
+    'promo-label':'🎁 Hai un codice promozionale?',
+    'promo-placeholder':'Inserisci il codice promo',
+    'promo-btn':'Attiva →',
+    'promo-error':'Codice non valido',
     'launch-offer':'⏳ Offerta lancio — valida fino al 6 settembre',
     'gallery-caption':'Alcuni scatti del nostro itinerario',
     'purchase-title':'Quasi lì! 🎉',
@@ -518,10 +532,16 @@ var T={
     'cta-btn':'Buy the Cotswolds guide →',
     'payment-secure':'Secure and encrypted payment',
     'cta-or':'or',
+    'cta-or-promo':'or',
     'cta-code-label':'Do you have an access code?',
     'cta-code-input':'Enter code',
     'cta-code-btn':'Activate',
     'cta-error':'Invalid code',
+    'promo-text':'🎁 Code <strong>WAYCOTSWOLDS</strong> — free access until September 20',
+    'promo-label':'🎁 Do you have a promo code?',
+    'promo-placeholder':'Enter promo code',
+    'promo-btn':'Activate →',
+    'promo-error':'Invalid code',
     'launch-offer':'⏳ Launch offer — valid until September 6th',
     'gallery-caption':'Some shots from our itinerary',
     'purchase-title':'Almost there! 🎉',
@@ -633,6 +653,28 @@ function activateCode(){
 }
 document.getElementById('access-code-input').addEventListener('keydown',function(e){
   if(e.key==='Enter')activateCode();
+});
+
+// Promo code — free access with registration
+function applyPromoCode(){
+  var code=document.getElementById('promo-code-input').value.trim().toUpperCase();
+  var errEl=document.getElementById('promo-error');
+  errEl.style.display='none';
+  var today=new Date();
+  var deadline=new Date('2026-09-20T23:59:59');
+  if(code==='WAYCOTSWOLDS'&&today<=deadline){
+    localStorage.setItem('WT_PROMO_ACCESS','1');
+    window.location.href='https://wayterra.it/app?region=cotswolds';
+  } else if(code==='WAYCOTSWOLDS'){
+    errEl.textContent=_lang==='en'?'Promo code expired':'Codice promozionale scaduto';
+    errEl.style.display='block';
+  } else {
+    errEl.textContent=T[_lang]['promo-error']||(_lang==='en'?'Invalid code':'Codice non valido');
+    errEl.style.display='block';
+  }
+}
+document.getElementById('promo-code-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter')applyPromoCode();
 });
 
 function openLandingReviewsPopup(reviews,regionName){

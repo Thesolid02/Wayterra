@@ -3885,7 +3885,13 @@ function loadEsperienze(){
         var _regionParam=_urlParams.get('region');
         if(_regionParam){
           if(_regionParam==='cotswolds'&&!localStorage.getItem(K.UC)){
-            openAccessRequestModal('cotswolds');
+            if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){
+              var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
+              selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+              document.getElementById('purchase-onboarding-sheet').style.display='block';
+            } else {
+              openAccessRequestModal('cotswolds');
+            }
           } else {
             var _io2=document.getElementById('initial-overlay');if(_io2)_io2.remove();
             var _sp=document.getElementById('splash');
@@ -6790,6 +6796,7 @@ async function submitOnboarding(){
     var uid=result.data.user.id;
     await _supaAuth.from('profiles').upsert({id:uid,full_name:fullName},{onConflict:'id'});
     await _supaAuth.from('user_regions').upsert({user_id:uid,region:'cotswolds'},{onConflict:'user_id,region'});
+    if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){localStorage.removeItem('WT_PROMO_ACCESS');}
     if(!result.data.session){await _supaAuth.auth.signInWithPassword({email:email,password:password});}
     _currentUser=result.data.user;
     _currentUserProfile={full_name:fullName,avatar_url:null};
