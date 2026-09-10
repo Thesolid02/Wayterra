@@ -1594,6 +1594,7 @@ var currentPlace=null;
 var currentLightboxIdx=0,currentLightboxGallery=[];
 var lang='it';
 var unlocked=false;
+var _cotswoldsFree=false;
 var splashPhrases={it:['🎒 Preparando il tuo viaggio...','🗺️ Caricamento luoghi nascosti...','✨ Scopri posti unici...','🧭 Il tuo itinerario ti aspetta...','🌿 Esplora come un locale...'],en:['🎒 Preparing your journey...','🗺️ Loading hidden places...','✨ Discover unique spots...','🧭 Your itinerary awaits...','🌿 Explore like a local...']};
 var _splashIdx=0;
 var _splashIv=null;
@@ -4318,6 +4319,7 @@ function openItinerario(id){
       }).join('');
     } else {
       // raggruppa per giorno; stops senza day (day=0) in cima senza intestazione
+      var _isFreePreview=(e.region==='cotswolds'&&!unlocked&&!_cotswoldsFree);
       var dayGroups=[],dayMap={};
       e.stops.forEach(function(s){
         var d=s.day||0;
@@ -4333,7 +4335,8 @@ function openItinerario(id){
       });
       var globalIdx=0;
       dayGroups.forEach(function(d){
-        var dayStops=dayMap[d];
+        if(_isFreePreview&&d>2)return;
+        var dayStops=(_isFreePreview&&d===2)?dayMap[d].slice(0,1):dayMap[d];
         var bodyHtml='',dayNonAirport=0;
         dayStops.forEach(function(s){
           var r=resolveStop(s);
@@ -4353,7 +4356,19 @@ function openItinerario(id){
         }
       });
     }
-    stopsEl.innerHTML=html;
+    if(_isFreePreview){
+      stopsEl.innerHTML='<div style="position:relative;">'+html
+        +'<div style="position:absolute;bottom:0;left:0;right:0;height:300px;background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(255,255,255,1));pointer-events:none;z-index:10;"></div>'
+        +'</div>'
+        +'<div style="background:#fff;border:1.5px solid #dc6b2f;border-radius:16px;padding:20px;margin-top:8px;text-align:center;">'
+        +'<div style="font-size:1.05rem;font-weight:700;color:#1a1a1a;margin-bottom:6px;">'+(lang==='en'?'Unlock the full itinerary':'Sblocca l\'itinerario completo')+'</div>'
+        +'<div style="font-size:.9rem;color:#666;margin-bottom:16px;">'+(lang==='en'?'Full 4-day itinerary with all stops, PDF download, and lifetime access.':'Itinerario completo di 4 giorni con tutte le tappe, PDF scaricabile e accesso per sempre.')+'</div>'
+        +'<a href="https://wayterra.gumroad.com/l/lbchl" target="_blank" style="display:block;background:#dc6b2f;color:#fff;border-radius:100px;padding:13px 24px;font-size:.95rem;font-weight:700;text-decoration:none;margin-bottom:10px;">'+(lang==='en'?'Buy the guide →':'Acquista la guida →')+'</a>'
+        +'<div style="font-size:.8rem;color:#888;">€9,99 · '+(lang==='en'?'Lifetime access':'Accesso per sempre')+'</div>'
+        +'</div>';
+    } else {
+      stopsEl.innerHTML=html;
+    }
   } else {
     stopsEl.innerHTML='';
   }
@@ -4398,11 +4413,18 @@ function openItinerario(id){
   }
   var _btnStyle='flex:1;padding:9px 12px;border-radius:100px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;';
   var _eid2=e.id;
-  var _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:#dc6b2f;color:#fff;border:none;">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
-  if(_itdMapCoords.length>=2){
-    _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:var(--g100);color:var(--g900);border:none;">'+(lang==='en'?'Open in Google Maps':'Apri su Google Maps')+'</button>';
+  var _btnsHtml;
+  if(_isFreePreview){
+    _btnsHtml='<button onclick="showPW()" style="'+_btnStyle+'background:#dc6b2f;color:#fff;border:none;opacity:.6;">'+(lang==='en'?'Stop map 🔒':'Mappa tappe 🔒')+'</button>';
+    if(_itdMapCoords.length>=2){
+      _btnsHtml+='<button onclick="showPW()" style="'+_btnStyle+'background:var(--g100);color:var(--g900);border:none;opacity:.6;">'+(lang==='en'?'Open in Google Maps 🔒':'Apri su Google Maps 🔒')+'</button>';
+    }
+  } else {
+    _btnsHtml='<button onclick="openItinMapPopup('+_eid2+')" style="'+_btnStyle+'background:#dc6b2f;color:#fff;border:none;">'+(lang==='en'?'Stop map':'Mappa tappe')+'</button>';
+    if(_itdMapCoords.length>=2){
+      _btnsHtml+='<button onclick="openItinerarioGMaps(_itdMapCoords)" style="'+_btnStyle+'background:var(--g100);color:var(--g900);border:none;">'+(lang==='en'?'Open in Google Maps':'Apri su Google Maps')+'</button>';
+    }
   }
-
   _btnsEl.innerHTML=_btnsHtml;
   _btnsEl.style.display='flex';
   var _svcEl=document.getElementById('itd-services');
@@ -5594,11 +5616,13 @@ window.addEventListener('DOMContentLoaded',function(){
     fetch(SB_URL+'/rest/v1/activities?select=*&order=place_id,sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/place_types?select=id,name,name_en,icon,color,sort_order&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
     fetch(SB_URL+'/rest/v1/experience_types?select=id,name,name_en,icon,color,sort_order&order=sort_order',{headers:h}).then(function(r){return r.ok?r.json():[];}),
-    fetch(SB_URL+'/rest/v1/experience_subtypes?select=id,experience_type_id,name,name_en,icon,color&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];})
+    fetch(SB_URL+'/rest/v1/experience_subtypes?select=id,experience_type_id,name,name_en,icon,color&order=id',{headers:h}).then(function(r){return r.ok?r.json():[];}),
+    fetch(SB_URL+'/rest/v1/settings?select=value&key=eq.cotswolds_free&limit=1',{headers:h}).then(function(r){return r.ok?r.json():[];}).catch(function(){return[];})
   ])
   .then(function(results){
     clearTimeout(timeout);
-    var placeRows=results[0], catRows=results[1], atypeRows=results[2], actRows=results[3], placeTypeRows=results[4], expTypeRows=results[5], expSubtypeRows=results[6];
+    var placeRows=results[0], catRows=results[1], atypeRows=results[2], actRows=results[3], placeTypeRows=results[4], expTypeRows=results[5], expSubtypeRows=results[6], settingRows=results[7]||[];
+    if(settingRows.length&&settingRows[0].value==='true'){_cotswoldsFree=true;unlocked=true;}
 
     if(!placeRows||!placeRows.length){
       initDefaults();
@@ -6851,22 +6875,32 @@ async function submitPurchaseLogin(){
   selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
 }
 function requireAuth(actionName){
-  console.log('requireAuth chiamata, actionName:',actionName,'_currentUser:',!!_currentUser);
   if(_currentUser)return true;
-  console.log('Utente anonimo — apro profilo settings');
-  openProfilePage();
-  switchProfileTab('settings');
-  setTimeout(function(){
-    var msgEl=document.getElementById('settings-form-error');
-    if(msgEl){
-      msgEl.textContent=lang==='en'?'Complete your profile to '+actionName:'Completa il tuo profilo per '+actionName;
-      msgEl.style.display='block';
-      msgEl.style.background='#fef3ec';
-      msgEl.style.color='#dc6b2f';
-      msgEl.style.borderRadius='8px';
-      msgEl.style.padding='10px';
+  if(_currentTravelRegion==='cotswolds'){
+    var _sheet=document.getElementById('purchase-onboarding-sheet');
+    var _old=document.getElementById('req-auth-promo');
+    if(_old)_old.remove();
+    var _inner=_sheet?_sheet.querySelector('div[style*="bottom:0"]'):null;
+    if(_inner){
+      var _firstBtn=_inner.querySelector('button');
+      if(_firstBtn)_firstBtn.insertAdjacentHTML('beforebegin','<div id="req-auth-promo" style="background:#fef3ec;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#dc6b2f;">Acquista la guida per registrarti e accedere a tutte le funzionalità → <a href="https://wayterra.gumroad.com/l/lbchl" style="color:#dc6b2f;font-weight:500;text-decoration:underline;">Acquista ora</a></div>');
     }
-  },50);
+    if(_sheet)_sheet.style.display='block';
+  } else {
+    openProfilePage();
+    switchProfileTab('settings');
+    setTimeout(function(){
+      var msgEl=document.getElementById('settings-form-error');
+      if(msgEl){
+        msgEl.textContent=lang==='en'?'Complete your profile to '+actionName:'Completa il tuo profilo per '+actionName;
+        msgEl.style.display='block';
+        msgEl.style.background='#fef3ec';
+        msgEl.style.color='#dc6b2f';
+        msgEl.style.borderRadius='8px';
+        msgEl.style.padding='10px';
+      }
+    },50);
+  }
   return false;
 }
 </script>
