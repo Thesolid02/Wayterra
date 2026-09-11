@@ -843,7 +843,7 @@ lottie.loadAnimation({
         <div class="rp-card-name">Lazio</div>
         <div class="rp-card-sub" id="rp-lazio-sub"></div>
         <div id="rp-lazio-reviews" style="margin:8px 0 4px;"></div>
-        <button class="rp-card-btn" id="rp-lazio-btn">Esplora →</button>
+        <button class="rp-card-btn" id="rp-lazio-btn" data-t="rp_explore_travels">Esplora →</button>
       </div>
     </div>
     <!-- 🇬🇧 UK -->
@@ -858,7 +858,7 @@ lottie.loadAnimation({
         <div class="rp-card-name">Cotswolds</div>
         <div class="rp-card-sub" id="rp-cotswolds-sub"></div>
         <div id="rp-cotswolds-reviews" style="margin:8px 0 4px;"></div>
-        <button class="rp-card-btn rp-card-btn-blue">Esplora →</button>
+        <button class="rp-card-btn rp-card-btn-blue" data-t="rp_explore_travels">Esplora →</button>
       </div>
     </div>
     <!-- 🇩🇪 GERMANIA -->
@@ -1778,6 +1778,8 @@ function applyTranslations(){
   });
   var si=document.getElementById('search-input');
   if(si)si.placeholder=t('search_placeholder');
+  var itinTab=document.querySelector('.bn-item[data-nav="itinerari"] [data-t="nav_itinerari"]');
+  if(itinTab)itinTab.textContent=lang==='en'?'Itineraries':'Itinerari';
   updateRegionPageLang();
 }
 
