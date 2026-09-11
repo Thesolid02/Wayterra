@@ -58,7 +58,7 @@ _ldScript.text=JSON.stringify(ldJson);
 document.head.appendChild(_ldScript);
 document.addEventListener('DOMContentLoaded',function(){
   document.querySelectorAll('[data-price]').forEach(function(el){
-    el.textContent='€'+COTSWOLDS_PRICE.replace('.',',');
+    el.innerHTML='<span style="text-decoration:line-through;opacity:0.5;">€'+COTSWOLDS_PRICE.replace('.',',')+'</span><span style="background:#fff;color:#dc6b2f;border-radius:6px;padding:3px 10px;font-size:13px;font-weight:700;margin-left:8px;">FREE</span>';
   });
 });
 </script>
@@ -366,7 +366,8 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   <div class="si tc">
     <div class="badge" data-t="cta-badge">Accesso per sempre</div>
     <h2 class="s-title" data-t="cta-title">Pronto a esplorare le Cotswolds?</h2>
-    <div class="cta-price" data-price>€9,99</div>
+    <div class="cta-price" data-price><span style="text-decoration:line-through;opacity:0.5;">€9,99</span><span style="background:#fff;color:#dc6b2f;border-radius:6px;padding:3px 10px;font-size:13px;font-weight:700;margin-left:8px;">FREE</span></div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:4px;" data-t="cta-promo-note">Promozione valida fino al 20 settembre 2026</div>
     <div class="cta-price-note" data-t="cta-note">Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile</div>
     <a href="https://wayterra.gumroad.com/l/lbchl" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="trackCTAClick();">Acquista la guida Cotswolds →</a>
     <div style="display:flex;align-items:center;justify-content:flex-start;gap:6px;margin-top:12px;margin-bottom:10px;">
@@ -459,6 +460,7 @@ var T={
     'rev-pill':'+500 viaggiatori la stanno già utilizzando',
     'rev-title':'Cosa dicono i viaggiatori',
     'cta-badge':'Accesso per sempre',
+    'cta-promo-note':'Promozione valida fino al 20 settembre 2026',
     'cta-title':'Pronto a esplorare le Cotswolds?',
     'cta-note':'Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile',
     'cta-btn':'Acquista la guida Cotswolds →',
@@ -528,6 +530,7 @@ var T={
     'rev-pill':'+500 travelers are already using it',
     'rev-title':'What travelers say',
     'cta-badge':'Permanent access',
+    'cta-promo-note':'Promotion valid until September 20th 2026',
     'cta-title':'Ready to explore the Cotswolds?',
     'cta-note':'Permanent access • Updates included • Downloadable PDF',
     'cta-btn':'Buy the Cotswolds guide →',
