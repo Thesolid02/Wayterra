@@ -3759,7 +3759,7 @@ function closeRegionDropdown(){
   _regionDropdownOpen=false;
 }
 var _langTabOpen=false;
-function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display=_langTabOpen?'flex':'none';}
+function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementById('rp-lang-tab-other');if(ot){ot.style.display=_langTabOpen?'flex':'none';ot.style.alignItems='center';ot.style.justifyContent='center';}}
 function switchLangFromTab(l){_langTabOpen=false;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display='none';var currentFlag=document.getElementById('rp-lang-tab-flag');var otherFlag=document.getElementById('rp-lang-tab-other-flag');if(currentFlag)currentFlag.textContent=l==='en'?'🇬🇧':'🇮🇹';if(otherFlag)otherFlag.textContent=l==='en'?'🇮🇹':'🇬🇧';setLang(l);}
 document.addEventListener('click',function(e){var tab=document.getElementById('rp-lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display='none';}});
 function selectRegionFromDropdown(regionId){
