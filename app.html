@@ -760,12 +760,14 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 }
 /* region page — desktop centering wrapper */
 .rp-content{width:100%;}
+.rp-page-footer{display:none;}
 @media(min-width:768px){
   .rp-content{max-width:560px;margin:0 auto;padding:0 24px;box-sizing:border-box;}
   .rp-header{padding-left:0;padding-right:0;}
   .rp-grid{padding-left:0;padding-right:0;gap:14px;}
   .rp-card{min-height:160px;}
   .rp-card-main{min-height:220px;}
+  .rp-page-footer{display:block;background:#1a1a1a;color:rgba(255,255,255,.4);text-align:center;padding:40px 24px 32px;margin-top:40px;}
 }</style>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
@@ -829,42 +831,6 @@ lottie.loadAnimation({
         <button class="rp-card-btn" id="rp-lazio-btn">Esplora →</button>
       </div>
     </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/toscana.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-lock-ico">🔒</div>
-        <div class="rp-card-name">Toscana</div>
-        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
-      </div>
-    </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/campania.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-lock-ico">🔒</div>
-        <div class="rp-card-name">Campania</div>
-        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
-      </div>
-    </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/umbria.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-lock-ico">🔒</div>
-        <div class="rp-card-name">Umbria</div>
-        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
-      </div>
-    </div>
-    <div class="rp-card rp-card-locked" onclick="showRegionToast()">
-      <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/abruzzo.jpg');background-size:cover;background-position:center;"></div>
-      <div class="rp-card-ov"></div>
-      <div class="rp-card-body">
-        <div class="rp-lock-ico">🔒</div>
-        <div class="rp-card-name">Abruzzo</div>
-        <span class="rp-soon-badge" data-t="rp_soon">Prossimamente</span>
-      </div>
-    </div>
     <!-- 🇬🇧 UK -->
     <div class="rp-sec-label rp-sec-label-sep">
       <span style="font-size:24px;">🇬🇧</span>
@@ -895,6 +861,18 @@ lottie.loadAnimation({
       </div>
     </div>
   </div>
+  </div>
+  <div class="rp-page-footer">
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
+      <svg width="24" height="24" viewBox="0 0 200 200" fill="none"><circle cx="100" cy="100" r="88" stroke="#e8e0b8" stroke-width="10" fill="none"/><polygon points="100,8 107,32 100,26 93,32" fill="#e8721a"/><path d="M58 75 L100 68 L142 75 L142 138 L100 145 L58 138 Z" fill="rgba(232,224,184,.2)" stroke="#e8e0b8" stroke-width="4" stroke-linejoin="round"/><circle cx="80" cy="120" r="3" fill="#e8721a"/><polygon points="125,92 118,98 122,106 133,96" fill="#e8721a"/></svg>
+      <span style="font-size:15px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:-.01em;">Wayterra</span>
+    </div>
+    <div style="font-size:12px;color:rgba(255,255,255,.3);margin-bottom:12px;">Discover hidden places · Starting from Italy</div>
+    <div style="display:flex;flex-direction:row;gap:20px;align-items:center;justify-content:center;margin-bottom:12px;">
+      <a href="mailto:mattia@wayterra.it" style="display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,.3);text-decoration:none;"><i class="ti ti-mail" style="font-size:15px;"></i>mattia@wayterra.it</a>
+      <a href="https://www.instagram.com/wayterra_guide/" target="_blank" style="display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,.3);text-decoration:none;"><i class="ti ti-brand-instagram" style="font-size:15px;"></i>@wayterra_guide</a>
+    </div>
+    <div style="font-size:12px;color:rgba(255,255,255,.25);">© 2026 Wayterra · All rights reserved<a href="/privacy.html" style="color:rgba(255,255,255,.35);text-decoration:none;margin-left:16px;">Privacy Policy</a></div>
   </div>
   </div>
 </div>
@@ -3579,6 +3557,7 @@ function showRegionPage(){
   if(_io)_io.remove();
   el.classList.remove('gone');
   el.classList.remove('fade-out');
+  if(window.innerWidth<=767){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.display='none';}
   var _rpb=document.getElementById('rp-profile-btn');
   if(_rpb)_rpb.style.display='flex';
   if(DATA.experiences&&DATA.experiences.length>0){
@@ -3592,7 +3571,7 @@ function hideRegionPage(cb){
   el.classList.add('fade-out');
   var _rpb=document.getElementById('rp-profile-btn');
   if(_rpb)_rpb.style.display='none';
-  setTimeout(function(){el.classList.add('gone');if(cb)cb();},380);
+  setTimeout(function(){el.classList.add('gone');if(window.innerWidth<=767){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.display='flex';}if(cb)cb();},380);
 }
 function selectRegion(regionId){
   localStorage.setItem('WT_LAST_REGION','lazio');
@@ -3725,11 +3704,11 @@ function openRegionDropdown(){
     ]},
     'cotswolds':{label:'REGNO UNITO',regions:[
       {id:'cotswolds',name:'Cotswolds',active:true},
-      {id:'highlands',name:'Highlands',active:false}
+      {id:'bavaria',name:'Baviera',active:false}
     ]},
     'highlands':{label:'REGNO UNITO',regions:[
       {id:'cotswolds',name:'Cotswolds',active:true},
-      {id:'highlands',name:'Highlands',active:false}
+      {id:'bavaria',name:'Baviera',active:false}
     ]},
     'bavaria':{label:'GERMANIA',regions:[
       {id:'bavaria',name:'Baviera',active:false}
