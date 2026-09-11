@@ -821,8 +821,8 @@ lottie.loadAnimation({
     <button id="rp-nav-profile-btn" onclick="_profileOpenedFromRegionPage=true;openProfilePage();" style="background:rgba(0,0,0,.06);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
   </div>
   <div id="rp-lang-tab">
-    <div id="rp-lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="rp-lang-tab-flag">🇮🇹</span></div>
-    <div id="rp-lang-tab-other" onclick="switchLangFromTab(lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="rp-lang-tab-other-flag">🇬🇧</span></div>
+    <div id="rp-lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="lang-tab-flag">🇮🇹</span></div>
+    <div id="rp-lang-tab-other" onclick="switchLangFromTab(lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
   </div>
   <div id="rp-scroll">
   <div class="rp-content">
@@ -1763,9 +1763,9 @@ function setLang(l){
   buildDD();
   var langVal=document.getElementById('settings-lang-value');
   if(langVal)langVal.textContent=l==='it'?'Italiano':'English';
-  var rpTabFlag=document.getElementById('rp-lang-tab-flag');
+  var rpTabFlag=document.getElementById('lang-tab-flag');
   if(rpTabFlag)rpTabFlag.textContent=l==='en'?'🇬🇧':'🇮🇹';
-  var rpTabOtherFlag=document.getElementById('rp-lang-tab-other-flag');
+  var rpTabOtherFlag=document.getElementById('lang-tab-other-flag');
   if(rpTabOtherFlag)rpTabOtherFlag.textContent=l==='en'?'🇮🇹':'🇬🇧';
 }
 function applyTranslations(){
@@ -3760,7 +3760,7 @@ function closeRegionDropdown(){
 }
 var _langTabOpen=false;
 function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display=_langTabOpen?'flex':'none';}
-function switchLangFromTab(l){setLang(l);_langTabOpen=false;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display='none';var cf=document.getElementById('rp-lang-tab-flag');if(cf)cf.textContent=l==='en'?'🇬🇧':'🇮🇹';var of=document.getElementById('rp-lang-tab-other-flag');if(of)of.textContent=l==='en'?'🇮🇹':'🇬🇧';}
+function switchLangFromTab(l){_langTabOpen=false;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display='none';document.getElementById('lang-tab-flag').textContent=l==='en'?'🇬🇧':'🇮🇹';document.getElementById('lang-tab-other-flag').textContent=l==='en'?'🇮🇹':'🇬🇧';setLang(l);}
 document.addEventListener('click',function(e){var tab=document.getElementById('rp-lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display='none';}});
 function selectRegionFromDropdown(regionId){
   closeRegionDropdown();
