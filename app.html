@@ -761,7 +761,9 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
 /* region page — desktop centering wrapper */
 .rp-content{width:100%;}
 .rp-page-footer{display:none;}
-#rp-desktop-nav{display:none;flex-shrink:0;}
+#rp-desktop-nav{display:flex;flex-shrink:0;justify-content:space-between;align-items:center;padding:0 16px;height:56px;background:#fafaf8;border-bottom:0.5px solid #eee;}
+#rp-lang-tab{display:none;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9999;flex-direction:column;align-items:stretch;}
+#rp-profile-btn{display:none!important;}
 @media(min-width:768px){
   .rp-content{max-width:560px;margin:0 auto;padding:0 24px;box-sizing:border-box;}
   .rp-header{padding-left:0;padding-right:0;}
@@ -769,8 +771,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   .rp-card{min-height:160px;}
   .rp-card-main{min-height:220px;}
   .rp-page-footer{display:block;background:#1a1a1a;color:rgba(255,255,255,.4);text-align:center;padding:40px 24px 32px;margin-top:40px;}
-  #rp-desktop-nav{display:flex;justify-content:space-between;align-items:center;padding:0 32px;height:60px;background:#fafaf8;border-bottom:0.5px solid #eee;}
-  #rp-profile-btn{display:none!important;}
+  #rp-desktop-nav{padding:0 32px;height:60px;}
 }</style>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
@@ -817,19 +818,11 @@ lottie.loadAnimation({
       <svg width="28" height="28" viewBox="0 0 200 200" fill="none"><circle cx="100" cy="100" r="88" stroke="#2d5a27" stroke-width="10" fill="none"/><polygon points="100,8 107,32 100,26 93,32" fill="#e8721a"/><polygon points="100,192 107,168 100,174 93,168" fill="#2d5a27"/><polygon points="192,100 168,107 174,100 168,93" fill="#2d5a27"/><polygon points="8,100 32,107 26,100 32,93" fill="#2d5a27"/><path d="M58 75 L100 68 L142 75 L142 138 L100 145 L58 138 Z" fill="#e8e0b8" stroke="#2d5a27" stroke-width="4" stroke-linejoin="round"/><line x1="100" y1="68" x2="100" y2="145" stroke="#2d5a27" stroke-width="2.5" stroke-dasharray="4 3"/><ellipse cx="76" cy="118" rx="14" ry="8" fill="#5a9e50" opacity=".7"/><circle cx="72" cy="128" r="3.5" fill="#e8721a"/><circle cx="115" cy="98" r="3" fill="#e8721a" opacity=".8"/><polygon points="128,90 120,96 124,104 136,94" fill="#e8721a"/></svg>
       <span style="font-size:.95rem;font-weight:800;color:#111;letter-spacing:-.03em;">Wayterra</span>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div style="position:relative;">
-        <button id="rp-lang-btn" onclick="toggleRpLangDropdown()" style="background:#fff;color:#1a1a1a;border:0.5px solid #ddd;border-radius:20px;padding:8px 10px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-family:inherit;height:36px;width:56px;min-width:56px;box-sizing:border-box;">
-          <span id="rp-lang-flag">🇮🇹</span>
-          <i class="ti ti-chevron-down" style="font-size:12px;color:#666;" aria-hidden="true"></i>
-        </button>
-        <div id="rp-lang-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:0.5px solid #ddd;border-radius:10px;overflow:hidden;z-index:700;min-width:48px;box-shadow:0 4px 12px rgba(0,0,0,.1);">
-          <div onclick="setLang('it');closeRpLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''">🇮🇹</div>
-          <div onclick="setLang('en');closeRpLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''">🇬🇧</div>
-        </div>
-      </div>
-      <button id="rp-nav-profile-btn" onclick="_profileOpenedFromRegionPage=true;openProfilePage();" style="background:rgba(0,0,0,.06);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
-    </div>
+    <button id="rp-nav-profile-btn" onclick="_profileOpenedFromRegionPage=true;openProfilePage();" style="background:rgba(0,0,0,.06);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
+  </div>
+  <div id="rp-lang-tab">
+    <div id="rp-lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="rp-lang-tab-flag">🇮🇹</span></div>
+    <div id="rp-lang-tab-other" onclick="switchLangFromTab(lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="rp-lang-tab-other-flag">🇬🇧</span></div>
   </div>
   <div id="rp-scroll">
   <div class="rp-content">
@@ -1770,8 +1763,10 @@ function setLang(l){
   buildDD();
   var langVal=document.getElementById('settings-lang-value');
   if(langVal)langVal.textContent=l==='it'?'Italiano':'English';
-  var rpFlag=document.getElementById('rp-lang-flag');
-  if(rpFlag)rpFlag.textContent=l==='en'?'🇬🇧':'🇮🇹';
+  var rpTabFlag=document.getElementById('rp-lang-tab-flag');
+  if(rpTabFlag)rpTabFlag.textContent=l==='en'?'🇬🇧':'🇮🇹';
+  var rpTabOtherFlag=document.getElementById('rp-lang-tab-other-flag');
+  if(rpTabOtherFlag)rpTabOtherFlag.textContent=l==='en'?'🇮🇹':'🇬🇧';
 }
 function applyTranslations(){
   document.getElementById('fav-title').textContent=t('favorites');
@@ -3581,7 +3576,7 @@ function showRegionPage(){
   if(_io)_io.remove();
   el.classList.remove('gone');
   el.classList.remove('fade-out');
-  if(window.innerWidth<=767){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.display='none';}
+  if(window.innerWidth<=767){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.display='none';var _rlt=document.getElementById('rp-lang-tab');if(_rlt){_rlt.style.cssText='display:flex!important;flex-direction:column;align-items:stretch;position:fixed!important;right:0!important;top:50%!important;transform:translateY(-50%)!important;z-index:9999!important;';}}
   var _rpb=document.getElementById('rp-profile-btn');
   if(_rpb)_rpb.style.display='flex';
   if(DATA.experiences&&DATA.experiences.length>0){
@@ -3595,7 +3590,7 @@ function hideRegionPage(cb){
   el.classList.add('fade-out');
   var _rpb=document.getElementById('rp-profile-btn');
   if(_rpb)_rpb.style.display='none';
-  setTimeout(function(){el.classList.add('gone');if(window.innerWidth<=767){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.display='flex';}if(cb)cb();},380);
+  setTimeout(function(){el.classList.add('gone');if(window.innerWidth<=767){var _bn=document.getElementById('bottom-nav');if(_bn)_bn.style.display='flex';}var _rlt=document.getElementById('rp-lang-tab');if(_rlt)_rlt.style.display='none';if(cb)cb();},380);
 }
 function selectRegion(regionId){
   localStorage.setItem('WT_LAST_REGION','lazio');
@@ -3763,9 +3758,10 @@ function closeRegionDropdown(){
   document.getElementById('region-dropdown').style.display='none';
   _regionDropdownOpen=false;
 }
-function toggleRpLangDropdown(){var dd=document.getElementById('rp-lang-dropdown');if(dd)dd.style.display=dd.style.display==='none'?'block':'none';}
-function closeRpLangDropdown(){var dd=document.getElementById('rp-lang-dropdown');if(dd)dd.style.display='none';}
-document.addEventListener('click',function(e){var btn=document.getElementById('rp-lang-btn');if(btn&&!btn.contains(e.target))closeRpLangDropdown();});
+var _langTabOpen=false;
+function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display=_langTabOpen?'flex':'none';}
+function switchLangFromTab(l){setLang(l);_langTabOpen=false;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display='none';var cf=document.getElementById('rp-lang-tab-flag');if(cf)cf.textContent=l==='en'?'🇬🇧':'🇮🇹';var of=document.getElementById('rp-lang-tab-other-flag');if(of)of.textContent=l==='en'?'🇮🇹':'🇬🇧';}
+document.addEventListener('click',function(e){var tab=document.getElementById('rp-lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('rp-lang-tab-other');if(ot)ot.style.display='none';}});
 function selectRegionFromDropdown(regionId){
   closeRegionDropdown();
   var _dp=document.getElementById('detail-page');
