@@ -770,6 +770,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:var(--f);background
   .rp-card-main{min-height:220px;}
   .rp-page-footer{display:block;background:#1a1a1a;color:rgba(255,255,255,.4);text-align:center;padding:40px 24px 32px;margin-top:40px;}
   #rp-desktop-nav{display:flex;justify-content:space-between;align-items:center;padding:0 32px;height:60px;background:#fafaf8;border-bottom:0.5px solid #eee;}
+  #rp-profile-btn{display:none!important;}
 }</style>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
@@ -827,7 +828,7 @@ lottie.loadAnimation({
           <div onclick="setLang('en');closeRpLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''">🇬🇧</div>
         </div>
       </div>
-      <a href="/app?region=cotswolds" style="background:#dc6b2f;color:#fff;border:none;border-radius:100px;padding:8px 18px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;height:36px;box-sizing:border-box;">Esplora la mappa →</a>
+      <button id="rp-nav-profile-btn" onclick="_profileOpenedFromRegionPage=true;openProfilePage();" style="background:rgba(0,0,0,.06);border:none;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;"><i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i></button>
     </div>
   </div>
   <div id="rp-scroll">
@@ -6420,6 +6421,18 @@ function updateNavProfileAvatar(){
       rpBtn.innerHTML='<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;"><img src="'+_avatarSrc(profile.avatar_url,_currentUser.id)+'" style="width:100%;height:100%;object-fit:cover;"></div>';
     } else {
       rpBtn.innerHTML='<i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i>';
+    }
+  }
+  var rpNavBtn=document.getElementById('rp-nav-profile-btn');
+  if(rpNavBtn){
+    if(_currentUser&&profile&&profile.avatar_url){
+      rpNavBtn.innerHTML='<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;border:1.5px solid #dc6b2f;"><img src="'+_avatarSrc(profile.avatar_url,_currentUser.id)+'" style="width:100%;height:100%;object-fit:cover;"></div>';
+    } else if(_currentUser&&profile){
+      var parts=(profile.full_name||'').trim().split(' ');
+      var ini=parts[0]?parts[0].charAt(0).toUpperCase()+(parts[1]?parts[1].charAt(0).toUpperCase():''):'?';
+      rpNavBtn.innerHTML='<div style="width:30px;height:30px;border-radius:50%;background:#dc6b2f;display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:#fff;font-weight:600;">'+ini+'</span></div>';
+    } else {
+      rpNavBtn.innerHTML='<i class="ti ti-user" style="font-size:18px;color:#1a1a1a;"></i>';
     }
   }
 }
