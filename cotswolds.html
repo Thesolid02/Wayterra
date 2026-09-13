@@ -372,7 +372,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="cta-price" data-price><span style="text-decoration:line-through;opacity:0.5;">€9,99</span><span style="background:#fff;color:#dc6b2f;border-radius:6px;padding:4px 14px;font-size:20px;font-weight:700;margin-left:8px;letter-spacing:.08em;">FREE</span></div>
     <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:4px;" data-t="cta-promo-note">Promozione valida fino al 20 settembre 2026</div>
     <div class="cta-price-note" data-t="cta-note">Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile</div>
-    <a href="https://wayterra.gumroad.com/l/lbchl" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="trackCTAClick();">Accedi alla guida →</a>
+    <a href="https://wayterra.it/app?access=cotswolds" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="event.preventDefault();trackCTAClick();localStorage.setItem('WT_ACCESS_COTSWOLDS','1');window.location.href='https://wayterra.it/app?access=cotswolds';">Accedi alla guida →</a>
     <div style="display:flex;align-items:center;justify-content:flex-start;gap:6px;margin-top:12px;margin-bottom:10px;">
       <i class="ti ti-lock" style="font-size:14px;color:rgba(255,255,255,0.85);"></i>
       <span style="font-size:12px;color:rgba(255,255,255,0.85);" data-t="payment-secure">Pagamento sicuro e crittografato</span>
