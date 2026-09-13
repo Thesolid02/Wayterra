@@ -339,7 +339,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="phones-row" id="phones-row"></div>
     <div class="phones-dots" id="phones-dots"></div>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://wayterra.it/app?region=cotswolds" style="display:inline-block;background:#dc6b2f;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;text-decoration:none;" data-t="app-cta-btn">Inizia ad esplorare le Cotswolds →</a>
+      <a href="https://wayterra.it/app?access=cotswolds" onclick="event.preventDefault();localStorage.setItem('WT_ACCESS_COTSWOLDS','1');window.location.href='https://wayterra.it/app?access=cotswolds';" style="display:inline-block;background:#dc6b2f;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;text-decoration:none;" data-t="app-cta-btn">Inizia ad esplorare le Cotswolds →</a>
     </div>
   </div>
 </section>
