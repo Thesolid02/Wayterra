@@ -5502,11 +5502,12 @@ function bootApp(d){
   var _urlParamsB=new URLSearchParams(window.location.search);
   var _accessParam=_urlParamsB.get('access');
   if(_accessParam==='cotswolds'){
-    localStorage.setItem(K.UC,'1');
     setTimeout(async function(){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       var _sess=await _supaAuth.auth.getSession();
       if(_sess.data&&_sess.data.session){
+        localStorage.setItem(K.UC,'1');
+        localStorage.removeItem('WT_PROMO_ACCESS');
         selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
         return;
       }
@@ -6803,7 +6804,7 @@ async function submitOnboarding(){
     var uid=result.data.user.id;
     await _supaAuth.from('profiles').upsert({id:uid,full_name:fullName},{onConflict:'id'});
     await _supaAuth.from('user_regions').upsert({user_id:uid,region:'cotswolds'},{onConflict:'user_id,region'});
-    if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){localStorage.removeItem('WT_PROMO_ACCESS');}
+    if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){localStorage.removeItem('WT_PROMO_ACCESS');localStorage.setItem(K.UC,'1');}
     if(!result.data.session){await _supaAuth.auth.signInWithPassword({email:email,password:password});}
     _currentUser=result.data.user;
     _currentUserProfile={full_name:fullName,avatar_url:null};
