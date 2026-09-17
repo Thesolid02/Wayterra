@@ -333,22 +333,36 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 
 <!-- SOCIAL PROOF -->
 <section id="social-proof-section" style="background:#f5f0e8;padding:48px 20px;">
-  <div style="max-width:600px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-    <div style="background:#dc6b2f;border-radius:16px;padding:24px 20px;text-align:center;">
-      <div style="font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;" data-t="social-label-ig">Su Instagram</div>
-      <div id="count-instagram" style="font-size:42px;font-weight:700;color:#fff;line-height:1;">+6k</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:8px;margin-bottom:16px;" data-t="social-instagram">persone che ci seguono in questo viaggio ✈️</div>
-      <a href="https://www.instagram.com/wayterra_guide" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;text-decoration:none;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#fff" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg>
-        <span style="font-size:12px;color:#fff;font-weight:500;">@wayterra_guide</span>
-      </a>
+  <div style="max-width:600px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+      <div style="background:#dc6b2f;border-radius:16px;padding:20px 16px;text-align:center;transform:rotate(-1.5deg);">
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;" data-t="social-label-ig">Su Instagram</div>
+        <div id="count-instagram" style="font-size:38px;font-weight:700;color:#fff;line-height:1;">+6k</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:8px;margin-bottom:14px;" data-t="social-instagram">persone che ci seguono in questo viaggio ✈️</div>
+        <a href="https://www.instagram.com/wayterra_guide" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.2);border-radius:20px;padding:5px 12px;text-decoration:none;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#fff" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg>
+          <span style="font-size:11px;color:#fff;font-weight:500;">@wayterra_guide</span>
+        </a>
+      </div>
+
+      <div style="background:#dc6b2f;border-radius:16px;padding:20px 16px;text-align:center;transform:rotate(1.5deg);margin-top:12px;">
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;" data-t="social-label-travelers">Già in viaggio</div>
+        <div id="count-travelers" style="font-size:38px;font-weight:700;color:#fff;line-height:1;">+500</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:8px;margin-bottom:12px;" data-t="social-travelers">viaggiatori stanno già esplorando le Cotswolds con questa guida 🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+        <div id="lottie-social" style="width:70px;height:70px;margin:0 auto;"></div>
+      </div>
+
     </div>
-    <div style="background:#dc6b2f;border-radius:16px;padding:24px 20px;text-align:center;">
-      <div style="font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;" data-t="social-label-travelers">Già in viaggio</div>
-      <div id="count-travelers" style="font-size:42px;font-weight:700;color:#fff;line-height:1;">+500</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:8px;margin-bottom:12px;" data-t="social-travelers">viaggiatori stanno già esplorando le Cotswolds con questa guida 🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
-      <div id="lottie-social" style="width:80px;height:80px;margin:0 auto;"></div>
+
+    <div style="max-width:220px;margin:10px auto 0;transform:rotate(-0.5deg);">
+      <div style="background:#dc6b2f;border-radius:16px;padding:20px 16px;text-align:center;">
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;" data-t="social-label-pdf">PDF scaricati</div>
+        <div id="count-pdf" style="font-size:38px;font-weight:700;color:#fff;line-height:1;">+100</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:8px;" data-t="social-pdf">PDF portati in viaggio 🗺️</div>
+      </div>
     </div>
+
   </div>
 </section>
 <script>
@@ -381,6 +395,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
       animated=true;
       animateCount(document.getElementById('count-instagram'),6,'k',1800);
       animateCount(document.getElementById('count-travelers'),500,'',2000);
+      animateCount(document.getElementById('count-pdf'),100,'',1600);
     }
   },{threshold:0.3});
   var section=document.querySelector('#social-proof-section');
@@ -524,8 +539,10 @@ var T={
     'inc-9':'Aggiornamenti gratuiti inclusi per sempre',
     'social-label-ig':'Su Instagram',
     'social-label-travelers':'Già in viaggio',
+    'social-label-pdf':'PDF scaricati',
     'social-instagram':'persone che ci seguono in questo viaggio ✈️',
     'social-travelers':'viaggiatori stanno già esplorando le Cotswolds con questa guida 🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+    'social-pdf':'PDF portati in viaggio 🗺️',
     'app-title':'La guida in tasca',
     'app-cta-btn':'Inizia ad esplorare le Cotswolds →',
     'app-sub':"Accedi alla guida direttamente tramite il sito Wayterra (senza scaricare nulla) — mappa interattiva, schede luoghi, itinerario giorno per giorno e PDF da stampare.",
@@ -599,8 +616,10 @@ var T={
     'inc-9':'Free updates included forever',
     'social-label-ig':'On Instagram',
     'social-label-travelers':'Already traveling',
+    'social-label-pdf':'Downloaded PDFs',
     'social-instagram':'people following us on this journey ✈️',
     'social-travelers':'travelers are already exploring the Cotswolds with this guide 🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+    'social-pdf':'PDFs taken on the journey 🗺️',
     'app-title':'The guide in your pocket',
     'app-cta-btn':'Start exploring the Cotswolds →',
     'app-sub':'Access the guide directly on the Wayterra website (no download needed) — interactive map, place cards, day-by-day itinerary and printable PDF.',
