@@ -206,6 +206,9 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 .phones-dots{display:none;justify-content:center;gap:7px;margin-top:18px;}
 .phones-dot{width:7px;height:7px;border-radius:50%;background:var(--g300);transition:background .2s;cursor:pointer;}
 .phones-dot.active{background:var(--orange);}
+@keyframes fly{0%{transform:translateX(-60px) translateY(10px) rotate(-5deg);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateX(160px) translateY(-10px) rotate(5deg);opacity:0;}}
+.plane-wrap{height:50px;position:relative;overflow:hidden;margin:8px 0;}
+.plane-anim{position:absolute;top:50%;transform:translateY(-50%);animation:fly 3s ease-in-out infinite;animation-delay:1s;}
 </style>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
@@ -340,6 +343,9 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
         <div style="font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;" data-t="social-label-ig">Su Instagram</div>
         <div id="count-instagram" style="font-size:38px;font-weight:700;color:#fff;line-height:1;">+6k</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:8px;margin-bottom:14px;" data-t="social-instagram">persone che ci seguono in questo viaggio ✈️</div>
+        <div class="plane-wrap">
+          <div class="plane-anim"><i class="ti ti-plane" style="font-size:32px;color:#fff;" aria-hidden="true"></i></div>
+        </div>
         <a href="https://www.instagram.com/wayterra_guide" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.2);border-radius:20px;padding:5px 12px;text-decoration:none;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#fff" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg>
           <span style="font-size:11px;color:#fff;font-weight:500;">@wayterra_guide</span>
