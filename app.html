@@ -4076,7 +4076,7 @@ async function renderItinerariPage(region){
       +'</div>'
       +'<div class="itp-card-dur">'+(lang==='en'?'Coming soon...':'In preparazione...')+'</div>'
       +'</div></div>';
-    scroll.innerHTML=activeHtml+(travels.length?'<div class="trv-sep">'+soonLabel+'</div>':'')+fakeHtml;
+    scroll.innerHTML=activeHtml+(travels.length===0?fakeHtml:'');
   } else {
     var lazioExp=DATA.experiences.filter(function(e){return!e.isTravel&&(e.published!==false||_isAdmin);});
     if(!lazioExp.length){
