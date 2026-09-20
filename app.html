@@ -4186,6 +4186,7 @@ function openItinerario(id){
   var stopsEl=document.getElementById('itd-stops');
   if(e.stops&&e.stops.length){
     // helper: risolve name/thumb/meta/sc/onclick per una tappa
+    function _capRegion(region){return region?region.charAt(0).toUpperCase()+region.slice(1):'';}
     function resolveStop(s){
       var name='',meta='',thumb='',sc=null,onclick='',placeRef=null,isAirport=!!s.is_airport;
       if(s.type==='place'){
@@ -4193,7 +4194,7 @@ function openItinerario(id){
         if(p){
           placeRef=p;
           name=(lang==='en'&&p.nameEn)?p.nameEn:p.name;
-          meta=p.region||'';
+          meta=_capRegion(p.region);
           sc=scoreColor(p.hiddenScore);
           onclick=' onclick="openStopFromItinerario(\'place\','+p.id+',0,'+( s.day!=null?s.day:'null')+')"';
           thumb=p.coverPhoto
@@ -4210,7 +4211,7 @@ function openItinerario(id){
           }
           if(_fba){
             name=_fba.name||'';
-            meta=_fbp?(_fbp.name||''):(_fba.region||'');
+            meta=_fbp?(_fbp.name||''):_capRegion(_fba.region);
             sc=scoreColor(_fba.hiddenScore);
             onclick=' onclick="openStopFromItinerario(\'activity\','+_fba.id+','+(_fbp?_fbp.id:0)+')"';
             thumb=_fba.coverPhoto
@@ -4235,7 +4236,7 @@ function openItinerario(id){
           name=foundAct.name||'';
           meta=foundPlace
             ?((lang==='en'&&foundPlace.nameEn)?foundPlace.nameEn:foundPlace.name)
-            :(foundAct.region||'');
+            :_capRegion(foundAct.region);
           sc=scoreColor(foundAct.hiddenScore);
           onclick=' onclick="openStopFromItinerario(\'activity\','+foundAct.id+','+(foundPlace?foundPlace.id:0)+')"';
           thumb=foundAct.coverPhoto
