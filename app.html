@@ -4859,6 +4859,7 @@ function openItinerarioPDF(){
         if(lp.indexOf('auto')!==-1||lp.indexOf('macchina')!==-1||lp.indexOf('car')!==-1)icon='ti-car';
         else if(lp.indexOf('piedi')!==-1||lp.indexOf('walk')!==-1)icon='ti-walk';
         else if(lp.indexOf('bici')!==-1||lp.indexOf('bike')!==-1)icon='ti-bike';
+        else if(lp.indexOf('treno')!==-1||lp.indexOf('train')!==-1)icon='ti-train';
         var m=part.match(/(\d+)\s*min/);
         var dur=m?m[1]+' min':part;
         if(!_pdfFirst)_pdfTt+='<span style="color:#ccc;margin:0 1px;">·</span>';
@@ -5243,7 +5244,7 @@ function _fmtTravelTime(txt){
     var dur='';
     if(hm) dur+=hm[1]+'h ';
     if(mm) dur+=mm[1]+' min';
-    if(!dur) dur=part.replace(/auto|macchina|car|piedi|walk|in |e /gi,'').trim();
+    if(!dur) dur=part.replace(/auto|macchina|car|piedi|walk|treno|train|bici|bike|in |e /gi,'').trim();
     if(!first)out+='<span style="color:#ccc;margin:0 1px;">·</span>';
     out+='<i class="ti '+icon+'" style="font-size:14px;"></i><span>'+dur+'</span>';
     first=false;
