@@ -206,6 +206,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 .phones-dots{display:none;justify-content:center;gap:7px;margin-top:18px;}
 .phones-dot{width:7px;height:7px;border-radius:50%;background:var(--g300);transition:background .2s;cursor:pointer;}
 .phones-dot.active{background:var(--orange);}
+@keyframes alarm-shake{0%,100%{transform:rotate(0deg);}10%{transform:rotate(-15deg);}20%{transform:rotate(15deg);}30%{transform:rotate(-10deg);}40%{transform:rotate(10deg);}50%{transform:rotate(0deg);}}
 @media(max-width:767px){#countdown-banner{flex-direction:column;text-align:center;}#countdown-banner>div:first-child{justify-content:center;}}
 @keyframes fly{0%{transform:translateX(-60px) translateY(10px) rotate(-5deg);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateX(160px) translateY(-10px) rotate(5deg);opacity:0;}}
 .plane-wrap{height:50px;position:relative;overflow:hidden;margin:8px 0;}
@@ -227,7 +228,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <body>
 <div id="countdown-banner" style="position:sticky;top:0;z-index:999;background:#1a1a1a;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
   <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.9);flex:1;">
-    ⏰ <span data-t="countdown-text"><strong>Ultima chance!</strong> Oggi a mezzanotte scade l'accesso gratuito. Accedi ora e consultala con calma quando vuoi — per sempre.</span>
+    <span style="display:inline-block;font-size:18px;animation:alarm-shake 1s ease-in-out infinite;">⏰</span> <span data-t="countdown-text"><strong>Ultima chance!</strong> Oggi a mezzanotte scade l'accesso gratuito. Accedi ora e consultala con calma quando vuoi — per sempre.</span>
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
     <div style="display:flex;align-items:center;gap:4px;">
