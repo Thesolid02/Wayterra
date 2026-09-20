@@ -206,6 +206,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 .phones-dots{display:none;justify-content:center;gap:7px;margin-top:18px;}
 .phones-dot{width:7px;height:7px;border-radius:50%;background:var(--g300);transition:background .2s;cursor:pointer;}
 .phones-dot.active{background:var(--orange);}
+@media(max-width:767px){#countdown-banner{flex-direction:column;text-align:center;}#countdown-banner>div:first-child{justify-content:center;}}
 @keyframes fly{0%{transform:translateX(-60px) translateY(10px) rotate(-5deg);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateX(160px) translateY(-10px) rotate(5deg);opacity:0;}}
 .plane-wrap{height:50px;position:relative;overflow:hidden;margin:8px 0;}
 .plane-anim{position:absolute;top:50%;transform:translateY(-50%);animation:fly 3s ease-in-out infinite;animation-delay:1s;}
@@ -224,6 +225,21 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 </style>
 </head>
 <body>
+<div id="countdown-banner" style="position:sticky;top:0;z-index:999;background:#1a1a1a;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.9);flex:1;">
+    ⏰ <span data-t="countdown-text"><strong>Ultima chance!</strong> Oggi a mezzanotte scade l'accesso gratuito. Accedi ora e consultala con calma quando vuoi — per sempre.</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:4px;">
+      <div id="cd-h" style="background:#dc6b2f;border-radius:6px;padding:4px 8px;font-size:15px;font-weight:700;color:#fff;min-width:36px;text-align:center;">00</div>
+      <span style="font-size:15px;font-weight:700;color:#dc6b2f;">:</span>
+      <div id="cd-m" style="background:#dc6b2f;border-radius:6px;padding:4px 8px;font-size:15px;font-weight:700;color:#fff;min-width:36px;text-align:center;">00</div>
+      <span style="font-size:15px;font-weight:700;color:#dc6b2f;">:</span>
+      <div id="cd-s" style="background:#dc6b2f;border-radius:6px;padding:4px 8px;font-size:15px;font-weight:700;color:#fff;min-width:36px;text-align:center;">00</div>
+    </div>
+    <button onclick="localStorage.setItem('WT_ACCESS_COTSWOLDS','1');window.location.href='https://wayterra.it/app?access=cotswolds';" style="background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;">Accedi ora →</button>
+  </div>
+</div>
 
 <!-- NAV -->
 <nav id="main-nav">
@@ -525,6 +541,7 @@ var T={
     'nav-buy':'Accedi alla guida <span class="nav-cta-arrow">→</span>',
     'nav-login':'Vai alla tua guida',
     'hero-sub':"La guida completa per esplorare i borghi più belli d'Inghilterra",
+    'countdown-text':'<strong>Ultima chance!</strong> Oggi a mezzanotte scade l\'accesso gratuito. Accedi ora e consultala con calma quando vuoi — per sempre.',
     'hero-cta':'Accedi alla guida →',
     'hero-scroll':'SCORRI',
     'intro-badge':'La guida',
@@ -602,6 +619,7 @@ var T={
     'nav-buy':'Access the guide <span class="nav-cta-arrow">→</span>',
     'nav-login':'Go to your guide',
     'hero-sub':"The complete guide to exploring England's most beautiful villages",
+    'countdown-text':'<strong>Last chance!</strong> Free access expires tonight at midnight. Access now and browse it whenever you want — forever.',
     'hero-cta':'Access the guide →',
     'hero-scroll':'SCROLL',
     'intro-badge':'The guide',
@@ -1221,5 +1239,24 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
   <div id="lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="lang-tab-flag">🇮🇹</span></div>
   <div id="lang-tab-other" onclick="switchLangFromTab(_lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
 </div>
+<script>
+(function(){
+  function updateCountdown(){
+    var now=new Date();
+    var midnight=new Date();
+    midnight.setHours(23,59,59,999);
+    var diff=midnight-now;
+    if(diff<=0){document.getElementById('countdown-banner').style.display='none';return;}
+    var h=Math.floor(diff/3600000);
+    var m=Math.floor((diff%3600000)/60000);
+    var s=Math.floor((diff%60000)/1000);
+    document.getElementById('cd-h').textContent=String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent=String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent=String(s).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown,1000);
+})();
+</script>
 </body>
 </html>
