@@ -5232,8 +5232,12 @@ function _fmtTravelTime(txt){
     if(lp.indexOf('auto')!==-1||lp.indexOf('macchina')!==-1||lp.indexOf('car')!==-1)icon='ti-car';
     else if(lp.indexOf('piedi')!==-1||lp.indexOf('walk')!==-1)icon='ti-walk';
     else if(lp.indexOf('bici')!==-1||lp.indexOf('bike')!==-1)icon='ti-bike';
-    var m=part.match(/(\d+)\s*min/);
-    var dur=m?m[1]+' min':part;
+    var hm=part.match(/(\d+)\s*h/);
+    var mm=part.match(/(\d+)\s*min/);
+    var dur='';
+    if(hm) dur+=hm[1]+'h ';
+    if(mm) dur+=mm[1]+' min';
+    if(!dur) dur=part.replace(/auto|macchina|car|piedi|walk|in |e /gi,'').trim();
     if(!first)out+='<span style="color:#ccc;margin:0 1px;">·</span>';
     out+='<i class="ti '+icon+'" style="font-size:14px;"></i><span>'+dur+'</span>';
     first=false;
