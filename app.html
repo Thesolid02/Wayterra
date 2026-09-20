@@ -4434,7 +4434,7 @@ function openItinerario(id){
   if(_suggestedEl&&_suggestedList){
     var _usedIds=(e.stops||[]).map(function(s){return s.id;});
     var _suggested=(DATA.places||[]).filter(function(p){
-      return p.region&&e.region&&p.region.toLowerCase()===e.region.toLowerCase()&&!_usedIds.includes(p.id);
+      return p.region&&e.region&&(p.region.toLowerCase()===e.region.toLowerCase()||(GUIDE_REGIONS[e.region]&&GUIDE_REGIONS[e.region].indexOf(p.region.toLowerCase())!==-1))&&!_usedIds.includes(p.id);
     }).slice(0,6);
     if(_suggested.length){
       if(_suggestedLabel) _suggestedLabel.textContent=lang==='en'?'YOU MIGHT ALSO VISIT':'POTRESTI ANCHE VISITARE';
