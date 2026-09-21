@@ -4436,6 +4436,8 @@ function openItinerario(id){
     var _suggested=(DATA.places||[]).filter(function(p){
       return p.region&&e.region&&(p.region.toLowerCase()===e.region.toLowerCase()||(GUIDE_REGIONS[e.region]&&GUIDE_REGIONS[e.region].indexOf(p.region.toLowerCase())!==-1))&&!_usedIds.includes(p.id);
     }).slice(0,6);
+    console.log('Luoghi suggeriti trovati:', _suggested.length, 'regione itinerario:', e.region);
+    console.log('Luoghi con region cotswolds:', (DATA.places||[]).filter(function(p){return p.region&&p.region.toLowerCase()==='cotswolds';}).length);
     if(_suggested.length){
       if(_suggestedLabel) _suggestedLabel.textContent=lang==='en'?'YOU MIGHT ALSO VISIT':'POTRESTI ANCHE VISITARE';
       _suggestedList.innerHTML=_suggested.map(function(p){
