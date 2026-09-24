@@ -4057,7 +4057,8 @@ async function renderItinerariPage(region){
       var img=e.coverPhoto
         ?'<div style="position:relative;"><img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'+_chk+'</div>'
         :'<div class="itp-card-img-ph" style="position:relative;">🌍'+_chk+'</div>';
-      var stopsCount=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
+      var uniqueStops = [...new Set((e.stops||[]).filter(function(s){return !s.is_airport;}).map(function(s){return s.id;}))];
+      var stopsCount = uniqueStops.length;
       var stops=stopsCount?'<span class="itp-stop-badge">'+stopsCount+(lang==='en'?' stops':' tappe')+'</span>':'';
       var _draftBadgeItp=(_isAdmin&&e.published===false)?'<span style="display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.05em;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle;">BOZZA</span>':'';
       return '<div class="itp-card" onclick="openItinerario('+e.id+')" style="'+(_isAdmin&&e.published===false?'border:1.5px dashed #6b7280;':'')+'">'+img+'<div class="itp-card-body"><div class="itp-card-title">'+title+_draftBadgeItp+'</div>'
@@ -4097,7 +4098,8 @@ async function renderItinerariPage(region){
       var img=e.coverPhoto
         ?'<div style="position:relative;"><img class="itp-card-img" src="'+e.coverPhoto+'" alt="">'+_chk+'</div>'
         :'<div class="itp-card-img-ph" style="position:relative;">🗺'+_chk+'</div>';
-      var _sc=(e.stops||[]).filter(function(s){return !s.is_airport;}).length;
+      var uniqueStops = [...new Set((e.stops||[]).filter(function(s){return !s.is_airport;}).map(function(s){return s.id;}))];
+      var _sc = uniqueStops.length;
       var stops=_sc?'<span class="itp-stop-badge">'+_sc+' tappe</span>':'';
       var _draftBadgeLazio=(_isAdmin&&e.published===false)?'<span style="display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.05em;color:#fff;background:#6b7280;border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle;">BOZZA</span>':'';
       return '<div class="itp-card" onclick="openItinerario('+e.id+')" style="'+(_isAdmin&&e.published===false?'border:1.5px dashed #6b7280;':'')+'">'+img+'<div class="itp-card-body"><div class="itp-card-title">'+title+_draftBadgeLazio+'</div>'
