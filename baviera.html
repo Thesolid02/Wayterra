@@ -108,6 +108,8 @@ section{padding:80px 24px;}
 .intro-mosaic{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:140px 140px;gap:6px;border-radius:12px;overflow:hidden;}
 .intro-mosaic img{width:100%;height:100%;object-fit:cover;display:block;}
 @media(max-width:680px){.intro-2col{grid-template-columns:1fr;}.intro-mosaic{grid-template-rows:120px 120px;}.gallery-caption{margin-top:4px;}}
+.intro-video{width:100%;border-radius:12px;object-fit:cover;object-position:center;cursor:pointer;max-height:280px;}
+@media(max-width:767px){.intro-video{max-height:220px;}}
 
 /* WHAT'S INCLUDED */
 .includes-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:36px;}
@@ -267,6 +269,15 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
           <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/mosaico4_baviera.jpg" alt="" style="grid-column:3/4;grid-row:1/3;cursor:pointer;" loading="lazy" onclick="event.stopPropagation();openLightbox(this.src)">
         </div>
         <p class="gallery-caption" data-t="gallery-caption" style="font-size:12px;color:#999;text-align:center;margin-top:8px;font-style:italic;">Alcuni scatti del nostro itinerario</p>
+      </div>
+    </div>
+    <div style="margin-top:28px;">
+      <div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;" data-t="video-label">I luoghi che troverai nella guida</div>
+      <div style="position:relative;">
+        <video class="intro-video" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/video_baviera.MP4" autoplay muted loop playsinline preload="auto" onerror="this.style.display='none'" onclick="trackSectionClick('video');if(this.requestFullscreen){this.requestFullscreen();}else if(this.webkitRequestFullscreen){this.webkitRequestFullscreen();}else if(this.webkitEnterFullscreen){this.webkitEnterFullscreen();}">Il tuo browser non supporta il video.</video>
+        <div style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.5);border-radius:6px;padding:4px 8px;pointer-events:none;">
+          <i class="ti ti-maximize" style="font-size:14px;color:#fff;" aria-hidden="true"></i>
+        </div>
       </div>
     </div>
   </div>
@@ -453,6 +464,7 @@ var T={
     'intro-title':'Un viaggio lungo la Strada Romantica',
     'intro-sub':'La Romantische Straße è un percorso di 460 km che attraversa Baviera e Assia, collegando Würzburg a Füssen. Il nostro itinerario di 8 giorni e circa 700 km va oltre il percorso ufficiale, con tappe aggiuntive tra castelli medievali, borghi con le case a graticcio e il castello di Neuschwanstein.',
     'intro-claim':'💬 Una guida personale — tutto quello che trovi è stato vissuto e verificato da noi.',
+    'video-label':'I luoghi che troverai nella guida',
     'gallery-caption':'Alcuni scatti del nostro itinerario',
     'inc-badge':'Cosa include',
     'inc-title':'Tutto quello che ti serve',
@@ -495,6 +507,7 @@ var T={
     'intro-title':'A journey along the Romantic Road',
     'intro-sub':'The Romantische Straße is a 460 km route crossing Bavaria and Hesse, linking Würzburg to Füssen. Our 8-day, 700 km itinerary goes beyond the official route, adding extra stops among medieval castles, half-timbered villages and the iconic Neuschwanstein Castle.',
     'intro-claim':'💬 A personal guide — everything you find has been personally experienced and verified by us.',
+    'video-label':"The places you'll find in the guide",
     'gallery-caption':'Some shots from our itinerary',
     'inc-badge':"What's included",
     'inc-title':'Everything you need',
