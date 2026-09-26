@@ -5542,12 +5542,24 @@ function bootApp(d){
     if(_rr){
       localStorage.removeItem('WT_REDIRECT_REGION');
       localStorage.removeItem('WT_PROMO_ACCESS');
-      if(_rr==='cotswolds')localStorage.setItem(K.UC,'1');
-      else if(_rr==='bavaria')localStorage.setItem(K.UB,'1');
-      setTimeout(function(){
-        var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
-        selectTravelRegion(_rr,getRegionCenter(_rr),getRegionZoom(_rr));
-      },100);
+      if(_rr==='cotswolds'||_rr==='bavaria'){
+        _onboardRegion=_rr;
+        setTimeout(async function(){
+          var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+          var _sess=await _supaAuth.auth.getSession();
+          if(_sess.data&&_sess.data.session){
+            var _proceed=await checkCrossRegionAccess(_rr,_sess.data.session.user.id);
+            if(!_proceed)return;
+          }
+          selectTravelRegion(_rr,getRegionCenter(_rr),getRegionZoom(_rr));
+          document.getElementById('purchase-onboarding-sheet').style.display='block';
+        },100);
+      } else {
+        setTimeout(function(){
+          var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+          selectTravelRegion(_rr,getRegionCenter(_rr),getRegionZoom(_rr));
+        },100);
+      }
     } else if(!localStorage.getItem('WT_LAST_REGION')){
       window.location.href='/landing.html';
       return;
