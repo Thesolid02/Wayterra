@@ -289,8 +289,10 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <!-- NAV -->
 <nav>
   <div class="nav-brand">
-    <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/logo_test.jpg" style="height:32px;width:auto;border-radius:50%;object-fit:cover;" alt="Wayterra">
-    <span class="nav-name">Wayterra</span>
+    <a href="https://wayterra.it" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+      <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/logo_test.jpg" style="height:32px;width:auto;border-radius:50%;object-fit:cover;" alt="Wayterra">
+      <span class="nav-name">Wayterra</span>
+    </a>
   </div>
   <div class="nav-links">
     <div style="position:relative;">
@@ -599,22 +601,21 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
       </a>
 
       <!-- Card Baviera -->
-      <div style="flex-shrink:0;width:240px;opacity:.35;">
-        <div style="height:360px;border-radius:20px;overflow:hidden;position:relative;background:linear-gradient(135deg,#2a2a1a,#4a4a2a);">
+      <a href="/baviera" style="text-decoration:none;flex-shrink:0;width:240px;">
+        <div style="height:360px;border-radius:20px;overflow:hidden;position:relative;background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cover_baviera.jpg');background-size:cover;background-position:center;">
           <div style="position:absolute;inset:0;background:linear-gradient(to bottom, transparent 35%, rgba(0,0,0,.85) 100%);"></div>
           <div style="position:absolute;top:14px;left:14px;">
             <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,.9);background:rgba(0,0,0,.4);padding:4px 10px;border-radius:20px;letter-spacing:.04em;">🇩🇪 GERMANIA</span>
           </div>
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-            <i class="ti ti-lock" style="font-size:32px;color:rgba(255,255,255,.3);"></i>
-          </div>
           <div style="position:absolute;bottom:0;left:0;right:0;padding:20px;">
             <p style="font-size:22px;font-weight:500;color:#fff;margin:0 0 4px;">Baviera</p>
-            <p style="font-size:12px;color:rgba(255,255,255,.5);margin:0 0 2px;">Strada Romantica e dintorni</p>
-            <p data-t="dest-coming-soon" style="font-size:12px;color:rgba(255,255,255,.5);margin:0;">Prossimamente</p>
+            <p style="font-size:12px;color:rgba(255,255,255,.7);margin:0 0 12px;">Strada Romantica e dintorni</p>
+            <div style="padding:10px;background:#dc6b2f;border-radius:10px;text-align:center;">
+              <span data-t="baviera-explore" style="font-size:13px;font-weight:500;color:#fff;">Vai alla guida →</span>
+            </div>
           </div>
         </div>
-      </div>
+      </a>
 
     </div>
   </div>
@@ -894,6 +895,7 @@ var T={
     'dest-explore':'Explore →',
     'cotswolds-explore':'View the guide →',
     'lazio-explore':'View the guide →',
+    'baviera-explore':'View the guide →',
     'dest-coming-soon':'Coming soon',
     'cats-badge':'Explore by type',
     'cats-title':'Every kind of<br>hidden place',
@@ -991,6 +993,7 @@ var T={
     'dest-explore':'Esplora →',
     'cotswolds-explore':'Vai alla guida →',
     'lazio-explore':'Vai alla guida →',
+    'baviera-explore':'Vai alla guida →',
     'dest-coming-soon':'Prossimamente',
     'cats-badge':'Esplora per tipo',
     'cats-title':'Ogni tipo di<br>luogo nascosto',
