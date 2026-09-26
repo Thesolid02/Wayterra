@@ -218,7 +218,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
         <div onclick="setLang('en');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇬🇧</div>
       </div>
     </div>
-    <a href="https://wayterra.it/app?region=bavaria" class="nav-btn" data-t="nav-explore">Esplora la mappa →</a>
+    <a href="https://wayterra.it/app?access=bavaria" id="nav-explore-btn" class="nav-btn" data-t="nav-explore" onclick="event.preventDefault();localStorage.setItem('WT_ACCESS_BAVARIA','1');window.location.href='https://wayterra.it/app?access=bavaria';">Esplora la mappa →</a>
   </div>
 </nav>
 
@@ -232,6 +232,13 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h1 class="hero-h1" data-t="hero-h1">Dove la Germania sembra uscita da una fiaba</h1>
     <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare la Strada Romantica tra Baviera e Assia</p>
     <a class="hero-cta" data-t="hero-cta" href="#esplora">Esplora la mappa →</a>
+    <div onclick="openPromoPopup()" style="background:rgba(255,255,255,0.12);border:0.5px solid rgba(255,255,255,0.25);border-radius:10px;padding:12px 14px;margin-top:10px;margin-left:auto;margin-right:auto;cursor:pointer;max-width:400px;">
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <i class="ti ti-tag" style="font-size:16px;color:#fff;margin-top:1px;flex-shrink:0;" aria-hidden="true"></i>
+        <div style="font-size:13px;color:#fff;line-height:1.5;" data-t="promo-box-text">Clicca qui ed inserisci il codice <strong style="color:#ffaa77;">WAYBAVIERA</strong> per accedere gratuitamente alla guida</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;"><a href="#" onclick="event.preventDefault();openLoginSheet();" style="font-size:14px;color:rgba(255,255,255,.75);text-decoration:underline;cursor:pointer;" data-t="hero-login">Hai già un account? Accedi</a></div>
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
@@ -375,7 +382,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="phones-row" id="phones-row"></div>
     <div class="phones-dots" id="phones-dots"></div>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://wayterra.it/app?region=bavaria" style="display:inline-block;background:#dc6b2f;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;text-decoration:none;" data-t="app-cta-btn">Inizia ad esplorare la Baviera →</a>
+      <a href="https://wayterra.it/app?access=bavaria" onclick="event.preventDefault();localStorage.setItem('WT_ACCESS_BAVARIA','1');window.location.href='https://wayterra.it/app?access=bavaria';" style="display:inline-block;background:#dc6b2f;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;text-decoration:none;" data-t="app-cta-btn">Inizia ad esplorare la Baviera →</a>
     </div>
   </div>
 </section>
@@ -406,8 +413,21 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="badge" data-t="cta-badge">Come funziona</div>
     <h2 class="s-title" data-t="cta-title">Esplora gratis, acquista quando vuoi</h2>
     <p class="s-sub" data-t="cta-sub">Accedi subito alla mappa della Baviera. Quando sei pronto, sblocca la guida completa dall'app.</p>
-    <a href="https://wayterra.it/app?region=bavaria" class="cta-btn" data-t="cta-btn" onclick="trackCTAClick();">Esplora la mappa →</a>
+    <a href="https://wayterra.it/app?access=bavaria" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="event.preventDefault();trackCTAClick();localStorage.setItem('WT_ACCESS_BAVARIA','1');window.location.href='https://wayterra.it/app?access=bavaria';">Esplora la mappa →</a>
     <div class="cta-note" data-t="cta-note">€9,99 per l'accesso completo alla guida</div>
+    <div data-t="cta-or" style="display:flex;align-items:center;gap:12px;max-width:420px;margin:24px auto;color:rgba(255,255,255,.5);font-size:.8rem;">oppure</div>
+    <div data-t="cta-code-label" style="font-size:.85rem;color:rgba(255,255,255,0.8);margin-bottom:10px;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;">Hai un codice di accesso?</div>
+    <div style="display:flex;gap:8px;max-width:420px;margin:0 auto;">
+      <input id="access-code-input" type="text" placeholder="Inserisci codice" data-t="cta-code-input" style="flex:1;padding:12px 16px;border-radius:16px;border:none;font-family:var(--f);font-size:.9rem;color:var(--g900);outline:none;">
+      <button onclick="activateCode()" data-t="cta-code-btn" style="padding:12px 20px;background:var(--g900);color:#fff;border:none;border-radius:16px;font-family:var(--f);font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;">Attiva</button>
+    </div>
+    <div id="code-error" data-t="cta-error" style="margin-top:10px;font-size:.82rem;color:rgba(255,220,200,.9);display:none;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;">Codice non valido</div>
+    <div onclick="openPromoPopup()" style="background:rgba(255,255,255,0.12);border:0.5px solid rgba(255,255,255,0.25);border-radius:10px;padding:12px 14px;margin-top:20px;margin-left:auto;margin-right:auto;cursor:pointer;max-width:400px;">
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <i class="ti ti-tag" style="font-size:16px;color:#fff;margin-top:1px;flex-shrink:0;" aria-hidden="true"></i>
+        <div style="font-size:13px;color:#fff;line-height:1.5;" data-t="promo-box-text">Clicca qui ed inserisci il codice <strong style="color:#ffaa77;">WAYBAVIERA</strong> per accedere gratuitamente alla guida</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -482,7 +502,30 @@ var T={
     'cta-title':'Esplora gratis, acquista quando vuoi',
     'cta-sub':"Accedi subito alla mappa della Baviera. Quando sei pronto, sblocca la guida completa dall'app.",
     'cta-btn':'Esplora la mappa →',
-    'cta-note':"€9,99 per l'accesso completo alla guida"
+    'cta-note':"€9,99 per l'accesso completo alla guida",
+    'cta-or':'oppure',
+    'cta-code-label':'Hai un codice di accesso?',
+    'cta-code-input':'Inserisci codice',
+    'cta-code-btn':'Attiva',
+    'cta-error':'Codice non valido',
+    'promo-box-text':'Clicca qui ed inserisci il codice <strong style="color:#ffaa77;">WAYBAVIERA</strong> per accedere gratuitamente alla guida',
+    'hero-login':'Hai già un account? Accedi',
+    'login-title':'Accedi al tuo account',
+    'login-sub':'Inserisci le tue credenziali per accedere alla guida Baviera.',
+    'login-email-placeholder':'nome@email.com',
+    'login-password-placeholder':'Password',
+    'login-error':'Email o password non corretti.',
+    'login-cta':'Accedi →',
+    'login-forgot':'Password dimenticata?',
+    'forgot-title':'Recupera password',
+    'forgot-sub':'Inserisci la tua email per ricevere il link di recupero.',
+    'forgot-btn':'Invia link di recupero',
+    'reset-title':'Crea nuova password',
+    'reset-btn':'Salva nuova password',
+    'promo-popup-title':'Inserisci il tuo codice',
+    'promo-popup-sub':'Inserisci il codice promozionale per accedere alla guida gratuitamente.',
+    'promo-popup-btn':'Attiva',
+    'promo-popup-error':'Codice non valido'
   },
   en:{
     'nav-explore':'Explore the map →',
@@ -525,7 +568,30 @@ var T={
     'cta-title':"Explore for free, buy when you're ready",
     'cta-sub':"Access the Bavaria map straight away. When you're ready, unlock the full guide from the app.",
     'cta-btn':'Explore the map →',
-    'cta-note':'€9.99 for full access to the guide'
+    'cta-note':'€9.99 for full access to the guide',
+    'cta-or':'or',
+    'cta-code-label':'Do you have an access code?',
+    'cta-code-input':'Enter code',
+    'cta-code-btn':'Activate',
+    'cta-error':'Invalid code',
+    'promo-box-text':'Click here and enter the code <strong style="color:#ffaa77;">WAYBAVIERA</strong> to access the guide for free',
+    'hero-login':'Already have an account? Sign in',
+    'login-title':'Sign in to your account',
+    'login-sub':'Enter your credentials to access the Bavaria guide.',
+    'login-email-placeholder':'name@email.com',
+    'login-password-placeholder':'Password',
+    'login-error':'Invalid email or password.',
+    'login-cta':'Sign in →',
+    'login-forgot':'Forgot password?',
+    'forgot-title':'Reset password',
+    'forgot-sub':'Enter your email to receive the recovery link.',
+    'forgot-btn':'Send recovery link',
+    'reset-title':'Create new password',
+    'reset-btn':'Save new password',
+    'promo-popup-title':'Enter your code',
+    'promo-popup-sub':'Enter the promo code to access the guide for free.',
+    'promo-popup-btn':'Activate',
+    'promo-popup-error':'Invalid code'
   }
 };
 var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
@@ -587,6 +653,11 @@ function setLang(l){
     if(!T[l]||T[l][key]===undefined)return;
     if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=T[l][key];}
     else{el.innerHTML=T[l][key];}
+  });
+  document.querySelectorAll('[data-t-placeholder]').forEach(function(el){
+    var key=el.getAttribute('data-t-placeholder');
+    if(!T[l]||T[l][key]===undefined)return;
+    el.placeholder=T[l][key];
   });
   renderPhones(l);
   if(typeof window.renderReviews==='function')window.renderReviews();
@@ -753,6 +824,9 @@ function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementBy
 function switchLangFromTab(l){setLang(l);_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}
 document.addEventListener('click',function(e){var tab=document.getElementById('lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}});
 document.addEventListener('DOMContentLoaded',async function(){
+  if(window.location.hash.includes('type=recovery')){
+    document.getElementById('reset-password-sheet').style.display='block';
+  }
   if(!_supaLanding)return;
   var r=await _supaLanding.auth.getSession();
   var session=r.data&&r.data.session;
@@ -760,6 +834,19 @@ document.addEventListener('DOMContentLoaded',async function(){
     sessionStorage.setItem('WT_NOTIF_BAVIERA_VIEW','1');
     var _tgUser=session&&session.user?session.user.email:'Visitatore anonimo';
     fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'👀 Visita pagina Baviera\nUtente: '+_tgUser})}).catch(function(){});
+  }
+  if(session&&session.user){
+    document.querySelectorAll('.cta-btn').forEach(function(btn){
+      btn.textContent=_lang==='en'?'Access the guide →':'Accedi alla guida →';
+      btn.onclick=function(){localStorage.setItem('WT_REDIRECT_REGION','bavaria');window.location.href='/app';};
+    });
+    var _userId=session.user.id;
+    _supaLanding.from('profiles').select('avatar_url').eq('id',_userId).single().then(function(result){
+      var avatarUrl=(result.data&&result.data.avatar_url)||(session.user.user_metadata&&session.user.user_metadata.avatar_url);
+      var initials=(session.user.email||'U').charAt(0).toUpperCase();
+      var navBtn=document.getElementById('nav-explore-btn');
+      if(navBtn){navBtn.outerHTML='<div id="nav-avatar" onclick="openProfilePopup()" style="width:34px;height:34px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">'+(avatarUrl?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</span>')+'</div>';}
+    });
   }
 });
 </script>
@@ -848,5 +935,152 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
   <div id="lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="lang-tab-flag">🇮🇹</span></div>
   <div id="lang-tab-other" onclick="switchLangFromTab(_lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
 </div>
+
+<div id="login-sheet" style="display:none;position:fixed;inset:0;z-index:1001;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="closeLoginSheet()"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div data-t="login-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Accedi al tuo account</div>
+    <div data-t="login-sub" style="font-size:14px;color:#888;margin-bottom:20px;">Inserisci le tue credenziali per accedere alla guida Baviera.</div>
+    <button onclick="loginWithGoogle()" style="width:100%;background:#fff;color:#1a1a1a;border:1px solid #ddd;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+      Continua con Google
+    </button>
+    <div style="text-align:center;margin-bottom:16px;font-size:13px;color:#bbb;">oppure</div>
+    <input id="login-email" type="email" data-t-placeholder="login-email-placeholder" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <input id="login-password" type="password" data-t-placeholder="login-password-placeholder" placeholder="Password" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <div id="login-error" data-t="login-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;">Email o password non corretti.</div>
+    <button onclick="submitLogin()" id="login-cta-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="login-cta">Accedi →</button>
+    <div style="text-align:center;margin-top:8px;"><a href="#" onclick="event.preventDefault();document.getElementById('login-sheet').style.display='none';document.getElementById('forgot-password-sheet').style.display='block';" style="font-size:12px;color:#888;" data-t="login-forgot">Password dimenticata?</a></div>
+  </div>
+</div>
+<div id="profile-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="document.getElementById('profile-sheet').style.display='none'"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div id="profile-email" style="font-size:14px;color:#888;margin-bottom:20px;text-align:center;"></div>
+    <button onclick="localStorage.setItem('WT_REDIRECT_REGION','bavaria');window.location.href='/app';" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:10px;">Accedi alla guida →</button>
+    <button onclick="_supaLanding.auth.signOut().then(function(){window.location.reload();})" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;font-family:inherit;">Logout</button>
+  </div>
+</div>
+<div id="forgot-password-sheet" style="display:none;position:fixed;inset:0;z-index:1001;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="document.getElementById('forgot-password-sheet').style.display='none'"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div data-t="forgot-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Recupera password</div>
+    <div data-t="forgot-sub" style="font-size:14px;color:#888;margin-bottom:16px;">Inserisci la tua email per ricevere il link di recupero.</div>
+    <input id="forgot-email-input" type="email" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <div id="forgot-email-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
+    <button onclick="sendResetEmail()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="forgot-btn">Invia link di recupero</button>
+  </div>
+</div>
+<div id="reset-password-sheet" style="display:none;position:fixed;inset:0;z-index:1002;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div data-t="reset-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Crea nuova password</div>
+    <input id="reset-password-input" type="password" placeholder="Nuova password (min. 6 caratteri)" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <div id="reset-password-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
+    <button onclick="saveNewPassword()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="reset-btn">Salva nuova password</button>
+  </div>
+</div>
+<div id="promo-popup" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);" onclick="closePromoPopup()"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div style="font-size:18px;font-weight:500;margin-bottom:6px;" data-t="promo-popup-title">Inserisci il tuo codice</div>
+    <div style="font-size:13px;color:#888;margin-bottom:16px;" data-t="promo-popup-sub">Inserisci il codice promozionale per accedere alla guida gratuitamente.</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <input id="promo-popup-input" type="text" placeholder="Es. WAYBAVIERA" style="flex:1;padding:12px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;text-transform:uppercase;">
+      <button onclick="applyPromoFromPopup()" style="background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px 16px;font-size:14px;font-weight:500;cursor:pointer;" data-t="promo-popup-btn">Attiva</button>
+    </div>
+    <div id="promo-popup-error" style="display:none;font-size:12px;color:#e53e3e;margin-bottom:8px;" data-t="promo-popup-error">Codice non valido</div>
+  </div>
+</div>
+<script>
+function openLoginSheet(){document.getElementById('login-sheet').style.display='block';}
+function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
+async function loginWithGoogle(){if(!_supaLanding)return;await _supaLanding.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/baviera'}});}
+async function resetPassword(){
+  var email=document.getElementById('login-email').value.trim();
+  if(!email){alert(_lang==='en'?'Enter your email first':'Inserisci prima la tua email');return;}
+  await _supaLanding.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/baviera'});
+  alert(_lang==='en'?'Password reset email sent!':'Email di recupero inviata!');
+}
+async function submitLogin(){
+  var email=document.getElementById('login-email').value.trim();
+  var password=document.getElementById('login-password').value;
+  var errEl=document.getElementById('login-error');
+  var btn=document.getElementById('login-cta-btn');
+  errEl.style.display='none';
+  if(!email||!email.includes('@')||!password){errEl.style.display='block';return;}
+  btn.disabled=true;btn.textContent='...';
+  if(!_supaLanding){errEl.style.display='block';btn.disabled=false;btn.textContent=_lang==='en'?'Sign in →':'Accedi →';return;}
+  var result=await _supaLanding.auth.signInWithPassword({email:email,password:password});
+  if(result.error){errEl.style.display='block';btn.disabled=false;btn.textContent=_lang==='en'?'Sign in →':'Accedi →';return;}
+  localStorage.setItem('WT_REDIRECT_REGION','bavaria');
+  window.location.href='/app';
+}
+function openProfilePopup(){
+  if(!_supaLanding)return;
+  _supaLanding.auth.getSession().then(function(result){
+    var session=result.data&&result.data.session;
+    if(session)document.getElementById('profile-email').textContent=session.user.email;
+  });
+  document.getElementById('profile-sheet').style.display='block';
+}
+function showToast(msg){
+  var t=document.getElementById('wt-toast');
+  if(!t){t=document.createElement('div');t.id='wt-toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#dc6b2f;color:#fff;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:500;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .3s;';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._to);t._to=setTimeout(function(){t.style.opacity='0';},3000);
+}
+async function sendResetEmail(){
+  var email=document.getElementById('forgot-email-input').value.trim();
+  var errEl=document.getElementById('forgot-email-error');
+  if(!email||!email.includes('@')){errEl.textContent=_lang==='en'?'Enter a valid email':'Inserisci un\'email valida';errEl.style.display='block';return;}
+  var btn=document.querySelector('#forgot-password-sheet button');
+  btn.disabled=true;btn.textContent='...';
+  await _supaLanding.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/baviera'});
+  document.getElementById('forgot-password-sheet').style.display='none';
+  btn.disabled=false;
+  showToast(_lang==='en'?'Recovery email sent! Check your inbox.':'Email di recupero inviata! Controlla la casella.');
+}
+async function saveNewPassword(){
+  var password=document.getElementById('reset-password-input').value;
+  var errEl=document.getElementById('reset-password-error');
+  if(password.length<6){errEl.textContent=_lang==='en'?'Password must be at least 6 characters':'La password deve essere di almeno 6 caratteri';errEl.style.display='block';return;}
+  var result=await _supaLanding.auth.updateUser({password:password});
+  if(result.error){errEl.textContent=result.error.message;errEl.style.display='block';return;}
+  document.getElementById('reset-password-sheet').style.display='none';
+  showToast(_lang==='en'?'Password updated! ✓':'Password aggiornata! ✓');
+}
+function openPromoPopup(){document.getElementById('promo-popup').style.display='block';}
+function closePromoPopup(){document.getElementById('promo-popup').style.display='none';}
+function applyPromoFromPopup(){
+  var code=document.getElementById('promo-popup-input').value.trim().toUpperCase();
+  if(code==='WAYBAVIERA'){
+    closePromoPopup();
+    localStorage.setItem('WT_PROMO_ACCESS','1');
+    window.location.href='/app?access=bavaria';
+  } else {
+    document.getElementById('promo-popup-error').style.display='block';
+  }
+}
+function activateCode(){
+  var code=document.getElementById('access-code-input').value.trim().toLowerCase();
+  var err=document.getElementById('code-error');
+  if(code==='waybaviera'){
+    localStorage.setItem('WT_PROMO_ACCESS','1');
+    window.location.href='/app?access=bavaria';
+  } else {
+    err.style.display='block';
+    setTimeout(function(){err.style.display='none';},3000);
+  }
+}
+document.getElementById('access-code-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter')activateCode();
+});
+</script>
 </body>
 </html>

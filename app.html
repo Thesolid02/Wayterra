@@ -1224,7 +1224,7 @@ lottie.loadAnimation({
 var ITINERARI_LIVE=true; // set to true when itinerary content is ready for launch
 
 /* ═══ STORAGE KEYS ═══ */
-var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1',CA:'WT_CITY_ACTIVITIES_v1',EXP:'WT_EXPERIENCES_v1',UC:'WT_ACCESS_COTSWOLDS'};
+var K={P:'WT_PLACES_v2',C:'WT_CATS_v2',A:'WT_ATYPES_v2',U:'WT_UNLOCKED_v2',FAV:'WT_FAVS_v2',LANG:'WT_LANG_v1',PT:'WT_PLACE_TYPES_v1',ET:'WT_EXP_TYPES_v1',ES:'WT_EXP_SUBTYPES_v1',CA:'WT_CITY_ACTIVITIES_v1',EXP:'WT_EXPERIENCES_v1',UC:'WT_ACCESS_COTSWOLDS',UB:'WT_ACCESS_BAVARIA'};
 var BUY_URL='https://mattiagold.gumroad.com/l/wayterra';
 
 /* ═══ TRANSLATIONS ═══ */
@@ -5508,6 +5508,7 @@ function bootApp(d){
   var _urlParamsB=new URLSearchParams(window.location.search);
   var _accessParam=_urlParamsB.get('access');
   if(_accessParam==='cotswolds'){
+    _onboardRegion='cotswolds';
     setTimeout(async function(){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       var _sess=await _supaAuth.auth.getSession();
@@ -5520,6 +5521,22 @@ function bootApp(d){
       selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
       document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
+  } else if(_accessParam==='bavaria'){
+    localStorage.setItem(K.UB,'1');
+    _onboardRegion='bavaria';
+    setTimeout(async function(){
+      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+      var _sess=await _supaAuth.auth.getSession();
+      if(_sess.data&&_sess.data.session){
+        localStorage.removeItem('WT_PROMO_ACCESS');
+        selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
+        return;
+      }
+      selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
+      if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){
+        document.getElementById('purchase-onboarding-sheet').style.display='block';
+      }
+    },100);
   } else if(_accessParam==='lazio'){
     setTimeout(function(){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
@@ -5531,7 +5548,8 @@ function bootApp(d){
     if(_rr){
       localStorage.removeItem('WT_REDIRECT_REGION');
       localStorage.removeItem('WT_PROMO_ACCESS');
-      localStorage.setItem(K.UC,'1');
+      if(_rr==='cotswolds')localStorage.setItem(K.UC,'1');
+      else if(_rr==='bavaria')localStorage.setItem(K.UB,'1');
       setTimeout(function(){
         var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
         selectTravelRegion(_rr,getRegionCenter(_rr),getRegionZoom(_rr));
@@ -6786,6 +6804,7 @@ async function createAccountFromPurchase(){
 </div>
 <script>
 var _onboardEmailExists=false;
+var _onboardRegion='cotswolds'; // regione per cui è aperto l'onboarding/login sheet ('cotswolds' o 'bavaria')
 async function continueOnboarding(){
   var email=document.getElementById('onboard-email').value.trim();
   var errEl=document.getElementById('onboard-error');
@@ -6845,18 +6864,18 @@ async function submitOnboarding(){
   }
   if(result.data&&result.data.user){
     var uid=result.data.user.id;
-    await _supaAuth.from('user_regions').upsert({user_id:uid,region:'cotswolds'},{onConflict:'user_id,region'});
-    if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){localStorage.removeItem('WT_PROMO_ACCESS');localStorage.setItem(K.UC,'1');}
+    await _supaAuth.from('user_regions').upsert({user_id:uid,region:_onboardRegion},{onConflict:'user_id,region'});
+    if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){localStorage.removeItem('WT_PROMO_ACCESS');localStorage.setItem(_onboardRegion==='bavaria'?K.UB:K.UC,'1');}
     if(!result.data.session){await _supaAuth.auth.signInWithPassword({email:email,password:password});}
     _currentUser=result.data.user;
     _currentUserProfile={full_name:'',avatar_url:null};
     updateNavProfileAvatar();
   }
   document.getElementById('purchase-onboarding-sheet').style.display='none';
-  selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+  selectTravelRegion(_onboardRegion,getRegionCenter(_onboardRegion),getRegionZoom(_onboardRegion));
 }
 async function onboardingGoogleLogin(){
-  await _supaAuth.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/app?access=cotswolds'}});
+  await _supaAuth.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/app?access='+_onboardRegion}});
 }
 function showPurchaseForgotPassword(){
   document.getElementById('purchase-login-sheet').style.display='none';
@@ -6867,7 +6886,7 @@ async function submitPurchaseForgot(){
   var errEl=document.getElementById('purchase-forgot-error');
   errEl.style.display='none';
   if(!email||!email.includes('@')){errEl.textContent='Inserisci un\'email valida';errEl.style.display='block';return;}
-  await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/app?access=cotswolds'});
+  await _supaAuth.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/app?access='+_onboardRegion});
   document.getElementById('purchase-forgot-sheet').style.display='none';
   if(typeof toast==='function')toast(lang==='en'?'Recovery email sent! Check your inbox.':'Email di recupero inviata! Controlla la casella.');
 }
@@ -6881,11 +6900,11 @@ async function submitPurchaseLogin(){
   if(result.error){errEl.textContent=translateAuthError(result.error.message,lang);errEl.style.display='block';return;}
   document.getElementById('purchase-login-sheet').style.display='none';
   if(result.data&&result.data.user){
-    await _supaAuth.from('user_regions').upsert({user_id:result.data.user.id,region:'cotswolds'},{onConflict:'user_id,region'});
+    await _supaAuth.from('user_regions').upsert({user_id:result.data.user.id,region:_onboardRegion},{onConflict:'user_id,region'});
     _currentUser=result.data.user;
     updateNavProfileAvatar();
   }
-  selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+  selectTravelRegion(_onboardRegion,getRegionCenter(_onboardRegion),getRegionZoom(_onboardRegion));
 }
 function requireAuth(actionName){
   console.log('requireAuth chiamata, actionName:',actionName,'_currentUser:',!!_currentUser);
