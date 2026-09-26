@@ -232,12 +232,6 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h1 class="hero-h1" data-t="hero-h1">Dove la Germania sembra uscita da una fiaba</h1>
     <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare la Strada Romantica tra Baviera e Assia</p>
     <a class="hero-cta" data-t="hero-cta" href="#esplora">Esplora la mappa →</a>
-    <div onclick="openPromoPopup()" style="background:rgba(255,255,255,0.12);border:0.5px solid rgba(255,255,255,0.25);border-radius:10px;padding:12px 14px;margin-top:10px;margin-left:auto;margin-right:auto;cursor:pointer;max-width:400px;">
-      <div style="display:flex;align-items:flex-start;gap:8px;">
-        <i class="ti ti-tag" style="font-size:16px;color:#fff;margin-top:1px;flex-shrink:0;" aria-hidden="true"></i>
-        <div style="font-size:13px;color:#fff;line-height:1.5;" data-t="promo-box-text">Clicca qui ed inserisci il codice <strong style="color:#ffaa77;">WAYBAVIERA</strong> per accedere gratuitamente alla guida</div>
-      </div>
-    </div>
     <div style="margin-top:16px;"><a href="#" onclick="event.preventDefault();openLoginSheet();" style="font-size:14px;color:rgba(255,255,255,.75);text-decoration:underline;cursor:pointer;" data-t="hero-login">Hai già un account? Accedi</a></div>
   </div>
   <div class="hero-scroll">
@@ -415,19 +409,6 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <p class="s-sub" data-t="cta-sub">Accedi subito alla mappa della Baviera. Quando sei pronto, sblocca la guida completa dall'app.</p>
     <a href="https://wayterra.it/app?access=bavaria" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="event.preventDefault();trackCTAClick();localStorage.setItem('WT_ACCESS_BAVARIA','1');window.location.href='https://wayterra.it/app?access=bavaria';">Esplora la mappa →</a>
     <div class="cta-note" data-t="cta-note">€9,99 per l'accesso completo alla guida</div>
-    <div data-t="cta-or" style="display:flex;align-items:center;gap:12px;max-width:420px;margin:24px auto;color:rgba(255,255,255,.5);font-size:.8rem;">oppure</div>
-    <div data-t="cta-code-label" style="font-size:.85rem;color:rgba(255,255,255,0.8);margin-bottom:10px;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;">Hai un codice di accesso?</div>
-    <div style="display:flex;gap:8px;max-width:420px;margin:0 auto;">
-      <input id="access-code-input" type="text" placeholder="Inserisci codice" data-t="cta-code-input" style="flex:1;padding:12px 16px;border-radius:16px;border:none;font-family:var(--f);font-size:.9rem;color:var(--g900);outline:none;">
-      <button onclick="activateCode()" data-t="cta-code-btn" style="padding:12px 20px;background:var(--g900);color:#fff;border:none;border-radius:16px;font-family:var(--f);font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;">Attiva</button>
-    </div>
-    <div id="code-error" data-t="cta-error" style="margin-top:10px;font-size:.82rem;color:rgba(255,220,200,.9);display:none;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;">Codice non valido</div>
-    <div onclick="openPromoPopup()" style="background:rgba(255,255,255,0.12);border:0.5px solid rgba(255,255,255,0.25);border-radius:10px;padding:12px 14px;margin-top:20px;margin-left:auto;margin-right:auto;cursor:pointer;max-width:400px;">
-      <div style="display:flex;align-items:flex-start;gap:8px;">
-        <i class="ti ti-tag" style="font-size:16px;color:#fff;margin-top:1px;flex-shrink:0;" aria-hidden="true"></i>
-        <div style="font-size:13px;color:#fff;line-height:1.5;" data-t="promo-box-text">Clicca qui ed inserisci il codice <strong style="color:#ffaa77;">WAYBAVIERA</strong> per accedere gratuitamente alla guida</div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -503,12 +484,6 @@ var T={
     'cta-sub':"Accedi subito alla mappa della Baviera. Quando sei pronto, sblocca la guida completa dall'app.",
     'cta-btn':'Esplora la mappa →',
     'cta-note':"€9,99 per l'accesso completo alla guida",
-    'cta-or':'oppure',
-    'cta-code-label':'Hai un codice di accesso?',
-    'cta-code-input':'Inserisci codice',
-    'cta-code-btn':'Attiva',
-    'cta-error':'Codice non valido',
-    'promo-box-text':'Clicca qui ed inserisci il codice <strong style="color:#ffaa77;">WAYBAVIERA</strong> per accedere gratuitamente alla guida',
     'hero-login':'Hai già un account? Accedi',
     'login-title':'Accedi al tuo account',
     'login-sub':'Inserisci le tue credenziali per accedere alla guida Baviera.',
@@ -521,11 +496,7 @@ var T={
     'forgot-sub':'Inserisci la tua email per ricevere il link di recupero.',
     'forgot-btn':'Invia link di recupero',
     'reset-title':'Crea nuova password',
-    'reset-btn':'Salva nuova password',
-    'promo-popup-title':'Inserisci il tuo codice',
-    'promo-popup-sub':'Inserisci il codice promozionale per accedere alla guida gratuitamente.',
-    'promo-popup-btn':'Attiva',
-    'promo-popup-error':'Codice non valido'
+    'reset-btn':'Salva nuova password'
   },
   en:{
     'nav-explore':'Explore the map →',
@@ -569,12 +540,6 @@ var T={
     'cta-sub':"Access the Bavaria map straight away. When you're ready, unlock the full guide from the app.",
     'cta-btn':'Explore the map →',
     'cta-note':'€9.99 for full access to the guide',
-    'cta-or':'or',
-    'cta-code-label':'Do you have an access code?',
-    'cta-code-input':'Enter code',
-    'cta-code-btn':'Activate',
-    'cta-error':'Invalid code',
-    'promo-box-text':'Click here and enter the code <strong style="color:#ffaa77;">WAYBAVIERA</strong> to access the guide for free',
     'hero-login':'Already have an account? Sign in',
     'login-title':'Sign in to your account',
     'login-sub':'Enter your credentials to access the Bavaria guide.',
@@ -587,11 +552,7 @@ var T={
     'forgot-sub':'Enter your email to receive the recovery link.',
     'forgot-btn':'Send recovery link',
     'reset-title':'Create new password',
-    'reset-btn':'Save new password',
-    'promo-popup-title':'Enter your code',
-    'promo-popup-sub':'Enter the promo code to access the guide for free.',
-    'promo-popup-btn':'Activate',
-    'promo-popup-error':'Invalid code'
+    'reset-btn':'Save new password'
   }
 };
 var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
@@ -984,19 +945,6 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
     <button onclick="saveNewPassword()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="reset-btn">Salva nuova password</button>
   </div>
 </div>
-<div id="promo-popup" style="display:none;position:fixed;inset:0;z-index:1000;">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);" onclick="closePromoPopup()"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;">
-    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
-    <div style="font-size:18px;font-weight:500;margin-bottom:6px;" data-t="promo-popup-title">Inserisci il tuo codice</div>
-    <div style="font-size:13px;color:#888;margin-bottom:16px;" data-t="promo-popup-sub">Inserisci il codice promozionale per accedere alla guida gratuitamente.</div>
-    <div style="display:flex;gap:8px;margin-bottom:8px;">
-      <input id="promo-popup-input" type="text" placeholder="Es. WAYBAVIERA" style="flex:1;padding:12px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;text-transform:uppercase;">
-      <button onclick="applyPromoFromPopup()" style="background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px 16px;font-size:14px;font-weight:500;cursor:pointer;" data-t="promo-popup-btn">Attiva</button>
-    </div>
-    <div id="promo-popup-error" style="display:none;font-size:12px;color:#e53e3e;margin-bottom:8px;" data-t="promo-popup-error">Codice non valido</div>
-  </div>
-</div>
 <script>
 function openLoginSheet(){document.getElementById('login-sheet').style.display='block';}
 function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
@@ -1055,32 +1003,6 @@ async function saveNewPassword(){
   document.getElementById('reset-password-sheet').style.display='none';
   showToast(_lang==='en'?'Password updated! ✓':'Password aggiornata! ✓');
 }
-function openPromoPopup(){document.getElementById('promo-popup').style.display='block';}
-function closePromoPopup(){document.getElementById('promo-popup').style.display='none';}
-function applyPromoFromPopup(){
-  var code=document.getElementById('promo-popup-input').value.trim().toUpperCase();
-  if(code==='WAYBAVIERA'){
-    closePromoPopup();
-    localStorage.setItem('WT_PROMO_ACCESS','1');
-    window.location.href='/app?access=bavaria';
-  } else {
-    document.getElementById('promo-popup-error').style.display='block';
-  }
-}
-function activateCode(){
-  var code=document.getElementById('access-code-input').value.trim().toLowerCase();
-  var err=document.getElementById('code-error');
-  if(code==='waybaviera'){
-    localStorage.setItem('WT_PROMO_ACCESS','1');
-    window.location.href='/app?access=bavaria';
-  } else {
-    err.style.display='block';
-    setTimeout(function(){err.style.display='none';},3000);
-  }
-}
-document.getElementById('access-code-input').addEventListener('keydown',function(e){
-  if(e.key==='Enter')activateCode();
-});
 </script>
 </body>
 </html>
