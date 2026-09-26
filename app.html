@@ -5513,29 +5513,23 @@ function bootApp(d){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       var _sess=await _supaAuth.auth.getSession();
       if(_sess.data&&_sess.data.session){
-        localStorage.setItem(K.UC,'1');
-        localStorage.removeItem('WT_PROMO_ACCESS');
-        selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
-        return;
+        var _proceed=await checkCrossRegionAccess('cotswolds',_sess.data.session.user.id);
+        if(!_proceed)return;
       }
       selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
       document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
   } else if(_accessParam==='bavaria'){
-    localStorage.setItem(K.UB,'1');
     _onboardRegion='bavaria';
     setTimeout(async function(){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       var _sess=await _supaAuth.auth.getSession();
       if(_sess.data&&_sess.data.session){
-        localStorage.removeItem('WT_PROMO_ACCESS');
-        selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
-        return;
+        var _proceed=await checkCrossRegionAccess('bavaria',_sess.data.session.user.id);
+        if(!_proceed)return;
       }
       selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
-      if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){
-        document.getElementById('purchase-onboarding-sheet').style.display='block';
-      }
+      document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
   } else if(_accessParam==='lazio'){
     setTimeout(function(){
@@ -6739,6 +6733,18 @@ async function createAccountFromPurchase(){
 }
 </script>
 
+<!-- CROSS-REGION SHEET (utente già registrato per un'altra guida) -->
+<div id="cross-region-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);" onclick="document.getElementById('cross-region-sheet').style.display='none';"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div id="cross-region-title" style="font-size:18px;font-weight:500;margin-bottom:6px;"></div>
+    <div id="cross-region-sub" style="font-size:14px;color:#888;margin-bottom:20px;"></div>
+    <button id="cross-region-available-btn" style="width:100%;background:#f5f5f5;color:#333;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:10px;font-family:inherit;"></button>
+    <button id="cross-region-unlock-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;"></button>
+  </div>
+</div>
+
 <!-- ONBOARDING SHEET (post-acquisto) -->
 <div id="purchase-onboarding-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
   <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);"></div>
@@ -6805,6 +6811,55 @@ async function createAccountFromPurchase(){
 <script>
 var _onboardEmailExists=false;
 var _onboardRegion='cotswolds'; // regione per cui è aperto l'onboarding/login sheet ('cotswolds' o 'bavaria')
+var CROSS_REGION_LABELS={cotswolds:'Cotswolds',bavaria:'Baviera'};
+function openRegion(region){
+  if(region==='lazio')selectRegion('lazio');
+  else selectTravelRegion(region,getRegionCenter(region),getRegionZoom(region));
+}
+// Verifica in user_regions se l'utente loggato ha davvero diritto alla regione richiesta,
+// prima di concederla solo perché ha una sessione attiva (bug corretto: prima bastava
+// essere loggati per qualsiasi motivo per ottenere gratis cotswolds/bavaria).
+async function checkCrossRegionAccess(requestedRegion,userId){
+  var result=await _supaAuth.from('user_regions').select('region').eq('user_id',userId);
+  var userRegions=(result.data||[]).map(function(r){return r.region;});
+  if(userRegions.indexOf(requestedRegion)!==-1){
+    if(requestedRegion==='cotswolds')localStorage.setItem(K.UC,'1');
+    else if(requestedRegion==='bavaria')localStorage.setItem(K.UB,'1');
+    localStorage.removeItem('WT_PROMO_ACCESS');
+    openRegion(requestedRegion);
+    return false;
+  }
+  var availableRegion=userRegions.find(function(r){return r==='cotswolds'||r==='bavaria';});
+  if(availableRegion){
+    showCrossRegionSheet(requestedRegion,availableRegion);
+    return false;
+  }
+  return true;
+}
+function showCrossRegionSheet(requestedRegion,availableRegion){
+  var reqLabel=CROSS_REGION_LABELS[requestedRegion]||requestedRegion;
+  var availLabel=CROSS_REGION_LABELS[availableRegion]||availableRegion;
+  document.getElementById('cross-region-title').textContent=lang==='en'
+    ?'You already have access to '+availLabel
+    :'Hai già accesso a '+availLabel;
+  document.getElementById('cross-region-sub').textContent=lang==='en'
+    ?'Your account is linked to the '+availLabel+' guide. Continue there, or unlock '+reqLabel+' too?'
+    :'Il tuo account è collegato alla guida '+availLabel+'. Continua da lì, oppure sblocca anche '+reqLabel+'.';
+  var _availBtn=document.getElementById('cross-region-available-btn');
+  _availBtn.textContent=lang==='en'?('Continue with '+availLabel+' →'):('Continua con '+availLabel+' →');
+  _availBtn.onclick=function(){
+    document.getElementById('cross-region-sheet').style.display='none';
+    if(availableRegion==='cotswolds')localStorage.setItem(K.UC,'1');
+    else if(availableRegion==='bavaria')localStorage.setItem(K.UB,'1');
+    openRegion(availableRegion);
+  };
+  var _unlockBtn=document.getElementById('cross-region-unlock-btn');
+  _unlockBtn.textContent=lang==='en'?('Unlock '+reqLabel+' →'):('Sblocca '+reqLabel+' →');
+  _unlockBtn.onclick=function(){
+    window.location.href='https://wayterra.it/'+requestedRegion;
+  };
+  document.getElementById('cross-region-sheet').style.display='block';
+}
 async function continueOnboarding(){
   var email=document.getElementById('onboard-email').value.trim();
   var errEl=document.getElementById('onboard-error');
