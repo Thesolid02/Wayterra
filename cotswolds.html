@@ -246,7 +246,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="hero-badge">🇬🇧 United Kingdom</div>
     <h1 class="hero-h1">Cotswolds</h1>
     <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare i borghi più belli d'Inghilterra</p>
-    <a class="hero-cta" data-t="hero-cta" href="#acquista">Accedi alla guida →</a>
+    <a class="hero-cta" data-t="hero-cta" href="#acquista">Acquista la guida →</a>
     <div style="margin-top:16px;"><a href="#" onclick="event.preventDefault();openLoginSheet();" style="font-size:14px;color:rgba(255,255,255,.75);text-decoration:underline;cursor:pointer;" data-t="hero-login">Hai già acquistato? Accedi alla guida</a></div>
   </div>
   <div class="hero-scroll">
@@ -422,7 +422,15 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h2 class="s-title" data-t="cta-title">Pronto a esplorare le Cotswolds?</h2>
     <div class="cta-price" data-price>€12,90</div>
     <div class="cta-price-note" data-t="cta-note">Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile</div>
-    <a href="#" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="event.preventDefault();trackCTAClick();openPurchaseSheet();">Accedi alla guida →</a>
+    <a href="https://wayterra.gumroad.com/l/lbchl" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="trackCTAClick();">Acquista la guida →</a>
+    <div style="margin-top:20px;">
+      <div style="font-size:14px;color:rgba(255,255,255,0.9);margin-bottom:10px;font-weight:500;" data-t="code-label">🎁 Hai un codice di accesso gratuito?</div>
+      <div style="display:flex;gap:8px;">
+        <input id="access-code-input" type="text" placeholder="Inserisci codice" data-t-placeholder="code-placeholder" style="flex:1;padding:10px 14px;border:none;border-radius:8px;font-size:14px;text-transform:uppercase;background:rgba(255,255,255,0.15);color:#fff;outline:none;" />
+        <button onclick="activateCode()" style="background:#fff;color:#dc6b2f;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;" data-t="code-btn">Attiva</button>
+      </div>
+      <div id="code-error" style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:6px;display:none;" data-t="code-error">Codice non valido</div>
+    </div>
     <div style="display:flex;align-items:center;justify-content:flex-start;gap:6px;margin-top:12px;margin-bottom:10px;">
       <i class="ti ti-lock" style="font-size:14px;color:rgba(255,255,255,0.85);"></i>
       <span style="font-size:12px;color:rgba(255,255,255,0.85);" data-t="payment-secure">Pagamento sicuro e crittografato</span>
@@ -482,7 +490,7 @@ var T={
     'nav-buy':'Accedi alla guida <span class="nav-cta-arrow">→</span>',
     'nav-login':'Vai alla tua guida',
     'hero-sub':"La guida completa per esplorare i borghi più belli d'Inghilterra",
-    'hero-cta':'Accedi alla guida →',
+    'hero-cta':'Acquista la guida →',
     'hero-scroll':'SCORRI',
     'intro-badge':'La guida',
     'video-label':'I villaggi che troverai nella guida',
@@ -515,7 +523,11 @@ var T={
     'cta-badge':'Accesso per sempre',
     'cta-title':'Pronto a esplorare le Cotswolds?',
     'cta-note':'Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile',
-    'cta-btn':'Accedi alla guida →',
+    'cta-btn':'Acquista la guida →',
+    'code-label':'🎁 Hai un codice di accesso gratuito?',
+    'code-placeholder':'Inserisci codice',
+    'code-btn':'Attiva',
+    'code-error':'Codice non valido',
     'payment-secure':'Pagamento sicuro e crittografato',
     'gallery-caption':'Alcuni scatti del nostro itinerario',
     'purchase-title':'Quasi lì! 🎉',
@@ -544,7 +556,7 @@ var T={
     'nav-buy':'Access the guide <span class="nav-cta-arrow">→</span>',
     'nav-login':'Go to your guide',
     'hero-sub':"The complete guide to exploring England's most beautiful villages",
-    'hero-cta':'Access the guide →',
+    'hero-cta':'Buy the guide →',
     'hero-scroll':'SCROLL',
     'intro-badge':'The guide',
     'video-label':"The villages you'll find in the guide",
@@ -577,7 +589,11 @@ var T={
     'cta-badge':'Permanent access',
     'cta-title':'Ready to explore the Cotswolds?',
     'cta-note':'Permanent access • Updates included • Downloadable PDF',
-    'cta-btn':'Access the guide →',
+    'cta-btn':'Buy the guide →',
+    'code-label':'🎁 Do you have a free access code?',
+    'code-placeholder':'Enter code',
+    'code-btn':'Activate',
+    'code-error':'Invalid code',
     'payment-secure':'Secure and encrypted payment',
     'gallery-caption':'Some shots from our itinerary',
     'purchase-title':'Almost there! 🎉',
@@ -933,6 +949,15 @@ function showToast(msg){
   if(!t){t=document.createElement('div');t.id='wt-toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#dc6b2f;color:#fff;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:500;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .3s;';document.body.appendChild(t);}
   t.textContent=msg;t.style.opacity='1';
   clearTimeout(t._to);t._to=setTimeout(function(){t.style.opacity='0';},3000);
+}
+function activateCode() {
+  var code = document.getElementById('access-code-input').value.trim().toUpperCase();
+  if(code === 'WAYCOTSWOLDS') {
+    localStorage.setItem('WT_PROMO_ACCESS', '1');
+    window.location.href = '/app?access=cotswolds';
+  } else {
+    document.getElementById('code-error').style.display = 'block';
+  }
 }
 function toggleLangDropdown(){var dd=document.getElementById('lang-dropdown');dd.style.display=dd.style.display==='none'?'block':'none';}
 function closeLangDropdown(){var dd=document.getElementById('lang-dropdown');if(dd)dd.style.display='none';}

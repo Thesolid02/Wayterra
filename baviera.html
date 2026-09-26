@@ -244,7 +244,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="hero-badge" data-t="hero-badge">🇩🇪 GERMANY · BAVIERA</div>
     <h1 class="hero-h1" data-t="hero-h1">Dove la Germania sembra uscita da una fiaba</h1>
     <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare la Strada Romantica tra Baviera e Assia</p>
-    <a class="hero-cta" data-t="hero-cta" href="#acquista">Accedi alla guida →</a>
+    <a class="hero-cta" data-t="hero-cta" href="#acquista">Acquista la guida →</a>
     <div style="margin-top:16px;"><a href="#" onclick="event.preventDefault();openLoginSheet();" style="font-size:14px;color:rgba(255,255,255,.75);text-decoration:underline;cursor:pointer;" data-t="hero-login">Hai già acquistato? Accedi alla guida</a></div>
   </div>
   <div class="hero-scroll">
@@ -421,7 +421,15 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <h2 class="s-title" data-t="cta-title">Pronto a esplorare la Baviera?</h2>
     <div class="cta-price" data-price>€12,90</div>
     <div class="cta-price-note" data-t="cta-note">Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile</div>
-    <a href="#" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="event.preventDefault();trackCTAClick();openPurchaseSheet();">Accedi alla guida →</a>
+    <a href="#" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="trackCTAClick();">Acquista la guida →</a>
+    <div style="margin-top:20px;">
+      <div style="font-size:14px;color:rgba(255,255,255,0.9);margin-bottom:10px;font-weight:500;" data-t="code-label">🎁 Hai un codice di accesso gratuito?</div>
+      <div style="display:flex;gap:8px;">
+        <input id="access-code-input" type="text" placeholder="Inserisci codice" data-t-placeholder="code-placeholder" style="flex:1;padding:10px 14px;border:none;border-radius:8px;font-size:14px;text-transform:uppercase;background:rgba(255,255,255,0.15);color:#fff;outline:none;" />
+        <button onclick="activateCode()" style="background:#fff;color:#dc6b2f;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;" data-t="code-btn">Attiva</button>
+      </div>
+      <div id="code-error" style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:6px;display:none;" data-t="code-error">Codice non valido</div>
+    </div>
     <div style="display:flex;align-items:center;justify-content:flex-start;gap:6px;margin-top:12px;margin-bottom:10px;">
       <i class="ti ti-lock" style="font-size:14px;color:rgba(255,255,255,0.85);"></i>
       <span style="font-size:12px;color:rgba(255,255,255,0.85);" data-t="payment-secure">Pagamento sicuro e crittografato</span>
@@ -482,7 +490,7 @@ var T={
     'hero-badge':'🇩🇪 GERMANY · BAVIERA',
     'hero-h1':'Dove la Germania sembra uscita da una fiaba',
     'hero-sub':'La guida completa per esplorare la Strada Romantica tra Baviera e Assia',
-    'hero-cta':'Accedi alla guida →',
+    'hero-cta':'Acquista la guida →',
     'hero-scroll':'SCORRI',
     'intro-badge':'La guida',
     'intro-title':'Un viaggio lungo la Strada Romantica',
@@ -517,7 +525,11 @@ var T={
     'cta-badge':'Accesso per sempre',
     'cta-title':'Pronto a esplorare la Baviera?',
     'cta-note':'Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile',
-    'cta-btn':'Accedi alla guida →',
+    'cta-btn':'Acquista la guida →',
+    'code-label':'🎁 Hai un codice di accesso gratuito?',
+    'code-placeholder':'Inserisci codice',
+    'code-btn':'Attiva',
+    'code-error':'Codice non valido',
     'payment-secure':'Pagamento sicuro e crittografato',
     'payment-info':'Gestito da <span style="font-weight:500;color:rgba(255,255,255,0.7);">Gumroad</span> · Accesso immediato dopo il pagamento',
     'hero-login':'Hai già acquistato? Accedi alla guida',
@@ -547,7 +559,7 @@ var T={
     'hero-badge':'🇩🇪 GERMANY · BAVIERA',
     'hero-h1':'Where Germany looks like it came out of a fairy tale',
     'hero-sub':'The complete guide to exploring the Romantic Road through Bavaria and Hesse',
-    'hero-cta':'Access the guide →',
+    'hero-cta':'Buy the guide →',
     'hero-scroll':'SCROLL',
     'intro-badge':'The guide',
     'intro-title':'A journey along the Romantic Road',
@@ -582,7 +594,11 @@ var T={
     'cta-badge':'Permanent access',
     'cta-title':'Ready to explore Bavaria?',
     'cta-note':'Permanent access • Updates included • Downloadable PDF',
-    'cta-btn':'Access the guide →',
+    'cta-btn':'Buy the guide →',
+    'code-label':'🎁 Do you have a free access code?',
+    'code-placeholder':'Enter code',
+    'code-btn':'Activate',
+    'code-error':'Invalid code',
     'payment-secure':'Secure and encrypted payment',
     'payment-info':'Managed by <span style="font-weight:500;color:rgba(255,255,255,0.7);">Gumroad</span> · Instant access after payment',
     'hero-login':'Already purchased? Access the guide',
@@ -829,6 +845,15 @@ async function trackCTAClick(){
     var _tgUser=res.data&&res.data.session&&res.data.session.user?res.data.session.user.email:'Visitatore anonimo';
     fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'🛒 Click Acquista Baviera\nUtente: '+_tgUser})}).catch(function(){});
   });
+}
+function activateCode() {
+  var code = document.getElementById('access-code-input').value.trim().toUpperCase();
+  if(code === 'WAYBAVIERA') {
+    localStorage.setItem('WT_PROMO_ACCESS', '1');
+    window.location.href = '/app?access=bavaria';
+  } else {
+    document.getElementById('code-error').style.display = 'block';
+  }
 }
 function toggleLangDropdown(){var dd=document.getElementById('lang-dropdown');dd.style.display=dd.style.display==='none'?'block':'none';}
 function closeLangDropdown(){var dd=document.getElementById('lang-dropdown');if(dd)dd.style.display='none';}
