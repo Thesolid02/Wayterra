@@ -30,22 +30,35 @@ src="https://www.facebook.com/tr?id=1747651939835990&ev=PageView&noscript=1"
 <link rel="alternate" hreflang="it" href="https://wayterra.it/baviera"/>
 <link rel="alternate" hreflang="en" href="https://wayterra.it/baviera?lang=en"/>
 <link rel="alternate" hreflang="x-default" href="https://wayterra.it/baviera"/>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "Guida Wayterra — Baviera",
-  "description": "Guida di viaggio completa per la Strada Romantica: itinerario di 8 giorni, 14 tappe selezionate, mappa interattiva e PDF scaricabile.",
-  "url": "https://wayterra.it/baviera",
-  "image": "https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cover_baviera.jpg",
-  "brand": { "@type": "Brand", "name": "Wayterra" },
-  "offers": {
-    "@type": "Offer",
-    "price": "9.99",
-    "priceCurrency": "EUR",
-    "availability": "https://schema.org/InStock"
+<script>
+var BAVIERA_PRICE='12.90';
+var ldJson={
+  "@context":"https://schema.org","@type":"Product",
+  "name":"Guida Wayterra — Baviera",
+  "description":"Guida di viaggio completa per la Strada Romantica: itinerario di 8 giorni, 14 tappe selezionate, mappa interattiva e PDF scaricabile.",
+  "url":"https://wayterra.it/baviera",
+  "image":"https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cover_baviera.jpg",
+  "brand":{"@type":"Brand","name":"Wayterra"},
+  "offers":{
+    "@type":"Offer","price":BAVIERA_PRICE,"priceCurrency":"EUR","availability":"https://schema.org/InStock",
+    "hasMerchantReturnPolicy":{"@type":"MerchantReturnPolicy","applicableCountry":"IT","returnPolicyCategory":"https://schema.org/MerchantReturnNotPermitted"},
+    "shippingDetails":{
+      "@type":"OfferShippingDetails",
+      "shippingDestination":{"@type":"DefinedRegion","addressCountry":"IT"},
+      "shippingRate":{"@type":"MonetaryAmount","value":"0","currency":"EUR"},
+      "deliveryTime":{"@type":"ShippingDeliveryTime","handlingTime":{"@type":"QuantitativeValue","minValue":0,"maxValue":0,"unitCode":"DAY"},"transitTime":{"@type":"QuantitativeValue","minValue":0,"maxValue":0,"unitCode":"DAY"}}
+    }
   }
-}
+};
+var _ldScript=document.createElement('script');
+_ldScript.type='application/ld+json';
+_ldScript.text=JSON.stringify(ldJson);
+document.head.appendChild(_ldScript);
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('[data-price]').forEach(function(el){
+    el.textContent='€'+BAVIERA_PRICE.replace('.',',');
+  });
+});
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -145,10 +158,10 @@ section{padding:80px 24px;}
 .cta-sec{background:#dc6b2f;}
 .cta-sec .badge{background:rgba(255,255,255,.18);color:rgba(255,255,255,.85);}
 .cta-sec .s-title{color:#fff;}
-.cta-sec .s-sub{color:rgba(255,255,255,.8);max-width:500px;margin-left:auto;margin-right:auto;}
-.cta-btn{display:inline-flex;align-items:center;justify-content:center;width:100%;max-width:420px;padding:16px 32px;background:#fff;color:#dc6b2f;border:none;border-radius:100px;font-family:var(--f);font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 24px rgba(0,0,0,.18);transition:all .15s;text-decoration:none;margin-top:28px;}
+.cta-price{font-size:4rem;font-weight:900;color:#fff;letter-spacing:-.05em;line-height:1;margin:16px 0 4px;}
+.cta-price-note{font-size:.85rem;color:rgba(255,255,255,.75);margin-bottom:32px;}
+.cta-btn{display:inline-flex;align-items:center;justify-content:center;width:100%;max-width:420px;padding:16px 32px;background:#fff;color:#dc6b2f;border:none;border-radius:100px;font-family:var(--f);font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 24px rgba(0,0,0,.18);transition:all .15s;text-decoration:none;}
 .cta-btn:hover{background:var(--g50);transform:translateY(-1px);}
-.cta-note{font-size:.85rem;color:rgba(255,255,255,.75);margin-top:14px;}
 
 /* FOOTER */
 footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
@@ -160,7 +173,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 .foot-links a:hover{color:rgba(255,255,255,.7);}
 .foot-copy{font-size:.72rem;color:rgba(255,255,255,.2);}
 
-@media(max-width:640px){section{padding:60px 18px;}}
+@media(max-width:640px){section{padding:60px 18px;}.cta-price{font-size:3rem;}}
 
 /* PHONE MOCKUPS */
 .phones-row{display:flex;flex-direction:row;justify-content:center;align-items:flex-start;gap:32px;margin-top:40px;max-width:800px;margin-left:auto;margin-right:auto;}
@@ -218,7 +231,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
         <div onclick="setLang('en');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇬🇧</div>
       </div>
     </div>
-    <a href="https://wayterra.it/app?access=bavaria" id="nav-explore-btn" class="nav-btn" data-t="nav-explore" onclick="event.preventDefault();localStorage.setItem('WT_ACCESS_BAVARIA','1');window.location.href='https://wayterra.it/app?access=bavaria';">Esplora la mappa →</a>
+    <a href="#" id="nav-login" onclick="event.preventDefault();openLoginSheet();" class="nav-btn" data-t="nav-login">Vai alla tua guida</a>
   </div>
 </nav>
 
@@ -231,8 +244,8 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="hero-badge" data-t="hero-badge">🇩🇪 GERMANY · BAVIERA</div>
     <h1 class="hero-h1" data-t="hero-h1">Dove la Germania sembra uscita da una fiaba</h1>
     <p class="hero-sub" data-t="hero-sub">La guida completa per esplorare la Strada Romantica tra Baviera e Assia</p>
-    <a class="hero-cta" data-t="hero-cta" href="#esplora">Esplora la mappa →</a>
-    <div style="margin-top:16px;"><a href="#" onclick="event.preventDefault();openLoginSheet();" style="font-size:14px;color:rgba(255,255,255,.75);text-decoration:underline;cursor:pointer;" data-t="hero-login">Hai già un account? Accedi</a></div>
+    <a class="hero-cta" data-t="hero-cta" href="#acquista">Accedi alla guida →</a>
+    <div style="margin-top:16px;"><a href="#" onclick="event.preventDefault();openLoginSheet();" style="font-size:14px;color:rgba(255,255,255,.75);text-decoration:underline;cursor:pointer;" data-t="hero-login">Hai già acquistato? Accedi alla guida</a></div>
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
@@ -376,7 +389,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="phones-row" id="phones-row"></div>
     <div class="phones-dots" id="phones-dots"></div>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://wayterra.it/app?access=bavaria" onclick="event.preventDefault();localStorage.setItem('WT_ACCESS_BAVARIA','1');window.location.href='https://wayterra.it/app?access=bavaria';" style="display:inline-block;background:#dc6b2f;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;text-decoration:none;" data-t="app-cta-btn">Inizia ad esplorare la Baviera →</a>
+      <a href="https://wayterra.it/app?access=bavaria" onclick="event.preventDefault();localStorage.setItem('WT_PROMO_ACCESS','1');window.location.href='https://wayterra.it/app?access=bavaria';" style="display:inline-block;background:#dc6b2f;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;text-decoration:none;" data-t="app-cta-btn">Inizia ad esplorare la Baviera →</a>
     </div>
   </div>
 </section>
@@ -401,14 +414,36 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   </div>
 </section>
 
-<!-- CTA / COME FUNZIONA -->
-<section class="cta-sec" id="esplora">
+<!-- CTA ACQUISTO -->
+<section class="cta-sec" id="acquista">
   <div class="si tc">
-    <div class="badge" data-t="cta-badge">Come funziona</div>
-    <h2 class="s-title" data-t="cta-title">Esplora gratis, acquista quando vuoi</h2>
-    <p class="s-sub" data-t="cta-sub">Accedi subito alla mappa della Baviera. Quando sei pronto, sblocca la guida completa dall'app.</p>
-    <a href="https://wayterra.it/app?access=bavaria" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="event.preventDefault();trackCTAClick();localStorage.setItem('WT_ACCESS_BAVARIA','1');window.location.href='https://wayterra.it/app?access=bavaria';">Esplora la mappa →</a>
-    <div class="cta-note" data-t="cta-note">€9,99 per l'accesso completo alla guida</div>
+    <div class="badge" data-t="cta-badge">Accesso per sempre</div>
+    <h2 class="s-title" data-t="cta-title">Pronto a esplorare la Baviera?</h2>
+    <div class="cta-price" data-price>€12,90</div>
+    <div class="cta-price-note" data-t="cta-note">Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile</div>
+    <a href="https://wayterra.it/app?access=bavaria" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="event.preventDefault();trackCTAClick();localStorage.setItem('WT_PROMO_ACCESS','1');window.location.href='https://wayterra.it/app?access=bavaria';">Accedi alla guida →</a>
+    <div style="display:flex;align-items:center;justify-content:flex-start;gap:6px;margin-top:12px;margin-bottom:10px;">
+      <i class="ti ti-lock" style="font-size:14px;color:rgba(255,255,255,0.85);"></i>
+      <span style="font-size:12px;color:rgba(255,255,255,0.85);" data-t="payment-secure">Pagamento sicuro e crittografato</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+      <div style="border:0.5px solid rgba(255,255,255,0.3);border-radius:6px;padding:4px 8px;display:flex;align-items:center;justify-content:flex-start;height:28px;background:rgba(255,255,255,0.15);">
+        <svg width="38" height="12" viewBox="0 0 38 12"><text x="0" y="11" font-family="Arial" font-size="13" font-weight="700" fill="#fff">VISA</text></svg>
+      </div>
+      <div style="border:0.5px solid rgba(255,255,255,0.3);border-radius:6px;padding:4px 8px;display:flex;align-items:center;height:28px;background:rgba(255,255,255,0.15);">
+        <div style="width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.7);"></div>
+        <div style="width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.5);margin-left:-6px;"></div>
+      </div>
+      <div style="border:0.5px solid rgba(255,255,255,0.3);border-radius:6px;padding:4px 8px;display:flex;align-items:center;justify-content:flex-start;height:28px;background:rgba(255,255,255,0.15);">
+        <svg width="42" height="14" viewBox="0 0 42 14"><text x="0" y="11" font-family="Arial" font-size="11" font-weight="700" fill="#fff">Pay</text><text x="20" y="11" font-family="Arial" font-size="11" font-weight="700" fill="rgba(255,255,255,0.8)">Pal</text></svg>
+      </div>
+      <div style="border:0.5px solid rgba(255,255,255,0.3);border-radius:6px;padding:4px 8px;display:flex;align-items:center;justify-content:flex-start;height:28px;background:rgba(255,255,255,0.15);">
+        <svg width="50" height="14" viewBox="0 0 50 14"><text x="0" y="11" font-family="Arial" font-size="10" font-weight="500" fill="#fff">Apple Pay</text></svg>
+      </div>
+    </div>
+    <div style="text-align:left;font-size:11px;color:rgba(255,255,255,0.7);" data-t="payment-info">
+      Gestito da <span style="font-weight:500;color:rgba(255,255,255,0.7);">Gumroad</span> · Accesso immediato dopo il pagamento
+    </div>
   </div>
 </section>
 
@@ -443,11 +478,11 @@ var _lang=localStorage.getItem('WT_LANG_v1')||'it';
 // Translation
 var T={
   it:{
-    'nav-explore':'Esplora la mappa →',
+    'nav-login':'Vai alla tua guida',
     'hero-badge':'🇩🇪 GERMANY · BAVIERA',
     'hero-h1':'Dove la Germania sembra uscita da una fiaba',
     'hero-sub':'La guida completa per esplorare la Strada Romantica tra Baviera e Assia',
-    'hero-cta':'Esplora la mappa →',
+    'hero-cta':'Accedi alla guida →',
     'hero-scroll':'SCORRI',
     'intro-badge':'La guida',
     'intro-title':'Un viaggio lungo la Strada Romantica',
@@ -479,12 +514,21 @@ var T={
     'rev-badge':'Recensioni',
     'rev-pill':'+500 viaggiatori la stanno già utilizzando',
     'rev-title':'Cosa dicono i viaggiatori',
-    'cta-badge':'Come funziona',
-    'cta-title':'Esplora gratis, acquista quando vuoi',
-    'cta-sub':"Accedi subito alla mappa della Baviera. Quando sei pronto, sblocca la guida completa dall'app.",
-    'cta-btn':'Esplora la mappa →',
-    'cta-note':"€9,99 per l'accesso completo alla guida",
-    'hero-login':'Hai già un account? Accedi',
+    'cta-badge':'Accesso per sempre',
+    'cta-title':'Pronto a esplorare la Baviera?',
+    'cta-note':'Accesso per sempre • Aggiornamenti inclusi • PDF scaricabile',
+    'cta-btn':'Accedi alla guida →',
+    'payment-secure':'Pagamento sicuro e crittografato',
+    'payment-info':'Gestito da <span style="font-weight:500;color:rgba(255,255,255,0.7);">Gumroad</span> · Accesso immediato dopo il pagamento',
+    'hero-login':'Hai già acquistato? Accedi alla guida',
+    'purchase-title':'Quasi lì! 🎉',
+    'purchase-sub':"Inserisci la tua email per ricevere l'accesso alla guida.",
+    'purchase-email-placeholder':'nome@email.com',
+    'purchase-error':"Inserisci un'email valida",
+    'purchase-cta':'Continua con il pagamento →',
+    'purchase-already':'Hai già comprato questa guida ☺️',
+    'purchase-login-text':'Hai già un account?',
+    'purchase-login-link':'Accedi',
     'login-title':'Accedi al tuo account',
     'login-sub':'Inserisci le tue credenziali per accedere alla guida Baviera.',
     'login-email-placeholder':'nome@email.com',
@@ -499,11 +543,11 @@ var T={
     'reset-btn':'Salva nuova password'
   },
   en:{
-    'nav-explore':'Explore the map →',
+    'nav-login':'Go to your guide',
     'hero-badge':'🇩🇪 GERMANY · BAVIERA',
     'hero-h1':'Where Germany looks like it came out of a fairy tale',
     'hero-sub':'The complete guide to exploring the Romantic Road through Bavaria and Hesse',
-    'hero-cta':'Explore the map →',
+    'hero-cta':'Access the guide →',
     'hero-scroll':'SCROLL',
     'intro-badge':'The guide',
     'intro-title':'A journey along the Romantic Road',
@@ -535,12 +579,21 @@ var T={
     'rev-badge':'Reviews',
     'rev-pill':'+500 travelers are already using it',
     'rev-title':'What travelers say',
-    'cta-badge':'How it works',
-    'cta-title':"Explore for free, buy when you're ready",
-    'cta-sub':"Access the Bavaria map straight away. When you're ready, unlock the full guide from the app.",
-    'cta-btn':'Explore the map →',
-    'cta-note':'€9.99 for full access to the guide',
-    'hero-login':'Already have an account? Sign in',
+    'cta-badge':'Permanent access',
+    'cta-title':'Ready to explore Bavaria?',
+    'cta-note':'Permanent access • Updates included • Downloadable PDF',
+    'cta-btn':'Access the guide →',
+    'payment-secure':'Secure and encrypted payment',
+    'payment-info':'Managed by <span style="font-weight:500;color:rgba(255,255,255,0.7);">Gumroad</span> · Instant access after payment',
+    'hero-login':'Already purchased? Access the guide',
+    'purchase-title':'Almost there! 🎉',
+    'purchase-sub':'Enter your email to receive access to the guide.',
+    'purchase-email-placeholder':'name@email.com',
+    'purchase-error':'Enter a valid email',
+    'purchase-cta':'Continue to payment →',
+    'purchase-already':'You already purchased this guide ☺️',
+    'purchase-login-text':'Already have an account?',
+    'purchase-login-link':'Sign in',
     'login-title':'Sign in to your account',
     'login-sub':'Enter your credentials to access the Bavaria guide.',
     'login-email-placeholder':'name@email.com',
@@ -774,7 +827,7 @@ async function trackCTAClick(){
   try{if(_supaLanding)await _supaLanding.from('analytics_events').insert({event_type:'cta_explore_click',region:'bavaria',session_id:localStorage.getItem('WT_SESSION_ID')||null,user_id:null});}catch(e){}
   _supaLanding&&_supaLanding.auth.getSession().then(function(res){
     var _tgUser=res.data&&res.data.session&&res.data.session.user?res.data.session.user.email:'Visitatore anonimo';
-    fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'🗺️ Click Esplora Mappa Baviera\nUtente: '+_tgUser})}).catch(function(){});
+    fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'🛒 Click Acquista Baviera\nUtente: '+_tgUser})}).catch(function(){});
   });
 }
 function toggleLangDropdown(){var dd=document.getElementById('lang-dropdown');dd.style.display=dd.style.display==='none'?'block':'none';}
@@ -805,7 +858,7 @@ document.addEventListener('DOMContentLoaded',async function(){
     _supaLanding.from('profiles').select('avatar_url').eq('id',_userId).single().then(function(result){
       var avatarUrl=(result.data&&result.data.avatar_url)||(session.user.user_metadata&&session.user.user_metadata.avatar_url);
       var initials=(session.user.email||'U').charAt(0).toUpperCase();
-      var navBtn=document.getElementById('nav-explore-btn');
+      var navBtn=document.getElementById('nav-login');
       if(navBtn){navBtn.outerHTML='<div id="nav-avatar" onclick="openProfilePopup()" style="width:34px;height:34px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">'+(avatarUrl?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</span>')+'</div>';}
     });
   }
@@ -897,6 +950,51 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
   <div id="lang-tab-other" onclick="switchLangFromTab(_lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
 </div>
 
+<!-- TODO: sostituire # con il vero URL del prodotto Gumroad Baviera quando disponibile -->
+<div id="purchase-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="closePurchaseSheet()"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div data-t="purchase-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Quasi lì! 🎉</div>
+    <div data-t="purchase-sub" style="font-size:14px;color:#888;margin-bottom:20px;">Inserisci la tua email per ricevere l'accesso alla guida.</div>
+    <input id="purchase-email" type="email" data-t-placeholder="purchase-email-placeholder" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <div id="purchase-email-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;" data-t="purchase-error">Inserisci un'email valida</div>
+    <button id="purchase-cta-btn" onclick="goToPurchase()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="purchase-cta">Continua con il pagamento →</button>
+    <div style="text-align:center;margin-top:12px;font-size:13px;color:#888;">
+      <span data-t="purchase-login-text">Hai già un account?</span> <a href="#" onclick="openLoginFromPurchase();return false;" style="color:#dc6b2f;" data-t="purchase-login-link">Accedi</a>
+    </div>
+  </div>
+</div>
+<script>
+function openPurchaseSheet(){document.getElementById('purchase-sheet').style.display='block';}
+function closePurchaseSheet(){document.getElementById('purchase-sheet').style.display='none';}
+async function goToPurchase(){
+  var email=document.getElementById('purchase-email').value.trim();
+  var errEl=document.getElementById('purchase-email-error');
+  if(!email||!email.includes('@')){errEl.style.display='block';errEl.textContent=T[_lang]['purchase-error'];return;}
+  errEl.style.display='none';
+  var btn=document.getElementById('purchase-cta-btn');
+  var originalText=btn.textContent;
+  btn.textContent='...';btn.disabled=true;
+  try{
+    var resp=await fetch(_SB_URL+'/functions/v1/check-email',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_SB_ANON_KEY},
+      body:JSON.stringify({email:email})
+    });
+    var data=await resp.json();
+    if(data.exists){
+      errEl.textContent=T[_lang]['purchase-already'];errEl.style.display='block';
+      btn.textContent=originalText;btn.disabled=false;
+      return;
+    }
+  }catch(e){
+    console.warn('check-email failed',e);
+  }
+  localStorage.setItem('WT_PENDING_EMAIL',email);
+  window.location.href='#';
+}
+</script>
 <div id="login-sheet" style="display:none;position:fixed;inset:0;z-index:1001;">
   <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="closeLoginSheet()"></div>
   <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
@@ -947,6 +1045,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
 </div>
 <script>
 function openLoginSheet(){document.getElementById('login-sheet').style.display='block';}
+function openLoginFromPurchase(){closePurchaseSheet();openLoginSheet();}
 function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
 async function loginWithGoogle(){if(!_supaLanding)return;await _supaLanding.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/baviera'}});}
 async function resetPassword(){
