@@ -5518,7 +5518,16 @@ function bootApp(d){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       var _sess=await _supaAuth.auth.getSession();
       if(_sess.data&&_sess.data.session){
-        var _proceed=await checkCrossRegionAccess('cotswolds',_sess.data.session.user.id);
+        var _uid=_sess.data.session.user.id;
+        if(localStorage.getItem('WT_PENDING_PURCHASE')==='cotswolds'){
+          // ritorno da un acquisto Gumroad reale (flag impostato dal bottone prima del redirect)
+          localStorage.removeItem('WT_PENDING_PURCHASE');
+          await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'cotswolds'},{onConflict:'user_id,region'});
+          localStorage.setItem(K.UC,'1');
+          selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+          return;
+        }
+        var _proceed=await checkCrossRegionAccess('cotswolds',_uid);
         if(!_proceed)return;
       }
       selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
@@ -5530,7 +5539,16 @@ function bootApp(d){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       var _sess=await _supaAuth.auth.getSession();
       if(_sess.data&&_sess.data.session){
-        var _proceed=await checkCrossRegionAccess('bavaria',_sess.data.session.user.id);
+        var _uid=_sess.data.session.user.id;
+        if(localStorage.getItem('WT_PENDING_PURCHASE')==='bavaria'){
+          // ritorno da un acquisto Gumroad reale (flag impostato dal bottone prima del redirect)
+          localStorage.removeItem('WT_PENDING_PURCHASE');
+          await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'bavaria'},{onConflict:'user_id,region'});
+          localStorage.setItem(K.UB,'1');
+          selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
+          return;
+        }
+        var _proceed=await checkCrossRegionAccess('bavaria',_uid);
         if(!_proceed)return;
       }
       selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
@@ -6886,8 +6904,10 @@ function showCrossRegionSheet(requestedRegion,availableRegion){
   _unlockBtn.textContent=lang==='en'?('Unlock '+reqLabel+' →'):('Sblocca '+reqLabel+' →');
   _unlockBtn.onclick=function(){
     if(requestedRegion==='bavaria'){
+      localStorage.setItem('WT_PENDING_PURCHASE','bavaria');
       window.location.href='https://wayterra.gumroad.com/l/baviera';
     } else if(requestedRegion==='cotswolds'){
+      localStorage.setItem('WT_PENDING_PURCHASE','cotswolds');
       window.location.href='https://wayterra.gumroad.com/l/lbchl';
     } else {
       window.location.href='https://wayterra.it/'+requestedRegion;
