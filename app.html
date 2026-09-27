@@ -3603,7 +3603,7 @@ async function updateRegionCards() {
   if(cotswoldsCard && userRegions.indexOf('cotswolds') === -1) {
     cotswoldsCard.style.opacity = '0.5';
     cotswoldsCard.style.filter = 'grayscale(50%)';
-    cotswoldsCard.setAttribute('onclick', 'window.location.href="https://wayterra.it/cotswolds"');
+    cotswoldsCard.setAttribute('onclick', 'openRegionPurchaseSheet("Cotswolds", "https://wayterra.gumroad.com/l/lbchl")');
   }
 
   // Card Baviera
@@ -3611,8 +3611,14 @@ async function updateRegionCards() {
   if(bavariaCard && userRegions.indexOf('bavaria') === -1) {
     bavariaCard.style.opacity = '0.5';
     bavariaCard.style.filter = 'grayscale(50%)';
-    bavariaCard.setAttribute('onclick', 'window.location.href="https://wayterra.it/baviera"');
+    bavariaCard.setAttribute('onclick', 'openRegionPurchaseSheet("Baviera", "https://wayterra.gumroad.com/l/baviera")');
   }
+}
+function openRegionPurchaseSheet(regionName, gumroadUrl) {
+  document.getElementById('region-purchase-title').textContent = 'Guida ' + regionName + ' non inclusa';
+  document.getElementById('region-purchase-subtitle').textContent = regionName + ' — guida completa';
+  document.getElementById('region-purchase-btn').href = gumroadUrl;
+  document.getElementById('region-purchase-sheet').style.display = 'block';
 }
 function hideRegionPage(cb){
   var el=document.getElementById('region-page');
@@ -7097,5 +7103,49 @@ function requireAuth(actionName){
   return false;
 }
 </script>
+<div id="region-purchase-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);" onclick="document.getElementById('region-purchase-sheet').style.display='none'"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <div style="width:40px;height:40px;border-radius:10px;background:#fef3ec;display:flex;align-items:center;justify-content:center;">
+        <i class="ti ti-lock" style="font-size:20px;color:#dc6b2f;"></i>
+      </div>
+      <div>
+        <div id="region-purchase-title" style="font-size:16px;font-weight:500;color:#1a1a1a;">Guida non inclusa</div>
+        <div id="region-purchase-subtitle" style="font-size:13px;color:#888;"></div>
+      </div>
+    </div>
+    <div style="background:#f9f9f9;border-radius:10px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:13px;color:#555;margin-bottom:10px;">Con questa guida accedi a:</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><i class="ti ti-check" style="font-size:14px;color:#16a34a;"></i>Tutti i luoghi e le attività sbloccati</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><i class="ti ti-check" style="font-size:14px;color:#16a34a;"></i>Itinerario completo</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><i class="ti ti-check" style="font-size:14px;color:#16a34a;"></i>PDF scaricabile</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><i class="ti ti-check" style="font-size:14px;color:#16a34a;"></i>Accesso per sempre</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-size:13px;color:#888;">Prezzo</div>
+      <div style="font-size:20px;font-weight:500;color:#1a1a1a;">€12,90</div>
+    </div>
+    <a id="region-purchase-btn" href="#" target="_blank" style="display:block;background:#dc6b2f;color:#fff;border-radius:10px;padding:13px;text-align:center;font-size:15px;font-weight:500;text-decoration:none;margin-bottom:12px;">
+      Acquista la guida →
+    </a>
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;">
+      <i class="ti ti-lock" style="font-size:12px;color:#999;"></i>
+      <span style="font-size:12px;color:#999;">Pagamento sicuro e crittografato</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+      <div style="border:0.5px solid #e5e5e5;border-radius:4px;padding:3px 8px;font-size:11px;color:#1a1f71;font-weight:700;">VISA</div>
+      <div style="border:0.5px solid #e5e5e5;border-radius:4px;padding:3px 7px;display:flex;align-items:center;gap:2px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:#eb001b;"></div>
+        <div style="width:12px;height:12px;border-radius:50%;background:#f79e1b;margin-left:-4px;"></div>
+      </div>
+      <div style="border:0.5px solid #e5e5e5;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:700;color:#003087;">Pay<span style="color:#009cde;">Pal</span></div>
+      <div style="border:0.5px solid #e5e5e5;border-radius:4px;padding:3px 8px;font-size:11px;color:#1a1a1a;">Apple Pay</div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
