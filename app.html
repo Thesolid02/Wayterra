@@ -5564,21 +5564,12 @@ function bootApp(d){
       var _sess=await _supaAuth.auth.getSession();
       if(_sess.data&&_sess.data.session){
         var _uid=_sess.data.session.user.id;
-        if(localStorage.getItem('WT_PENDING_PURCHASE')==='cotswolds'){
-          // ritorno da un acquisto Gumroad reale (flag impostato dal bottone prima del redirect)
-          localStorage.removeItem('WT_PENDING_PURCHASE');
-          await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'cotswolds'},{onConflict:'user_id,region'});
-          localStorage.setItem(K.UC,'1');
-          _accessCheckPending=false;
-          selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
-          return;
-        }
-        var _proceed=await checkCrossRegionAccess('cotswolds',_uid);
-        if(!_proceed){
-          _accessCheckPending=false;
-          var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
-          return;
-        }
+        localStorage.removeItem('WT_PENDING_PURCHASE');
+        await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'cotswolds'},{onConflict:'user_id,region'});
+        localStorage.setItem(K.UC,'1');
+        _accessCheckPending=false;
+        selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
+        return;
       }
       _accessCheckPending=false;
       selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
@@ -5594,21 +5585,12 @@ function bootApp(d){
       var _sess=await _supaAuth.auth.getSession();
       if(_sess.data&&_sess.data.session){
         var _uid=_sess.data.session.user.id;
-        if(localStorage.getItem('WT_PENDING_PURCHASE')==='bavaria'){
-          // ritorno da un acquisto Gumroad reale (flag impostato dal bottone prima del redirect)
-          localStorage.removeItem('WT_PENDING_PURCHASE');
-          await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'bavaria'},{onConflict:'user_id,region'});
-          localStorage.setItem(K.UB,'1');
-          _accessCheckPending=false;
-          selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
-          return;
-        }
-        var _proceed=await checkCrossRegionAccess('bavaria',_uid);
-        if(!_proceed){
-          _accessCheckPending=false;
-          var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
-          return;
-        }
+        localStorage.removeItem('WT_PENDING_PURCHASE');
+        await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'bavaria'},{onConflict:'user_id,region'});
+        localStorage.setItem(K.UB,'1');
+        _accessCheckPending=false;
+        selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
+        return;
       }
       _accessCheckPending=false;
       selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
