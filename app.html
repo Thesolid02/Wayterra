@@ -868,7 +868,7 @@ lottie.loadAnimation({
       <span style="font-size:24px;">🇩🇪</span>
       <span style="font-size:13px;font-weight:600;color:var(--g400);letter-spacing:.06em;text-transform:uppercase;">GERMANIA</span>
     </div>
-    <div class="rp-card rp-card-main rp-card-travels" onclick="selectTravelRegion('bavaria', getRegionCenter('bavaria'), getRegionZoom('bavaria'))">
+    <div class="rp-card rp-card-main rp-card-travels" onclick="checkAndSelectRegion('bavaria')">
       <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/germania-cover.jpg');background-size:cover;background-position:center;background-color:#c8d8c0;"></div>
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
@@ -6832,6 +6832,15 @@ var CROSS_REGION_LABELS={cotswolds:'Cotswolds',bavaria:'Baviera'};
 function openRegion(region){
   if(region==='lazio')selectRegion('lazio');
   else selectTravelRegion(region,getRegionCenter(region),getRegionZoom(region));
+}
+// Click su una card regione dall'elenco paesi: verifica l'accesso prima di aprire la mappa.
+async function checkAndSelectRegion(region) {
+  var session = await _supaAuth.auth.getSession();
+  if(session.data.session) {
+    var proceed = await checkCrossRegionAccess(region, session.data.session.user.id);
+    if(!proceed) return;
+  }
+  selectTravelRegion(region, getRegionCenter(region), getRegionZoom(region));
 }
 // Verifica in user_regions se l'utente loggato ha davvero diritto alla regione richiesta,
 // prima di concederla solo perché ha una sessione attiva (bug corretto: prima bastava
