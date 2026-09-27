@@ -3608,7 +3608,10 @@ async function updateRegionCards() {
 
   // Card Baviera
   var bavariaCard = document.getElementById('rp-card-bavaria');
+  console.log('rp-card-bavaria element:', bavariaCard);
+  console.log('bavaria in userRegions:', userRegions.indexOf('bavaria'));
   if(bavariaCard && userRegions.indexOf('bavaria') === -1) {
+    console.log('Applicando stile grigio a Bavaria');
     bavariaCard.style.opacity = '0.5';
     bavariaCard.style.filter = 'grayscale(50%)';
     bavariaCard.setAttribute('onclick', 'openRegionPurchaseSheet("Baviera", "https://wayterra.gumroad.com/l/baviera")');
