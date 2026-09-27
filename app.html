@@ -5635,6 +5635,13 @@ function bootApp(d){
       var _io=document.getElementById('initial-overlay');
       if(_io)_io.remove();
       showRegionPage();
+      (async function(){
+        var _sess=await _supaAuth.auth.getSession();
+        if(_sess.data&&_sess.data.session)_currentUser=_sess.data.session.user;
+        // showRegionPage() ha già chiamato updateRegionCards(), ma _currentUser non era ancora
+        // disponibile a quel punto: richiamala ora che la sessione è caricata.
+        await updateRegionCards();
+      })();
     }
   }
   checkAuthSession();
