@@ -4977,6 +4977,7 @@ var _currentTravelRegion=null;
 var _currentRegionCenter=[12.8,41.8];
 var _currentRegionZoom=8;
 var _mapReady=false;
+var _accessCheckPending=false; // true mentre si verifica l'accesso per ?access=cotswolds/bavaria: la mappa di sfondo non deve essere visibile
 
 function openItineraryMapView(id,fromDetail){
   if(!ITINERARI_LIVE){toast(t('itd_soon_toast'));return;}
@@ -5514,8 +5515,11 @@ function bootApp(d){
   var _accessParam=_urlParamsB.get('access');
   if(_accessParam==='cotswolds'){
     _onboardRegion='cotswolds';
+    _accessCheckPending=true;
+    // niente mappa di sfondo finché il controllo d'accesso non è finito: resta sullo splash
+    document.getElementById('splash').classList.remove('hide');
+    document.getElementById('splash').style.display='';
     setTimeout(async function(){
-      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       var _sess=await _supaAuth.auth.getSession();
       if(_sess.data&&_sess.data.session){
         var _uid=_sess.data.session.user.id;
@@ -5524,19 +5528,28 @@ function bootApp(d){
           localStorage.removeItem('WT_PENDING_PURCHASE');
           await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'cotswolds'},{onConflict:'user_id,region'});
           localStorage.setItem(K.UC,'1');
+          _accessCheckPending=false;
           selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
           return;
         }
         var _proceed=await checkCrossRegionAccess('cotswolds',_uid);
-        if(!_proceed)return;
+        if(!_proceed){
+          _accessCheckPending=false;
+          var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+          return;
+        }
       }
+      _accessCheckPending=false;
       selectTravelRegion('cotswolds',getRegionCenter('cotswolds'),getRegionZoom('cotswolds'));
       document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
   } else if(_accessParam==='bavaria'){
     _onboardRegion='bavaria';
+    _accessCheckPending=true;
+    // niente mappa di sfondo finché il controllo d'accesso non è finito: resta sullo splash
+    document.getElementById('splash').classList.remove('hide');
+    document.getElementById('splash').style.display='';
     setTimeout(async function(){
-      var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
       var _sess=await _supaAuth.auth.getSession();
       if(_sess.data&&_sess.data.session){
         var _uid=_sess.data.session.user.id;
@@ -5545,12 +5558,18 @@ function bootApp(d){
           localStorage.removeItem('WT_PENDING_PURCHASE');
           await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'bavaria'},{onConflict:'user_id,region'});
           localStorage.setItem(K.UB,'1');
+          _accessCheckPending=false;
           selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
           return;
         }
         var _proceed=await checkCrossRegionAccess('bavaria',_uid);
-        if(!_proceed)return;
+        if(!_proceed){
+          _accessCheckPending=false;
+          var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
+          return;
+        }
       }
+      _accessCheckPending=false;
       selectTravelRegion('bavaria',getRegionCenter('bavaria'),getRegionZoom('bavaria'));
       document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
@@ -6770,7 +6789,7 @@ async function createAccountFromPurchase(){
 
 <!-- CROSS-REGION SHEET (utente già registrato per un'altra guida) -->
 <div id="cross-region-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);" onclick="document.getElementById('cross-region-sheet').style.display='none';"></div>
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);" onclick="closeCrossRegionSheet();"></div>
   <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
     <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
     <div id="cross-region-title" style="font-size:18px;font-weight:500;margin-bottom:6px;"></div>
@@ -6882,6 +6901,13 @@ async function checkCrossRegionAccess(requestedRegion,userId){
     return false;
   }
   return true;
+}
+function closeCrossRegionSheet(){
+  document.getElementById('cross-region-sheet').style.display='none';
+  // se l'utente chiude senza scegliere, non lasciarlo bloccato sullo splash: torna alla vista di default
+  stopSplashRotation();
+  var _sp=document.getElementById('splash');
+  if(_sp){_sp.classList.add('hide');}
 }
 function showCrossRegionSheet(requestedRegion,availableRegion){
   var reqLabel=CROSS_REGION_LABELS[requestedRegion]||requestedRegion;
