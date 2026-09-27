@@ -873,8 +873,8 @@ lottie.loadAnimation({
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
         <div class="rp-card-name">Baviera</div>
-        <div class="rp-card-sub" id="rp-baviera-sub"></div>
-        <div id="rp-baviera-reviews" style="margin:8px 0 4px;"></div>
+        <div class="rp-card-sub" id="rp-baviera-sub" data-t="baviera-places">14 luoghi · 1 itinerario</div>
+        <div id="rp-baviera-reviews" style="margin:8px 0;display:flex;align-items:center;gap:6px;"></div>
         <button class="rp-card-btn rp-card-btn-blue" data-t="rp_explore_travels">Esplora →</button>
       </div>
     </div>
@@ -1306,6 +1306,7 @@ var T={
     rp_sec_italia:'Esplora l\'Italia',
     rp_sec_mondo:'Nel mondo',
     rp_explore_travels:'Esplora →',
+    'baviera-places':'14 luoghi · 1 itinerario',
     trv_title:'I miei viaggi all\'estero',
     itd_soon_toast:'Presto disponibile! Stiamo preparando i primi itinerari 🗺️',
     itd_info_title:'Info utili',
@@ -1405,6 +1406,7 @@ var T={
     rp_sec_italia:'Explore Italy',
     rp_sec_mondo:'Around the world',
     rp_explore_travels:'Explore →',
+    'baviera-places':'14 places · 1 itinerary',
     trv_title:'My travels abroad',
     itd_soon_toast:'Coming soon! We\'re preparing our first itineraries 🗺️',
     itd_info_title:'Useful info',
@@ -3774,7 +3776,7 @@ function openRegionDropdown(){
   };
   var country=countries[currentRegion]||countries['lazio'];
   countryLabel.textContent=country.label;
-  list.innerHTML=country.regions.map(function(r){
+  list.innerHTML=country.regions.filter(function(r){return r.active;}).map(function(r){
     var isCurrent=r.id===currentRegion;
     if(r.active){
       return '<div onclick="selectRegionFromDropdown(\''+r.id+'\')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;background:'+(isCurrent?'#fff3ed':'')+';transition:background .12s;">'
