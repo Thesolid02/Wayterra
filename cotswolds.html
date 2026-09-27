@@ -933,12 +933,7 @@ async function submitLogin(){
   window.location.href='/app';
 }
 function openProfilePopup(){
-  if(!_supaLanding)return;
-  _supaLanding.auth.getSession().then(function(result){
-    var session=result.data&&result.data.session;
-    if(session)document.getElementById('profile-email').textContent=session.user.email;
-  });
-  document.getElementById('profile-sheet').style.display='block';
+  window.location.href='https://wayterra.it/app';
 }
 function showToast(msg){
   var t=document.getElementById('wt-toast');

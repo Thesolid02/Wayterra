@@ -1225,6 +1225,16 @@ lottie.loadAnimation({
 </div>
 
 <script>
+// Se l'URL ha ?access=..., mostra subito lo splash/schermata di caricamento: la mappa
+// (centrata di default su Lazio) non deve mai comparire prima che il controllo d'accesso finisca.
+if(new URLSearchParams(window.location.search).get('access')) {
+  var _accessSplashEl=document.getElementById('splash');
+  if(_accessSplashEl){
+    _accessSplashEl.style.display='flex';
+    _accessSplashEl.classList.remove('hide');
+  }
+}
+
 /* ═══ FEATURE FLAGS ═══ */
 var ITINERARI_LIVE=true; // set to true when itinerary content is ready for launch
 
@@ -3577,6 +3587,31 @@ function showRegionPage(){
   if(DATA.experiences&&DATA.experiences.length>0){
     loadRegionReviews('cotswolds','rp-cotswolds-reviews');
     loadRegionReviews('lazio','rp-lazio-reviews');
+  }
+  updateRegionCards();
+}
+// Nella schermata elenco paesi: le regioni non ancora acquistate diventano card grigie
+// che portano alla pagina di acquisto, invece della mappa.
+async function updateRegionCards() {
+  if(!_currentUser) return; // utente anonimo - lascia tutto normale
+
+  var result = await _supaAuth.from('user_regions').select('region').eq('user_id', _currentUser.id);
+  var userRegions = (result.data || []).map(function(r) { return r.region; });
+
+  // Card Cotswolds
+  var cotswoldsCard = document.querySelector('[onclick*="checkAndSelectRegion(\'cotswolds\')"]');
+  if(cotswoldsCard && userRegions.indexOf('cotswolds') === -1) {
+    cotswoldsCard.style.opacity = '0.5';
+    cotswoldsCard.style.filter = 'grayscale(50%)';
+    cotswoldsCard.setAttribute('onclick', 'window.location.href="https://wayterra.it/cotswolds"');
+  }
+
+  // Card Baviera
+  var bavariaCard = document.querySelector('[onclick*="checkAndSelectRegion(\'bavaria\')"]');
+  if(bavariaCard && userRegions.indexOf('bavaria') === -1) {
+    bavariaCard.style.opacity = '0.5';
+    bavariaCard.style.filter = 'grayscale(50%)';
+    bavariaCard.setAttribute('onclick', 'window.location.href="https://wayterra.it/baviera"');
   }
 }
 function hideRegionPage(cb){
