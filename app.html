@@ -6885,7 +6885,11 @@ function showCrossRegionSheet(requestedRegion,availableRegion){
   var _unlockBtn=document.getElementById('cross-region-unlock-btn');
   _unlockBtn.textContent=lang==='en'?('Unlock '+reqLabel+' →'):('Sblocca '+reqLabel+' →');
   _unlockBtn.onclick=function(){
-    window.location.href='https://wayterra.it/'+requestedRegion;
+    if(requestedRegion==='bavaria'){
+      window.location.href='https://wayterra.gumroad.com/l/baviera';
+    } else {
+      window.location.href='https://wayterra.it/'+requestedRegion;
+    }
   };
   document.getElementById('cross-region-sheet').style.display='block';
 }
