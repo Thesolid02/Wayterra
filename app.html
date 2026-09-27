@@ -6846,8 +6846,11 @@ async function checkAndSelectRegion(region) {
 // prima di concederla solo perché ha una sessione attiva (bug corretto: prima bastava
 // essere loggati per qualsiasi motivo per ottenere gratis cotswolds/bavaria).
 async function checkCrossRegionAccess(requestedRegion,userId){
+  console.log('checkCrossRegionAccess chiamata:', requestedRegion, userId);
   var result=await _supaAuth.from('user_regions').select('region').eq('user_id',userId);
+  console.log('user_regions result:', JSON.stringify(result));
   var userRegions=(result.data||[]).map(function(r){return r.region;});
+  console.log('userRegions:', userRegions);
   if(userRegions.indexOf(requestedRegion)!==-1){
     if(requestedRegion==='cotswolds')localStorage.setItem(K.UC,'1');
     else if(requestedRegion==='bavaria')localStorage.setItem(K.UB,'1');
