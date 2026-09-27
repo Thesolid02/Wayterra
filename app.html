@@ -853,7 +853,7 @@ lottie.loadAnimation({
       <span style="font-size:24px;">🇬🇧</span>
       <span style="font-size:13px;font-weight:600;color:var(--g400);letter-spacing:.06em;text-transform:uppercase;">UK</span>
     </div>
-    <div class="rp-card rp-card-main rp-card-travels" onclick="selectTravelRegion('cotswolds',[-1.8,51.7],9)">
+    <div class="rp-card rp-card-main rp-card-travels" onclick="checkAndSelectRegion('cotswolds')">
       <div class="rp-card-bg" style="background-image:url('https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cotswolds-cover.jpg');background-size:cover;background-position:center;"></div>
       <div class="rp-card-ov"></div>
       <div class="rp-card-body">
@@ -6887,6 +6887,8 @@ function showCrossRegionSheet(requestedRegion,availableRegion){
   _unlockBtn.onclick=function(){
     if(requestedRegion==='bavaria'){
       window.location.href='https://wayterra.gumroad.com/l/baviera';
+    } else if(requestedRegion==='cotswolds'){
+      window.location.href='https://wayterra.gumroad.com/l/lbchl';
     } else {
       window.location.href='https://wayterra.it/'+requestedRegion;
     }
