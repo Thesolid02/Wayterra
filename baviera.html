@@ -844,7 +844,7 @@ async function trackCTAClick(){
 }
 function activateCode() {
   var code = document.getElementById('access-code-input').value.trim().toUpperCase();
-  if(code === 'WAYBAVIERA') {
+  if(code === 'WAYBAVIERA' || code === 'ROMANTICA') {
     localStorage.setItem('WT_PROMO_ACCESS', '1');
     window.location.href = '/app?access=bavaria';
   } else {
