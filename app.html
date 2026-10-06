@@ -3417,16 +3417,22 @@ function loadAllReviews(){
       if(res.data){res.data.forEach(function(r){if(!_reviewsCache[r.experience_id])_reviewsCache[r.experience_id]=[];_reviewsCache[r.experience_id].push(r);});}
     });
 }
-async function loadRegionReviews(regionId,elementId){
+async function loadRegionReviews(regionId,elementId,reviewIds){
   var el=document.getElementById(elementId);
   if(!el||!_supaAuth||!DATA)return;
-  var ids=(DATA.experiences||[]).filter(function(e){
-    if(regionId==='lazio')return!e.isTravel;
-    return e.region===regionId;
-  }).map(function(e){return e.id;});
-  if(!ids.length){el.innerHTML='';return;}
-  var res=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,profiles!user_id(full_name,avatar_url)').in('experience_id',ids);
-  var reviews=res.data||[];
+  var reviews;
+  if(reviewIds){
+    var res=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,profiles!user_id(full_name,avatar_url)').in('id',reviewIds);
+    reviews=res.data||[];
+  }else{
+    var ids=(DATA.experiences||[]).filter(function(e){
+      if(regionId==='lazio')return!e.isTravel;
+      return e.region===regionId;
+    }).map(function(e){return e.id;});
+    if(!ids.length){el.innerHTML='';return;}
+    var res2=await _supaAuth.from('itinerary_reviews').select('id,rating,user_id,profiles!user_id(full_name,avatar_url)').in('experience_id',ids);
+    reviews=res2.data||[];
+  }
   if(!reviews.length){el.innerHTML='';return;}
   var shown=reviews.slice(0,3);
   var avg=Math.round(reviews.reduce(function(s,r){return s+r.rating;},0)/reviews.length*10)/10;
@@ -3561,6 +3567,7 @@ function showRegionPage(){
   if(DATA.experiences&&DATA.experiences.length>0){
     loadRegionReviews('cotswolds','rp-cotswolds-reviews');
     loadRegionReviews('lazio','rp-lazio-reviews');
+    loadRegionReviews('bavaria','rp-baviera-reviews',[24]);
   }
   updateRegionCards();
 }
@@ -3872,6 +3879,7 @@ function loadEsperienze(){
       setTimeout(function(){
         loadRegionReviews('cotswolds','rp-cotswolds-reviews');
         loadRegionReviews('lazio','rp-lazio-reviews');
+        loadRegionReviews('bavaria','rp-baviera-reviews',[24]);
       },300);
       var _urlParams=new URLSearchParams(window.location.search);
       var _itinerarioId=_urlParams.get('itinerario');
@@ -6178,6 +6186,7 @@ async function checkAuthSession(){
       loadAllReviews();
       loadRegionReviews('cotswolds','rp-cotswolds-reviews');
       loadRegionReviews('lazio','rp-lazio-reviews');
+      loadRegionReviews('bavaria','rp-baviera-reviews',[24]);
       if(_authCallback){_authCallback();_authCallback=null;}
     }
     if(event==='SIGNED_OUT'){

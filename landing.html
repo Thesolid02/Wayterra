@@ -665,10 +665,7 @@ function closeLandingReviewsPopup(){
   var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
   var COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed'];
-  function loadReviews(expIds,elId){
-    fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,user_id,created_at,text,text_en,profiles!user_id(full_name,avatar_url)&experience_id=in.('+expIds.join(',')+')',{
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-    }).then(function(r){return r.json();}).then(function(reviews){
+  function renderReviewsWidget(reviews,elId){
       if(!reviews||!reviews.length)return;
       var el=document.getElementById(elId);
       if(!el)return;
@@ -699,9 +696,22 @@ function closeLandingReviewsPopup(){
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-        openLandingReviewsPopup(_landingReviews[elId],elId.includes('lazio')?'Lazio':'Cotswolds');
+        openLandingReviewsPopup(_landingReviews[elId],elId.includes('lazio')?'Lazio':elId.includes('baviera')?'Baviera':'Cotswolds');
         return false;
       };
+  }
+  function loadReviews(expIds,elId){
+    fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,user_id,created_at,text,text_en,profiles!user_id(full_name,avatar_url)&experience_id=in.('+expIds.join(',')+')',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    }).then(function(r){return r.json();}).then(function(reviews){
+      renderReviewsWidget(reviews,elId);
+    });
+  }
+  function loadReviewsByIds(reviewIds,elId){
+    fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,user_id,created_at,text,text_en,profiles!user_id(full_name,avatar_url)&id=in.('+reviewIds.join(',')+')',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    }).then(function(r){return r.json();}).then(function(reviews){
+      renderReviewsWidget(reviews,elId);
     });
   }
   fetch(SB_URL+'/rest/v1/experiences?select=id&is_travel=eq.false',{
@@ -714,6 +724,7 @@ function closeLandingReviewsPopup(){
   }).then(function(r){return r.json();}).then(function(exps){
     if(exps&&exps.length)loadReviews(exps.map(function(e){return e.id;}),'landing-reviews-cotswolds');
   });
+  loadReviewsByIds([24],'landing-reviews-baviera');
 })();
 </script>
 
