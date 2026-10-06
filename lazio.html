@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<script>window.location.href='https://wayterra.it';</script>
 <html lang="it">
 <head>
 <!-- Meta Pixel Code -->
@@ -21,15 +20,38 @@ src="https://www.facebook.com/tr?id=1747651939835990&ev=PageView&noscript=1"
 <!-- End Meta Pixel Code -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guida Lazio — Wayterra | Borghi e luoghi nascosti del Lazio</title>
-<meta name="description" content="Scopri il Lazio con la guida completa Wayterra: 4 itinerari, più di 50 luoghi verificati personalmente, PDF scaricabile e aggiornamenti gratuiti per sempre.">
+<title>Lazio — Guida di viaggio completa | Wayterra</title>
+<meta name="description" content="Esplora il Lazio con la nostra guida gratuita. Borghi medievali, laghi vulcanici e paesaggi nascosti a due passi da Roma. 5 itinerari e 50+ luoghi selezionati.">
+<meta name="keywords" content="lazio, guida lazio, borghi lazio, castelli romani, tuscia, viaggio lazio, cosa vedere nel lazio">
 <meta property="og:title" content="Guida Lazio — Wayterra">
-<meta property="og:description" content="Una guida personale e verificata per esplorare i borghi e i luoghi nascosti del Lazio.">
-<meta property="og:image" content="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio_cover.jpg">
+<meta property="og:description" content="Guida di viaggio gratuita per il Lazio: borghi medievali, laghi vulcanici e paesaggi nascosti a due passi da Roma.">
+<meta property="og:image" content="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cover_lazio.jpg">
 <meta property="og:type" content="website">
+<link rel="alternate" hreflang="it" href="https://wayterra.it/lazio"/>
+<link rel="alternate" hreflang="en" href="https://wayterra.it/lazio?lang=en"/>
+<link rel="alternate" hreflang="x-default" href="https://wayterra.it/lazio"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Guida Wayterra — Lazio",
+  "description": "Guida di viaggio gratuita per il Lazio: 5 itinerari, 50+ luoghi selezionati, mappa interattiva.",
+  "url": "https://wayterra.it/lazio",
+  "image": "https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cover_lazio.jpg",
+  "brand": { "@type": "Brand", "name": "Wayterra" },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 <style>
 :root{
   --w:#fff;--g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;
@@ -52,10 +74,12 @@ img{display:block;max-width:100%;}
 nav{position:sticky;top:0;z-index:100;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.06);}
 .nav-brand{display:flex;align-items:center;gap:9px;}
 .nav-name{font-size:.95rem;font-weight:800;color:var(--g900);letter-spacing:-.03em;}
-.nav-cta{display:inline-flex;align-items:center;padding:9px 20px;border-radius:100px;font-weight:700;font-size:.82rem;cursor:pointer;background:#dc6b2f;color:#fff;border:none;font-family:var(--f);transition:background .15s;}
-.nav-cta:hover{background:var(--orange-d);}
+.nav-btn{background:#dc6b2f;color:#fff;border:none;border-radius:100px;padding:8px 16px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;font-family:var(--f);transition:background .15s;height:36px;min-width:110px;box-sizing:border-box;line-height:1.4;}
+.nav-btn:hover{background:var(--orange-d);}
+#lang-dropdown-btn{background:#fff;color:#1a1a1a;border:0.5px solid #ddd;border-radius:20px;padding:8px 10px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-family:var(--f);height:36px;width:56px;min-width:56px;box-sizing:border-box;}
+#lang-dropdown-btn:hover{border-color:#999;}
 .nav-links{display:flex;align-items:center;gap:8px;}
-.lang-sw-nav{display:flex;background:var(--g100);border-radius:100px;padding:3px;gap:2px;}
+@media(max-width:767px){.nav-cta-arrow{display:none;}.nav-btn{padding:8px 14px;font-size:.8rem;min-width:80px;}#lang-dropdown-btn{width:46px;min-width:46px;}.nav-btn,#lang-dropdown-btn{height:32px!important;min-height:32px!important;max-height:32px!important;padding-top:0!important;padding-bottom:0!important;line-height:32px!important;box-sizing:border-box!important;}#lang-dropdown-btn{display:none!important;}#lang-tab{display:flex!important;flex-direction:column;}}
 
 /* HERO */
 .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;overflow:hidden;}
@@ -64,7 +88,7 @@ nav{position:sticky;top:0;z-index:100;padding:0 24px;height:64px;display:flex;al
 .hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,12,6,.55) 0%,rgba(8,12,6,.3) 40%,rgba(8,12,6,.55) 75%,rgba(8,12,6,.85) 100%);}
 .hero-content{position:relative;z-index:2;max-width:700px;margin:0 auto;}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.13);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.25);border-radius:100px;padding:7px 18px;font-size:.78rem;font-weight:600;margin-bottom:28px;backdrop-filter:blur(10px);letter-spacing:.02em;}
-.hero-h1{font-size:clamp(3rem,8vw,6rem);font-weight:800;line-height:1.05;color:#fff;margin-bottom:20px;letter-spacing:-.04em;text-shadow:0 2px 32px rgba(0,0,0,.4);}
+.hero-h1{font-size:clamp(2.4rem,6vw,4.6rem);font-weight:800;line-height:1.08;color:#fff;margin-bottom:20px;letter-spacing:-.04em;text-shadow:0 2px 32px rgba(0,0,0,.4);}
 .hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:rgba(255,255,255,.75);line-height:1.7;max-width:520px;margin:0 auto 40px;font-weight:400;}
 .hero-cta{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;background:#dc6b2f;color:#fff;border-radius:100px;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(220,107,47,.45);transition:all .15s;}
 .hero-cta:hover{background:var(--orange-d);transform:translateY(-1px);}
@@ -79,7 +103,13 @@ section{padding:80px 24px;}
 .s-sub{font-size:1rem;color:var(--g500);line-height:1.75;max-width:600px;}
 
 /* INTRO */
-.intro-claim{margin-top:24px;padding:18px 22px;background:#fff8f3;border-left:3px solid #dc6b2f;border-radius:0 var(--r) var(--r) 0;font-size:.95rem;color:#7c3a10;font-weight:500;line-height:1.6;max-width:600px;}
+.intro-claim{margin-top:24px;padding:18px 22px;background:#fff8f3;border-left:3px solid #dc6b2f;border-radius:0 var(--r) var(--r) 0;font-size:.95rem;color:#7c3a10;font-weight:500;line-height:1.6;}
+.intro-2col{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+.intro-mosaic{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:140px 140px;gap:6px;border-radius:12px;overflow:hidden;}
+.intro-mosaic img{width:100%;height:100%;object-fit:cover;display:block;}
+@media(max-width:680px){.intro-2col{grid-template-columns:1fr;}.intro-mosaic{grid-template-rows:120px 120px;}.gallery-caption{margin-top:4px;}}
+.intro-video{width:100%;border-radius:12px;object-fit:cover;object-position:center;cursor:pointer;max-height:280px;}
+@media(max-width:767px){.intro-video{max-height:220px;}}
 
 /* WHAT'S INCLUDED */
 .includes-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:36px;}
@@ -119,15 +149,6 @@ section{padding:80px 24px;}
 .cta-price-note{font-size:.85rem;color:rgba(255,255,255,.75);margin-bottom:32px;}
 .cta-btn{display:inline-flex;align-items:center;justify-content:center;width:100%;max-width:420px;padding:16px 32px;background:#fff;color:#dc6b2f;border:none;border-radius:100px;font-family:var(--f);font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 24px rgba(0,0,0,.18);transition:all .15s;text-decoration:none;}
 .cta-btn:hover{background:var(--g50);transform:translateY(-1px);}
-.cta-or{display:flex;align-items:center;gap:12px;max-width:420px;margin:24px auto;color:rgba(255,255,255,.5);font-size:.8rem;}
-.cta-or::before,.cta-or::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.25);}
-.cta-code-wrap{display:flex;gap:8px;max-width:420px;margin:0 auto;}
-.cta-code-label{font-size:.85rem;color:rgba(255,255,255,.8);margin-bottom:10px;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;}
-.cta-code-input{flex:1;padding:12px 16px;border-radius:var(--rl);border:none;font-family:var(--f);font-size:.9rem;color:var(--g900);outline:none;}
-.cta-code-input:focus{box-shadow:0 0 0 3px rgba(255,255,255,.4);}
-.cta-code-btn{padding:12px 20px;background:var(--g900);color:#fff;border:none;border-radius:var(--rl);font-family:var(--f);font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap;}
-.cta-code-btn:hover{background:#1f2937;}
-.cta-error{margin-top:10px;font-size:.82rem;color:rgba(255,220,200,.9);display:none;text-align:center;max-width:420px;margin-left:auto;margin-right:auto;}
 
 /* FOOTER */
 footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
@@ -140,9 +161,33 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 .foot-copy{font-size:.72rem;color:rgba(255,255,255,.2);}
 
 @media(max-width:640px){section{padding:60px 18px;}.cta-price{font-size:3rem;}}
+
+/* PHONE MOCKUPS */
+.phones-row{display:flex;flex-direction:row;justify-content:center;align-items:flex-start;gap:32px;margin-top:40px;max-width:800px;margin-left:auto;margin-right:auto;}
+.phone-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.phone-frame{background:#1a1a1a;border-radius:36px;padding:8px;width:160px;}
+.phone-inner{border-radius:28px;overflow:hidden;background:#000;position:relative;}
+.phone-notch{width:52px;height:8px;background:#1a1a1a;border-radius:0 0 8px 8px;margin:0 auto;position:relative;z-index:1;}
+.phone-screen{width:100%;height:280px;object-fit:cover;object-position:top center;display:block;margin-top:-8px;}
+.phone-label{font-size:13px;text-align:center;color:var(--g500);line-height:1.5;max-width:140px;}
+@media(min-width:768px){.phone-frame{width:190px;}.phone-inner{height:360px;}.phone-screen{height:360px;object-fit:cover;object-position:top center;}.phone-label{max-width:170px;}.phones-row{max-width:900px;gap:20px;}}
+@media(max-width:767px){
+  .phones-row{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 12px 4px;justify-content:flex-start;max-width:100%;scrollbar-width:none;-ms-overflow-style:none;}
+  .phones-row::-webkit-scrollbar{display:none;}
+  .phone-wrap{scroll-snap-align:center;flex-shrink:0;width:75vw;max-width:260px;}
+  .phones-dots{display:flex!important;}
+  .rev-pill-desktop{display:none;}
+  .rev-pill-mobile{display:inline-block!important;}
+}
+.phones-dots{display:none;justify-content:center;gap:7px;margin-top:18px;}
+.phones-dot{width:7px;height:7px;border-radius:50%;background:var(--g300);transition:background .2s;cursor:pointer;}
+.phones-dot.active{background:var(--orange);}
+@keyframes fly{0%{transform:translateX(-60px) translateY(10px) rotate(-5deg);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateX(160px) translateY(-10px) rotate(5deg);opacity:0;}}
+.plane-wrap{height:50px;position:relative;overflow:hidden;margin:8px 0;}
+.plane-anim{position:absolute;top:50%;transform:translateY(-50%);animation:fly 3s ease-in-out infinite;animation-delay:1s;}
 </style>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="icon" type="image/jpeg" href="/logo_test.jpg">
+<link rel="apple-touch-icon" href="/logo_test.jpg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
 <style>
   :root {
@@ -159,148 +204,213 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <!-- NAV -->
 <nav id="main-nav">
   <div class="nav-brand">
-    <svg width="28" height="28" viewBox="0 0 200 200" fill="none">
-      <circle cx="100" cy="100" r="88" stroke="#2d5a27" stroke-width="10" fill="none"/>
-      <polygon points="100,8 107,32 100,26 93,32" fill="#e8721a"/>
-      <polygon points="100,192 107,168 100,174 93,168" fill="#2d5a27"/>
-      <polygon points="192,100 168,107 174,100 168,93" fill="#2d5a27"/>
-      <polygon points="8,100 32,107 26,100 32,93" fill="#2d5a27"/>
-      <path d="M58 75 L100 68 L142 75 L142 138 L100 145 L58 138 Z" fill="#e8e0b8" stroke="#2d5a27" stroke-width="4" stroke-linejoin="round"/>
-      <line x1="100" y1="68" x2="100" y2="145" stroke="#2d5a27" stroke-width="2.5" stroke-dasharray="4 3"/>
-      <ellipse cx="76" cy="118" rx="14" ry="8" fill="#5a9e50" opacity=".7"/>
-      <circle cx="72" cy="128" r="3.5" fill="#e8721a"/>
-      <circle cx="115" cy="98" r="3" fill="#e8721a" opacity=".8"/>
-      <polygon points="128,90 120,96 124,104 136,94" fill="#e8721a"/>
-    </svg>
-    <span class="nav-name">Wayterra</span>
+    <a href="https://wayterra.it" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+      <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/logo_test.jpg" style="height:32px;width:auto;border-radius:50%;object-fit:cover;" alt="Wayterra">
+      <span class="nav-name">Wayterra</span>
+    </a>
   </div>
   <div class="nav-links">
-    <div class="lang-sw-nav">
-      <button id="lang-en" onclick="setLang('en')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:var(--g900);color:#fff;transition:all .15s;">EN</button>
-      <button id="lang-it" onclick="setLang('it')" style="padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:none;color:var(--g500);transition:all .15s;">IT</button>
+    <div style="position:relative;">
+      <button id="lang-dropdown-btn" onclick="toggleLangDropdown()">
+        <span id="lang-flag">🇮🇹</span>
+        <i class="ti ti-chevron-down" style="font-size:12px;color:#666;" aria-hidden="true"></i>
+      </button>
+      <div id="lang-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:0.5px solid #ddd;border-radius:10px;overflow:hidden;z-index:100;min-width:48px;box-shadow:0 4px 12px rgba(0,0,0,.1);">
+        <div onclick="setLang('it');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇮🇹</div>
+        <div onclick="setLang('en');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇬🇧</div>
+      </div>
     </div>
-    <a href="#acquista" class="nav-cta" id="nav-buy" data-t="nav-buy">Acquista la guida →</a>
+    <a href="https://wayterra.it/app?region=lazio" class="nav-btn" data-t="nav-cta">Esplora gratis →</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg">
-    <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/lazio_cover.jpg" alt="Lazio" loading="eager">
+    <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/cover_lazio.jpg" alt="Lazio" loading="eager">
   </div>
   <div class="hero-content">
-    <div class="hero-badge">🇮🇹 Italia</div>
-    <h1 class="hero-h1">Lazio</h1>
-    <p class="hero-sub">La guida completa per esplorare i borghi e i luoghi nascosti del Lazio</p>
-    <a href="#acquista" class="hero-cta">Acquista la guida — €19,99 →</a>
+    <div class="hero-badge" data-t="hero-badge">🇮🇹 ITALY · LAZIO</div>
+    <h1 class="hero-h1" data-t="hero-h1">Dove ogni borgo racconta una storia</h1>
+    <p class="hero-sub" data-t="hero-sub">Il Lazio nasconde molto più della sua capitale — borghi medievali, laghi vulcanici, foreste antiche e paesaggi che sembrano fermi nel tempo.</p>
+    <a class="hero-cta" data-t="hero-cta" href="https://wayterra.it/app?region=lazio" onclick="trackExploreClick();">Esplora gratis →</a>
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
-    SCORRI
+    <span data-t="hero-scroll">SCORRI</span>
   </div>
 </section>
 
 <!-- INTRO -->
 <section>
   <div class="si">
-    <div class="badge">La guida</div>
-    <h2 class="s-title">Esplora il Lazio come un locale</h2>
-    <p class="s-sub">Il Lazio è una regione ricca di storia, natura e borghi medievali spesso sconosciuti al grande turismo. La nostra guida ti porta alla scoperta dei luoghi più autentici, dalle valli etrusche ai borghi arroccati sui colli, con tutto quello che ti serve per un viaggio indimenticabile.</p>
-    <div class="intro-claim">💬 Una guida personale — tutto quello che trovi è stato vissuto e verificato da noi.</div>
-  </div>
-</section>
-
-<!-- COSA INCLUDE -->
-<section style="background:var(--g50);">
-  <div class="si">
-    <div class="badge">Cosa include</div>
-    <h2 class="s-title">Tutto quello che ti serve</h2>
-    <div class="includes-grid">
-      <div class="include-item"><div class="include-ico">🗺</div><div class="include-text">4 itinerari tematici con le tappe selezionate da noi</div></div>
-      <div class="include-item"><div class="include-ico">📍</div><div class="include-text">Più di 50 luoghi visitati e verificati personalmente</div></div>
-      <div class="include-item"><div class="include-ico">🚗</div><div class="include-text">Indicazioni pratiche su parcheggi e logistica per ogni tappa</div></div>
-      <div class="include-item"><div class="include-ico">🍽</div><div class="include-text">Dove abbiamo mangiato noi — selezionato e testato</div></div>
-      <div class="include-item"><div class="include-ico">🛏</div><div class="include-text">Dove abbiamo dormito noi — selezionato e testato</div></div>
-      <div class="include-item"><div class="include-ico">🎯</div><div class="include-text">Esperienze e attività che abbiamo fatto</div></div>
-      <div class="include-item"><div class="include-ico">🤫</div><div class="include-text">Segreti locali scoperti durante il viaggio</div></div>
-      <div class="include-item"><div class="include-ico">📄</div><div class="include-text">PDF scaricabile per ogni itinerario</div></div>
-      <div class="include-item"><div class="include-ico">♾️</div><div class="include-text">Aggiornamenti gratuiti inclusi per sempre</div></div>
+    <div class="intro-2col">
+      <div>
+        <div class="badge" data-t="intro-badge">La guida</div>
+        <h2 class="s-title" data-t="intro-title">Una regione tutta da scoprire</h2>
+        <p class="s-sub" data-t="intro-sub">Il Lazio è molto più di Roma. Dai Castelli Romani ai Monti Simbruini, dalla Tuscia alla Maremma laziale, la regione offre paesaggi straordinari, borghi medievali intatti e una storia millenaria tutta da esplorare.</p>
+        <div class="intro-claim" data-t="intro-claim">💬 Una guida personale — tutto quello che trovi è stato vissuto e verificato da noi.</div>
+      </div>
+      <div>
+        <div class="intro-mosaic" onclick="trackSectionClick('gallery')">
+          <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/mosaico1_lazio.jpg" alt="" style="grid-column:1/3;grid-row:1/2;cursor:pointer;" loading="lazy" onclick="event.stopPropagation();openLightbox(this.src)">
+          <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/mosaico2_lazio.jpg" alt="" style="grid-column:1/2;grid-row:2/3;cursor:pointer;" loading="lazy" onclick="event.stopPropagation();openLightbox(this.src)">
+          <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/mosaico3_lazio.jpg" alt="" style="grid-column:2/3;grid-row:2/3;cursor:pointer;" loading="lazy" onclick="event.stopPropagation();openLightbox(this.src)">
+          <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/mosaico4_lazio.jpg" alt="" style="grid-column:3/4;grid-row:1/3;cursor:pointer;" loading="lazy" onclick="event.stopPropagation();openLightbox(this.src)">
+        </div>
+        <p class="gallery-caption" data-t="gallery-caption" style="font-size:12px;color:#999;text-align:center;margin-top:8px;font-style:italic;">Alcuni scatti del nostro itinerario</p>
+      </div>
+    </div>
+    <div style="margin-top:28px;">
+      <div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;" data-t="video-label">I luoghi che troverai nella guida</div>
+      <div style="position:relative;">
+        <video class="intro-video" src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/video_lazio.MP4" autoplay muted loop playsinline preload="auto" onerror="this.style.display='none'" onclick="trackSectionClick('video');if(this.requestFullscreen){this.requestFullscreen();}else if(this.webkitRequestFullscreen){this.webkitRequestFullscreen();}else if(this.webkitEnterFullscreen){this.webkitEnterFullscreen();}">Il tuo browser non supporta il video.</video>
+        <div style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.5);border-radius:6px;padding:4px 8px;pointer-events:none;">
+          <i class="ti ti-maximize" style="font-size:14px;color:#fff;" aria-hidden="true"></i>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- COSA INCLUDE -->
+<section style="background:var(--g50);" onclick="trackSectionClick('includes')">
+  <div class="si">
+    <div class="badge" data-t="inc-badge">Cosa include</div>
+    <h2 class="s-title" data-t="inc-title">Tutto quello che ti serve</h2>
+    <div class="includes-grid">
+      <div class="include-item"><div class="include-ico">🗺</div><div class="include-text" data-t="inc-1">5 itinerari selezionati da noi</div></div>
+      <div class="include-item"><div class="include-ico">📍</div><div class="include-text" data-t="inc-2">50+ luoghi da scoprire</div></div>
+      <div class="include-item"><div class="include-ico">📋</div><div class="include-text" data-t="inc-3">Schede dettagliate per ogni luogo</div></div>
+      <div class="include-item"><div class="include-ico">🧭</div><div class="include-text" data-t="inc-4">Mappa interattiva sempre aggiornata</div></div>
+      <div class="include-item"><div class="include-ico">🆓</div><div class="include-text" data-t="inc-5">Accesso completamente gratuito</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section id="social-proof-section" style="background:#f5f0e8;padding:48px 20px;">
+  <div style="max-width:600px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+      <div style="background:#dc6b2f;border-radius:16px;padding:20px 16px;text-align:center;transform:rotate(-1.5deg);">
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;" data-t="social-label-ig">Su Instagram</div>
+        <div id="count-instagram" style="font-size:38px;font-weight:700;color:#fff;line-height:1;">+6k</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:8px;margin-bottom:14px;" data-t="social-instagram">persone che ci seguono in questo viaggio ✈️</div>
+        <div class="plane-wrap">
+          <div class="plane-anim"><i class="ti ti-plane" style="font-size:32px;color:#fff;" aria-hidden="true"></i></div>
+        </div>
+        <a href="https://www.instagram.com/wayterra_guide" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.2);border-radius:20px;padding:5px 12px;text-decoration:none;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#fff" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg>
+          <span style="font-size:11px;color:#fff;font-weight:500;">@wayterra_guide</span>
+        </a>
+      </div>
+
+      <div style="background:#dc6b2f;border-radius:16px;padding:20px 16px;text-align:center;transform:rotate(1.5deg);margin-top:12px;">
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;" data-t="social-label-travelers">Già in viaggio</div>
+        <div id="count-travelers" style="font-size:38px;font-weight:700;color:#fff;line-height:1;">+500</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:8px;margin-bottom:12px;" data-t="social-travelers">viaggiatori stanno già esplorando il Lazio con questa guida 🏛️</div>
+        <div id="lottie-social" style="width:70px;height:70px;margin:0 auto;"></div>
+      </div>
+
+    </div>
+
+    <div style="max-width:220px;margin:10px auto 0;transform:rotate(-0.5deg);">
+      <div style="background:#dc6b2f;border-radius:16px;padding:20px 16px;text-align:center;">
+        <div style="font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;" data-t="social-label-pdf">PDF scaricati</div>
+        <div id="count-pdf" style="font-size:38px;font-weight:700;color:#fff;line-height:1;">+100</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.85);line-height:1.5;margin-top:8px;" data-t="social-pdf">PDF portati in viaggio 🗺️</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<script>
+(function(){
+  if(typeof lottie!=='undefined'){
+    lottie.loadAnimation({
+      container:document.getElementById('lottie-social'),
+      renderer:'svg',
+      loop:true,
+      autoplay:true,
+      path:'https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/6cd1f2c4-1172-11ee-8e6d-4fb0902f9b7b.json'
+    });
+  }
+  function animateCount(el,target,suffix,duration){
+    var startTime=null;
+    function step(timestamp){
+      if(!startTime)startTime=timestamp;
+      var progress=Math.min((timestamp-startTime)/duration,1);
+      var ease=1-Math.pow(1-progress,3);
+      var current=Math.floor(ease*target);
+      el.textContent='+'+current+suffix;
+      if(progress<1)requestAnimationFrame(step);
+      else el.textContent='+'+target+suffix;
+    }
+    requestAnimationFrame(step);
+  }
+  var animated=false;
+  var observer=new IntersectionObserver(function(entries){
+    if(entries[0].isIntersecting&&!animated){
+      animated=true;
+      animateCount(document.getElementById('count-instagram'),6,'k',1800);
+      animateCount(document.getElementById('count-travelers'),500,'',2000);
+      animateCount(document.getElementById('count-pdf'),100,'',1600);
+    }
+  },{threshold:0.3});
+  var section=document.querySelector('#social-proof-section');
+  if(section)observer.observe(section);
+})();
+</script>
+
 <!-- ANTEPRIMA APP -->
-<section class="app-preview-sec">
+<section class="app-preview-sec" onclick="trackSectionClick('app')">
   <div class="si tc">
     <div class="badge">App Wayterra</div>
-    <h2 class="s-title">Tutto nella tua tasca</h2>
-    <p class="s-sub" style="margin:0 auto;">Accedi alla guida direttamente dall'app Wayterra — mappa interattiva, schede luoghi, itinerario giorno per giorno e PDF da stampare.</p>
-    <div class="app-cards">
-      <div class="app-card">
-        <div class="app-card-ico">🗺</div>
-        <div class="app-card-t">Mappa interattiva</div>
-        <div class="app-card-d">Tutti i luoghi geo-referenziati su mappa, esplorabili per categoria e con dettaglio fotografico.</div>
-      </div>
-      <div class="app-card">
-        <div class="app-card-ico">📅</div>
-        <div class="app-card-t">Itinerario dettagliato</div>
-        <div class="app-card-d">Giorno per giorno, con km, tempi di guida, info pratiche e consigli diretti per ogni tappa.</div>
-      </div>
-      <div class="app-card">
-        <div class="app-card-ico">📄</div>
-        <div class="app-card-t">PDF scaricabile</div>
-        <div class="app-card-d">Scarica l'itinerario completo in PDF da portare offline — anche senza connessione.</div>
-      </div>
+    <h2 class="s-title" data-t="app-title">La guida in tasca</h2>
+    <p class="s-sub" data-t="app-sub">Accedi alla guida direttamente tramite il sito Wayterra (senza scaricare nulla) — mappa interattiva, schede luoghi, itinerari e PDF da stampare.</p>
+    <div class="phones-row" id="phones-row"></div>
+    <div class="phones-dots" id="phones-dots"></div>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://wayterra.it/app?region=lazio" onclick="trackExploreClick();" style="display:inline-block;background:#dc6b2f;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;text-decoration:none;" data-t="app-cta-btn">Inizia a esplorare il Lazio →</a>
     </div>
   </div>
 </section>
 
 <!-- RECENSIONI -->
-<section>
+<section onclick="trackSectionClick('reviews')">
   <div class="si">
-    <div class="badge">Recensioni</div>
-    <h2 class="s-title">Cosa dicono i viaggiatori</h2>
+    <div class="badge" data-t="rev-badge">Recensioni</div>
+    <h2 class="s-title" data-t="rev-title">Cosa dicono i viaggiatori</h2>
     <div class="reviews-avg" id="reviews-avg" style="display:none;cursor:pointer;" onclick="openReviewsPopup()">
       <div class="reviews-avg-num" id="avg-num"></div>
       <div>
         <div class="reviews-avg-stars" id="avg-stars"></div>
         <div class="reviews-avg-count" id="avg-count"></div>
       </div>
+      <span class="rev-pill-desktop" data-t="rev-pill" style="background:#dc6b2f;color:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;">+500 viaggiatori la stanno già utilizzando</span>
     </div>
+    <div class="rev-pill-mobile" data-t="rev-pill" style="display:none;background:#dc6b2f;color:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;margin-top:8px;">+500 viaggiatori la stanno già utilizzando</div>
     <div class="reviews-grid" id="reviews-grid">
       <p style="color:var(--g400);font-size:.88rem;">Caricamento recensioni…</p>
     </div>
   </div>
 </section>
 
-<!-- CTA ACQUISTO -->
-<section class="cta-sec" id="acquista">
+<!-- CTA ESPLORA -->
+<section class="cta-sec" id="esplora">
   <div class="si tc">
-    <div class="badge">Accesso permanente</div>
-    <h2 class="s-title">Pronto a esplorare il Lazio?</h2>
-    <div class="cta-price">€19,99</div>
-    <div class="cta-price-note">Accesso permanente • Aggiornamenti inclusi • PDF scaricabile</div>
-    <a href="https://wayterra.gumroad.com/l/lazio" target="_blank" rel="noopener" class="cta-btn">Acquista la guida Lazio →</a>
-    <div class="cta-or">oppure</div>
-    <div class="cta-code-label">Hai un codice di accesso?</div>
-    <div class="cta-code-wrap">
-      <input class="cta-code-input" id="access-code-input" type="text" placeholder="Inserisci codice">
-      <button class="cta-code-btn" onclick="activateCode()">Attiva</button>
-    </div>
-    <div class="cta-error" id="code-error">Codice non valido</div>
+    <div class="badge" data-t="cta-badge">Accesso gratuito</div>
+    <h2 class="s-title" data-t="cta-title">Inizia a esplorare il Lazio</h2>
+    <div class="cta-price-note" data-t="cta-note">Accesso completamente gratuito. Nessuna carta di credito richiesta.</div>
+    <a href="https://wayterra.it/app?region=lazio" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="trackExploreClick();">Esplora gratis →</a>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
   <div class="foot-brand">
-    <svg width="24" height="24" viewBox="0 0 200 200" fill="none">
-      <circle cx="100" cy="100" r="88" stroke="#e8e0b8" stroke-width="10" fill="none"/>
-      <polygon points="100,8 107,32 100,26 93,32" fill="#e8721a"/>
-      <path d="M58 75 L100 68 L142 75 L142 138 L100 145 L58 138 Z" fill="rgba(232,224,184,.2)" stroke="#e8e0b8" stroke-width="4" stroke-linejoin="round"/>
-      <circle cx="80" cy="120" r="3" fill="#e8721a"/>
-      <polygon points="125,92 118,98 122,106 133,96" fill="#e8721a"/>
-    </svg>
+    <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/logo_test.jpg" style="height:28px;width:auto;border-radius:50%;object-fit:cover;" alt="Wayterra">
     <span class="foot-name">Wayterra</span>
   </div>
   <div class="foot-tagline">Discover hidden places · Starting from Italy</div>
@@ -318,41 +428,149 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 </footer>
 
 <script>
+var _lang=localStorage.getItem('WT_LANG_v1')||'it';
 // Translation
 var T={
-  it:{'nav-buy':'Acquista la guida →'},
-  en:{'nav-buy':'Buy the guide →'}
+  it:{
+    'nav-cta':'Esplora gratis →',
+    'hero-badge':'🇮🇹 ITALY · LAZIO',
+    'hero-h1':'Dove ogni borgo racconta una storia',
+    'hero-sub':'Il Lazio nasconde molto più della sua capitale — borghi medievali, laghi vulcanici, foreste antiche e paesaggi che sembrano fermi nel tempo.',
+    'hero-cta':'Esplora gratis →',
+    'hero-scroll':'SCORRI',
+    'intro-badge':'La guida',
+    'intro-title':'Una regione tutta da scoprire',
+    'intro-sub':'Il Lazio è molto più di Roma. Dai Castelli Romani ai Monti Simbruini, dalla Tuscia alla Maremma laziale, la regione offre paesaggi straordinari, borghi medievali intatti e una storia millenaria tutta da esplorare.',
+    'intro-claim':'💬 Una guida personale — tutto quello che trovi è stato vissuto e verificato da noi.',
+    'video-label':'I luoghi che troverai nella guida',
+    'gallery-caption':'Alcuni scatti del nostro itinerario',
+    'inc-badge':'Cosa include',
+    'inc-title':'Tutto quello che ti serve',
+    'inc-1':'5 itinerari selezionati da noi',
+    'inc-2':'50+ luoghi da scoprire',
+    'inc-3':'Schede dettagliate per ogni luogo',
+    'inc-4':'Mappa interattiva sempre aggiornata',
+    'inc-5':'Accesso completamente gratuito',
+    'social-label-ig':'Su Instagram',
+    'social-label-travelers':'Già in viaggio',
+    'social-label-pdf':'PDF scaricati',
+    'social-instagram':'persone che ci seguono in questo viaggio ✈️',
+    'social-travelers':'viaggiatori stanno già esplorando il Lazio con questa guida 🏛️',
+    'social-pdf':'PDF portati in viaggio 🗺️',
+    'app-title':'La guida in tasca',
+    'app-cta-btn':'Inizia a esplorare il Lazio →',
+    'app-sub':"Accedi alla guida direttamente tramite il sito Wayterra (senza scaricare nulla) — mappa interattiva, schede luoghi, itinerari e PDF da stampare.",
+    'rev-badge':'Recensioni',
+    'rev-pill':'+500 viaggiatori la stanno già utilizzando',
+    'rev-title':'Cosa dicono i viaggiatori',
+    'cta-badge':'Accesso gratuito',
+    'cta-title':'Inizia a esplorare il Lazio',
+    'cta-note':'Accesso completamente gratuito. Nessuna carta di credito richiesta.',
+    'cta-btn':'Esplora gratis →'
+  },
+  en:{
+    'nav-cta':'Explore for free →',
+    'hero-badge':'🇮🇹 ITALY · LAZIO',
+    'hero-h1':'Where every village tells a story',
+    'hero-sub':'Lazio hides much more than its capital — medieval villages, volcanic lakes, ancient forests and landscapes that seem frozen in time.',
+    'hero-cta':'Explore for free →',
+    'hero-scroll':'SCROLL',
+    'intro-badge':'The guide',
+    'intro-title':'A region waiting to be discovered',
+    'intro-sub':'Lazio is much more than Rome. From the Castelli Romani to the Monti Simbruini, from Tuscia to the Lazio Maremma, the region offers extraordinary landscapes, intact medieval villages and a thousand-year history waiting to be explored.',
+    'intro-claim':'💬 A personal guide — everything you find has been personally experienced and verified by us.',
+    'video-label':"The places you'll find in the guide",
+    'gallery-caption':'Some shots from our itinerary',
+    'inc-badge':"What's included",
+    'inc-title':'Everything you need',
+    'inc-1':'5 itineraries selected by us',
+    'inc-2':'50+ places to discover',
+    'inc-3':'Detailed info for each place',
+    'inc-4':'Always up-to-date interactive map',
+    'inc-5':'Completely free access',
+    'social-label-ig':'On Instagram',
+    'social-label-travelers':'Already traveling',
+    'social-label-pdf':'Downloaded PDFs',
+    'social-instagram':'people following us on this journey ✈️',
+    'social-travelers':'travelers are already exploring Lazio with this guide 🏛️',
+    'social-pdf':'PDFs taken on the journey 🗺️',
+    'app-title':'The guide in your pocket',
+    'app-cta-btn':'Start exploring Lazio →',
+    'app-sub':'Access the guide directly on the Wayterra website (no download needed) — interactive map, place cards, itineraries and printable PDF.',
+    'rev-badge':'Reviews',
+    'rev-pill':'+500 travelers are already using it',
+    'rev-title':'What travelers say',
+    'cta-badge':'Free access',
+    'cta-title':'Start exploring Lazio',
+    'cta-note':'Completely free access. No credit card required.',
+    'cta-btn':'Explore for free →'
+  }
 };
+var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
+
+function renderPhones(l){
+  var phones=l==='en'?[
+    {src:_BASE+'app1laz_ENG.PNG',label:'Explore the interactive map with all the places'},
+    {src:_BASE+'app2laz_ENG.PNG',label:'Discover each place in detail'},
+    {src:_BASE+'app3laz_ENG.PNG',label:'For each place discover: where to eat, parking and activities to do'},
+    {src:_BASE+'app4laz_ENG.PNG',label:'Follow the itinerary day by day'}
+  ]:[
+    {src:_BASE+'app1laz_ITA.PNG',label:'Esplora la mappa interattiva con tutti i luoghi'},
+    {src:_BASE+'app2laz_ITA.PNG',label:'Scopri ogni luogo nel dettaglio'},
+    {src:_BASE+'app3laz_ITA.PNG',label:'Per ogni luogo scopri: dove mangiare, parcheggi e attività da fare'},
+    {src:_BASE+'app4laz_ITA.PNG',label:"Segui l'itinerario giorno per giorno"}
+  ];
+  var row=document.getElementById('phones-row');
+  row.innerHTML=phones.map(function(p){
+    return'<div class="phone-wrap">'
+      +'<div class="phone-frame">'
+      +'<div class="phone-inner">'
+      +'<div class="phone-notch"></div>'
+      +'<img class="phone-screen" src="'+p.src+'" alt="'+p.label+'" loading="lazy">'
+      +'</div>'
+      +'</div>'
+      +'<div class="phone-label">'+p.label+'</div>'
+      +'</div>';
+  }).join('');
+
+  // carousel dots (mobile only — shown via CSS)
+  var dotsEl=document.getElementById('phones-dots');
+  if(dotsEl){
+    dotsEl.innerHTML=phones.map(function(_,i){
+      return'<div class="phones-dot'+(i===0?' active':'')+'" id="phones-dot-'+i+'"></div>';
+    }).join('');
+    var wraps=row.querySelectorAll('.phone-wrap');
+    if(typeof IntersectionObserver!=='undefined'){
+      var obs=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting&&entry.intersectionRatio>=0.5){
+            var idx=Array.from(wraps).indexOf(entry.target);
+            dotsEl.querySelectorAll('.phones-dot').forEach(function(d,i){d.classList.toggle('active',i===idx);});
+          }
+        });
+      },{root:row,threshold:0.5});
+      wraps.forEach(function(w){obs.observe(w);});
+    }
+  }
+}
 
 function setLang(l){
+  _lang=l;
   localStorage.setItem('WT_LANG_v1',l);
-  document.getElementById('lang-en').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:'+(l==='en'?'#111827;color:#fff':'none;color:#6b7280')+';transition:all .15s;';
-  document.getElementById('lang-it').style.cssText='padding:5px 12px;border-radius:100px;border:none;font-family:var(--f);font-size:.76rem;font-weight:700;cursor:pointer;background:'+(l==='it'?'#111827;color:#fff':'none;color:#6b7280')+';transition:all .15s;';
-  var t=T[l]||T.it;
+  var _lf=document.getElementById('lang-flag');if(_lf)_lf.textContent=l==='en'?'🇬🇧':'🇮🇹';
+  var _tcf=document.getElementById('lang-tab-flag');if(_tcf)_tcf.textContent=l==='en'?'🇬🇧':'🇮🇹';
+  var _tof=document.getElementById('lang-tab-other-flag');if(_tof)_tof.textContent=l==='en'?'🇮🇹':'🇬🇧';
   document.querySelectorAll('[data-t]').forEach(function(el){
     var key=el.getAttribute('data-t');
-    if(t[key]!==undefined)el.innerHTML=t[key];
+    if(!T[l]||T[l][key]===undefined)return;
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=T[l][key];}
+    else{el.innerHTML=T[l][key];}
   });
+  renderPhones(l);
+  if(typeof window.renderReviews==='function')window.renderReviews();
 }
 
 setLang(localStorage.getItem('WT_LANG_v1')||'it');
-
-
-// Code activation
-function activateCode(){
-  var code=document.getElementById('access-code-input').value.trim().toLowerCase();
-  var err=document.getElementById('code-error');
-  if(code==='waylazio'){
-    localStorage.setItem('WT_ACCESS_LAZIO','1');
-    window.location.href='https://wayterra.it/app?region=lazio';
-  } else {
-    err.style.display='block';
-    setTimeout(function(){err.style.display='none';},3000);
-  }
-}
-document.getElementById('access-code-input').addEventListener('keydown',function(e){
-  if(e.key==='Enter')activateCode();
-});
 
 function openLandingReviewsPopup(reviews,regionName){
   var popup=document.getElementById('landing-reviews-popup');
@@ -362,6 +580,7 @@ function openLandingReviewsPopup(reviews,regionName){
   document.getElementById('lrp-rating').textContent='★ '+avg;
   document.getElementById('lrp-count').textContent='('+reviews.length+' recensioni)';
   var COLORS=['#dc6b2f','#2563eb','#16a34a','#7c3aed'];
+  var lang=localStorage.getItem('WT_LANG_v1')||'it';
   document.getElementById('lrp-list').innerHTML=reviews.map(function(r,i){
     var name=(r.profiles&&r.profiles.full_name)?r.profiles.full_name:'?';
     var parts=name.trim().split(' ');
@@ -380,7 +599,7 @@ function openLandingReviewsPopup(reviews,regionName){
       +'<div style="font-size:12px;">'+stars+'</div></div>'
       +'<span style="font-size:11px;color:#999;">'+date+'</span>'
       +'</div>'
-      +'<p style="font-size:13px;color:#555;margin:0;line-height:1.5;">'+(r.text||'')+'</p>'
+      +'<p style="font-size:13px;color:#555;margin:0;line-height:1.5;">'+((lang==='en'&&r.text_en)?r.text_en:(r.text||''))+'</p>'
       +'</div>';
   }).join('');
 }
@@ -388,7 +607,7 @@ function closeLandingReviewsPopup(){
   document.getElementById('landing-reviews-popup').style.display='none';
 }
 
-// Load reviews
+// Load reviews — tutte le recensioni degli itinerari non-travel (cioè quelli del Lazio)
 (function(){
   var SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
@@ -404,7 +623,7 @@ function closeLandingReviewsPopup(){
     var avatarContent=(r.profiles&&r.profiles.avatar_url)
       ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;">'
       :'<span>'+ini+'</span>';
-    var text=r.text||'';
+    var text=(localStorage.getItem('WT_LANG_v1')==='en'&&r.text_en)?r.text_en:(r.text||'');
     return'<div class="review-card">'
       +'<div class="review-header">'
       +'<div class="review-avatar" style="background:'+COLORS[i%COLORS.length]+';">'+avatarContent+'</div>'
@@ -419,9 +638,21 @@ function closeLandingReviewsPopup(){
     openLandingReviewsPopup(_allReviews,'Lazio');
   };
 
-  fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,text,user_id,created_at,profiles!user_id(full_name,avatar_url)&experience_id=in.(1,2,5,6,7)&order=created_at.desc',{
+  window.renderReviews=function(){
+    if(!_allReviews.length)return;
+    var grid=document.getElementById('reviews-grid');
+    grid.innerHTML=_allReviews.slice(0,4).map(makeReviewHTML).join('');
+  };
+
+  fetch(SB_URL+'/rest/v1/experiences?select=id&or=(is_travel.is.null,is_travel.eq.false)',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
-  }).then(function(r){return r.json();}).then(function(reviews){
+  }).then(function(r){return r.json();}).then(function(exps){
+    var ids=(exps||[]).map(function(e){return e.id;});
+    if(!ids.length)return[];
+    return fetch(SB_URL+'/rest/v1/itinerary_reviews?select=id,rating,text,text_en,user_id,created_at,profiles!user_id(full_name,avatar_url)&experience_id=in.('+ids.join(',')+')&order=created_at.desc',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    }).then(function(r){return r.json();});
+  }).then(function(reviews){
     _allReviews=reviews||[];
     var grid=document.getElementById('reviews-grid');
     if(!_allReviews.length){
@@ -456,6 +687,60 @@ function closeLandingReviewsPopup(){
     <div id="lrp-list" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;"></div>
   </div>
 </div>
+
+<script>
+var _SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
+var _SB_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZ2xmcnR6YnZua3dwdXd5Z3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzY5MTUsImV4cCI6MjA5NDM1MjkxNX0.fweBcLg1g-7ZqzoaQULeXBU6NjSS6uylg3c_4GZrcb4';
+var _supaLanding=(function(){try{return supabase.createClient(_SB_URL,_SB_ANON_KEY,{auth:{persistSession:true,storage:window.localStorage}});}catch(e){return null;}})();
+if(!localStorage.getItem('WT_SESSION_ID')){localStorage.setItem('WT_SESSION_ID','sess_'+Date.now()+'_'+Math.random().toString(36).substr(2,9));}
+async function trackSectionClick(section){
+  if(!_supaLanding)return;
+  try{await _supaLanding.from('analytics_events').insert({event_type:'lazio_section_click',region:'lazio',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:{section:section}});}catch(e){}
+}
+var _scrollTracked={};
+window.addEventListener('scroll',function(){
+  var scrollPct=Math.round((window.scrollY+window.innerHeight)/document.body.scrollHeight*100);
+  [25,50,75,100].forEach(function(threshold){
+    if(scrollPct>=threshold&&!_scrollTracked[threshold]){
+      _scrollTracked[threshold]=true;
+      if(_supaLanding)(async function(){try{await _supaLanding.from('analytics_events').insert({event_type:'lazio_scroll_depth',region:'lazio',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:{depth:threshold}});}catch(e){}})();
+    }
+  });
+});
+var _timeTracked={};
+[5,10,30,60,120,300].forEach(function(seconds){
+  setTimeout(async function(){
+    if(!_timeTracked[seconds]){
+      _timeTracked[seconds]=true;
+      if(_supaLanding)try{await _supaLanding.from('analytics_events').insert({event_type:'lazio_time_on_page',region:'lazio',session_id:localStorage.getItem('WT_SESSION_ID')||null,properties:{seconds:seconds}});}catch(e){}
+    }
+  },seconds*1000);
+});
+async function trackExploreClick(){
+  try{if(_supaLanding)await _supaLanding.from('analytics_events').insert({event_type:'cta_explore_click',region:'lazio',session_id:localStorage.getItem('WT_SESSION_ID')||null,user_id:null});}catch(e){}
+  _supaLanding&&_supaLanding.auth.getSession().then(function(res){
+    var _tgUser=res.data&&res.data.session&&res.data.session.user?res.data.session.user.email:'Visitatore anonimo';
+    fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'🚀 Click Esplora Lazio\nUtente: '+_tgUser})}).catch(function(){});
+  });
+}
+function toggleLangDropdown(){var dd=document.getElementById('lang-dropdown');dd.style.display=dd.style.display==='none'?'block':'none';}
+function closeLangDropdown(){var dd=document.getElementById('lang-dropdown');if(dd)dd.style.display='none';}
+document.addEventListener('click',function(e){var btn=document.getElementById('lang-dropdown-btn');if(btn&&!btn.contains(e.target))closeLangDropdown();});
+var _langTabOpen=false;
+function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display=_langTabOpen?'flex':'none';}
+function switchLangFromTab(l){setLang(l);_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}
+document.addEventListener('click',function(e){var tab=document.getElementById('lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}});
+document.addEventListener('DOMContentLoaded',async function(){
+  if(!_supaLanding)return;
+  var r=await _supaLanding.auth.getSession();
+  var session=r.data&&r.data.session;
+  if(!sessionStorage.getItem('WT_NOTIF_LAZIO_VIEW')){
+    sessionStorage.setItem('WT_NOTIF_LAZIO_VIEW','1');
+    var _tgUser=session&&session.user?session.user.email:'Visitatore anonimo';
+    fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'👀 Visita pagina Lazio\nUtente: '+_tgUser})}).catch(function(){});
+  }
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
 <script>
 CookieConsent.run({
@@ -519,5 +804,27 @@ CookieConsent.run({
   onChange: function() {}
 });
 </script>
+<script>
+function openLightbox(src){
+  document.getElementById('lightbox-img').src=src;
+  document.getElementById('lightbox').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').style.display='none';
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+</script>
+<div id="lightbox" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.95);align-items:center;justify-content:center;cursor:pointer;">
+  <img id="lightbox-img" src="" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:8px;">
+  <div style="position:absolute;top:16px;right:16px;">
+    <i class="ti ti-x" style="font-size:24px;color:#fff;" aria-hidden="true"></i>
+  </div>
+</div>
+<div id="lang-tab" style="display:none;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:900;flex-direction:column;align-items:stretch;">
+  <div id="lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="lang-tab-flag">🇮🇹</span></div>
+  <div id="lang-tab-other" onclick="switchLangFromTab(_lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
+</div>
 </body>
 </html>
