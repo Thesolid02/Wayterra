@@ -368,26 +368,6 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
   </div>
 </section>
 
-<!-- RECENSIONI -->
-<section onclick="trackSectionClick('reviews')">
-  <div class="si">
-    <div class="badge" data-t="rev-badge">Recensioni</div>
-    <h2 class="s-title" data-t="rev-title">Cosa dicono i viaggiatori</h2>
-    <div class="reviews-avg" id="reviews-avg" style="display:none;cursor:pointer;" onclick="openReviewsPopup()">
-      <div class="reviews-avg-num" id="avg-num"></div>
-      <div>
-        <div class="reviews-avg-stars" id="avg-stars"></div>
-        <div class="reviews-avg-count" id="avg-count"></div>
-      </div>
-      <span class="rev-pill-desktop" data-t="rev-pill" style="background:#dc6b2f;color:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;">+500 viaggiatori la stanno già utilizzando</span>
-    </div>
-    <div class="rev-pill-mobile" data-t="rev-pill" style="display:none;background:#dc6b2f;color:#fff;border-radius:20px;padding:4px 12px;font-size:.72rem;font-weight:700;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;margin-top:8px;">+500 viaggiatori la stanno già utilizzando</div>
-    <div class="reviews-grid" id="reviews-grid">
-      <p style="color:var(--g400);font-size:.88rem;">Caricamento recensioni…</p>
-    </div>
-  </div>
-</section>
-
 <!-- CTA ESPLORA -->
 <section class="cta-sec" id="esplora">
   <div class="si tc">
@@ -662,22 +642,6 @@ function closeLandingReviewsPopup(){
   });
 })();
 </script>
-
-<div id="landing-reviews-popup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeLandingReviewsPopup()">
-  <div style="background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:80vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px);">
-    <div style="padding:16px 20px;border-bottom:0.5px solid #eee;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;">
-      <div>
-        <p style="font-size:1rem;font-weight:500;margin:0;" id="lrp-title">Recensioni</p>
-        <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
-          <span id="lrp-rating" style="font-size:13px;font-weight:500;color:#f59e0b;"></span>
-          <span id="lrp-count" style="font-size:12px;color:#999;"></span>
-        </div>
-      </div>
-      <button onclick="closeLandingReviewsPopup()" style="background:none;border:none;cursor:pointer;font-size:24px;color:#999;line-height:1;">×</button>
-    </div>
-    <div id="lrp-list" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;"></div>
-  </div>
-</div>
 
 <script>
 var _SB_URL='https://vfglfrtzbvnkwpuwyguf.supabase.co';
