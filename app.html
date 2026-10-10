@@ -5582,10 +5582,25 @@ function bootApp(d){
       document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
   } else if(_accessParam==='lazio'){
-    setTimeout(function(){
+    _onboardRegion='lazio';
+    _accessCheckPending=true;
+    // niente mappa di sfondo finché il controllo d'accesso non è finito: resta sullo splash
+    document.getElementById('splash').classList.remove('hide');
+    document.getElementById('splash').style.display='';
+    setTimeout(async function(){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
-      showRegionPage();
-      openAccessRequestModal();
+      var _sess=await _supaAuth.auth.getSession();
+      if(_sess.data&&_sess.data.session){
+        var _uid=_sess.data.session.user.id;
+        localStorage.removeItem('WT_PROMO_ACCESS');
+        await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'lazio'},{onConflict:'user_id,region'});
+        _accessCheckPending=false;
+        selectRegion('lazio');
+        return;
+      }
+      _accessCheckPending=false;
+      selectRegion('lazio');
+      document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
   } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
     var _rr=localStorage.getItem('WT_REDIRECT_REGION');
@@ -6881,7 +6896,7 @@ async function createAccountFromPurchase(){
 <script>
 var _onboardEmailExists=false;
 var _onboardRegion='cotswolds'; // regione per cui è aperto l'onboarding/login sheet ('cotswolds' o 'bavaria')
-var CROSS_REGION_LABELS={cotswolds:'Cotswolds',bavaria:'Baviera'};
+var CROSS_REGION_LABELS={cotswolds:'Cotswolds',bavaria:'Baviera',lazio:'Lazio'};
 function openRegion(region){
   if(region==='lazio')selectRegion('lazio');
   else selectTravelRegion(region,getRegionCenter(region),getRegionZoom(region));
@@ -7017,14 +7032,18 @@ async function submitOnboarding(){
   if(result.data&&result.data.user){
     var uid=result.data.user.id;
     await _supaAuth.from('user_regions').upsert({user_id:uid,region:_onboardRegion},{onConflict:'user_id,region'});
-    if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){localStorage.removeItem('WT_PROMO_ACCESS');localStorage.setItem(_onboardRegion==='bavaria'?K.UB:K.UC,'1');}
+    if(localStorage.getItem('WT_PROMO_ACCESS')==='1'){
+      localStorage.removeItem('WT_PROMO_ACCESS');
+      if(_onboardRegion==='bavaria')localStorage.setItem(K.UB,'1');
+      else if(_onboardRegion==='cotswolds')localStorage.setItem(K.UC,'1');
+    }
     if(!result.data.session){await _supaAuth.auth.signInWithPassword({email:email,password:password});}
     _currentUser=result.data.user;
     _currentUserProfile={full_name:'',avatar_url:null};
     updateNavProfileAvatar();
   }
   document.getElementById('purchase-onboarding-sheet').style.display='none';
-  selectTravelRegion(_onboardRegion,getRegionCenter(_onboardRegion),getRegionZoom(_onboardRegion));
+  openRegion(_onboardRegion);
 }
 async function onboardingGoogleLogin(){
   await _supaAuth.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/app?access='+_onboardRegion}});

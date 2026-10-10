@@ -220,7 +220,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
         <div onclick="setLang('en');closeLangDropdown();" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='#fff'">🇬🇧</div>
       </div>
     </div>
-    <a href="https://wayterra.it/app?region=lazio" class="nav-btn" data-t="nav-cta">Esplora gratis →</a>
+    <a href="#" id="nav-login" onclick="event.preventDefault();openRegistrationSheet();" class="nav-btn" data-t="nav-cta">Esplora gratis →</a>
   </div>
 </nav>
 
@@ -233,7 +233,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="hero-badge" data-t="hero-badge">🇮🇹 ITALY · LAZIO</div>
     <h1 class="hero-h1" data-t="hero-h1">Dove ogni borgo racconta una storia</h1>
     <p class="hero-sub" data-t="hero-sub">Il Lazio nasconde molto più della sua capitale — borghi medievali, laghi vulcanici, foreste antiche e paesaggi che sembrano fermi nel tempo.</p>
-    <a class="hero-cta" data-t="hero-cta" href="https://wayterra.it/app?region=lazio" onclick="trackExploreClick();">Esplora gratis →</a>
+    <a class="hero-cta" data-t="hero-cta" href="https://wayterra.it/app?access=lazio" onclick="event.preventDefault(); localStorage.setItem('WT_PROMO_ACCESS','1'); window.location.href='https://wayterra.it/app?access=lazio';">Esplora gratis →</a>
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
@@ -363,7 +363,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="phones-row" id="phones-row"></div>
     <div class="phones-dots" id="phones-dots"></div>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://wayterra.it/app?region=lazio" onclick="trackExploreClick();" style="display:inline-block;background:#dc6b2f;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;text-decoration:none;" data-t="app-cta-btn">Inizia a esplorare il Lazio →</a>
+      <a href="https://wayterra.it/app?access=lazio" onclick="event.preventDefault(); localStorage.setItem('WT_PROMO_ACCESS','1'); window.location.href='https://wayterra.it/app?access=lazio';" style="display:inline-block;background:#dc6b2f;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;text-decoration:none;" data-t="app-cta-btn">Inizia a esplorare il Lazio →</a>
     </div>
   </div>
 </section>
@@ -374,7 +374,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
     <div class="badge" data-t="cta-badge">Accesso gratuito</div>
     <h2 class="s-title" data-t="cta-title">Inizia a esplorare il Lazio</h2>
     <div class="cta-price-note" data-t="cta-note">Accesso completamente gratuito. Nessuna carta di credito richiesta.</div>
-    <a href="https://wayterra.it/app?region=lazio" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="trackExploreClick();">Esplora gratis →</a>
+    <a href="https://wayterra.it/app?access=lazio" class="cta-btn" data-t="cta-btn" style="display:inline-block;text-decoration:none;" onclick="event.preventDefault(); localStorage.setItem('WT_PROMO_ACCESS','1'); window.location.href='https://wayterra.it/app?access=lazio';">Esplora gratis →</a>
   </div>
 </section>
 
@@ -437,7 +437,31 @@ var T={
     'cta-badge':'Accesso gratuito',
     'cta-title':'Inizia a esplorare il Lazio',
     'cta-note':'Accesso completamente gratuito. Nessuna carta di credito richiesta.',
-    'cta-btn':'Esplora gratis →'
+    'cta-btn':'Esplora gratis →',
+    'onboard-s1-title':'Benvenuto su Wayterra! 🎉',
+    'onboard-s1-sub':'Inserisci la tua email per accedere alla guida del Lazio.',
+    'onboard-google-btn':'Continua con Google',
+    'onboard-or':'oppure',
+    'onboard-email-placeholder':'Email',
+    'onboard-continue-btn-label':'Continua →',
+    'onboard-already-text':'Hai già un account?',
+    'onboard-already-link':'Accedi',
+    'onboard-s2-title':'Un ultimo passo e ci siamo!',
+    'onboard-password-placeholder':'Password (min. 6 caratteri)',
+    'onboard-submit-btn':'Accedi →',
+    'onboard-back-btn':'← Indietro',
+    'login-title':'Accedi al tuo account',
+    'login-sub':'Inserisci le tue credenziali per accedere alla guida del Lazio.',
+    'login-email-placeholder':'nome@email.com',
+    'login-password-placeholder':'Password',
+    'login-error':'Email o password non corretti.',
+    'login-cta':'Accedi →',
+    'login-forgot':'Password dimenticata?',
+    'forgot-title':'Recupera password',
+    'forgot-sub':'Inserisci la tua email per ricevere il link di recupero.',
+    'forgot-btn':'Invia link di recupero',
+    'reset-title':'Crea nuova password',
+    'reset-btn':'Salva nuova password'
   },
   en:{
     'nav-cta':'Explore for free →',
@@ -474,7 +498,31 @@ var T={
     'cta-badge':'Free access',
     'cta-title':'Start exploring Lazio',
     'cta-note':'Completely free access. No credit card required.',
-    'cta-btn':'Explore for free →'
+    'cta-btn':'Explore for free →',
+    'onboard-s1-title':'Welcome to Wayterra! 🎉',
+    'onboard-s1-sub':'Enter your email to access the Lazio guide.',
+    'onboard-google-btn':'Continue with Google',
+    'onboard-or':'or',
+    'onboard-email-placeholder':'Email',
+    'onboard-continue-btn-label':'Continue →',
+    'onboard-already-text':'Already have an account?',
+    'onboard-already-link':'Sign in',
+    'onboard-s2-title':'One last step and you\'re in!',
+    'onboard-password-placeholder':'Password (min. 6 characters)',
+    'onboard-submit-btn':'Sign in →',
+    'onboard-back-btn':'← Back',
+    'login-title':'Sign in to your account',
+    'login-sub':'Enter your credentials to access the Lazio guide.',
+    'login-email-placeholder':'name@email.com',
+    'login-password-placeholder':'Password',
+    'login-error':'Invalid email or password.',
+    'login-cta':'Sign in →',
+    'login-forgot':'Forgot password?',
+    'forgot-title':'Reset password',
+    'forgot-sub':'Enter your email to receive the recovery link.',
+    'forgot-btn':'Send recovery link',
+    'reset-title':'Create new password',
+    'reset-btn':'Save new password'
   }
 };
 var _BASE='https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/';
@@ -686,6 +734,9 @@ function toggleLangTab(){_langTabOpen=!_langTabOpen;var ot=document.getElementBy
 function switchLangFromTab(l){setLang(l);_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}
 document.addEventListener('click',function(e){var tab=document.getElementById('lang-tab');if(tab&&!tab.contains(e.target)){_langTabOpen=false;var ot=document.getElementById('lang-tab-other');if(ot)ot.style.display='none';}});
 document.addEventListener('DOMContentLoaded',async function(){
+  if(window.location.hash.includes('type=recovery')){
+    document.getElementById('reset-password-sheet').style.display='block';
+  }
   if(!_supaLanding)return;
   var r=await _supaLanding.auth.getSession();
   var session=r.data&&r.data.session;
@@ -694,7 +745,138 @@ document.addEventListener('DOMContentLoaded',async function(){
     var _tgUser=session&&session.user?session.user.email:'Visitatore anonimo';
     fetch('https://api.telegram.org/bot8873841587:AAFHZWtRe3nlYikPXvHhTvOq52WnruTf0QM/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:'5194988248',text:'👀 Visita pagina Lazio\nUtente: '+_tgUser})}).catch(function(){});
   }
+  if(session&&session.user){
+    document.querySelectorAll('.cta-btn').forEach(function(btn){
+      btn.textContent=_lang==='en'?'Access the guide →':'Accedi alla guida →';
+      btn.onclick=function(){localStorage.setItem('WT_PROMO_ACCESS','1');window.location.href='https://wayterra.it/app?access=lazio';};
+    });
+    var _userId=session.user.id;
+    _supaLanding.from('profiles').select('avatar_url').eq('id',_userId).single().then(function(result){
+      var avatarUrl=(result.data&&result.data.avatar_url)||(session.user.user_metadata&&session.user.user_metadata.avatar_url);
+      var initials=(session.user.email||'U').charAt(0).toUpperCase();
+      var navLogin=document.getElementById('nav-login');
+      if(navLogin){navLogin.outerHTML='<div id="nav-avatar" onclick="window.location.href=\'https://wayterra.it/app\';" style="width:34px;height:34px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">'+(avatarUrl?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</span>')+'</div>';}
+    });
+  }
 });
+var _onboardEmailExists=false;
+function openRegistrationSheet(){document.getElementById('purchase-onboarding-sheet').style.display='block';}
+function closeRegistrationSheet(){document.getElementById('purchase-onboarding-sheet').style.display='none';}
+function backToStep1(){
+  document.getElementById('onboard-step2').style.display='none';
+  document.getElementById('onboard-step1').style.display='block';
+  document.getElementById('onboard-step2-error').style.display='none';
+}
+async function continueOnboarding(){
+  var email=document.getElementById('onboard-email').value.trim();
+  var errEl=document.getElementById('onboard-error');
+  errEl.style.display='none';
+  document.getElementById('onboard-email').style.border='';
+  if(!email||!email.includes('@')){
+    document.getElementById('onboard-email').style.border='1.5px solid #e53e3e';
+    errEl.textContent=_lang==='en'?'Enter a valid email':'Inserisci un\'email valida';
+    errEl.style.display='block';return;
+  }
+  var btn=document.getElementById('onboard-continue-btn');
+  btn.disabled=true;btn.style.opacity='.7';
+  try{
+    var resp=await fetch(_SB_URL+'/functions/v1/check-email',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_SB_ANON_KEY},
+      body:JSON.stringify({email:email})
+    });
+    var data=await resp.json();
+    _onboardEmailExists=!!data.exists;
+  }catch(e){_onboardEmailExists=false;}
+  btn.disabled=false;btn.style.opacity='';
+  document.getElementById('onboard-step1').style.display='none';
+  document.getElementById('onboard-step2').style.display='block';
+  document.getElementById('onboard-step2-email').textContent=email;
+  document.getElementById('onboard-step2-sub').textContent=_onboardEmailExists
+    ?(_lang==='en'?'Welcome back! Enter your password.':'Bentornato! Inserisci la tua password.')
+    :(_lang==='en'?'Create your password.':'Crea la tua password.');
+}
+async function submitOnboarding(){
+  var email=document.getElementById('onboard-email').value.trim();
+  var password=document.getElementById('onboard-password').value;
+  var errEl=document.getElementById('onboard-step2-error');
+  errEl.style.display='none';
+  document.getElementById('onboard-password').style.border='';
+  if(password.length<6){
+    document.getElementById('onboard-password').style.border='1.5px solid #e53e3e';
+    errEl.textContent=_lang==='en'?'Password must be at least 6 characters':'La password deve essere di almeno 6 caratteri';
+    errEl.style.display='block';return;
+  }
+  var btn=document.getElementById('onboard-btn');
+  btn.disabled=true;btn.style.opacity='.7';
+  var result;
+  if(_onboardEmailExists){
+    result=await _supaLanding.auth.signInWithPassword({email:email,password:password});
+  }else{
+    result=await _supaLanding.auth.signUp({email:email,password:password});
+    if(result.error&&result.error.message.toLowerCase().includes('already')){
+      _onboardEmailExists=true;
+      result=await _supaLanding.auth.signInWithPassword({email:email,password:password});
+    }
+  }
+  if(result.error){
+    btn.disabled=false;btn.style.opacity='';
+    errEl.textContent=result.error.message;errEl.style.display='block';return;
+  }
+  if(result.data&&result.data.user){
+    await _supaLanding.from('user_regions').upsert({user_id:result.data.user.id,region:'lazio'},{onConflict:'user_id,region'});
+  }
+  localStorage.setItem('WT_PROMO_ACCESS','1');
+  window.location.href='https://wayterra.it/app?access=lazio';
+}
+function onboardingGoogleLogin(){
+  if(!_supaLanding)return;
+  _supaLanding.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/app?access=lazio'}});
+}
+function openLoginSheet(){closeRegistrationSheet();document.getElementById('login-sheet').style.display='block';}
+function closeLoginSheet(){document.getElementById('login-sheet').style.display='none';}
+async function loginWithGoogle(){if(!_supaLanding)return;await _supaLanding.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://wayterra.it/lazio'}});}
+async function submitLogin(){
+  var email=document.getElementById('login-email').value.trim();
+  var password=document.getElementById('login-password').value;
+  var errEl=document.getElementById('login-error');
+  var btn=document.getElementById('login-cta-btn');
+  errEl.style.display='none';
+  if(!email||!email.includes('@')||!password){errEl.style.display='block';return;}
+  btn.disabled=true;btn.textContent='...';
+  if(!_supaLanding){errEl.style.display='block';btn.disabled=false;btn.textContent=_lang==='en'?'Sign in →':'Accedi →';return;}
+  var result=await _supaLanding.auth.signInWithPassword({email:email,password:password});
+  if(result.error){errEl.style.display='block';btn.disabled=false;btn.textContent=_lang==='en'?'Sign in →':'Accedi →';return;}
+  await _supaLanding.from('user_regions').upsert({user_id:result.data.user.id,region:'lazio'},{onConflict:'user_id,region'});
+  localStorage.setItem('WT_PROMO_ACCESS','1');
+  window.location.href='https://wayterra.it/app?access=lazio';
+}
+function showToast(msg){
+  var t=document.getElementById('wt-toast');
+  if(!t){t=document.createElement('div');t.id='wt-toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#dc6b2f;color:#fff;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:500;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .3s;';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._to);t._to=setTimeout(function(){t.style.opacity='0';},3000);
+}
+async function sendResetEmail(){
+  var email=document.getElementById('forgot-email-input').value.trim();
+  var errEl=document.getElementById('forgot-email-error');
+  if(!email||!email.includes('@')){errEl.textContent=_lang==='en'?'Enter a valid email':'Inserisci un\'email valida';errEl.style.display='block';return;}
+  var btn=document.querySelector('#forgot-password-sheet button');
+  btn.disabled=true;btn.textContent='...';
+  await _supaLanding.auth.resetPasswordForEmail(email,{redirectTo:'https://wayterra.it/lazio'});
+  document.getElementById('forgot-password-sheet').style.display='none';
+  btn.disabled=false;
+  showToast(_lang==='en'?'Recovery email sent! Check your inbox.':'Email di recupero inviata! Controlla la casella.');
+}
+async function saveNewPassword(){
+  var password=document.getElementById('reset-password-input').value;
+  var errEl=document.getElementById('reset-password-error');
+  if(password.length<6){errEl.textContent=_lang==='en'?'Password must be at least 6 characters':'La password deve essere di almeno 6 caratteri';errEl.style.display='block';return;}
+  var result=await _supaLanding.auth.updateUser({password:password});
+  if(result.error){errEl.textContent=result.error.message;errEl.style.display='block';return;}
+  document.getElementById('reset-password-sheet').style.display='none';
+  showToast(_lang==='en'?'Password updated! ✓':'Password aggiornata! ✓');
+}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
 <script>
@@ -780,6 +962,81 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbo
 <div id="lang-tab" style="display:none;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:900;flex-direction:column;align-items:stretch;">
   <div id="lang-tab-current" onclick="toggleLangTab()" style="background:#dc6b2f;color:#fff;padding:10px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px 0 0 0;font-size:20px;user-select:none;"><span id="lang-tab-flag">🇮🇹</span></div>
   <div id="lang-tab-other" onclick="switchLangFromTab(_lang==='it'?'en':'it')" style="display:none;background:#1a1a1a;color:#fff;padding:10px 8px;cursor:pointer;align-items:center;justify-content:center;border-radius:0 0 0 8px;font-size:20px;user-select:none;"><span id="lang-tab-other-flag">🇬🇧</span></div>
+</div>
+
+<!-- REGISTRAZIONE (onboarding gratuito Lazio) -->
+<div id="purchase-onboarding-sheet" style="display:none;position:fixed;inset:0;z-index:1000;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;max-height:90vh;overflow-y:auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <!-- STEP 1: email -->
+    <div id="onboard-step1">
+      <div style="font-size:20px;font-weight:500;margin-bottom:6px;" data-t="onboard-s1-title">Benvenuto su Wayterra! 🎉</div>
+      <div style="font-size:14px;color:#888;margin-bottom:20px;" data-t="onboard-s1-sub">Inserisci la tua email per accedere alla guida del Lazio.</div>
+      <button onclick="onboardingGoogleLogin()" style="width:100%;background:#fff;color:#1a1a1a;border:1px solid #ddd;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+        <span data-t="onboard-google-btn">Continua con Google</span>
+      </button>
+      <div style="text-align:center;margin-bottom:16px;font-size:13px;color:#bbb;" data-t="onboard-or">oppure</div>
+      <input id="onboard-email" type="email" data-t-placeholder="onboard-email-placeholder" placeholder="Email" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+      <div id="onboard-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
+      <button onclick="continueOnboarding()" id="onboard-continue-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="onboard-continue-btn-label">Continua →</button>
+      <div style="text-align:center;margin-top:12px;font-size:13px;color:#888;">
+        <span data-t="onboard-already-text">Hai già un account?</span> <a href="#" onclick="openLoginSheet();return false;" style="color:#dc6b2f;" data-t="onboard-already-link">Accedi</a>
+      </div>
+    </div>
+    <!-- STEP 2: password -->
+    <div id="onboard-step2" style="display:none;">
+      <div style="font-size:20px;font-weight:500;margin-bottom:6px;" data-t="onboard-s2-title">Un ultimo passo e ci siamo!</div>
+      <div id="onboard-step2-email" style="font-size:13px;color:#aaa;margin-bottom:4px;"></div>
+      <div id="onboard-step2-sub" style="font-size:14px;color:#888;margin-bottom:16px;"></div>
+      <input id="onboard-password" type="password" data-t-placeholder="onboard-password-placeholder" placeholder="Password (min. 6 caratteri)" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+      <div id="onboard-step2-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
+      <button onclick="submitOnboarding()" id="onboard-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:10px;" data-t="onboard-submit-btn">Accedi →</button>
+      <button onclick="backToStep1()" style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:8px;padding:12px;font-size:14px;cursor:pointer;font-family:inherit;" data-t="onboard-back-btn">← Indietro</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN (utenti già registrati) -->
+<div id="login-sheet" style="display:none;position:fixed;inset:0;z-index:1001;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="closeLoginSheet()"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div data-t="login-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Accedi al tuo account</div>
+    <div data-t="login-sub" style="font-size:14px;color:#888;margin-bottom:20px;">Inserisci le tue credenziali per accedere alla guida del Lazio.</div>
+    <button onclick="loginWithGoogle()" style="width:100%;background:#fff;color:#1a1a1a;border:1px solid #ddd;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+      Continua con Google
+    </button>
+    <div style="text-align:center;margin-bottom:16px;font-size:13px;color:#bbb;">oppure</div>
+    <input id="login-email" type="email" data-t-placeholder="login-email-placeholder" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <input id="login-password" type="password" data-t-placeholder="login-password-placeholder" placeholder="Password" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <div id="login-error" data-t="login-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;">Email o password non corretti.</div>
+    <button onclick="submitLogin()" id="login-cta-btn" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="login-cta">Accedi →</button>
+    <div style="text-align:center;margin-top:8px;"><a href="#" onclick="event.preventDefault();document.getElementById('login-sheet').style.display='none';document.getElementById('forgot-password-sheet').style.display='block';" style="font-size:12px;color:#888;" data-t="login-forgot">Password dimenticata?</a></div>
+  </div>
+</div>
+<div id="forgot-password-sheet" style="display:none;position:fixed;inset:0;z-index:1001;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);" onclick="document.getElementById('forgot-password-sheet').style.display='none'"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div data-t="forgot-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Recupera password</div>
+    <div data-t="forgot-sub" style="font-size:14px;color:#888;margin-bottom:16px;">Inserisci la tua email per ricevere il link di recupero.</div>
+    <input id="forgot-email-input" type="email" placeholder="nome@email.com" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <div id="forgot-email-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
+    <button onclick="sendResetEmail()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="forgot-btn">Invia link di recupero</button>
+  </div>
+</div>
+<div id="reset-password-sheet" style="display:none;position:fixed;inset:0;z-index:1002;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:24px;max-width:600px;margin:0 auto;box-sizing:border-box;">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 20px;"></div>
+    <div data-t="reset-title" style="font-size:18px;font-weight:500;margin-bottom:6px;">Crea nuova password</div>
+    <input id="reset-password-input" type="password" placeholder="Nuova password (min. 6 caratteri)" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:8px;font-family:inherit;">
+    <div id="reset-password-error" style="font-size:12px;color:#e53e3e;margin-bottom:8px;display:none;"></div>
+    <button onclick="saveNewPassword()" style="width:100%;background:#dc6b2f;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;" data-t="reset-btn">Salva nuova password</button>
+  </div>
 </div>
 </body>
 </html>
