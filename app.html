@@ -6765,8 +6765,8 @@ async function settingsLogout(){
     saveFavs();localStorage.removeItem('WT_FAVS_v2');
     if(_supaAuth){await _supaAuth.auth.signOut({scope:'local'}).catch(function(){});}
   }
-  console.log('Redirecting to cotswolds...');
-  window.location.href='https://wayterra.it/cotswolds';
+  console.log('Redirecting to landing...');
+  window.location.href='https://wayterra.it';
 }
 </script>
 <div id="pw-forgot-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;">
