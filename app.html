@@ -6962,10 +6962,10 @@ function showCrossRegionSheet(requestedRegion,availableRegion){
   _unlockBtn.onclick=function(){
     if(requestedRegion==='bavaria'){
       localStorage.setItem('WT_PENDING_PURCHASE','bavaria');
-      window.location.href='https://wayterra.gumroad.com/l/baviera';
+      window.location.href='https://wayterra.gumroad.com/l/baviera?wanted=true';
     } else if(requestedRegion==='cotswolds'){
       localStorage.setItem('WT_PENDING_PURCHASE','cotswolds');
-      window.location.href='https://wayterra.gumroad.com/l/lbchl';
+      window.location.href='https://wayterra.gumroad.com/l/lbchl?wanted=true';
     } else {
       window.location.href='https://wayterra.it/'+requestedRegion;
     }
