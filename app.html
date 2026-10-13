@@ -5582,25 +5582,9 @@ function bootApp(d){
       document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
   } else if(_accessParam==='lazio'){
-    _onboardRegion='lazio';
-    _accessCheckPending=true;
-    // niente mappa di sfondo finché il controllo d'accesso non è finito: resta sullo splash
-    document.getElementById('splash').classList.remove('hide');
-    document.getElementById('splash').style.display='';
-    setTimeout(async function(){
+    setTimeout(function(){
       var _io=document.getElementById('initial-overlay');if(_io)_io.remove();
-      var _sess=await _supaAuth.auth.getSession();
-      if(_sess.data&&_sess.data.session){
-        var _uid=_sess.data.session.user.id;
-        localStorage.removeItem('WT_PROMO_ACCESS');
-        await _supaAuth.from('user_regions').upsert({user_id:_uid,region:'lazio'},{onConflict:'user_id,region'});
-        _accessCheckPending=false;
-        selectRegion('lazio');
-        return;
-      }
-      _accessCheckPending=false;
       selectRegion('lazio');
-      document.getElementById('purchase-onboarding-sheet').style.display='block';
     },100);
   } else if(!_urlParamsB.get('region')&&!_urlParamsB.get('itinerario')){
     var _rr=localStorage.getItem('WT_REDIRECT_REGION');
