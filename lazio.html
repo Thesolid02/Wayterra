@@ -36,6 +36,7 @@ src="https://www.facebook.com/tr?id=1747651939835990&ev=PageView&noscript=1"
 <link rel="alternate" hreflang="it" href="https://wayterra.it/lazio"/>
 <link rel="alternate" hreflang="en" href="https://wayterra.it/lazio?lang=en"/>
 <link rel="alternate" hreflang="x-default" href="https://wayterra.it/lazio"/>
+<link rel="canonical" href="https://wayterra.it/lazio">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -224,7 +225,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <nav id="main-nav">
   <div class="nav-brand">
     <a href="https://wayterra.it" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
-      <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/logo_test.jpg" style="height:32px;width:auto;border-radius:50%;object-fit:cover;" alt="Wayterra">
+      <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/logo_test.jpg" style="height:32px;width:auto;border-radius:50%;object-fit:cover;" alt="Wayterra" loading="lazy">
       <span class="nav-name">Wayterra</span>
     </a>
   </div>
@@ -436,7 +437,7 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
 <!-- FOOTER -->
 <footer>
   <div class="foot-brand">
-    <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/logo_test.jpg" style="height:28px;width:auto;border-radius:50%;object-fit:cover;" alt="Wayterra">
+    <img src="https://vfglfrtzbvnkwpuwyguf.supabase.co/storage/v1/object/public/wayterra-images/logo_test.jpg" style="height:28px;width:auto;border-radius:50%;object-fit:cover;" alt="Wayterra" loading="lazy">
     <span class="foot-name">Wayterra</span>
   </div>
   <div class="foot-tagline">Discover hidden places · Starting from Italy</div>
@@ -449,6 +450,13 @@ footer{background:var(--g900);padding:48px 24px 36px;text-align:center;}
       <i class="ti ti-brand-instagram" style="font-size:15px;"></i>
       @wayterra_guide
     </a>
+  </div>
+  <div style="margin-top:24px;">
+    <div style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;">Le nostre guide</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <a href="/cotswolds" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Cotswolds</a>
+      <a href="/baviera" style="font-size:13px;color:rgba(255,255,255,0.7);text-decoration:none;">Baviera</a>
+    </div>
   </div>
   <div class="foot-copy">© 2026 Wayterra · All rights reserved<a href="/privacy.html" style="color:rgba(255,255,255,.5);text-decoration:none;font-size:12px;margin-left:16px;">Privacy Policy</a></div>
 </footer>
@@ -685,7 +693,7 @@ function openLandingReviewsPopup(reviews,regionName){
     var displayName=parts.length>1?parts[0]+' '+parts[parts.length-1].charAt(0)+'.':parts[0];
     var ini=parts[0]?parts[0][0].toUpperCase()+(parts[1]?parts[1][0].toUpperCase():''):'?';
     var avatarHtml=(r.profiles&&r.profiles.avatar_url)
-      ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      ?'<img src="'+r.profiles.avatar_url+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
       :'<span style="font-size:11px;color:#fff;font-weight:500;">'+ini+'</span>';
     var stars='';
     for(var s=1;s<=5;s++)stars+='<span style="color:'+(s<=r.rating?'#f59e0b':'#ddd')+';">★</span>';
@@ -719,7 +727,7 @@ function closeLandingReviewsPopup(){
     var ini=parts[0]?parts[0][0].toUpperCase()+(parts[1]?parts[1][0].toUpperCase():''):'?';
     var stars='';for(var s=1;s<=5;s++)stars+=(s<=r.rating?'★':'☆');
     var avatarContent=(r.profiles&&r.profiles.avatar_url)
-      ?'<img src="'+r.profiles.avatar_url+'" style="width:100%;height:100%;object-fit:cover;">'
+      ?'<img src="'+r.profiles.avatar_url+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;">'
       :'<span>'+ini+'</span>';
     var text=(localStorage.getItem('WT_LANG_v1')==='en'&&r.text_en)?r.text_en:(r.text||'');
     return'<div class="review-card">'
@@ -834,7 +842,7 @@ document.addEventListener('DOMContentLoaded',async function(){
       var avatarUrl=(result.data&&result.data.avatar_url)||(session.user.user_metadata&&session.user.user_metadata.avatar_url);
       var initials=(session.user.email||'U').charAt(0).toUpperCase();
       var navLogin=document.getElementById('nav-login');
-      if(navLogin){navLogin.outerHTML='<div id="nav-avatar" onclick="window.location.href=\'https://wayterra.it/app\';" style="width:34px;height:34px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">'+(avatarUrl?'<img src="'+avatarUrl+'" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</span>')+'</div>';}
+      if(navLogin){navLogin.outerHTML='<div id="nav-avatar" onclick="window.location.href=\'https://wayterra.it/app\';" style="width:34px;height:34px;border-radius:50%;background:#fef3ec;border:1.5px solid #dc6b2f;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;">'+(avatarUrl?'<img src="'+avatarUrl+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;">':'<span style="font-size:14px;font-weight:500;color:#dc6b2f;">'+initials+'</span>')+'</div>';}
     });
   }
 });
@@ -1033,7 +1041,7 @@ function closeLightbox(){
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
 </script>
 <div id="lightbox" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.95);align-items:center;justify-content:center;cursor:pointer;">
-  <img id="lightbox-img" src="" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:8px;">
+  <img id="lightbox-img" src="" loading="lazy" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:8px;">
   <div style="position:absolute;top:16px;right:16px;">
     <i class="ti ti-x" style="font-size:24px;color:#fff;" aria-hidden="true"></i>
   </div>
